@@ -178,6 +178,7 @@ namespace ProtoGenesys
 			float flValue;
 			DWORD dwValue;
 			ImVec4 cValue;
+			LPSTR szValue;
 		} Current, Latched, Reset;
 
 		char _0x48[0x18];
