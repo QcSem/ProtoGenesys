@@ -44,8 +44,8 @@ namespace ProtoGenesys
 		flSpreadX = cosf(flRandom1) * flRandom2 * flSpread;
 		flSpreadY = sinf(flRandom1) * flRandom2 * flSpread;
 
-		usercmd->iViewAngles[0] += AngleToShort(flSpreadY * _profiler.gSpreadFactor->Custom.flValue);
-		usercmd->iViewAngles[1] += AngleToShort(flSpreadX * _profiler.gSpreadFactor->Custom.flValue);
+		usercmd->iViewAngles[0] += AngleToShort(flSpreadY * (1.0f - _profiler.gSpreadFactor->Custom.flValue));
+		usercmd->iViewAngles[1] += AngleToShort(flSpreadX * (1.0f - _profiler.gSpreadFactor->Custom.flValue));
 	}
 }
 

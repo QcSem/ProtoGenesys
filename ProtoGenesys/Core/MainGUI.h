@@ -37,6 +37,9 @@ namespace ProtoGenesys
 
 		ImGuiFs::Dialog SaveDialog, LoadDialog;
 
+		ImFont* Eurostile_Bold, * Eurostile_Extended, * Eurostile_Regular;
+		float flEurostile_Bold, flEurostile_Extended, flEurostile_Regular;
+
 		struct sVirtualKeys
 		{
 			bool bKey, bDown, bUp;

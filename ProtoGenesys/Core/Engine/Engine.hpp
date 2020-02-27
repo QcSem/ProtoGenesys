@@ -34,8 +34,6 @@
 #define	VectorScale(a,b,c) ((c)[0]=(a)[0]*(b),(c)[1]=(a)[1]*(b),(c)[2]=(a)[2]*(b))
 #define	VectorMA(a,b,c,d) ((d)[0]=(a)[0]+(c)[0]*(b),(d)[1]=(a)[1]+(c)[1]*(b),(d)[2]=(a)[2]+(c)[2]*(b))
 #define VectorAverage(a,b,c) ((c)[0]=((a)[0]+(b)[0])/2.0f,(c)[1]=((a)[1]+(b)[1])/2.0f,(c)[2]=((a)[2]+(b)[2])/2.0f)
-#define GetDistance2D(a,b) (sqrtf(powf(((a)[0]-(b)[0]),2.0f)+powf(((a)[1]-(b)[1]),2.0f)))
-#define GetDistance3D(a,b) (sqrtf(powf(((a)[0]-(b)[0]),2.0f)+powf(((a)[1]-(b)[1]),2.0f)+powf(((a)[2]-(b)[2]),2.0f)))
 
 //=====================================================================================
 
@@ -77,11 +75,52 @@ namespace ProtoGenesys
 	*/
 	typedef enum
 	{
+		ET_GENERAL,
+		ET_PLAYER,
+		ET_PLAYER_CORPSE,
+		ET_ITEM,
+		ET_MISSILE,
+		ET_INVISIBLE,
+		ET_SCRIPTMOVER,
+		ET_SOUND_BLEND,
+		ET_FX,
+		ET_LOOP_FX,
+		ET_PRIMARY_LIGHT,
+		ET_TURRET,
+		ET_HELICOPTER,
+		ET_PLANE,
+		ET_VEHICLE,
+		ET_VEHICLE_CORPSE,
+		ET_ACTOR,
+		ET_ACTOR_SPAWNER,
+		ET_ACTOR_CORPSE,
+		ET_STREAMER_HINT,
+		ET_ZBARRIER,
+		ET_EVENTS,
+		ET_MAX
+	} eEntityType;
+	/*
+	//=====================================================================================
+	*/
+	typedef enum
+	{
+		TRACE_HITTYPE_NONE,
+		TRACE_HITTYPE_ENTITY,
+		TRACE_HITTYPE_DYNENT_MODEL,
+		TRACE_HITTYPE_DYNENT_BRUSH,
+		TRACE_HITTYPE_GLASS,
+		TRACE_HITTYPE_MAX
+	} eTraceHitType;
+	/*
+	//=====================================================================================
+	*/
+	typedef enum
+	{
 		PENETRATE_TYPE_NONE,
 		PENETRATE_TYPE_SMALL,
 		PENETRATE_TYPE_MEDIUM,
 		PENETRATE_TYPE_LARGE,
-		PENETRATE_TYPE_COUNT,
+		PENETRATE_TYPE_MAX
 	} ePenetrateType;
 	/*
 	//=====================================================================================
@@ -110,6 +149,26 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
+		LPSTR szName;
+		char _0x4[0x14];
+
+		union uDvarValue
+		{
+			bool bValue;
+			int iValue;
+			DWORD dwValue;
+			float flValue;
+			LPSTR szValue;
+			ImVec4 cValue;
+		} Current, Latched, Reset;
+
+		char _0x48[0x18];
+	} sDvar;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
 		int iServerTime;
 		char _0x4[0x14];
 		int iOtherFlags;
@@ -122,7 +181,9 @@ namespace ProtoGenesys
 		int iGravity;
 		char _0x90[0x4];
 		int iSpeed;
-		char _0x98[0x148];
+		char _0x98[0x138];
+		int iWeaponState[2];
+		char _0x1D8[0x8];
 		float flZoomProgress;
 		char _0x1E4[0x4];
 		float flSpreadOverride;
@@ -167,7 +228,8 @@ namespace ProtoGenesys
 		Vector3 vViewOrg;
 		char _0x40[0x4];
 		Vector3 vViewAxis[3];
-	} sRefDef;
+		char _0x68[0x16FF8];
+	} sRefDef; // 0x68
 	/*
 	//=====================================================================================
 	*/
@@ -222,7 +284,8 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
-		char _0x0[0x4];
+		char _0x0[0x2];
+		short wValid;
 		short wUsedForPlayerMesh;
 		char _0x6[0x26];
 		Vector3 vOrigin;
@@ -243,7 +306,11 @@ namespace ProtoGenesys
 		int iWeaponID2;
 		char _0x244[0x70];
 		short wEntityType;
-		char _0x2B6[0xA];
+		short wGroundEntityNum;
+		char _0x2B8[0x2];
+		short wOtherEntityNum;
+		short wAttackerEntityNum;
+		char _0x2BE[0x2];
 		int iWeaponID1;
 		char _0x2C4[0xB4];
 		int iAlive;
@@ -290,7 +357,10 @@ namespace ProtoGenesys
 		sPlayerState PlayerState;
 		char _0x485FC[0x5294];
 		sRefDef RefDef;
-		char _0x4D8F8[0x1C168];
+		Vector3 vRefDefViewAngles;
+		char _0x648FC[0x130];
+		Vector3 vWeaponAngles;
+		char _0x64A38[0x5028];
 		sClientInfo Client[MAX_CLIENTS];
 		char _0x72AF0[0xE06C];
 		float flSpread;
@@ -353,10 +423,28 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
+		char szName[32];
+		char _0x20[0x6E];
+		char szIP[4];
+		char _0x92[0xB6];
+	} sServerSession;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
+		int iWidth;
+		int iHeight;
+	} sWindow;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
 		Vector3 vNormal;
 		char _0xC[0x4];
 		float flFraction;
-		int iSFlags;
+		int iSurfaceFlags;
 		char _0x18[0x8];
 		short wHitID;
 		char _0x22[0x6];
@@ -397,10 +485,17 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
-		char szName[32];
-		char _0x20[0x6E];
-		char szIP[4];
-		char _0x92[0xB6];
+		union uIP
+		{
+			char szIP[4];
+			int iNetAddr;
+		} IP;
+
+		short iPort;
+		char _0x6[0x2];
+		int iType;
+		int iLocalNetID;
+		int iServerID;
 	} sNetAddr;
 	/*
 	//=====================================================================================
@@ -416,6 +511,9 @@ namespace ProtoGenesys
 	static DWORD_PTR dwMaxClientsDvar = 0x25E456C;
 	static DWORD_PTR dwNoDeltaDvar = 0x11C3634;
 
+	static DWORD_PTR dwPenetrationMultiplier = bIsSteamVersion ? *(DWORD_PTR*)0x325FC04 : *(DWORD_PTR*)0x323EC04;
+	static DWORD_PTR dwPenetrationCount = *(DWORD_PTR*)0x28FB870;
+
 	static DWORD_PTR dwConnectPathsException1 = bIsSteamVersion ? 0x43B6DB : 0x53367B;
 	static DWORD_PTR dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
 	static DWORD_PTR dwObituaryException = bIsSteamVersion ? 0x7A345C : 0x7A40EC;
@@ -428,15 +526,18 @@ namespace ProtoGenesys
 	static DWORD_PTR dwWindowHandle = 0x2B6ED88;
 	static DWORD_PTR dwServerSession = 0x12A7000;
 	static DWORD_PTR dwServerID = 0x11D0ACC;
+	static DWORD_PTR dwWindow = 0x2956244;
 
 	static DWORD_PTR dwSetValueForKey = bIsSteamVersion ? 0x406830 : 0x551B00;
 	static DWORD_PTR dwPredictPlayerState = bIsSteamVersion ? 0x5B3C40 : 0x5B4F40;
 	static DWORD_PTR dwLocalClientIsInGame = bIsSteamVersion ? 0x5922F0 : 0x402F80;
 	static DWORD_PTR dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
+	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
 	static DWORD_PTR dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
 	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
 	static DWORD_PTR dwGetDObj = bIsSteamVersion ? 0x5D2590 : 0x4DA190;
 	static DWORD_PTR dwGetTagPos = bIsSteamVersion ? 0x664930 : 0x4A1210;
+	static DWORD_PTR dwGetPlayerViewOrigin = bIsSteamVersion ? 0x580890 : 0x640E80;
 	static DWORD_PTR dwLocationalTrace = bIsSteamVersion ? 0x6C6C00 : 0x50B870;
 	static DWORD_PTR dwBulletTrace = bIsSteamVersion ? 0x7E0170 : 0x7E0A00;
 	static DWORD_PTR dwGetTraceHitType = bIsSteamVersion ? 0x4AC3D0 : 0x6A32F0;
@@ -460,6 +561,8 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetUsername = bIsSteamVersion ? 0x65FDE0 : 0x4B58D0;
 	static DWORD_PTR dwGetClantag = bIsSteamVersion ? 0x5ACDA0 : 0x6D2900;
 	static DWORD_PTR dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
+	static DWORD_PTR dwGetCurrentSession = bIsSteamVersion ? 0x4823F0 : 0x534520;
+	static DWORD_PTR dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
 	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
 	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
 	static DWORD_PTR dwProcessText = bIsSteamVersion ? 0x66AFA0 : 0x546D30;
@@ -475,12 +578,13 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static sClientActive* ClientActive;
 	static sCG* CG = (sCG*)dwCG;
+	static sClientActive* ClientActive;
 	static sWeaponName* WeaponNames = (sWeaponName*)dwWeaponNames;
 	static sViewAngles* ViewAngles = (sViewAngles*)dwViewAngles;
 	static sRecoilAngles* RecoilAngles = (sRecoilAngles*)dwRecoilAngles;
-	static sNetAddr* NetAddr = (sNetAddr*)(dwServerSession + 0x248);
+	static sServerSession* ServerSession = (sServerSession*)(dwServerSession + 0x248);
+	static sWindow* Window = (sWindow*)dwWindow;
 	/*
 	//=====================================================================================
 	*/
@@ -491,9 +595,16 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline int AddReliableCommand(std::string command)
+	inline void AddReliableCommand(std::string command)
 	{
-		return VariadicCall<int>(dwAddReliableCommand, 0, command.c_str());
+		return VariadicCall<void>(dwAddReliableCommand, 0, command.c_str());
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline void Cbuf_AddText(std::string command)
+	{
+		return VariadicCall<void>(dwCbufAddText, 0, command.c_str());
 	}
 	/*
 	//=====================================================================================
@@ -515,6 +626,13 @@ namespace ProtoGenesys
 	inline LPVOID GetTagPosition(sEntity* entity, WORD tag, LPVOID dobj, Vector3 position)
 	{
 		return VariadicCall<LPVOID>(dwGetTagPos, entity, dobj, tag, position);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline void GetPlayerViewOrigin(Vector3 position)
+	{
+		return VariadicCall<void>(dwGetPlayerViewOrigin, 0, &CG->PlayerState, position);
 	}
 	/*
 	//=====================================================================================
@@ -676,6 +794,35 @@ namespace ProtoGenesys
 	inline LPSTR GetXuidstring()
 	{
 		return VariadicCall<LPSTR>(dwGetXuidstring, 0);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline LPVOID GetCurrentSession()
+	{
+		return VariadicCall<LPVOID>(dwGetCurrentSession);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline sNetAddr* GetPlayerAddr(sNetAddr* netaddr, LPVOID session, int clientnum)
+	{
+		return VariadicCall<sNetAddr*>(dwGetPlayerAddr, netaddr, session, clientnum);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline bool EntityHasRiotShield(sEntity* entity)
+	{
+		return ((BYTE)entity->iWeaponID1 == ID_ASSAULTSHIELD || (BYTE)entity->iWeaponID2 == ID_ASSAULTSHIELD);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline bool IsPlayerReloading(sPlayerState* playerstate)
+	{
+		return (playerstate->iWeaponState[0] == 11 || playerstate->iWeaponState[0] == 13 || playerstate->iWeaponState[0] == 14 || playerstate->iWeaponState[0] == 16 || playerstate->iWeaponState[0] == 15 || playerstate->iWeaponState[0] == 12 || playerstate->iWeaponState[0] == 17 || playerstate->iWeaponState[0] == 18 ||
+			playerstate->iWeaponState[1] == 11 || playerstate->iWeaponState[1] == 13 || playerstate->iWeaponState[1] == 14 || playerstate->iWeaponState[1] == 16 || playerstate->iWeaponState[1] == 15 || playerstate->iWeaponState[1] == 12 || playerstate->iWeaponState[1] == 17 || playerstate->iWeaponState[1] == 18);
 	}
 }
 

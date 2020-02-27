@@ -135,6 +135,13 @@ namespace ProtoGenesys
 
 		typedef enum
 		{
+			SORT_METHOD_FOV,
+			SORT_METHOD_DISTANCE,
+			SORT_METHOD_MAX
+		} eSortMethod;
+
+		typedef enum
+		{
 			WALLHACK_MODE_AXIS,
 			WALLHACK_MODE_ALLIES,
 			WALLHACK_MODE_ALL,
@@ -148,7 +155,8 @@ namespace ProtoGenesys
 			PLAYER_BOXES_CORNER,
 			PLAYER_BOXES_BORDER_FILLED,
 			PLAYER_BOXES_CORNER_FILLED,
-			PLAYER_BOXES_CUBES,
+			PLAYER_BOXES_BORDER_3D,
+			PLAYER_BOXES_CORNER_3D,
 			PLAYER_BOXES_MAX
 		} ePlayerBoxes;
 
@@ -165,6 +173,9 @@ namespace ProtoGenesys
 			PLAYER_SNAPLINES_OFF,
 			PLAYER_SNAPLINES_TOP,
 			PLAYER_SNAPLINES_BOTTOM,
+			PLAYER_SNAPLINES_LEFT,
+			PLAYER_SNAPLINES_RIGHT,
+			PLAYER_SNAPLINES_CENTER,
 			PLAYER_SNAPLINES_MAX
 		} ePlayerSnapLines;
 
@@ -177,32 +188,33 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gAutoZoom = std::make_shared<sCvar>("Autozoom", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAutoFire = std::make_shared<sCvar>("Autofire", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAutoWall = std::make_shared<sCvar>("Autowall", std::vector<std::string>(), false, FALSE, TRUE);
+		std::shared_ptr<sCvar> gApplyPrediction = std::make_shared<sCvar>("Apply Prediction", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAntiTeamKill = std::make_shared<sCvar>("Anti-Teamkill", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gDisableMouse = std::make_shared<sCvar>("Disable Mouse", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gSilentAim = std::make_shared<sCvar>("Silent-Aim", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAntiAim = std::make_shared<sCvar>("Anti-Aim", std::vector<std::string>({ "Off", "Spinbot", "Jitterbot", "Randomized", "Reversed" }), ANTIAIM_OFF, ANTIAIM_OFF, ANTIAIM_MAX);
 		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On Timer", "Immediate" }), BONESCAN_OFF, BONESCAN_OFF, BONESCAN_MAX);
+		std::shared_ptr<sCvar> gSortMethod = std::make_shared<sCvar>("Sort Method", std::vector<std::string>({ "Field of View", "Distance" }), SORT_METHOD_FOV, SORT_METHOD_FOV, SORT_METHOD_MAX);
 
 		std::shared_ptr<sCvar> gWallHackMode = std::make_shared<sCvar>("Mode", std::vector<std::string>({ "Axis", "Allies", "All" }), WALLHACK_MODE_AXIS, WALLHACK_MODE_AXIS, WALLHACK_MODE_MAX);
-		std::shared_ptr<sCvar> gPlayerBoxes = std::make_shared<sCvar>("Boxes", std::vector<std::string>({ "Off", "Border", "Corner", "Border Filled", "Corner Filled", "Cubes" }), PLAYER_BOXES_OFF, PLAYER_BOXES_OFF, PLAYER_BOXES_MAX);
+		std::shared_ptr<sCvar> gPlayerBoxes = std::make_shared<sCvar>("Boxes", std::vector<std::string>({ "Off", "Border", "Corner", "Border Filled", "Corner Filled", "Border 3D", "Corner 3D" }), PLAYER_BOXES_OFF, PLAYER_BOXES_OFF, PLAYER_BOXES_MAX);
 		std::shared_ptr<sCvar> gPlayerBones = std::make_shared<sCvar>("Bones", std::vector<std::string>({ "Off", "Dots", "Lines" }), PLAYER_BONES_OFF, PLAYER_BONES_OFF, PLAYER_BONES_MAX);
-		std::shared_ptr<sCvar> gPlayerSnapLines = std::make_shared<sCvar>("Snaplines", std::vector<std::string>({ "Off", "Top", "Bottom" }), PLAYER_SNAPLINES_OFF, PLAYER_SNAPLINES_OFF, PLAYER_SNAPLINES_MAX);
-		std::shared_ptr<sCvar> gPlayerDistances = std::make_shared<sCvar>("Distances", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gPlayerNames = std::make_shared<sCvar>("Names", std::vector<std::string>(), false, FALSE, TRUE);
+		std::shared_ptr<sCvar> gPlayerSnapLines = std::make_shared<sCvar>("Snaplines", std::vector<std::string>({ "Off", "Top", "Bottom", "Left", "Right", "Center" }), PLAYER_SNAPLINES_OFF, PLAYER_SNAPLINES_OFF, PLAYER_SNAPLINES_MAX);
+		std::shared_ptr<sCvar> gPlayerInfo = std::make_shared<sCvar>("Info", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gPlayerWeapons = std::make_shared<sCvar>("Weapons", std::vector<std::string>(), false, FALSE, TRUE);
+		std::shared_ptr<sCvar> gPlayerEntities = std::make_shared<sCvar>("Entities", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gPlayerCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gPlayerCompass = std::make_shared<sCvar>("Compass", std::vector<std::string>(), false, FALSE, TRUE);
 		std::shared_ptr<sCvar> gPlayerRadar = std::make_shared<sCvar>("Radar", std::vector<std::string>(), false, FALSE, TRUE);
 
 		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HEAD, BONE_HEAD, BONE_MAX - 1);
-		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 360.0f, 5.0f, 360.0f);
+		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180.0f, 5.0f, 180.0f);
 		std::shared_ptr<sCvar> gAimPower = std::make_shared<sCvar>("Aimpower", std::vector<std::string>(), 100, 5, 100);
 		std::shared_ptr<sCvar> gAutoAimTime = std::make_shared<sCvar>("Autoaim Time", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoAimDelay = std::make_shared<sCvar>("Autoaim Delay", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoZoomDelay = std::make_shared<sCvar>("Autozoom Delay", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoFireDelay = std::make_shared<sCvar>("Autofire Delay", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gRecoilFactor = std::make_shared<sCvar>("Recoil Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
-		std::shared_ptr<sCvar> gSpreadFactor = std::make_shared<sCvar>("Spread Factor", std::vector<std::string>(), 0.0f, 0.0f, 1.0f);
+		std::shared_ptr<sCvar> gSpreadFactor = std::make_shared<sCvar>("Spread Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 
 		std::shared_ptr<sCvar> gColorAxis = std::make_shared<sCvar>("Axis", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)), 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gColorAllies = std::make_shared<sCvar>("Allies", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)), 0.0f, 1.0f);

@@ -170,6 +170,10 @@ namespace ProtoGenesys
 		ImGui::GetIO().Fonts->AddFontMedium();
 		ImGui::GetIO().Fonts->AddFontBold();
 
+		Eurostile_Bold = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(eurostile_bold_compressed_data_base85, flEurostile_Bold = Window->iHeight / 80.0f);
+		Eurostile_Extended = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(eurostile_extended_compressed_data_base85, flEurostile_Extended = Window->iHeight / 60.0f);
+		Eurostile_Regular = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(eurostile_regular_compressed_data_base85, flEurostile_Regular = Window->iHeight / 80.0f);
+
 		ImGui_ImplDX11_CreateDeviceObjects();
 
 		SetMenuFont(font);
@@ -238,17 +242,13 @@ namespace ProtoGenesys
 		if (GetKeyPress(VK_INSERT, false))
 			bShowWindow = !bShowWindow;
 
-		if (GetKeyPress(VK_DELETE, false))
-			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\\x5E\x48\x3C\x3C\x10\\xuid\\%s\"", _mainGui.szNameOverride.empty() ? GetUsername() : _mainGui.szNameOverride.c_str(), !_hooks.dwXuidOverride ? GetXuidstring() : _ui64toa(_hooks.dwXuidOverride, _hooks.szXuidOverride, 0x10)));
-
 		if (GetKeyPress(VK_HOME, false))
 			_profiler.LoadProfile("");
 
 		if (GetKeyPress(VK_END, false))
 			_profiler.DisableAll();
 
-		*(bool*)dwMouseInput = !(bShowWindow || (LocalClientIsInGame() && WeaponAmmoAvailable() && (CG->PlayerState.iOtherFlags & 0x4) &&
-			!_profiler.gSilentAim->Custom.bValue && _profiler.gDisableMouse->Custom.bValue && _aimBot.AimState.bIsAutoAiming));
+		*(bool*)dwMouseInput = !bShowWindow;
 
 		if (bInitialized && bShowWindow && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 			return TRUE;
@@ -323,6 +323,31 @@ namespace ProtoGenesys
 				_drawing.DrawCrosshair();
 			}
 
+			std::string szWatermark(VariadicText("PROTOGENESYS for Call of Duty: BO2 | Frametime: %s, Ping: %s",
+				LocalClientIsInGame() ? VariadicText("%i ms", *(int*)(dwCG + 0x48088)).c_str() : "N/A",
+				LocalClientIsInGame() ? VariadicText("%i ms", *(int*)(*(DWORD_PTR*)dwClientActive + 0x68)).c_str() : "N/A"));
+
+			ImVec2 vWatermark(Eurostile_Extended->CalcTextSizeA(flEurostile_Extended, FLT_MAX, 0.0f, szWatermark.c_str()));
+
+			ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
+				ImVec2(vWatermark.y + 1.0f, flEurostile_Extended - vWatermark.y + 1.0f),
+				0xFF000000, szWatermark.c_str());
+
+			ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
+				ImVec2(vWatermark.y, flEurostile_Extended - vWatermark.y),
+				0xFFFFFFFF, szWatermark.c_str());
+
+			std::string szFramesPerSecond(VariadicText("%i", (int)ImGui::GetIO().Framerate));
+			ImVec2 vFramesPerSecond(Eurostile_Extended->CalcTextSizeA(flEurostile_Extended, FLT_MAX, 0.0f, szFramesPerSecond.c_str()));
+
+			ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
+				ImVec2(ImGui::GetIO().DisplaySize.x - vFramesPerSecond.x - vFramesPerSecond.y + 1.0f, flEurostile_Extended - vFramesPerSecond.y + 1.0f),
+				0xFF000000, szFramesPerSecond.c_str());
+
+			ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
+				ImVec2(ImGui::GetIO().DisplaySize.x - vFramesPerSecond.x - vFramesPerSecond.y, flEurostile_Extended - vFramesPerSecond.y),
+				0xFF00FFFF, szFramesPerSecond.c_str());
+
 			ImGui::End();
 
 			if (bShowWindow)
@@ -380,12 +405,12 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::SameLine(294.0f);
 
-					if (ImGui::Checkbox(_profiler.gAntiTeamKill->szLabel.c_str(), &_profiler.gAntiTeamKill->Custom.bValue))
+					if (ImGui::Checkbox(_profiler.gApplyPrediction->szLabel.c_str(), &_profiler.gApplyPrediction->Custom.bValue))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::Checkbox(_profiler.gDisableMouse->szLabel.c_str(), &_profiler.gDisableMouse->Custom.bValue))
+					if (ImGui::Checkbox(_profiler.gAntiTeamKill->szLabel.c_str(), &_profiler.gAntiTeamKill->Custom.bValue))
 					{
 						bWriteLog = true;
 					} ImGui::SameLine(294.0f);
@@ -401,6 +426,11 @@ namespace ProtoGenesys
 					} ImGui::NewLine();
 
 					if (ImGui::Combo(_profiler.gBoneScan->szLabel.c_str(), &_profiler.gBoneScan->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gBoneScan->szItems), _profiler.gBoneScan->MaxValue.iMax))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
+					if (ImGui::Combo(_profiler.gSortMethod->szLabel.c_str(), &_profiler.gSortMethod->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gSortMethod->szItems), _profiler.gSortMethod->MaxValue.iMax))
 					{
 						bWriteLog = true;
 					}
@@ -438,17 +468,17 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
-					if (ImGui::Checkbox(_profiler.gPlayerDistances->szLabel.c_str(), &_profiler.gPlayerDistances->Custom.bValue))
+					if (ImGui::Checkbox(_profiler.gPlayerInfo->szLabel.c_str(), &_profiler.gPlayerInfo->Custom.bValue))
 					{
 						bWriteLog = true;
 					} ImGui::SameLine(294.0f);
 
-					if (ImGui::Checkbox(_profiler.gPlayerNames->szLabel.c_str(), &_profiler.gPlayerNames->Custom.bValue))
+					if (ImGui::Checkbox(_profiler.gPlayerWeapons->szLabel.c_str(), &_profiler.gPlayerWeapons->Custom.bValue))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::Checkbox(_profiler.gPlayerWeapons->szLabel.c_str(), &_profiler.gPlayerWeapons->Custom.bValue))
+					if (ImGui::Checkbox(_profiler.gPlayerEntities->szLabel.c_str(), &_profiler.gPlayerEntities->Custom.bValue))
 					{
 						bWriteLog = true;
 					} ImGui::SameLine(294.0f);
@@ -647,7 +677,7 @@ namespace ProtoGenesys
 				for (int i = 0; i < MAX_CLIENTS; i++)
 				{
 					ImGui::PushID(i);
-					ImGui::RadioButton("", &_targetList.iSelectedTarget, i);
+					ImGui::RadioButton("", &_targetList.iRiotShieldTarget, i);
 					ImGui::PopID();
 					ImGui::SameLine();
 					ImGui::PushID(i + MAX_CLIENTS);
@@ -656,12 +686,12 @@ namespace ProtoGenesys
 					ImGui::SameLine();
 
 					ImGui::PushItemWidth(150.0f);
-					ImGui::InputText(NetAddr[i].szName,
+					ImGui::InputText(VariadicText("%i: %s", i, ServerSession[i].szName).c_str(),
 						(LPSTR)VariadicText("%u.%u.%u.%u",
-							(BYTE)NetAddr[i].szIP[0],
-							(BYTE)NetAddr[i].szIP[1],
-							(BYTE)NetAddr[i].szIP[2],
-							(BYTE)NetAddr[i].szIP[3]).c_str(),
+							(BYTE)ServerSession[i].szIP[0],
+							(BYTE)ServerSession[i].szIP[1],
+							(BYTE)ServerSession[i].szIP[2],
+							(BYTE)ServerSession[i].szIP[3]).c_str(),
 						1024, ImGuiInputTextFlags_ReadOnly);
 					ImGui::PopItemWidth();
 				}

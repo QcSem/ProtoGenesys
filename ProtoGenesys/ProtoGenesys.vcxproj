@@ -108,6 +108,9 @@
     <ClInclude Include="ImGui\Addons\FileSystem\imguifilesystem.h" />
     <ClInclude Include="ImGui\Addons\TabWindow\imguitabwindow.h" />
     <ClInclude Include="ImGui\DX11\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\Fonts\Eurostile_Bold.hpp" />
+    <ClInclude Include="ImGui\Fonts\Eurostile_Extended.hpp" />
+    <ClInclude Include="ImGui\Fonts\Eurostile_Regular.hpp" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_internal.h" />

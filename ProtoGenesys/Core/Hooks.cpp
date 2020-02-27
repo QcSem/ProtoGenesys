@@ -19,7 +19,7 @@ namespace ProtoGenesys
 				PredictPlayerState();
 			}
 
-			if ((LPVOID)ExceptionInfo->ContextRecord->Eip == pAddress)
+			if (ExceptionInfo->ContextRecord->Eip == dwAddress)
 			{
 				PageGuardSVFK();
 			}
@@ -32,23 +32,23 @@ namespace ProtoGenesys
 				if (szKey.find("name") != std::string::npos)
 				{
 					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = _mainGui.szNameOverride.empty() ? GetUsername() : _mainGui.szNameOverride.c_str();
-					PageGuardAddress((LPVOID)dwGetClantag);
+					PageGuardAddress(dwGetClantag);
 				}
 
 				if (szKey.find("clanAbbrev") != std::string::npos)
 				{
 					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = _mainGui.szClanOverride.empty() ? GetClantag() : _mainGui.szClanOverride.c_str();
-					PageGuardAddress((LPVOID)dwGetXuidstring);
+					PageGuardAddress(dwGetXuidstring);
 				}
 
 				if (szKey.find("xuid") != std::string::npos)
 				{
-					PageGuardAddress((LPVOID)dwGetIntPlayerStatInternal);
+					PageGuardAddress(dwGetIntPlayerStatInternal);
 				}
 
 				if (szKey.find("rank") != std::string::npos)
 				{
-					PageGuardAddress((LPVOID)dwInt64ToString);
+					PageGuardAddress(dwInt64ToString);
 				}
 
 				if (szKey.find("steamid") != std::string::npos)
@@ -136,12 +136,12 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	BOOL cHooks::PageGuardAddress(LPVOID address)
+	BOOL cHooks::PageGuardAddress(DWORD address)
 	{
-		pAddress = address;
+		dwAddress = address;
 		DWORD dwProtection = PAGE_EXECUTE | PAGE_GUARD;
 
-		return VirtualProtect(address, 0x4, dwProtection, &dwProtection);
+		return VirtualProtect((LPVOID)dwAddress, 0x4, dwProtection, &dwProtection);
 	}
 	/*
 	//=====================================================================================
@@ -175,7 +175,7 @@ namespace ProtoGenesys
 		{
 			_targetList.GetInformation();
 
-			if (WeaponAmmoAvailable())
+			if (!IsPlayerReloading(&CG->PlayerState) && WeaponAmmoAvailable())
 				_aimBot.StandardAim();
 
 			_removals.RecoilCompensation();
@@ -184,7 +184,8 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::PredictPlayerState() {
+	void cHooks::PredictPlayerState()
+	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
 			static int iBackupAngles[3];
@@ -195,6 +196,9 @@ namespace ProtoGenesys
 			sUserCmd* pCurrentCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
 			sUserCmd* pNewCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd + 1);
 
+			if (_mainGui.GetKeyPress(VK_DELETE, true))
+				CopyMemory(pCurrentCmd, pOldCmd, sizeof(sUserCmd));
+
 			CopyMemory(pNewCmd, pCurrentCmd, sizeof(sUserCmd));
 			++ClientActive->iCurrentCmd;
 
@@ -204,10 +208,12 @@ namespace ProtoGenesys
 			++pOldCmd->iServerTime;
 			--pCurrentCmd->iServerTime;
 
-			if (WeaponAmmoAvailable())
+			if (!IsPlayerReloading(&CG->PlayerState) && WeaponAmmoAvailable())
 			{
 				_aimBot.SilentAim(pOldCmd);
-				_aimBot.AutoFire(pCurrentCmd);
+
+				if (!WeaponIsVehicle())
+					_aimBot.AutoFire(pCurrentCmd);
 			}
 
 			_removals.SpreadCompensation(pOldCmd, pCurrentCmd->iServerTime);
@@ -239,18 +245,21 @@ namespace ProtoGenesys
 		{
 			if (attacker == CG->iClientNum && attacker != victim)
 			{
+				if (bTrickShot)
+					AddReliableCommand(VariadicText("mr %d -1 endround", *(DWORD_PTR*)dwServerID));
+
 				if (!_mainGui.szKillspam.empty())
 				{
 					std::string szKillspam = _mainGui.szKillspam;
 
-					szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", NetAddr[attacker].szName);
-					szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", NetAddr[victim].szName);
+					szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", CG->Client[attacker].szName);
+					szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", CG->Client[victim].szName);
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", 
 						VariadicText("%u.%u.%u.%u", 
-							(BYTE)NetAddr[victim].szIP[0], 
-							(BYTE)NetAddr[victim].szIP[1], 
-							(BYTE)NetAddr[victim].szIP[2], 
-							(BYTE)NetAddr[victim].szIP[3]));
+							(BYTE)ServerSession[victim].szIP[0], 
+							(BYTE)ServerSession[victim].szIP[1], 
+							(BYTE)ServerSession[victim].szIP[2], 
+							(BYTE)ServerSession[victim].szIP[3]));
 
 					AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
 				}

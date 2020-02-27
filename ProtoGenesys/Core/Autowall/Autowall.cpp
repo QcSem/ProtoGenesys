@@ -39,21 +39,20 @@ namespace ProtoGenesys
 		VectorSubtract(end, start, FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
-		bool bEnterHit = BulletTrace(&TR_Enter, 0, &FP_Enter, pCEntity, 0, 0);
+		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
 		if (HitRiotshield(&TR_Enter))
 			return 0.0f;
 
-		WORD wHitID = GetTraceHitType(&TR_Enter);
-
-		if (_profiler.gAntiTeamKill->Custom.bValue && wHitID < 19 && !_targetList.EntityIsEnemy(wHitID))
-			return 0.0f;
+		if (_profiler.gAntiTeamKill->Custom.bValue)
+			if (HitTeammate(&TR_Enter))
+				return 0.0f;
 
 		if (bEnterHit)
 		{
-			bool bHasFMJ = HasPerk(6);
 			ePenetrateType iPenetrateType = GetPenetrateType(iWeaponID);
 
+			bool bHasFMJ = HasPerk(6);
 			int iSurfaceCount = 0;
 			float flEnterDepth = 0.0f;
 			float flExitDepth = 0.0f;
@@ -65,11 +64,11 @@ namespace ProtoGenesys
 			{
 				flEnterDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Enter.iSurfaceType);
 
-				if (TR_Enter.Trace.iSFlags & 0x4)
+				if (TR_Enter.Trace.iSurfaceFlags & 0x4)
 					flEnterDepth = 100.0f;
 
 				if (bHasFMJ)
-					flEnterDepth *= 2.0f;
+					flEnterDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
 
 				if (flEnterDepth <= 0.0)
 					return 0.0f;
@@ -79,15 +78,14 @@ namespace ProtoGenesys
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
 					return 0.0f;
 
-				bEnterHit = BulletTrace(&TR_Enter, 0, &FP_Enter, pCEntity, TR_Enter.iSurfaceType, 0);
+				bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TR_Enter.iSurfaceType);
 
 				if (HitRiotshield(&TR_Enter))
 					return 0.0f;
 
-				wHitID = GetTraceHitType(&TR_Enter);
-
-				if (_profiler.gAntiTeamKill->Custom.bValue && wHitID < 19 && !_targetList.EntityIsEnemy(wHitID))
-					return 0.0f;
+				if (_profiler.gAntiTeamKill->Custom.bValue)
+					if (HitTeammate(&TR_Enter))
+						return 0.0f;
 
 				CopyMemory(&FP_Exit, &FP_Enter, sizeof(sBulletFireParams));
 				VectorScale(FP_Enter.vDir, -1.0f, FP_Exit.vDir);
@@ -101,18 +99,22 @@ namespace ProtoGenesys
 				if (bEnterHit)
 					AdvanceTrace(&FP_Exit, &TR_Exit, 0.0099999998f);
 
-				bool bExitHit = BulletTrace(&TR_Exit, 0, &FP_Exit, pCEntity, TR_Exit.iSurfaceType, 0);
-				bool bSolid = bExitHit && TR_Exit.Trace.bAllSolid || TR_Exit.Trace.bStartSolid && TR_Enter.Trace.bStartSolid;
+				bool bExitHit = BulletTrace(&TR_Exit, &FP_Exit, pCEntity, TR_Exit.iSurfaceType);
+				bool bSolid = bExitHit && TR_Exit.Trace.bAllSolid || TR_Enter.Trace.bStartSolid && TR_Exit.Trace.bStartSolid;
 
 				if (HitRiotshield(&TR_Exit))
 					return 0.0f;
 
+				if (_profiler.gAntiTeamKill->Custom.bValue)
+					if (HitTeammate(&TR_Exit))
+						return 0.0f;
+
 				if (bExitHit || bSolid)
 				{
 					if (bSolid)
-						flSurfaceDepth = _mathematics.GetDistance(FP_Exit.vStart, FP_Exit.vEnd);
+						flSurfaceDepth = _mathematics.CalculateDistance(FP_Exit.vEnd, FP_Exit.vStart);
 					else
-						flSurfaceDepth = _mathematics.GetDistance(TR_Exit.vHitPos, vHitPos);
+						flSurfaceDepth = _mathematics.CalculateDistance(vHitPos, TR_Exit.vHitPos);
 
 					flSurfaceDepth = max(flSurfaceDepth, 1.0f);
 
@@ -120,11 +122,11 @@ namespace ProtoGenesys
 					{
 						flExitDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Exit.iSurfaceType);
 
-						if (TR_Exit.Trace.iSFlags & 0x4)
+						if (TR_Exit.Trace.iSurfaceFlags & 0x4)
 							flExitDepth = 100.0f;
 
 						if (bHasFMJ)
-							flExitDepth *= 2.0f;
+							flExitDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
 
 						flEnterDepth = min(flEnterDepth, flExitDepth);
 
@@ -143,7 +145,7 @@ namespace ProtoGenesys
 
 				if (bEnterHit)
 				{
-					if (++iSurfaceCount < 5)
+					if (++iSurfaceCount < ((sDvar*)dwPenetrationCount)->Current.iValue)
 						continue;
 				}
 
@@ -185,14 +187,14 @@ namespace ProtoGenesys
 		VectorSubtract(end, start, FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
-		BulletTrace(&TR_Enter, 0, &FP_Enter, pCEntity, 0, 0);
+		BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
 		return ((TR_Enter.Trace.wHitID == entitynum || TR_Enter.Trace.flFraction == 1.0f) && !HitRiotshield(&TR_Enter));
 	}
 	/*
 	//=====================================================================================
 	*/
-	float cAutowall::TraceLine(Vector3 start, Vector3 end, int entitynum)
+	bool cAutowall::TraceLine(Vector3 start, Vector3 end, int entitynum)
 	{
 		Vector3 vStart, vEnd;
 
@@ -202,14 +204,14 @@ namespace ProtoGenesys
 		sTrace Trace;
 		ZeroMemory(&Trace, sizeof(sTrace));
 
-		LocationalTrace(&Trace, vStart, vEnd, entitynum, 0x803003);
+		LocationalTrace(&Trace, vStart, vEnd, CG->iClientNum, 0x803003);
 
-		return Trace.flFraction;
+		return (Trace.wHitID == entitynum || Trace.flFraction == 1.0f);
 	}
 	/*
 	//=====================================================================================
 	*/
-	bool cAutowall::BulletTrace(sBulletTraceResults* traceresults, int localnum, sBulletFireParams* fireparams, sEntity* attacker, int surfacetype, int simulated)
+	bool cAutowall::BulletTrace(sBulletTraceResults* traceresults, sBulletFireParams* fireparams, sEntity* attacker, int surfacetype)
 	{
 		bool bResult = false;
 		DWORD_PTR dwAddress = dwBulletTrace;
@@ -217,11 +219,11 @@ namespace ProtoGenesys
 		_fxsave(szSave);
 		_asm
 		{
-			push simulated
+			push 0
 			push surfacetype
 			push attacker
 			push fireparams
-			push localnum
+			push 0
 			mov  esi, traceresults
 			call dwAddress
 			mov	 bResult, al
@@ -268,6 +270,23 @@ namespace ProtoGenesys
 		if (wHitID != 1022)
 		{
 			if (EntityIsDeployedRiotshield(&CG->Entity[wHitID]))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cAutowall::HitTeammate(sBulletTraceResults* traceresults)
+	{
+		WORD wHitID = GetTraceHitType(traceresults);
+
+		if (wHitID < MAX_CLIENTS)
+		{
+			if (!_targetList.EntityIsEnemy(wHitID))
 			{
 				return true;
 			}

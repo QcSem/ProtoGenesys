@@ -183,16 +183,16 @@ void ImGui::StyleTabLabels(ImVec4* colors)
 	style.rounding = 0.0f;
 	style.fillColorGradientDeltaIn0_05 = 0.5f;
 
-	style.colors[TabLabelStyle::Col_TabLabel] = ColorConvertFloat4ToU32(ImVec4(0.98f, 0.98f, 0.98f, 0.40f));
-	style.colors[TabLabelStyle::Col_TabLabelHovered] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonHovered]);
-	style.colors[TabLabelStyle::Col_TabLabelActive] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonActive]);
-	style.colors[TabLabelStyle::Col_TabLabelBorder] = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
-	style.colors[TabLabelStyle::Col_TabLabelText] = ColorConvertFloat4ToU32(ImVec4(0.00f, 0.00f, 0.00f, 1.00f));
-	style.colors[TabLabelStyle::Col_TabLabelSelected] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonActive]);
-	style.colors[TabLabelStyle::Col_TabLabelSelectedHovered] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonHovered]);
-	style.colors[TabLabelStyle::Col_TabLabelSelectedActive] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonActive]);
-	style.colors[TabLabelStyle::Col_TabLabelSelectedBorder] = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
-	style.colors[TabLabelStyle::Col_TabLabelSelectedText] = ColorConvertFloat4ToU32(ImVec4(1.00f, 1.00f, 1.00f, 1.00f));
+    style.colors[TabLabelStyle::Col_TabLabel] = ColorConvertFloat4ToU32(colors[ImGuiCol_Header]);
+    style.colors[TabLabelStyle::Col_TabLabelHovered] = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderHovered]);
+    style.colors[TabLabelStyle::Col_TabLabelActive] = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderActive]);
+    style.colors[TabLabelStyle::Col_TabLabelBorder] = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
+    style.colors[TabLabelStyle::Col_TabLabelText] = ColorConvertFloat4ToU32(ImVec4(0.00f, 0.00f, 0.00f, 1.00f));
+    style.colors[TabLabelStyle::Col_TabLabelSelected] = ColorConvertFloat4ToU32(colors[ImGuiCol_Button]);
+    style.colors[TabLabelStyle::Col_TabLabelSelectedHovered] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonHovered]);
+    style.colors[TabLabelStyle::Col_TabLabelSelectedActive] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonActive]);
+    style.colors[TabLabelStyle::Col_TabLabelSelectedBorder] = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
+    style.colors[TabLabelStyle::Col_TabLabelSelectedText] = ColorConvertFloat4ToU32(ImVec4(1.00f, 1.00f, 1.00f, 1.00f));
 }
 
 void ImGui::StyleColorsNeutral(ImGuiStyle* dst)
@@ -250,6 +250,7 @@ void ImGui::StyleColorsNeutral(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = false;
 }
 
 void ImGui::StyleColorsNeutralNeon(ImGuiStyle* dst)
@@ -268,7 +269,7 @@ void ImGui::StyleColorsNeutralNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
@@ -282,8 +283,8 @@ void ImGui::StyleColorsNeutralNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
 	colors[ImGuiCol_ButtonActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.80f);
 	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.80f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
 	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
 	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
 	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
@@ -307,6 +308,7 @@ void ImGui::StyleColorsNeutralNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = true;
 }
 
 void ImGui::StyleColorsRed(ImGuiStyle* dst)
@@ -364,6 +366,7 @@ void ImGui::StyleColorsRed(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = false;
 }
 
 void ImGui::StyleColorsRedNeon(ImGuiStyle* dst)
@@ -382,7 +385,7 @@ void ImGui::StyleColorsRedNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.98f, 0.26f, 0.26f, 0.67f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.40f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
@@ -396,8 +399,8 @@ void ImGui::StyleColorsRedNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
 	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.80f);
 	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.80f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
 	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
 	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
 	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
@@ -421,6 +424,7 @@ void ImGui::StyleColorsRedNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = true;
 }
 
 void ImGui::StyleColorsOrange(ImGuiStyle* dst)
@@ -478,6 +482,7 @@ void ImGui::StyleColorsOrange(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = false;
 }
 
 void ImGui::StyleColorsOrangeNeon(ImGuiStyle* dst)
@@ -496,7 +501,7 @@ void ImGui::StyleColorsOrangeNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.98f, 0.49f, 0.26f, 0.67f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.40f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
@@ -510,8 +515,8 @@ void ImGui::StyleColorsOrangeNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
 	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.80f);
 	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.80f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
 	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
 	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
 	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
@@ -535,6 +540,7 @@ void ImGui::StyleColorsOrangeNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = true;
 }
 
 void ImGui::StyleColorsYellow(ImGuiStyle* dst)
@@ -592,6 +598,7 @@ void ImGui::StyleColorsYellow(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = false;
 }
 
 void ImGui::StyleColorsYellowNeon(ImGuiStyle* dst)
@@ -610,7 +617,7 @@ void ImGui::StyleColorsYellowNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.98f, 0.98f, 0.26f, 0.67f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.40f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
@@ -624,8 +631,8 @@ void ImGui::StyleColorsYellowNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
 	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.80f);
 	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.80f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
 	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
 	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
 	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
@@ -649,6 +656,7 @@ void ImGui::StyleColorsYellowNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = true;
 }
 
 void ImGui::StyleColorsGreen(ImGuiStyle* dst)
@@ -706,6 +714,7 @@ void ImGui::StyleColorsGreen(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = false;
 }
 
 void ImGui::StyleColorsGreenNeon(ImGuiStyle* dst)
@@ -724,7 +733,7 @@ void ImGui::StyleColorsGreenNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.26f, 0.98f, 0.26f, 0.67f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.40f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
@@ -738,8 +747,8 @@ void ImGui::StyleColorsGreenNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
 	colors[ImGuiCol_ButtonActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.80f);
 	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.80f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
 	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
 	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
 	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
@@ -763,6 +772,7 @@ void ImGui::StyleColorsGreenNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = true;
 }
 
 void ImGui::StyleColorsBlue(ImGuiStyle* dst)
@@ -820,6 +830,7 @@ void ImGui::StyleColorsBlue(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = false;
 }
 
 void ImGui::StyleColorsBlueNeon(ImGuiStyle* dst)
@@ -838,7 +849,7 @@ void ImGui::StyleColorsBlueNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.26f, 0.49f, 0.98f, 0.67f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.40f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
@@ -852,8 +863,8 @@ void ImGui::StyleColorsBlueNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
 	colors[ImGuiCol_ButtonActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.80f);
 	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.80f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
 	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
 	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
 	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
@@ -877,6 +888,7 @@ void ImGui::StyleColorsBlueNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = true;
 }
 
 void ImGui::StyleColorsPurple(ImGuiStyle* dst)
@@ -934,6 +946,7 @@ void ImGui::StyleColorsPurple(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = false;
 }
 
 void ImGui::StyleColorsPurpleNeon(ImGuiStyle* dst)
@@ -952,7 +965,7 @@ void ImGui::StyleColorsPurpleNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.26f, 0.98f, 0.67f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.40f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
@@ -966,8 +979,8 @@ void ImGui::StyleColorsPurpleNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
 	colors[ImGuiCol_ButtonActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.80f);
 	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.80f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
 	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
 	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
 	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
@@ -991,6 +1004,7 @@ void ImGui::StyleColorsPurpleNeon(ImGuiStyle* dst)
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 	StyleTabLabels(colors);
+    style->NeonStyleColors = true;
 }
 
 //-----------------------------------------------------------------------------

@@ -8,11 +8,36 @@ namespace ProtoGenesys
 {
 	cMathematics _mathematics;
 
-	float cMathematics::GetDistance(Vector3 a, Vector3 b)
+	float cMathematics::CalculateFOV(Vector3 position)
+	{
+		Vector3 vViewOrigin, vDirection, vAngles, vAimAngles;
+
+		GetPlayerViewOrigin(vViewOrigin);
+		VectorSubtract(position, WeaponIsVehicle() ? CG->RefDef.vViewOrg : vViewOrigin, vDirection);
+
+		VectorNormalize(vDirection);
+		VectorAngles(vDirection, vAngles);
+
+		MakeVector(WeaponIsVehicle() ? CG->vRefDefViewAngles : CG->vWeaponAngles, vAimAngles);
+		MakeVector(vAngles, vAngles);
+
+		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
+			flDot = DotProduct(vAimAngles, vAngles),
+			flReturn = RadiansToDegrees(acosf(flDot / powf(flMag, 2.0f)));
+
+		if (isnan(flReturn))
+			flReturn = 0.0f;
+
+		return flReturn;
+	}
+	/*
+	//=====================================================================================
+	*/
+	float cMathematics::CalculateDistance(Vector3 start, Vector3 end)
 	{
 		Vector3 vDirection;
 
-		VectorSubtract(a, b, vDirection);
+		VectorSubtract(start, end, vDirection);
 
 		return sqrtf(DotProduct(vDirection, vDirection));
 	}
@@ -62,9 +87,11 @@ namespace ProtoGenesys
 		flAngle = DegreesToRadians(angles[1]);
 		flSinYaw = sinf(flAngle);
 		flCosYaw = cosf(flAngle);
+		
 		flAngle = DegreesToRadians(angles[0]);
 		flSinPitch = sinf(flAngle);
 		flCosPitch = cosf(flAngle);
+		
 		flAngle = DegreesToRadians(angles[2]);
 		flSinRoll = sinf(flAngle);
 		flCosRoll = cosf(flAngle);
@@ -146,29 +173,10 @@ namespace ProtoGenesys
 
 		NormalizeAngles(angles);
 
-		angles[0] -= CG->PlayerState.vViewAngles[0];
-		angles[1] -= CG->PlayerState.vViewAngles[1];
+		angles[0] -= WeaponIsVehicle() ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
+		angles[1] -= WeaponIsVehicle() ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
 
 		NormalizeAngles(angles);
-	}
-	/*
-	//=====================================================================================
-	*/
-	float cMathematics::CalculateFOV(Vector3 start, Vector3 end)
-	{
-		Vector3 vDirection, vAngles, vAimAngles;
-		VectorSubtract(end, start, vDirection);
-
-		VectorNormalize(vDirection);
-		VectorAngles(vDirection, vAngles);
-
-		MakeVector(CG->PlayerState.vViewAngles, vAimAngles);
-		MakeVector(vAngles, vAngles);
-
-		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
-			flDot = DotProduct(vAimAngles, vAngles);
-
-		return RadiansToDegrees(acosf(flDot / powf(flMag, 2.0f)));
 	}
 	/*
 	//=====================================================================================
@@ -248,13 +256,15 @@ namespace ProtoGenesys
 	{
 		float flAngle;
 
-		Vector3 vDirection, vAngles;
+		Vector3 vViewOrigin, vDirection, vAngles;
 
-		VectorSubtract(CG->RefDef.vViewOrg, world, vDirection);
+		GetPlayerViewOrigin(vViewOrigin);
+		VectorSubtract(WeaponIsVehicle() ? CG->RefDef.vViewOrg : vViewOrigin, world, vDirection);
+
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
 
-		VectorSubtract(CG->PlayerState.vViewAngles, vAngles, vAngles);
+		VectorSubtract(CG->vRefDefViewAngles, vAngles, vAngles);
 		_mathematics.NormalizeAngles(vAngles);
 
 		flAngle = ((vAngles[1] + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
@@ -267,10 +277,14 @@ namespace ProtoGenesys
 	*/
 	void cMathematics::WorldToRadar(Vector3 world, ImVec2 radarpos, float scale, float radarsize, float blipsize, ImVec2& screen)
 	{
-		float flCosYaw = cosf(DegreesToRadians(CG->PlayerState.vViewAngles[1])),
-			flSinYaw = sinf(DegreesToRadians(CG->PlayerState.vViewAngles[1])),
-			flDeltaX = world[0] - CG->RefDef.vViewOrg[0],
-			flDeltaY = world[1] - CG->RefDef.vViewOrg[1],
+		Vector3 vViewOrigin;
+
+		GetPlayerViewOrigin(vViewOrigin);
+
+		float flCosYaw = cosf(DegreesToRadians(CG->vRefDefViewAngles[1])),
+			flSinYaw = sinf(DegreesToRadians(CG->vRefDefViewAngles[1])),
+			flDeltaX = world[0] - (WeaponIsVehicle() ? CG->RefDef.vViewOrg[0] : vViewOrigin[0]),
+			flDeltaY = world[1] - (WeaponIsVehicle() ? CG->RefDef.vViewOrg[1] : vViewOrigin[1]),
 			flLocationX = (flDeltaY * flCosYaw - flDeltaX * flSinYaw) / scale,
 			flLocationY = (flDeltaX * flCosYaw + flDeltaY * flSinYaw) / scale;
 

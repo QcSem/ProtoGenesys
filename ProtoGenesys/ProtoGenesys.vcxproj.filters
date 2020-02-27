@@ -161,6 +161,15 @@
     <ClInclude Include="Core\Engine\Helpers.hpp">
       <Filter>Core\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="ImGui\Fonts\Eurostile_Bold.hpp">
+      <Filter>ImGui\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Fonts\Eurostile_Extended.hpp">
+      <Filter>ImGui\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Fonts\Eurostile_Regular.hpp">
+      <Filter>ImGui\Fonts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Detours">
@@ -225,6 +234,9 @@
     </Filter>
     <Filter Include="ImGui\Win32">
       <UniqueIdentifier>{8f32ff21-0aaa-4328-af66-e9a0e2cb67a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Fonts">
+      <UniqueIdentifier>{f7fbee61-f00c-4a21-bbc9-85ca42013c53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

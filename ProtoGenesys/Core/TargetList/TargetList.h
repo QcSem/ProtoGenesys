@@ -16,7 +16,7 @@ namespace ProtoGenesys
 		{
 			int iIndex;
 
-			float flDistance2D = FLT_MAX, flDistance3D = FLT_MAX;
+			float flFOV = FLT_MAX, flDistance = FLT_MAX;
 		} sTargetInfo;
 
 		typedef struct
@@ -25,7 +25,7 @@ namespace ProtoGenesys
 			int iBoneIndex;
 		} sDamageInfo;
 
-		struct sEntityInfo
+		struct sEntityList
 		{
 			bool bIsValid, bW2SSuccess, bIsVisible;
 			int iBoneIndex, iLastBone;
@@ -33,12 +33,12 @@ namespace ProtoGenesys
 			ImVec2 vBones2D[BONE_MAX], vCorners2D[8], vCenter2D, vPosition, vDimentions, vLower, vUpper;
 			Vector3 vBones3D[BONE_MAX], vCorners3D[8], vCenter3D, vHitLocation;
 			ImVec4 cColor;
-		} EntityInfo[MAX_ENTITIES];
+		} EntityList[MAX_ENTITIES];
 
-		int iSelectedTarget;
-		Vector3 vSelectedTarget;
+		int iRiotShieldTarget;
+		Vector3 vRiotShieldTarget;
 
-		std::vector<BOOL> vIsTarget = std::vector<BOOL>(MAX_CLIENTS, FALSE);
+		std::vector<BOOL> vIsTarget = std::vector<BOOL>(MAX_CLIENTS, TRUE);
 
 		void GetInformation();
 		bool EntityIsValid(int index);

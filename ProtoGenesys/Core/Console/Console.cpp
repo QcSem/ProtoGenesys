@@ -37,6 +37,7 @@ namespace ProtoGenesys
 			vCommands.push_back("proto_name");
 			vCommands.push_back("proto_clan");
 			vCommands.push_back("proto_killspam");
+			vCommands.push_back("proto_trickshot");
 
 			AddLog("Ready.");
 
@@ -73,7 +74,7 @@ namespace ProtoGenesys
 	*/
 	void cConsole::Draw(LPCSTR title, bool* open)
 	{
-		ImGui::SetNextWindowSize(ImVec2(487.0f, 324.0f));
+		ImGui::SetNextWindowSize(ImVec2(510.0f, 350.0f));
 
 		if (!ImGui::Begin(title, open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
 		{
@@ -101,6 +102,7 @@ namespace ProtoGenesys
 			AddLog("4. proto_name <on|off> <name>\n\t\tChange your name.");
 			AddLog("5. proto_clan <on|off> <clan>\n\t\tChange your clan.");
 			AddLog("6. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
+			AddLog("7. proto_trickshot <on|off>\n\t\tImmediately end the round after your next kill.");
 		} ImGui::SameLine();
 
 		if (ImGui::Button("Clear", ImVec2(50, 0)))
@@ -263,7 +265,7 @@ namespace ProtoGenesys
 			std::random_device rd;
 			std::uniform_int_distribution<> dist(0x48, 0x49);
 
-			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\\x5E%c%s\\xuid\\%s\"", _mainGui.szNameOverride.empty() ? GetUsername() : _mainGui.szNameOverride.c_str(), (char)dist(rd), acut::RandomANString(5), !_hooks.dwXuidOverride ? GetXuidstring() : _ui64toa(_hooks.dwXuidOverride, _hooks.szXuidOverride, 0x10)));
+			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\\x5E%c%s\\xuid\\%s\"", _mainGui.szNameOverride.empty() ? GetUsername() : _mainGui.szNameOverride.c_str(), (char)dist(rd), acut::RandomANString(5).c_str(), !_hooks.dwXuidOverride ? GetXuidstring() : _ui64toa(_hooks.dwXuidOverride, _hooks.szXuidOverride, 0x10)));
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
@@ -416,9 +418,39 @@ namespace ProtoGenesys
 			}
 		}
 
+		else if (!Stricmp(CmdLine.szCmdName, "proto_trickshot"))
+		{
+			if (CmdLine.iArgNum > 0)
+			{
+				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_hooks.bTrickShot = true;
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_hooks.bTrickShot = false;
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else
+				{
+					AddLog("[ERROR] Invalid argument(s).");
+				}
+			}
+
+			else
+			{
+				AddLog("[ERROR] Missing argument(s).");
+			}
+		}
+
 		else
 		{
-			AddReliableCommand(command);
+			Cbuf_AddText(command);
 		}
 	}
 	/*

@@ -717,14 +717,15 @@ bool ImGui::ArrowButton(const char* str_id, ImGuiDir dir)
 }
 
 // Button to close a window
-bool ImGui::CloseButton(ImGuiID id, const ImVec2& pos)//, float size)
+bool ImGui::CloseButton(ImGuiID id, const ImVec2& pos, float size)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
+    ImGuiStyle& style = g.Style;
 
     // We intentionally allow interaction when clipped so that a mechanical Alt,Right,Validate sequence close a window.
     // (this isn't the regular behavior of buttons, but it doesn't affect the user much because navigation tends to keep items visible).
-	const ImRect bb(pos, pos + ImVec2(g.FontSize, g.FontSize) + g.Style.FramePadding * 2.0f);
+    const ImRect bb(pos + ImVec2(4.0f, 2.0f), pos + ImVec2(4.0f, 2.0f) + ImVec2(size + 2.0f, size + 2.0f));
     bool is_clipped = !ItemAdd(bb, id);
 
     bool hovered, held;
@@ -735,8 +736,13 @@ bool ImGui::CloseButton(ImGuiID id, const ImVec2& pos)//, float size)
     // Render
     ImU32 col = GetColorU32(held ? ImGuiCol_ButtonActive : ImGuiCol_ButtonHovered);
     ImVec2 center = bb.GetCenter();
-	if (hovered)
-		RenderFrame(bb.Min, bb.Max, col);
+    if (hovered)
+    {
+        if (style.NeonStyleColors)
+            RenderGradientFrame(bb.Min, bb.Max, col, GetColorU32(ImVec4(0.0f, 0.0f, 0.0f, 1.0f)));
+        else
+            RenderFrame(bb.Min, bb.Max, col);
+    }
 
     float cross_extent = g.FontSize * 0.5f * 0.7071f - 1.0f;
     ImU32 cross_col = GetColorU32(ImGuiCol_Text);
@@ -747,12 +753,13 @@ bool ImGui::CloseButton(ImGuiID id, const ImVec2& pos)//, float size)
     return pressed;
 }
 
-bool ImGui::CollapseButton(ImGuiID id, const ImVec2& pos)
+bool ImGui::CollapseButton(ImGuiID id, const ImVec2& pos, float size)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
+    ImGuiStyle& style = g.Style;
 
-    ImRect bb(pos, pos + ImVec2(g.FontSize, g.FontSize) + g.Style.FramePadding * 2.0f);
+    ImRect bb(pos + ImVec2(2.0f, 2.0f), pos + ImVec2(2.0f, 2.0f) + ImVec2(size + 2.0f, size + 2.0f));
     ItemAdd(bb, id);
     bool hovered, held;
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, ImGuiButtonFlags_None);
@@ -761,8 +768,13 @@ bool ImGui::CollapseButton(ImGuiID id, const ImVec2& pos)
     ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
     ImVec2 center = bb.GetCenter();
 	if (hovered || held)
-		RenderGradientFrame(bb.Min, bb.Max, col, GetColorU32(ImVec4(0.0f, 0.0f, 0.0f, 1.0f)));
-    RenderArrow(bb.Min + g.Style.FramePadding, window->Collapsed ? ImGuiDir_Right : ImGuiDir_Down, 1.0f);
+    {
+        if (style.NeonStyleColors)
+            RenderGradientFrame(bb.Min, bb.Max, col, GetColorU32(ImVec4(0.0f, 0.0f, 0.0f, 1.0f)));
+        else
+            RenderFrame(bb.Min, bb.Max, col);
+    }
+    RenderArrow(bb.Min + ImVec2(1.0f, 1.0f), window->Collapsed ? ImGuiDir_Right : ImGuiDir_Down, 1.0f);
 
     // Switch to moving the window after mouse is moved beyond the initial drag threshold
     if (IsItemActive() && IsMouseDragging())
@@ -5369,7 +5381,7 @@ bool ImGui::CollapsingHeader(const char* label, bool* p_open, ImGuiTreeNodeFlags
         float button_size = g.FontSize;
         float button_x = ImMax(window->DC.LastItemRect.Min.x, window->DC.LastItemRect.Max.x - g.Style.FramePadding.x * 2.0f - button_size);
         float button_y = window->DC.LastItemRect.Min.y;
-        if (CloseButton(window->GetID((void*)((intptr_t)id + 1)), ImVec2(button_x, button_y)))
+        if (CloseButton(window->GetID((void*)((intptr_t)id + 1)), ImVec2(button_x, button_y), button_size))
             *p_open = false;
         last_item_backup.Restore();
     }
@@ -7049,7 +7061,7 @@ bool ImGui::TabItemLabelAndCloseButton(ImDrawList* draw_list, const ImRect& bb, 
         ImGuiItemHoveredDataBackup last_item_backup;
         const float close_button_sz = g.FontSize;
         PushStyleVar(ImGuiStyleVar_FramePadding, frame_padding);
-        if (CloseButton(close_button_id, ImVec2(bb.Max.x - frame_padding.x * 2.0f - close_button_sz, bb.Min.y)))
+        if (CloseButton(close_button_id, ImVec2(bb.Max.x - frame_padding.x * 2.0f - close_button_sz, bb.Min.y), close_button_sz))
             close_button_pressed = true;
         PopStyleVar();
         last_item_backup.Restore();

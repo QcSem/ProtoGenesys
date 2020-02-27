@@ -23,18 +23,18 @@ namespace ProtoGenesys
 			VEH_INDEX_NODELTA = 33833
 		} eVehIndex;
 
-		bool bXuidOverride = false;
+		bool bXuidOverride = false, bTrickShot;
 		char szXuidOverride[0x11] = { NULL };
 		QWORD dwXuidOverride = NULL;
 
-		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta;
-		LPVOID pVectoredExceptionHandler, pAddress;
+		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwAddress;
+		LPVOID pVectoredExceptionHandler;
 
 		LONG VectoredExceptionHandler(_In_ LPEXCEPTION_POINTERS ExceptionInfo);
 		typedef LONG(CALLBACK* tVectoredExceptionHandler)(_In_ LPEXCEPTION_POINTERS ExceptionInfo);
 
 		BOOL PageGuardSVFK();
-		BOOL PageGuardAddress(LPVOID address);
+		BOOL PageGuardAddress(DWORD address);
 		BOOL PatchAntiCheat();
 
 		void DrawBigFPS();

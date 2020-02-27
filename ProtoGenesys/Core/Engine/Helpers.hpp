@@ -19,7 +19,7 @@ namespace ProtoGenesys
 	template<typename... Parameters>
 	inline std::string VariadicText(LPCSTR format, Parameters... params)
 	{
-		char szBuffer[0x4096] = { NULL };
+		char szBuffer[4096] = { NULL };
 		sprintf_s(szBuffer, format, params...);
 		return szBuffer;
 	}

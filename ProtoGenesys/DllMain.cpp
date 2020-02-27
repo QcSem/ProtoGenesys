@@ -106,11 +106,11 @@ VOID Deallocate()
 	_mainGui.pDevice->Release();
 	_mainGui.pDeviceContext->Release();
 
-	SetWindowLongPtr(_mainGui.hWindow, GWLP_WNDPROC, (LONG_PTR)_mainGui.oWindowProcess);
-
 	ImGui_ImplWin32_Shutdown();
 	ImGui_ImplDX11_Shutdown();
 	ImGui::DestroyContext();
+
+	SetWindowLongPtr(_mainGui.hWindow, GWLP_WNDPROC, (LONG_PTR)_mainGui.oWindowProcess);
 }
 
 //=====================================================================================
@@ -150,8 +150,6 @@ VOID WINAPI SteamID(LPWSTR xuid)
 
 BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID lpvReserved)
 {
-	DisableThreadLibraryCalls(hinstDLL);
-
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
@@ -161,9 +159,10 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 	case DLL_PROCESS_DETACH:
 		Deallocate();
 		return TRUE;
-	}
 
-	return FALSE;
+	default:
+		return FALSE;
+	}
 }
 
 //=====================================================================================
