@@ -282,13 +282,13 @@ namespace ProtoGenesys
 	{
 		float flWidth, flHeight, flPadding = 3.0f;
 
-		if (entity->iFlags & EF_PRONE)
+		if (entity->NextEntityState.LerpEntityState.eFlags1 & EF_PRONE)
 		{
 			flWidth = scale / 1.5f;
 			flHeight = scale / 2.0f;
 		}
 
-		else if (entity->iFlags & EF_CROUCH)
+		else if (entity->NextEntityState.LerpEntityState.eFlags1 & EF_CROUCH)
 		{
 			flWidth = scale / 2.0f;
 			flHeight = scale / 2.0f;
@@ -360,7 +360,7 @@ namespace ProtoGenesys
 
 		if (_profiler.gPlayerWeapons->Custom.bValue)
 		{
-			std::string szText(acut::StripColorCodes(_targetList.EntityList[entity->iClientNum].szWeapon));
+			std::string szText(acut::StripColorCodes(_targetList.EntityList[entity->NextEntityState.iEntityNum].szWeapon));
 			ImVec2 vStringSize = ImGui::GetIO().FontDefault->CalcTextSizeA(ImGui::GetIO().FontDefault->FontSize, FLT_MAX, 0.0f, szText.c_str());
 			
 			DrawString(szText, ImVec2(center.x - vStringSize.x / 2.0f, center.y + flHeight / 2.0f + flPadding), false, _profiler.gColorText->Custom.cValue);
@@ -415,7 +415,7 @@ namespace ProtoGenesys
 	{
 		Vector3 vMinimum, vMaximum;
 
-		if (entity->iFlags & EF_PRONE)
+		if (entity->NextEntityState.LerpEntityState.eFlags1 & EF_PRONE)
 		{
 			vMinimum[0] = center[0] - 32.5f;
 			vMinimum[1] = center[1] - 20.0f;
@@ -426,7 +426,7 @@ namespace ProtoGenesys
 			vMaximum[2] = center[2] + 10.0f;
 		}
 
-		else if (entity->iFlags & EF_CROUCH)
+		else if (entity->NextEntityState.LerpEntityState.eFlags1 & EF_CROUCH)
 		{
 			vMinimum[0] = center[0] - 20.0f;
 			vMinimum[1] = center[1] - 20.0f;
@@ -487,7 +487,7 @@ namespace ProtoGenesys
 		{
 			if (_targetList.EntityList[i].bW2SSuccess && _targetList.EntityList[i].bIsValid)
 			{
-				switch (CG->Entity[i].wEntityType)
+				switch (CG->Entity[i].NextEntityState.wEntityType)
 				{
 				case ET_PLAYER:
 				{
@@ -637,7 +637,7 @@ namespace ProtoGenesys
 	{
 		if (_profiler.gPlayerCrossHair->Custom.bValue)
 		{
-			if (!(CG->Entity[CG->iClientNum].iFlags & EF_ZOOM))
+			if (!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_ZOOM))
 			{
 				ImGui::GetWindowDrawList()->AddLine(ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 12.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 4.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImGui::GetColorU32(_profiler.gColorCrossHair->Custom.cValue));
 				ImGui::GetWindowDrawList()->AddLine(ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f + 3.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f + 11.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImGui::GetColorU32(_profiler.gColorCrossHair->Custom.cValue));

@@ -25,7 +25,7 @@ namespace ProtoGenesys
 			if (!EntityIsValid(i))
 				continue;
 
-			if (CG->Entity[i].wEntityType == ET_PLAYER)
+			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
 				LPVOID pDObj = GetDObj(&CG->Entity[i]);
 
@@ -51,12 +51,12 @@ namespace ProtoGenesys
 				VectorAverage(vMinTemp, vMaxTemp, EntityList[i].vCenter3D);
 			}
 
-			if (WeaponNames[(BYTE)CG->Entity[i].iWeaponID1].szDisplayName)
-				EntityList[i].szWeapon = WeaponNames[(BYTE)CG->Entity[i].iWeaponID1].szDisplayName;
+			if (WeaponNames[(BYTE)CG->Entity[i].NextEntityState.iWeaponID].szDisplayName)
+				EntityList[i].szWeapon = WeaponNames[(BYTE)CG->Entity[i].NextEntityState.iWeaponID].szDisplayName;
 
 			EntityList[i].bIsValid = true;
 
-			if (CG->Entity[i].wEntityType == ET_PLAYER)
+			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
 				Vector3 vViewOrigin;
 				VectorCopy(CG->Entity[i].vOrigin, vViewOrigin);
@@ -148,7 +148,7 @@ namespace ProtoGenesys
 		}
 
 		_aimBot.AimState.bTargetAcquired = (_aimBot.AimState.iTargetNum > -1);
-		_aimBot.AimState.bLockonTarget = (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].iFlags & EF_ZOOM));
+		_aimBot.AimState.bLockonTarget = (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_ZOOM));
 		_aimBot.AimState.bIsAutoAiming = (_aimBot.AimState.bTargetAcquired && _aimBot.AimState.bLockonTarget);
 		_aimBot.AimState.bIsAutoFiring = (_profiler.gAutoFire->Custom.bValue && _aimBot.AimState.bIsAutoAiming);
 
@@ -208,7 +208,7 @@ namespace ProtoGenesys
 	*/
 	bool cTargetList::EntityIsValid(int index)
 	{
-		if (CG->Entity[index].wEntityType == ET_PLAYER)
+		if (CG->Entity[index].NextEntityState.wEntityType == ET_PLAYER)
 		{
 			if (CG->Client[index].iInfoValid && (CG->Entity[index].iAlive & 2) && (&CG->Entity[index] != &CG->Entity[CG->iClientNum]))
 				return true;
@@ -227,15 +227,15 @@ namespace ProtoGenesys
 	*/
 	bool cTargetList::EntityIsEnemy(int index)
 	{
-		if (CG->Entity[index].wEntityType == ET_PLAYER)
+		if (CG->Entity[index].NextEntityState.wEntityType == ET_PLAYER)
 		{
-			if (((CG->Client[index].iTeam != 1) && (CG->Client[index].iTeam != 2)) || (CG->Client[index].iTeam != CG->Client[CG->iClientNum].iTeam))
+			if (((CG->Client[index].iTeam1 != TEAM_ALLIES) && (CG->Client[index].iTeam1 != TEAM_AXIS)) || (CG->Client[index].iTeam1 != CG->Client[CG->iClientNum].iTeam1))
 				return true;
 		}
 
 		else
 		{
-			if (((CG->Client[CG->Entity[index].wOtherEntityNum].iTeam != 1) && (CG->Client[CG->Entity[index].wOtherEntityNum].iTeam != 2)) || (CG->Client[CG->Entity[index].wOtherEntityNum].iTeam != CG->Client[CG->iClientNum].iTeam))
+			if (((CG->Client[CG->Entity[index].NextEntityState.wOtherEntityNum].iTeam1 != TEAM_ALLIES) && (CG->Client[CG->Entity[index].NextEntityState.wOtherEntityNum].iTeam1 != TEAM_AXIS)) || (CG->Client[CG->Entity[index].NextEntityState.wOtherEntityNum].iTeam1 != CG->Client[CG->iClientNum].iTeam1))
 				return true;
 		}
 
@@ -255,7 +255,7 @@ namespace ProtoGenesys
 
 		if (WeaponIsVehicle())
 		{
-			bool bTraceHit = _autoWall.TraceBullet(CG->RefDef.vViewOrg, position, entity->iClientNum);
+			bool bTraceHit = _autoWall.TraceBullet(CG->RefDef.vViewOrg, position, entity->NextEntityState.iEntityNum);
 
 			if (bTraceHit)
 				return true;
@@ -274,7 +274,7 @@ namespace ProtoGenesys
 
 		else
 		{
-			bool bTraceHit = _autoWall.TraceBullet(vViewOrigin, position, entity->iClientNum);
+			bool bTraceHit = _autoWall.TraceBullet(vViewOrigin, position, entity->NextEntityState.iEntityNum);
 
 			if (bTraceHit)
 				return true;
@@ -330,15 +330,15 @@ namespace ProtoGenesys
 	{
 		Vector3 vOldPosition, vNewPosition, vVelocity;
 
-		if (entity->OldTrajectory.iType && entity->OldTrajectory.iType != 1 && entity->OldTrajectory.iType != 14 && entity->OldTrajectory.iType != 10)
-			EvaluateTrajectory(&entity->OldTrajectory, CG->OldSnapShot->iServerTime, vOldPosition);
+		if (entity->CurrentEntityState.PositionTrajectory.iType && entity->CurrentEntityState.PositionTrajectory.iType != 1 && entity->CurrentEntityState.PositionTrajectory.iType != 14 && entity->CurrentEntityState.PositionTrajectory.iType != 10)
+			EvaluateTrajectory(&entity->CurrentEntityState.PositionTrajectory, CG->OldSnapShot->iServerTime, vOldPosition);
 		else
-			VectorCopy(entity->OldTrajectory.vBase, vOldPosition);
+			VectorCopy(entity->CurrentEntityState.PositionTrajectory.vBase, vOldPosition);
 
-		if (entity->NewTrajectory.iType && entity->NewTrajectory.iType != 1 && entity->NewTrajectory.iType != 14 && entity->NewTrajectory.iType != 10)
-			EvaluateTrajectory(&entity->NewTrajectory, CG->NewSnapShot->iServerTime, vNewPosition);
+		if (entity->NextEntityState.LerpEntityState.PositionTrajectory.iType && entity->NextEntityState.LerpEntityState.PositionTrajectory.iType != 1 && entity->NextEntityState.LerpEntityState.PositionTrajectory.iType != 14 && entity->NextEntityState.LerpEntityState.PositionTrajectory.iType != 10)
+			EvaluateTrajectory(&entity->NextEntityState.LerpEntityState.PositionTrajectory, CG->NewSnapShot->iServerTime, vNewPosition);
 		else
-			VectorCopy(entity->NewTrajectory.vBase, vNewPosition);
+			VectorCopy(entity->NextEntityState.LerpEntityState.PositionTrajectory.vBase, vNewPosition);
 
 		VectorSubtract(vNewPosition, vOldPosition, vVelocity);
 

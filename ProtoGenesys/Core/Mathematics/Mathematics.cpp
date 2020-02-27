@@ -18,7 +18,7 @@ namespace ProtoGenesys
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
 
-		MakeVector(WeaponIsVehicle() ? CG->vRefDefViewAngles : CG->vWeaponAngles, vAimAngles);
+		MakeVector((WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles : CG->vWeaponAngles, vAimAngles);
 		MakeVector(vAngles, vAngles);
 
 		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
@@ -173,8 +173,8 @@ namespace ProtoGenesys
 
 		NormalizeAngles(angles);
 
-		angles[0] -= WeaponIsVehicle() ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
-		angles[1] -= WeaponIsVehicle() ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
+		angles[0] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
+		angles[1] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
 
 		NormalizeAngles(angles);
 	}
@@ -183,7 +183,8 @@ namespace ProtoGenesys
 	*/
 	void cMathematics::MakeVector(Vector3 angles, Vector3 out)
 	{
-		float flPitch = DegreesToRadians(angles[0]), flYaw = DegreesToRadians(angles[1]);
+		float flPitch = DegreesToRadians(angles[0]), 
+			flYaw = DegreesToRadians(angles[1]);
 
 		out[0] = -cosf(flPitch) * -cosf(flYaw);
 		out[1] = sinf(flYaw) * cosf(flPitch);
@@ -244,8 +245,8 @@ namespace ProtoGenesys
 		if (vTransForm[2] < 0.01f)
 			return false;
 
-		screen.x = flCenterX * (1.0f - (vTransForm[0] / CG->RefDef.flFOVX / vTransForm[2]));
-		screen.y = flCenterY * (1.0f - (vTransForm[1] / CG->RefDef.flFOVY / vTransForm[2]));
+		screen.x = flCenterX * (1.0f - (vTransForm[0] / CG->RefDef.flFovX / vTransForm[2]));
+		screen.y = flCenterY * (1.0f - (vTransForm[1] / CG->RefDef.flFovY / vTransForm[2]));
 
 		return true;
 	}

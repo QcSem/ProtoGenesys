@@ -37,6 +37,8 @@ namespace ProtoGenesys
 			vCommands.push_back("proto_name");
 			vCommands.push_back("proto_clan");
 			vCommands.push_back("proto_killspam");
+			vCommands.push_back("proto_vsat");
+			vCommands.push_back("proto_thirdperson");
 			vCommands.push_back("proto_trickshot");
 
 			AddLog("Ready.");
@@ -75,7 +77,6 @@ namespace ProtoGenesys
 	void cConsole::Draw(LPCSTR title, bool* open)
 	{
 		ImGui::SetNextWindowSize(ImVec2(510.0f, 350.0f));
-
 		if (!ImGui::Begin(title, open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
 		{
 			ImGui::End();
@@ -85,9 +86,13 @@ namespace ProtoGenesys
 		if (ImGui::BeginPopupContextItem())
 		{
 			if (ImGui::MenuItem("Close"))
+			{
 				*open = false;
+				_mainGui.bWriteLog = true;
+			}
 
 			ImGui::EndPopup();
+			_mainGui.bWriteLog = true;
 		}
 
 		ImGui::TextWrapped("\t\t\tProtoGenesys");
@@ -102,12 +107,17 @@ namespace ProtoGenesys
 			AddLog("4. proto_name <on|off> <name>\n\t\tChange your name.");
 			AddLog("5. proto_clan <on|off> <clan>\n\t\tChange your clan.");
 			AddLog("6. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
-			AddLog("7. proto_trickshot <on|off>\n\t\tImmediately end the round after your next kill.");
+			AddLog("7. proto_vsat <on|off>\n\t\tEnable/disable orbital VSAT.");
+			AddLog("8. proto_thirdperson <on|off>\n\t\tEnable/disable third person camera.");
+			AddLog("9. proto_trickshot <on|off>\n\t\tImmediately end the round after your next kill.");
+
+			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
 
 		if (ImGui::Button("Clear", ImVec2(50, 0)))
 		{
 			ClearLog();
+			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
 
 		bool bCopyToClipboard = ImGui::Button("Copy", ImVec2(50, 0));
@@ -119,9 +129,13 @@ namespace ProtoGenesys
 		if (ImGui::BeginPopupContextWindow())
 		{
 			if (ImGui::Selectable("Clear"))
+			{
 				ClearLog();
+				_mainGui.bWriteLog = true;
+			}
 
 			ImGui::EndPopup();
+			_mainGui.bWriteLog = true;
 		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
@@ -176,6 +190,8 @@ namespace ProtoGenesys
 
 			ZeroMemory(szInput, sizeof(szInput));
 			bReclaimFocus = true;
+
+			_mainGui.bWriteLog = true;
 		}
 
 		ImGui::PopItemWidth();
@@ -403,6 +419,66 @@ namespace ProtoGenesys
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 					_mainGui.szKillspam.clear();
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else
+				{
+					AddLog("[ERROR] Invalid argument(s).");
+				}
+			}
+
+			else
+			{
+				AddLog("[ERROR] Missing argument(s).");
+			}
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, "proto_vsat"))
+		{
+			if (CmdLine.iArgNum > 0)
+			{
+				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_hooks.bOrbitalVsat = true;
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_hooks.bOrbitalVsat = false;
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else
+				{
+					AddLog("[ERROR] Invalid argument(s).");
+				}
+			}
+
+			else
+			{
+				AddLog("[ERROR] Missing argument(s).");
+			}
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, "proto_thirdperson"))
+		{
+			if (CmdLine.iArgNum > 0)
+			{
+				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_hooks.bThirdPerson = true;
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_hooks.bThirdPerson = false;
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 

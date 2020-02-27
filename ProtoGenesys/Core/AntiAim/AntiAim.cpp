@@ -10,7 +10,7 @@ namespace ProtoGenesys
 
 	void cAntiAim::AntiAim(sUserCmd* usercmd)
 	{
-		if (!WeaponIsVehicle() && !(CG->Entity[CG->iClientNum].iFlags & EF_PRONE))
+		if (!WeaponIsVehicle() && !(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_PRONE))
 		{
 			if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_SPINBOT)
 			{

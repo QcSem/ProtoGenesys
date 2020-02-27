@@ -12,6 +12,9 @@ namespace ProtoGenesys
 	{
 		*(DWORD_PTR*)dwTacSSHandle = 0x1;
 
+		*(BYTE*)dwOrbitalVsat = bOrbitalVsat ? TRUE : FALSE;
+		*(BYTE*)(dwCG + 0x4809C) = bThirdPerson ? TRUE : FALSE;
+
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_GUARD_PAGE)
 		{
 			if (ExceptionInfo->ContextRecord->Eip == dwPredictPlayerState)

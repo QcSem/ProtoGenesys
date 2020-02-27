@@ -677,13 +677,18 @@ namespace ProtoGenesys
 				for (int i = 0; i < MAX_CLIENTS; i++)
 				{
 					ImGui::PushID(i);
-					ImGui::RadioButton("", &_targetList.iRiotShieldTarget, i);
-					ImGui::PopID();
-					ImGui::SameLine();
+
+					if (ImGui::RadioButton("", &_targetList.iRiotShieldTarget, i))
+					{
+						bWriteLog = true;
+					} ImGui::PopID(); ImGui::SameLine();
+
 					ImGui::PushID(i + MAX_CLIENTS);
-					ImGui::Checkbox("", (bool*)&_targetList.vIsTarget[i]);
-					ImGui::PopID();
-					ImGui::SameLine();
+
+					if (ImGui::Checkbox("", (bool*)&_targetList.vIsTarget[i]))
+					{
+						bWriteLog = true;
+					} ImGui::PopID(); ImGui::SameLine();
 
 					ImGui::PushItemWidth(150.0f);
 					ImGui::InputText(VariadicText("%i: %s", i, ServerSession[i].szName).c_str(),

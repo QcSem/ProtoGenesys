@@ -31,6 +31,8 @@
 #define VectorCopy(a,b) ((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2])
 #define VectorAdd(a,b,c) ((c)[0]=(a)[0]+(b)[0],(c)[1]=(a)[1]+(b)[1],(c)[2]=(a)[2]+(b)[2])
 #define VectorSubtract(a,b,c) ((c)[0]=(a)[0]-(b)[0],(c)[1]=(a)[1]-(b)[1],(c)[2]=(a)[2]-(b)[2])
+#define VectorMultiply(a,b,c) ((c)[0]=(a)[0]*(b)[0],(c)[1]=(a)[1]*(b)[1],(c)[2]=(a)[2]*(b)[2])
+#define VectorDivide(a,b,c) ((c)[0]=(a)[0]/(b)[0],(c)[1]=(a)[1]/(b)[1],(c)[2]=(a)[2]/(b)[2])
 #define	VectorScale(a,b,c) ((c)[0]=(a)[0]*(b),(c)[1]=(a)[1]*(b),(c)[2]=(a)[2]*(b))
 #define	VectorMA(a,b,c,d) ((d)[0]=(a)[0]+(c)[0]*(b),(d)[1]=(a)[1]+(c)[1]*(b),(d)[2]=(a)[2]+(c)[2]*(b))
 #define VectorAverage(a,b,c) ((c)[0]=((a)[0]+(b)[0])/2.0f,(c)[1]=((a)[1]+(b)[1])/2.0f,(c)[2]=((a)[2]+(b)[2])/2.0f)
@@ -125,6 +127,23 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	typedef enum
+	{
+		TEAM_FREE,
+		TEAM_ALLIES,
+		TEAM_AXIS,
+		TEAM_THREE,
+		TEAM_FOUR,
+		TEAM_FIVE,
+		TEAM_SIX,
+		TEAM_SEVEN,
+		TEAM_EIGHT,
+		TEAM_SPECTATOR,
+		TEAM_MAX
+	} eTeam;
+	/*
+	//=====================================================================================
+	*/
 	static std::vector<std::pair<std::string, std::string>> vBones =
 	{
 		std::make_pair("Head", "j_head"),
@@ -156,9 +175,8 @@ namespace ProtoGenesys
 		{
 			bool bValue;
 			int iValue;
-			DWORD dwValue;
 			float flValue;
-			LPSTR szValue;
+			DWORD dwValue;
 			ImVec4 cValue;
 		} Current, Latched, Reset;
 
@@ -220,16 +238,16 @@ namespace ProtoGenesys
 		int iWidth;
 		int iHeight;
 		char _0x10[0x10];
-		float flFOVX;
-		float flFOVY;
-		float flFOVZ;
+		float flFovX;
+		float flFovY;
+		float flFovZ;
 		char _0x2C[0x4];
-		float flFOV;
+		float flFov;
 		Vector3 vViewOrg;
 		char _0x40[0x4];
 		Vector3 vViewAxis[3];
 		char _0x68[0x16FF8];
-	} sRefDef; // 0x68
+	} sRefDef;
 	/*
 	//=====================================================================================
 	*/
@@ -249,8 +267,8 @@ namespace ProtoGenesys
 		int iNextValid;
 		int iClientNum;
 		char szName[32];
-		int iTeam;
-		int iTeam2;
+		eTeam iTeam1;
+		eTeam iTeam2;
 		int iFFATeam;
 		char _0x38[0x28];
 		int iRank;
@@ -284,35 +302,47 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
+		int eFlags1;
+		int eFlags2;
+		sTrajectory PositionTrajectory;
+		sTrajectory AngleTrajectory;
+		char _0x50[0xC];
+		int iWeaponID1;
+		int iWeaponID2;
+		char _0x64[0x18];
+	} sLerpEntityState;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
+		int iEntityNum;
+		sLerpEntityState LerpEntityState;
+		char _0x80[0x58];
+		short wEntityType;
+		short wGroundEntityNum;
+		char _0xDA[0x2];
+		short wOtherEntityNum;
+		short wAttackerEntityNum;
+		char _0xE2[0x2];
+		int iWeaponID;
+		char _0xE8[0x10];
+	} sEntityState;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
 		char _0x0[0x2];
 		short wValid;
 		short wUsedForPlayerMesh;
 		char _0x6[0x26];
 		Vector3 vOrigin;
 		Vector3 vAngles;
-		char _0x38[0x11C];
-		int eFlags;
-		char _0x164[0x4];
-		sTrajectory OldTrajectory;
-		char _0x18C[0x30];
-		int iPlayerPrimaryWeaponID;
-		int iPlayerSecondaryWeaponID;
-		char _0x1C4[0x18];
-		int iClientNum;
-		int iFlags;
-		char _0x1E4[0x4];
-		sTrajectory NewTrajectory;
-		char _0x20C[0x34];
-		int iWeaponID2;
-		char _0x244[0x70];
-		short wEntityType;
-		short wGroundEntityNum;
-		char _0x2B8[0x2];
-		short wOtherEntityNum;
-		short wAttackerEntityNum;
-		char _0x2BE[0x2];
-		int iWeaponID1;
-		char _0x2C4[0xB4];
+		char _0x44[0x11C];
+		sLerpEntityState CurrentEntityState;
+		sEntityState NextEntityState;
+		char _0x2D4[0xA4];
 		int iAlive;
 		char _0x37C[0x4];
 	} sEntity;
@@ -513,6 +543,7 @@ namespace ProtoGenesys
 
 	static DWORD_PTR dwPenetrationMultiplier = bIsSteamVersion ? *(DWORD_PTR*)0x325FC04 : *(DWORD_PTR*)0x323EC04;
 	static DWORD_PTR dwPenetrationCount = *(DWORD_PTR*)0x28FB870;
+	static DWORD_PTR dwOrbitalVsat = 0x12A0CA4;
 
 	static DWORD_PTR dwConnectPathsException1 = bIsSteamVersion ? 0x43B6DB : 0x53367B;
 	static DWORD_PTR dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
@@ -618,7 +649,7 @@ namespace ProtoGenesys
 	*/
 	inline LPVOID GetDObj(sEntity* entity)
 	{
-		return VariadicCall<LPVOID>(dwGetDObj, entity->iClientNum, entity->wUsedForPlayerMesh);
+		return VariadicCall<LPVOID>(dwGetDObj, entity->NextEntityState.iEntityNum, entity->wUsedForPlayerMesh);
 	}
 	/*
 	//=====================================================================================
@@ -812,9 +843,16 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	inline bool IsThirdPerson()
+	{
+		return (*(BYTE*)(dwCG + 0x4809C) || *(BYTE*)(dwCG + 0x4812C));
+	}
+	/*
+	//=====================================================================================
+	*/
 	inline bool EntityHasRiotShield(sEntity* entity)
 	{
-		return ((BYTE)entity->iWeaponID1 == ID_ASSAULTSHIELD || (BYTE)entity->iWeaponID2 == ID_ASSAULTSHIELD);
+		return ((BYTE)entity->NextEntityState.iWeaponID == ID_ASSAULTSHIELD || (BYTE)entity->NextEntityState.LerpEntityState.iWeaponID2 == ID_ASSAULTSHIELD);
 	}
 	/*
 	//=====================================================================================

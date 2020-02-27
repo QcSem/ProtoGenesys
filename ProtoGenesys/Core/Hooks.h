@@ -23,7 +23,9 @@ namespace ProtoGenesys
 			VEH_INDEX_NODELTA = 33833
 		} eVehIndex;
 
-		bool bXuidOverride = false, bTrickShot;
+		bool bXuidOverride = false, 
+			bOrbitalVsat, bThirdPerson, bTrickShot;
+
 		char szXuidOverride[0x11] = { NULL };
 		QWORD dwXuidOverride = NULL;
 

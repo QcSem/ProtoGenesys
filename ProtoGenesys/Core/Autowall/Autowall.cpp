@@ -12,7 +12,7 @@ namespace ProtoGenesys
 	{
 		int iIndex = CG->iClientNum;
 		sEntity* pCEntity = &CG->Entity[iIndex];
-		int iWeaponID = pCEntity->iWeaponID1;
+		int iWeaponID = pCEntity->NextEntityState.iWeaponID;
 		sWeaponDef* WeaponDef = GetWeaponDef(iWeaponID);
 
 		sBulletFireParams FP_Enter;
@@ -166,7 +166,7 @@ namespace ProtoGenesys
 	{
 		int iIndex = CG->iClientNum;
 		sEntity* pCEntity = &CG->Entity[iIndex];
-		int iWeaponID = pCEntity->iWeaponID1;
+		int iWeaponID = pCEntity->NextEntityState.iWeaponID;
 		sWeaponDef* WeaponDef = GetWeaponDef(iWeaponID);
 
 		sBulletFireParams FP_Enter;
