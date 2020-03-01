@@ -233,10 +233,9 @@ namespace ProtoGenesys
 		float flCenterX = CG->RefDef.iWidth / 2.0f,
 			flCenterY = CG->RefDef.iHeight / 2.0f;
 
-		Vector3 vViewOrigin, vLocal, vTransForm;
+		Vector3 vLocal, vTransForm;
 
-		GetPlayerViewOrigin(vViewOrigin);
-		VectorSubtract(world, vViewOrigin, vLocal);
+		VectorSubtract(world, CG->RefDef.vViewOrg, vLocal);
 
 		vTransForm[0] = DotProduct(vLocal, CG->RefDef.vViewAxis[1]);
 		vTransForm[1] = DotProduct(vLocal, CG->RefDef.vViewAxis[2]);
