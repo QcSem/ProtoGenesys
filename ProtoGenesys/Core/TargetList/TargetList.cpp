@@ -198,7 +198,7 @@ namespace ProtoGenesys
 			GetPlayerViewOrigin(vViewOrigin);
 
 			VectorCopy(EntityList[_aimBot.AimState.iTargetNum].vHitLocation, _aimBot.AimState.vAimbotPosition);
-			_mathematics.CalculateAngles(WeaponIsVehicle() ? CG->RefDef.vViewOrg : vViewOrigin, _aimBot.AimState.vAimbotPosition, _aimBot.AimState.vAimbotAngles);
+			_mathematics.CalculateAngles(vViewOrigin, _aimBot.AimState.vAimbotPosition, _aimBot.AimState.vAimbotAngles);
 		}
 
 		iCounter++;
@@ -255,7 +255,7 @@ namespace ProtoGenesys
 
 		if (WeaponIsVehicle())
 		{
-			bool bTraceHit = _autoWall.TraceBullet(CG->RefDef.vViewOrg, position, entity->NextEntityState.iEntityNum);
+			bool bTraceHit = _autoWall.TraceBullet(vViewOrigin, position, entity->NextEntityState.iEntityNum);
 
 			if (bTraceHit)
 				return true;

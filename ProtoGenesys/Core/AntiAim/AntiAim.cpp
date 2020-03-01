@@ -10,7 +10,9 @@ namespace ProtoGenesys
 
 	void cAntiAim::AntiAim(sUserCmd* usercmd)
 	{
-		if (!WeaponIsVehicle() && !(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_PRONE))
+		if (!WeaponIsVehicle() && 
+			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_PRONE) &&
+			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_MANTLE))
 		{
 			if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_SPINBOT)
 			{
@@ -32,35 +34,27 @@ namespace ProtoGenesys
 				switch (iMode)
 				{
 				case 1:
-					usercmd->iViewAngles[0] += AngleToShort(-85.0f - CG->vRefDefViewAngles[0]);
+					usercmd->iViewAngles[0] += AngleToShort(-80.0f - CG->vRefDefViewAngles[0]);
 					usercmd->iViewAngles[1] += AngleToShort(0.0f - CG->vRefDefViewAngles[1]);
-
 					iMode = 2;
-
 					break;
 
 				case 2:
-					usercmd->iViewAngles[0] += AngleToShort(85.0f - CG->vRefDefViewAngles[0]);
+					usercmd->iViewAngles[0] += AngleToShort(80.0f - CG->vRefDefViewAngles[0]);
 					usercmd->iViewAngles[1] += AngleToShort(90.0f - CG->vRefDefViewAngles[1]);
-
 					iMode = 3;
-
 					break;
 
 				case 3:
-					usercmd->iViewAngles[0] += AngleToShort(-85.0f - CG->vRefDefViewAngles[0]);
+					usercmd->iViewAngles[0] += AngleToShort(-80.0f - CG->vRefDefViewAngles[0]);
 					usercmd->iViewAngles[1] += AngleToShort(180.0f - CG->vRefDefViewAngles[1]);
-
 					iMode = 4;
-
 					break;
 
 				case 4:
-					usercmd->iViewAngles[0] += AngleToShort(85.0f - CG->vRefDefViewAngles[0]);
+					usercmd->iViewAngles[0] += AngleToShort(80.0f - CG->vRefDefViewAngles[0]);
 					usercmd->iViewAngles[1] += AngleToShort(270.0f - CG->vRefDefViewAngles[1]);
-
 					iMode = 1;
-
 					break;
 				}
 			}
@@ -68,7 +62,7 @@ namespace ProtoGenesys
 			else if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_RANDOMIZED)
 			{
 				std::random_device Device;
-				std::uniform_real_distribution<float> RandomPitch(-85.0f, 85.0f), RandomYaw(0.0f, 360.0f);
+				std::uniform_real_distribution<float> RandomPitch(-80.0f, 80.0f), RandomYaw(0.0f, 360.0f);
 
 				usercmd->iViewAngles[0] += AngleToShort(RandomPitch(Device) - CG->vRefDefViewAngles[0]);
 				usercmd->iViewAngles[1] += AngleToShort(RandomYaw(Device) - CG->vRefDefViewAngles[1]);

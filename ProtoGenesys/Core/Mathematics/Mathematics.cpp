@@ -13,12 +13,12 @@ namespace ProtoGenesys
 		Vector3 vViewOrigin, vDirection, vAngles, vAimAngles;
 
 		GetPlayerViewOrigin(vViewOrigin);
-		VectorSubtract(position, WeaponIsVehicle() ? CG->RefDef.vViewOrg : vViewOrigin, vDirection);
+		VectorSubtract(position, vViewOrigin, vDirection);
 
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
 
-		MakeVector((WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles : CG->vWeaponAngles, vAimAngles);
+		MakeVector(CG->vRefDefViewAngles, vAimAngles);
 		MakeVector(vAngles, vAngles);
 
 		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
@@ -173,8 +173,8 @@ namespace ProtoGenesys
 
 		NormalizeAngles(angles);
 
-		angles[0] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
-		angles[1] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
+		angles[0] -= CG->vRefDefViewAngles[0];
+		angles[1] -= CG->vRefDefViewAngles[1];
 
 		NormalizeAngles(angles);
 	}
@@ -233,10 +233,10 @@ namespace ProtoGenesys
 		float flCenterX = CG->RefDef.iWidth / 2.0f,
 			flCenterY = CG->RefDef.iHeight / 2.0f;
 
-		Vector3 vLocal,
-			vTransForm;
+		Vector3 vViewOrigin, vLocal, vTransForm;
 
-		VectorSubtract(world, CG->RefDef.vViewOrg, vLocal);
+		GetPlayerViewOrigin(vViewOrigin);
+		VectorSubtract(world, vViewOrigin, vLocal);
 
 		vTransForm[0] = DotProduct(vLocal, CG->RefDef.vViewAxis[1]);
 		vTransForm[1] = DotProduct(vLocal, CG->RefDef.vViewAxis[2]);
@@ -260,7 +260,7 @@ namespace ProtoGenesys
 		Vector3 vViewOrigin, vDirection, vAngles;
 
 		GetPlayerViewOrigin(vViewOrigin);
-		VectorSubtract(WeaponIsVehicle() ? CG->RefDef.vViewOrg : vViewOrigin, world, vDirection);
+		VectorSubtract(vViewOrigin, world, vDirection);
 
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
@@ -284,8 +284,8 @@ namespace ProtoGenesys
 
 		float flCosYaw = cosf(DegreesToRadians(CG->vRefDefViewAngles[1])),
 			flSinYaw = sinf(DegreesToRadians(CG->vRefDefViewAngles[1])),
-			flDeltaX = world[0] - (WeaponIsVehicle() ? CG->RefDef.vViewOrg[0] : vViewOrigin[0]),
-			flDeltaY = world[1] - (WeaponIsVehicle() ? CG->RefDef.vViewOrg[1] : vViewOrigin[1]),
+			flDeltaX = world[0] - vViewOrigin[0],
+			flDeltaY = world[1] - vViewOrigin[1],
 			flLocationX = (flDeltaY * flCosYaw - flDeltaX * flSinYaw) / scale,
 			flLocationY = (flDeltaX * flCosYaw + flDeltaY * flSinYaw) / scale;
 

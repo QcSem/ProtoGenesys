@@ -12,7 +12,7 @@
 #define MAX_ENTITIES 1024
 #define EF_CROUCH 0x4
 #define EF_PRONE 0x8
-#define EF_SPRINT 0x20000
+#define EF_MANTLE 0x20000
 #define EF_ZOOM 0x80000
 #define ID_ASSAULTSHIELD 89
 #define M_METERS 55.0f
