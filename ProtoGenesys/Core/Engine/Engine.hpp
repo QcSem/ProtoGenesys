@@ -853,7 +853,7 @@ namespace ProtoGenesys
 	*/
 	inline bool IsPlayerReloading(sPlayerState* playerstate)
 	{
-		return (playerstate->iWeaponState[0] - 11 < 8 || playerstate->iWeaponState[1] - 11 < 8);
+		return ((UINT)(playerstate->iWeaponState[0] - 11) < 8 || (UINT)(playerstate->iWeaponState[1] - 11) < 8);
 	}
 	/*
 	//=====================================================================================
