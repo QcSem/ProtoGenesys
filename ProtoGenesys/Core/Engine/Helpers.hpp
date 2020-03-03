@@ -26,6 +26,18 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	template<typename Type>
+	inline void WriteMemoryProtected(LPVOID address, Type value)
+	{
+		DWORD dwProtection = PAGE_EXECUTE_READWRITE;
+
+		VirtualProtect(address, sizeof(Type), dwProtection, &dwProtection);
+		*(Type*)address = value;
+		VirtualProtect(address, sizeof(Type), dwProtection, &dwProtection);
+	}
+	/*
+	//=====================================================================================
+	*/
 	static MODULEINFO GetModuleInfo(LPCSTR name)
 	{
 		MODULEINFO ModuleInfo = { NULL };
