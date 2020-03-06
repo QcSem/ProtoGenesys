@@ -17,7 +17,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
@@ -33,8 +33,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)ProtoGenesys\Detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)ProtoGenesys\Detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Detours\Include;$(SolutionDir)DirectX\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Detours\Lib\x86;$(SolutionDir)DirectX\Lib\x86;$(LibraryPath)</LibraryPath>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -47,15 +47,13 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;PROTOGENESYS_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;IMGUI_DEFINE_MATH_OPERATORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>psapi.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -103,7 +101,6 @@
     <ClInclude Include="Core\Profiler\RapidXML\Utilities\StringUtility.hpp" />
     <ClInclude Include="Core\Removals\Removals.h" />
     <ClInclude Include="Core\TargetList\TargetList.h" />
-    <ClInclude Include="Detours\detours.h" />
     <ClInclude Include="ImGui\Addons\dirent_portable.h" />
     <ClInclude Include="ImGui\Addons\FileSystem\imguifilesystem.h" />
     <ClInclude Include="ImGui\Addons\TabWindow\imguitabwindow.h" />
@@ -119,9 +116,6 @@
     <ClInclude Include="ImGui\STB\imstb_truetype.h" />
     <ClInclude Include="ImGui\Win32\imgui_impl_win32.h" />
     <ClInclude Include="StdAfx.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="Detours\detours.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

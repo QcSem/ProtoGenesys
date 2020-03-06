@@ -62,9 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.hpp" />
-    <ClInclude Include="Detours\detours.h">
-      <Filter>Detours</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Hooks.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -172,9 +169,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Detours">
-      <UniqueIdentifier>{771a1900-6ea0-41e4-be80-443ad2a80a5d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{54d9cc06-747b-42dd-afe3-125c5cd75e1c}</UniqueIdentifier>
     </Filter>
@@ -238,10 +232,5 @@
     <Filter Include="ImGui\Fonts">
       <UniqueIdentifier>{f7fbee61-f00c-4a21-bbc9-85ca42013c53}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="Detours\detours.lib">
-      <Filter>Detours</Filter>
-    </Library>
   </ItemGroup>
 </Project>
