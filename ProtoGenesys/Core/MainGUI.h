@@ -27,14 +27,10 @@ namespace ProtoGenesys
 
 		cMainGUI() : _thunkWindowProcess(&cMainGUI::WindowProcess, this) {}
 
-		bool bInitialized = false, bShowWindow = true,
-			bStyleChanged, bWriteLog, bSaveButton, bLoadButton;
-
+		bool bInitialized, bShowWindow, bStyleChanged, bWriteLog, bSaveButton, bLoadButton;
 		char szProfilePath[1024] = { NULL };
 
-		std::string szIniFileName, szLogFileName, szKillspam,
-			szNameOverride, szClanOverride;
-
+		std::string szIniFileName, szLogFileName;
 		ImGuiFs::Dialog SaveDialog, LoadDialog;
 
 		ImFont* Eurostile_Bold, * Eurostile_Extended, * Eurostile_Regular;

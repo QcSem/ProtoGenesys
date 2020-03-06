@@ -25,12 +25,14 @@ namespace ProtoGenesys
 				float flValue;
 				DWORD dwValue;
 				ImVec4 cValue;
+				LPSTR szValue;
 
 				uCvarValue(bool value) : bValue(value) {}
 				uCvarValue(int value) : iValue(value) {}
 				uCvarValue(float value) : flValue(value) {}
 				uCvarValue(DWORD value) : dwValue(value) {}
 				uCvarValue(ImVec4 value) : cValue(value) {}
+				uCvarValue(LPSTR value) : szValue() {}
 			} Custom, Default;
 
 			union uMinValue
@@ -58,8 +60,9 @@ namespace ProtoGenesys
 			sCvar(std::string name, std::vector<std::string> items, bool value, int min, int max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
 			sCvar(std::string name, std::vector<std::string> items, int value, int min, int max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
 			sCvar(std::string name, std::vector<std::string> items, float value, float min, float max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
-			sCvar(std::string name, std::vector<std::string> items, DWORD value, DWORD min, DWORD max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
+			sCvar(std::string name, std::vector<std::string> items, DWORD value, int min, int max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
 			sCvar(std::string name, std::vector<std::string> items, ImVec4 value, float min, float max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
+			sCvar(std::string name, std::vector<std::string> items, LPSTR value, float min, float max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
 		};
 
 		typedef enum
@@ -220,6 +223,15 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gColorCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(0), ByteToFloat(255), ByteToFloat(255)), 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gColorText = std::make_shared<sCvar>("Text", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(255), ByteToFloat(255)), 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gColorShadow = std::make_shared<sCvar>("Shadow", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(0), ByteToFloat(0), ByteToFloat(255)), 0.0f, 1.0f);
+
+		std::shared_ptr<sCvar> gOrbitalVsat = std::make_shared<sCvar>("Orbital VSAT", std::vector<std::string>(), false, FALSE, TRUE);
+		std::shared_ptr<sCvar> gThirdPerson = std::make_shared<sCvar>("Third Person", std::vector<std::string>(), false, FALSE, TRUE);
+		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>(), false, FALSE, TRUE);
+
+		std::shared_ptr<sCvar> gNameOverride = std::make_shared<sCvar>("Name Override", std::vector<std::string>(), "", NULL, NULL);
+		std::shared_ptr<sCvar> gClanOverride = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), "", NULL, NULL);
+		std::shared_ptr<sCvar> gXuidOverride = std::make_shared<sCvar>("XUID Override", std::vector<std::string>(), "", NULL, NULL);
+		std::shared_ptr<sCvar> gKillspam = std::make_shared<sCvar>("Killspam Message", std::vector<std::string>(), "", NULL, NULL);
 
 		acut::XmlDoc<char> XML;
 

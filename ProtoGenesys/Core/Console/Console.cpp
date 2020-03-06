@@ -281,7 +281,7 @@ namespace ProtoGenesys
 			std::random_device rd;
 			std::uniform_int_distribution<> dist(0x48, 0x49);
 
-			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\\x5E%c%s\\xuid\\%s\"", _mainGui.szNameOverride.empty() ? GetUsername() : _mainGui.szNameOverride.c_str(), (char)dist(rd), acut::RandomANString(5).c_str(), !_hooks.dwXuidOverride ? GetXuidstring() : _ui64toa(_hooks.dwXuidOverride, _hooks.szXuidOverride, 0x10)));
+			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\\x5E%c%s\\xuid\\%s\"", GetUsername(), (char)dist(rd), acut::RandomANString(5).c_str(), GetXuidstring()));
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
@@ -315,7 +315,7 @@ namespace ProtoGenesys
 					if (szNameOverride)
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-						_mainGui.szNameOverride = strtok(szArgBuff, "\n");
+						_profiler.gNameOverride->Custom.szValue = Strdup(strtok(szArgBuff, "\n"));
 						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 					}
 
@@ -328,7 +328,7 @@ namespace ProtoGenesys
 				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_mainGui.szNameOverride.clear();
+					_profiler.gNameOverride->Custom.szValue = Strdup("");
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 
@@ -360,7 +360,7 @@ namespace ProtoGenesys
 					if (szClanOverride)
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-						_mainGui.szClanOverride = strtok(szArgBuff, "\n");
+						_profiler.gClanOverride->Custom.szValue = Strdup(strtok(szArgBuff, "\n"));
 						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 					}
 
@@ -373,7 +373,7 @@ namespace ProtoGenesys
 				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_mainGui.szClanOverride.clear();
+					_profiler.gClanOverride->Custom.szValue = Strdup("");
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 
@@ -405,7 +405,7 @@ namespace ProtoGenesys
 					if (szKillspam)
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-						_mainGui.szKillspam = strtok(szArgBuff, "\n");
+						_profiler.gKillspam->Custom.szValue = Strdup(strtok(szArgBuff, "\n"));
 						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 					}
 
@@ -418,7 +418,7 @@ namespace ProtoGenesys
 				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_mainGui.szKillspam.clear();
+					_profiler.gKillspam->Custom.szValue = Strdup("");
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 
@@ -441,14 +441,14 @@ namespace ProtoGenesys
 				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_hooks.bOrbitalVsat = true;
+					_profiler.gOrbitalVsat->Custom.bValue = true;
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 
 				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_hooks.bOrbitalVsat = false;
+					_profiler.gOrbitalVsat->Custom.bValue = false;
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 
@@ -471,14 +471,14 @@ namespace ProtoGenesys
 				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_hooks.bThirdPerson = true;
+					_profiler.gThirdPerson->Custom.bValue = true;
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 
 				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_hooks.bThirdPerson = false;
+					_profiler.gThirdPerson->Custom.bValue = false;
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 
@@ -501,14 +501,14 @@ namespace ProtoGenesys
 				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_hooks.bTrickShot = true;
+					_profiler.gTrickShot->Custom.bValue = true;
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 
 				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_hooks.bTrickShot = false;
+					_profiler.gTrickShot->Custom.bValue = false;
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 

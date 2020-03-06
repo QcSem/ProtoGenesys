@@ -12,8 +12,8 @@ namespace ProtoGenesys
 	{
 		*(DWORD_PTR*)dwTacSSHandle = 0x1;
 
-		*(BYTE*)dwOrbitalVsat = bOrbitalVsat ? TRUE : FALSE;
-		*(BYTE*)(dwCG + 0x4809C) = bThirdPerson ? TRUE : FALSE;
+		*(BYTE*)dwOrbitalVsat = _profiler.gOrbitalVsat->Custom.bValue;
+		*(BYTE*)(dwCG + 0x4809C) = _profiler.gThirdPerson->Custom.bValue;
 
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_GUARD_PAGE)
 		{
@@ -34,13 +34,17 @@ namespace ProtoGenesys
 
 				if (szKey.find("name") != std::string::npos)
 				{
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = _mainGui.szNameOverride.empty() ? GetUsername() : _mainGui.szNameOverride.c_str();
+					std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
+
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szNameOverride.empty() ? GetUsername() : szNameOverride.c_str();
 					PageGuardAddress(dwGetClantag);
 				}
 
 				if (szKey.find("clanAbbrev") != std::string::npos)
 				{
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = _mainGui.szClanOverride.empty() ? GetClantag() : _mainGui.szClanOverride.c_str();
+					std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
+
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szClanOverride.empty() ? GetClantag() : szClanOverride.c_str();
 					PageGuardAddress(dwGetXuidstring);
 				}
 
@@ -248,13 +252,16 @@ namespace ProtoGenesys
 		{
 			if (attacker == CG->iClientNum && attacker != victim)
 			{
-				if (bTrickShot)
-					AddReliableCommand(VariadicText("mr %d -1 endround", *(DWORD_PTR*)dwServerID));
-
-				if (!_mainGui.szKillspam.empty())
+				if (_profiler.gTrickShot->Custom.bValue)
 				{
-					std::string szKillspam = _mainGui.szKillspam;
+					AddReliableCommand(VariadicText("mr %d -1 endround", *(DWORD_PTR*)dwServerID));
+					_profiler.gTrickShot->Custom.bValue = false;
+				}
 
+				std::string szKillspam = _profiler.gKillspam->Custom.szValue;
+
+				if (!szKillspam.empty())
+				{
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", CG->Client[attacker].szName);
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", CG->Client[victim].szName);
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", 
