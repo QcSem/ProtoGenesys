@@ -12,100 +12,6 @@
 
 namespace acut
 {
-	static std::string StripPath(const std::string& path)
-	{
-		if (path.empty())
-			return path;
-
-		auto idx = path.rfind('\\');
-
-		if (idx == path.npos)
-			idx = path.rfind('/');
-
-		if (idx != path.npos)
-			return path.substr(idx + 1);
-
-		else
-			return path;
-	}
-	/*
-	//=====================================================================================
-	*/
-	static std::string GetParent(const std::string& path)
-	{
-		if (path.empty())
-			return path;
-
-		auto idx = path.rfind('\\');
-
-		if (idx == path.npos)
-			idx = path.rfind('/');
-
-		if (idx != path.npos)
-			return path.substr(0, idx);
-
-		else
-			return path;
-	}
-	/*
-	//=====================================================================================
-	*/
-	static std::string GetExeDirectory()
-	{
-		char imgName[MAX_PATH] = { NULL };
-		DWORD len = ARRAYSIZE(imgName);
-
-		QueryFullProcessImageName(GetCurrentProcess(), NULL, imgName, &len);
-
-		return GetParent(imgName);
-	}
-	/*
-	//=====================================================================================
-	*/
-	static std::string RandomANString(int length)
-	{
-		static constexpr char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZbcdefghijklmnopqrstuvwxyz1234567890";
-
-		static std::random_device rd;
-		static std::uniform_int_distribution<> dist(0, _countof(alphabet) - 1), dist_len(5, 15);
-
-		std::string result;
-
-		if (length == 0)
-			length = dist_len(rd);
-
-		for (int i = 0; i < length; i++)
-			result.push_back(alphabet[dist(rd)]);
-
-		return result;
-	}
-	/*
-	//=====================================================================================
-	*/
-	static std::string StripColorCodes(std::string text)
-	{
-		size_t iPosition;
-
-		while ((iPosition = text.find("^")) != std::string::npos)
-			text.erase(iPosition, 2);
-
-		return text;
-	}
-	/*
-	//=====================================================================================
-	*/
-	static std::string FindAndReplaceString(std::string text, std::string find, std::string replace)
-	{
-		size_t iPosition;
-
-		while ((iPosition = text.find(find.c_str())) != std::string::npos)
-			text.replace(iPosition, find.length(), replace.c_str());
-
-		return text;
-	}
-	/*
-	//=====================================================================================
-	*/
 	static std::string ToLower(std::string str)
 	{
 		std::transform(str.begin(), str.end(), str.begin(), ::tolower);
@@ -118,19 +24,6 @@ namespace acut
 	{
 		std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 		return str;
-	}
-	/*
-	//=====================================================================================
-	*/
-	static LPCSTR* StringVectorToCharPointerArray(const std::vector<std::string>& strvec)
-	{
-		static std::vector<LPCSTR> buf;
-		buf.clear();
-
-		for (auto& str : strvec)
-			buf.push_back(_strdup(str.c_str()));
-
-		return buf.data();
 	}
 	/*
 	//=====================================================================================
@@ -167,139 +60,246 @@ namespace acut
 	/*
 	//=====================================================================================
 	*/
-	template <typename tstring, typename Container>
-	void tsplit(const tstring& str, Container* result, const tstring& delimiters)
+	static std::string StripPath(const std::string& path)
 	{
-		size_t current, next = static_cast<size_t>(-1);
+		if (path.empty())
+			return path;
 
+		auto idx = path.rfind('\\');
+		
+		if (idx == path.npos)
+			idx = path.rfind('/');
+
+		if (idx != path.npos)
+			return path.substr(idx + 1);
+		
+		else
+			return path;
+	}
+	/*
+	//=====================================================================================
+	*/
+	static std::string GetParent(const std::string& path)
+	{
+		if (path.empty())
+			return path;
+
+		auto idx = path.rfind('\\');
+		
+		if (idx == path.npos)
+			idx = path.rfind('/');
+
+		if (idx != path.npos)
+			return path.substr(0, idx);
+		
+		else
+			return path;
+	}
+	/*
+	//=====================================================================================
+	*/
+	static std::string GetExeDirectory()
+	{
+		char imgName[MAX_PATH] = { NULL };
+		DWORD len = ARRAYSIZE(imgName);
+
+		QueryFullProcessImageName(GetCurrentProcess(), NULL, imgName, &len);
+
+		return GetParent(imgName);
+	}
+	/*
+	//=====================================================================================
+	*/
+	static std::string RandomANString(int length)
+	{
+		static constexpr char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZbcdefghijklmnopqrstuvwxyz1234567890";
+		
+		static std::random_device rd;
+		static std::uniform_int_distribution<> dist(0, _countof(alphabet) - 1), dist_len(5, 15);
+		
+		std::string result;
+
+		if (length == 0)
+			length = dist_len(rd);
+
+		for (int i = 0; i < length; i++)
+			result.push_back(alphabet[dist(rd)]);
+
+		return result;
+	}
+	/*
+	//=====================================================================================
+	*/
+	static std::string StripColorCodes(std::string text)
+	{
+		size_t iPosition;
+
+		while ((iPosition = text.find("^")) != std::string::npos)
+			text.erase(iPosition, 2);
+
+		return text;
+	}
+	/*
+	//=====================================================================================
+	*/
+	static std::string FindAndReplaceString(std::string text, std::string find, std::string replace)
+	{
+		size_t iPosition;
+
+		while ((iPosition = ToLower(text).find(ToLower(find))) != std::string::npos)
+			text.replace(iPosition, find.length(), replace);
+
+		return text;
+	}
+	/*
+	//=====================================================================================
+	*/
+	static LPCSTR* StringVectorToCharPointerArray(const std::vector<std::string>& strvec)
+	{
+		static std::vector<LPCSTR> buf;
+		buf.clear();
+
+		for (auto& str : strvec)
+			buf.push_back(_strdup(str.c_str()));
+
+		return buf.data();
+	}
+	/*
+	//=====================================================================================
+	*/
+    template <typename tstring, typename Container>
+    void tsplit(const tstring& str, Container* result, const tstring& delimiters)
+    {
+        size_t current, next = static_cast<size_t>(-1);
+       
 		do
-		{
-			next = str.find_first_not_of(delimiters, next + 1);
-
-			if (next == tstring::npos)
+        {
+            next = str.find_first_not_of( delimiters, next + 1 );
+            
+			if (next == tstring::npos) 
 				break;
-
+            
 			next -= 1;
 
-			current = next + 1;
-			next = str.find_first_of(delimiters, current);
-			result->push_back(str.substr(current, next - current));
-		} while (next != tstring::npos);
-	}
+            current = next + 1;
+            next = str.find_first_of( delimiters, current );
+            result->push_back( str.substr( current, next - current ) );
+        } while (next != tstring::npos);
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <typename Container>
-	void split(const std::string& str, Container* result, const std::string& delimiters = " ")
-	{
-		tsplit(str, result, delimiters);
-	}
+    template <typename Container>
+    void split(const std::string& str, Container* result, const std::string& delimiters = " ")
+    {
+        tsplit(str, result, delimiters);
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <typename Container>
-	void split(const std::wstring& str, Container* result, const std::wstring& delimiters = L" ")
-	{
-		tsplit(str, result, delimiters);
-	}
+    template <typename Container>
+    void split(const std::wstring& str, Container* result, const std::wstring& delimiters = L" ")
+    {
+        tsplit(str, result, delimiters);
+    }
 	/*
 	//=====================================================================================
 	*/
-	inline std::string trim(const std::string& str, const std::string& whitespace = " ")
-	{
-		const size_t strBegin = str.find_first_not_of(whitespace), strEnd = str.find_last_not_of(whitespace);
-
+    inline std::string trim(const std::string& str, const std::string& whitespace = " ")
+    {
+        const size_t strBegin = str.find_first_not_of(whitespace), strEnd = str.find_last_not_of(whitespace);
+       
 		if (strBegin == std::string::npos)
-			return "";
+            return "";
 
-		const size_t strRange = strEnd - strBegin + 1;
+        const size_t strRange = strEnd - strBegin + 1;
 
-		return str.substr(strBegin, strRange);
-	}
+        return str.substr(strBegin, strRange);
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <typename Ch>
-	inline std::basic_string<Ch> ensure_tchar(LPCSTR ptr);
+    template <typename Ch>
+    inline std::basic_string<Ch> ensure_tchar(LPCSTR ptr);
 	/*
 	//=====================================================================================
 	*/
-	template <typename Ch>
-	inline std::basic_string<Ch> ensure_tchar(LPCWSTR ptr);
+    template <typename Ch>
+    inline std::basic_string<Ch> ensure_tchar(LPCWSTR ptr);
 	/*
 	//=====================================================================================
 	*/
-	template <>
-	inline std::basic_string<char> ensure_tchar(LPCSTR ptr)
-	{
-		return ptr;
-	}
+    template <>
+    inline std::basic_string<char> ensure_tchar(LPCSTR ptr)
+    {
+        return ptr;
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <>
-	inline std::basic_string<wchar_t> ensure_tchar(LPCSTR ptr)
-	{
-		return UTF8ToWstring(ptr);
-	}
+    template <>
+    inline std::basic_string<wchar_t> ensure_tchar(LPCSTR ptr)
+    {
+        return UTF8ToWstring(ptr);
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <>
-	inline std::basic_string<char> ensure_tchar(LPCWSTR ptr)
-	{
-		return WstringToUTF8(ptr);
-	}
+    template <>
+    inline std::basic_string<char> ensure_tchar(LPCWSTR ptr)
+    {
+        return WstringToUTF8(ptr);
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <>
-	inline std::basic_string<wchar_t> ensure_tchar(LPCWSTR ptr)
-	{
-		return ptr;
-	}
+    template <>
+    inline std::basic_string<wchar_t> ensure_tchar(LPCWSTR ptr)
+    {
+        return ptr;
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <typename Ch>
-	inline Ch ensure_tchar(char ch);
+    template <typename Ch>
+    inline Ch ensure_tchar(char ch);
 	/*
 	//=====================================================================================
 	*/
-	template <typename Ch>
-	inline Ch ensure_tchar(wchar_t ch);
+    template <typename Ch>
+    inline Ch ensure_tchar(wchar_t ch);
 	/*
 	//=====================================================================================
 	*/
-	template <>
-	inline char ensure_tchar(char ch)
-	{
-		return ch;
-	}
+    template <>
+    inline char ensure_tchar(char ch)
+    {
+        return ch;
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <>
-	inline wchar_t ensure_tchar(char ch)
-	{
-		return UTF8ToWstring(std::string(1, ch)).front();
-	}
+    template <>
+    inline wchar_t ensure_tchar(char ch)
+    {
+        return UTF8ToWstring(std::string(1, ch)).front();
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <>
-	inline char ensure_tchar(wchar_t ch)
-	{
-		return WstringToUTF8(std::wstring(1, ch)).front();
-	}
+    template <>
+    inline char ensure_tchar(wchar_t ch)
+    {
+        return WstringToUTF8(std::wstring(1, ch)).front();
+    }
 	/*
 	//=====================================================================================
 	*/
-	template <>
-	inline wchar_t ensure_tchar(wchar_t ch)
-	{
-		return ch;
-	}
+    template <>
+    inline wchar_t ensure_tchar(wchar_t ch)
+    {
+        return ch;
+    }
 }
 
 //=====================================================================================
