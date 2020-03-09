@@ -201,6 +201,10 @@ namespace ProtoGenesys
 		gPlayerCrossHair->Custom.bValue = gPlayerCrossHair->Default.bValue;
 		gPlayerCompass->Custom.bValue = gPlayerCompass->Default.bValue;
 		gPlayerRadar->Custom.bValue = gPlayerRadar->Default.bValue;
+
+		gOrbitalVsat->Custom.bValue = gOrbitalVsat->Default.bValue;
+		gThirdPerson->Custom.bValue = gThirdPerson->Default.bValue;
+		gTrickShot->Custom.bValue = gTrickShot->Default.bValue;
 	}
 }
 

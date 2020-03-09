@@ -29,8 +29,8 @@ namespace ProtoGenesys
 
 			if (ExceptionInfo->ContextRecord->Eip == dwSetValueForKey)
 			{
-				std::string szKey(*(LPSTR*)(ExceptionInfo->ContextRecord->Esp + 0x8));
-				std::string szValue(*(LPSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC));
+				std::string szKey(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0x8));
+				std::string szValue(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC));
 
 				if (szKey.find("name") != std::string::npos)
 				{
@@ -258,7 +258,7 @@ namespace ProtoGenesys
 					_profiler.gTrickShot->Custom.bValue = false;
 				}
 
-				std::string szKillspam = _profiler.gKillspam->Custom.szValue;
+				std::string szKillspam(_profiler.gKillspam->Custom.szValue);
 
 				if (!szKillspam.empty())
 				{

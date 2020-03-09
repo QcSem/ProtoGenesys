@@ -32,7 +32,7 @@ namespace ProtoGenesys
 				uCvarValue(float value) : flValue(value) {}
 				uCvarValue(DWORD value) : dwValue(value) {}
 				uCvarValue(ImVec4 value) : cValue(value) {}
-				uCvarValue(LPSTR value) : szValue() {}
+				uCvarValue(LPSTR value) : szValue(value) {}
 			} Custom, Default;
 
 			union uMinValue
@@ -57,12 +57,12 @@ namespace ProtoGenesys
 				uMaxValue(DWORD max) : dwMax(max) {}
 			} MaxValue;
 
-			sCvar(std::string name, std::vector<std::string> items, bool value, int min, int max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
+			sCvar(std::string name, std::vector<std::string> items, bool value) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(NULL), MaxValue(NULL) {}
 			sCvar(std::string name, std::vector<std::string> items, int value, int min, int max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
 			sCvar(std::string name, std::vector<std::string> items, float value, float min, float max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
-			sCvar(std::string name, std::vector<std::string> items, DWORD value, int min, int max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
-			sCvar(std::string name, std::vector<std::string> items, ImVec4 value, float min, float max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
-			sCvar(std::string name, std::vector<std::string> items, LPSTR value, float min, float max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
+			sCvar(std::string name, std::vector<std::string> items, DWORD value, DWORD min, DWORD max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
+			sCvar(std::string name, std::vector<std::string> items, ImVec4 value) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(NULL), MaxValue(NULL) {}
+			sCvar(std::string name, std::vector<std::string> items, LPSTR value) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(NULL), MaxValue(NULL) {}
 		};
 
 		typedef enum
@@ -186,12 +186,12 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gMenuFont = std::make_shared<sCvar>("Menu Font", std::vector<std::string>({ "Light", "Medium", "Bold" }), MENU_FONT_LIGHT, MENU_FONT_LIGHT, MENU_FONT_MAX);
 
 		std::shared_ptr<sCvar> gAimBotMode = std::make_shared<sCvar>("Mode", std::vector<std::string>({ "Off", "Manual", "Auto" }), AIMBOT_MODE_OFF, AIMBOT_MODE_OFF, AIMBOT_MODE_MAX);
-		std::shared_ptr<sCvar> gAutoZoom = std::make_shared<sCvar>("Autozoom", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gAutoFire = std::make_shared<sCvar>("Autofire", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gAutoWall = std::make_shared<sCvar>("Autowall", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gApplyPrediction = std::make_shared<sCvar>("Apply Prediction", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gAntiTeamKill = std::make_shared<sCvar>("Anti-Teamkill", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gSilentAim = std::make_shared<sCvar>("Silent-Aim", std::vector<std::string>(), false, FALSE, TRUE);
+		std::shared_ptr<sCvar> gAutoZoom = std::make_shared<sCvar>("Autozoom", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gAutoFire = std::make_shared<sCvar>("Autofire", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gAutoWall = std::make_shared<sCvar>("Autowall", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gApplyPrediction = std::make_shared<sCvar>("Apply Prediction", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gAntiTeamKill = std::make_shared<sCvar>("Anti-Teamkill", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gSilentAim = std::make_shared<sCvar>("Silent-Aim", std::vector<std::string>(), false);
 		std::shared_ptr<sCvar> gAntiAim = std::make_shared<sCvar>("Anti-Aim", std::vector<std::string>({ "Off", "Spinbot", "Jitterbot", "Randomized", "Reversed" }), ANTIAIM_OFF, ANTIAIM_OFF, ANTIAIM_MAX);
 		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On Timer", "Immediate" }), BONESCAN_OFF, BONESCAN_OFF, BONESCAN_MAX);
 		std::shared_ptr<sCvar> gSortMethod = std::make_shared<sCvar>("Sort Method", std::vector<std::string>({ "Field of View", "Distance" }), SORT_METHOD_FOV, SORT_METHOD_FOV, SORT_METHOD_MAX);
@@ -200,12 +200,12 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gPlayerBoxes = std::make_shared<sCvar>("Boxes", std::vector<std::string>({ "Off", "Border", "Corner", "Border Filled", "Corner Filled", "Border 3D", "Corner 3D" }), PLAYER_BOXES_OFF, PLAYER_BOXES_OFF, PLAYER_BOXES_MAX);
 		std::shared_ptr<sCvar> gPlayerBones = std::make_shared<sCvar>("Bones", std::vector<std::string>({ "Off", "Dots", "Lines" }), PLAYER_BONES_OFF, PLAYER_BONES_OFF, PLAYER_BONES_MAX);
 		std::shared_ptr<sCvar> gPlayerSnapLines = std::make_shared<sCvar>("Snaplines", std::vector<std::string>({ "Off", "Top", "Bottom", "Crosshair" }), PLAYER_SNAPLINES_OFF, PLAYER_SNAPLINES_OFF, PLAYER_SNAPLINES_MAX);
-		std::shared_ptr<sCvar> gPlayerInfo = std::make_shared<sCvar>("Info", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gPlayerWeapons = std::make_shared<sCvar>("Weapons", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gPlayerEntities = std::make_shared<sCvar>("Entities", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gPlayerCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gPlayerCompass = std::make_shared<sCvar>("Compass", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gPlayerRadar = std::make_shared<sCvar>("Radar", std::vector<std::string>(), false, FALSE, TRUE);
+		std::shared_ptr<sCvar> gPlayerInfo = std::make_shared<sCvar>("Info", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gPlayerWeapons = std::make_shared<sCvar>("Weapons", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gPlayerEntities = std::make_shared<sCvar>("Entities", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gPlayerCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gPlayerCompass = std::make_shared<sCvar>("Compass", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gPlayerRadar = std::make_shared<sCvar>("Radar", std::vector<std::string>(), false);
 
 		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HEAD, BONE_HEAD, BONE_MAX - 1);
 		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180.0f, 5.0f, 180.0f);
@@ -217,21 +217,21 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gRecoilFactor = std::make_shared<sCvar>("Recoil Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gSpreadFactor = std::make_shared<sCvar>("Spread Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 
-		std::shared_ptr<sCvar> gColorAxis = std::make_shared<sCvar>("Axis", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)), 0.0f, 1.0f);
-		std::shared_ptr<sCvar> gColorAllies = std::make_shared<sCvar>("Allies", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)), 0.0f, 1.0f);
-		std::shared_ptr<sCvar> gColorRiotShield = std::make_shared<sCvar>("Riotshield", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(0), ByteToFloat(0), ByteToFloat(255)), 0.0f, 1.0f);
-		std::shared_ptr<sCvar> gColorCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(0), ByteToFloat(255), ByteToFloat(255)), 0.0f, 1.0f);
-		std::shared_ptr<sCvar> gColorText = std::make_shared<sCvar>("Text", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(255), ByteToFloat(255)), 0.0f, 1.0f);
-		std::shared_ptr<sCvar> gColorShadow = std::make_shared<sCvar>("Shadow", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(0), ByteToFloat(0), ByteToFloat(255)), 0.0f, 1.0f);
+		std::shared_ptr<sCvar> gColorAxis = std::make_shared<sCvar>("Axis", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
+		std::shared_ptr<sCvar> gColorAllies = std::make_shared<sCvar>("Allies", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
+		std::shared_ptr<sCvar> gColorRiotShield = std::make_shared<sCvar>("Riotshield", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(0), ByteToFloat(0), ByteToFloat(255)));
+		std::shared_ptr<sCvar> gColorCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(0), ByteToFloat(255), ByteToFloat(255)));
+		std::shared_ptr<sCvar> gColorText = std::make_shared<sCvar>("Text", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(255), ByteToFloat(255)));
+		std::shared_ptr<sCvar> gColorShadow = std::make_shared<sCvar>("Shadow", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(0), ByteToFloat(0), ByteToFloat(255)));
 
-		std::shared_ptr<sCvar> gOrbitalVsat = std::make_shared<sCvar>("Orbital VSAT", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gThirdPerson = std::make_shared<sCvar>("Third Person", std::vector<std::string>(), false, FALSE, TRUE);
-		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>(), false, FALSE, TRUE);
+		std::shared_ptr<sCvar> gOrbitalVsat = std::make_shared<sCvar>("Orbital VSAT", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gThirdPerson = std::make_shared<sCvar>("Third Person", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>(), false);
 
-		std::shared_ptr<sCvar> gNameOverride = std::make_shared<sCvar>("Name Override", std::vector<std::string>(), "", NULL, NULL);
-		std::shared_ptr<sCvar> gClanOverride = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), "", NULL, NULL);
-		std::shared_ptr<sCvar> gXuidOverride = std::make_shared<sCvar>("XUID Override", std::vector<std::string>(), "", NULL, NULL);
-		std::shared_ptr<sCvar> gKillspam = std::make_shared<sCvar>("Killspam Message", std::vector<std::string>(), "", NULL, NULL);
+		std::shared_ptr<sCvar> gKillspam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gNameOverride = std::make_shared<sCvar>("Name Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gClanOverride = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gXuidOverride = std::make_shared<sCvar>("XUID Override", std::vector<std::string>(), _strdup(""));
 
 		acut::XmlDoc<char> XML;
 
