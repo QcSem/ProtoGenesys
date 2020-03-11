@@ -642,6 +642,7 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::SameLine(0.0f, 3.0f);
 
+				static bool bSaveButton;
 				if ((bSaveButton = ImGui::Button("Save Profile", ImVec2(155.0f, 30.0f))))
 				{
 					bWriteLog = true;
@@ -654,10 +655,12 @@ namespace ProtoGenesys
 					strcpy_s(szProfilePath, szSavePath);
 				}
 
+				static bool bLoadButton;
 				if ((bLoadButton = ImGui::Button("Load Profile", ImVec2(155.0f, 30.0f))))
 				{
 					bWriteLog = true;
-				} LPCSTR szLoadPath = LoadDialog.chooseFileDialog(bLoadButton, LoadDialog.getLastDirectory(), ".xml", "Load Profile");
+				}
+				LPCSTR szLoadPath = LoadDialog.chooseFileDialog(bLoadButton, LoadDialog.getLastDirectory(), ".xml", "Load Profile");
 
 				if (strlen(szLoadPath))
 				{

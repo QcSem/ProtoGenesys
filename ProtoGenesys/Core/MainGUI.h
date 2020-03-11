@@ -27,7 +27,7 @@ namespace ProtoGenesys
 
 		cMainGUI() : _thunkWindowProcess(&cMainGUI::WindowProcess, this) {}
 
-		bool bInitialized, bShowWindow, bStyleChanged, bWriteLog, bSaveButton, bLoadButton;
+		bool bInitialized, bShowWindow = true, bStyleChanged, bWriteLog;
 		char szProfilePath[1024] = { NULL };
 
 		std::string szIniFileName, szLogFileName;
