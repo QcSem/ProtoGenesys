@@ -10,9 +10,7 @@ namespace ProtoGenesys
 
 	void cAntiAim::AntiAim(sUserCmd* usercmd)
 	{
-		if (!WeaponIsVehicle() && 
-			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_PRONE) &&
-			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_MANTLE))
+		if (!WeaponIsVehicle())
 		{
 			if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_SPINBOT)
 			{
@@ -74,7 +72,7 @@ namespace ProtoGenesys
 				{
 					_mathematics.CalculateAngles(CG->vOrigin, CG->Entity[_targetList.iRiotShieldTarget].vOrigin, _targetList.vRiotShieldTarget);
 
-					usercmd->iViewAngles[0] += AngleToShort(_targetList.vRiotShieldTarget[0] - 5.7f);
+					usercmd->iViewAngles[0] += AngleToShort(_targetList.vRiotShieldTarget[0] - 40.0f);
 					usercmd->iViewAngles[1] += AngleToShort(_targetList.vRiotShieldTarget[1] - 180.0f);
 				}
 				
@@ -82,13 +80,13 @@ namespace ProtoGenesys
 				{
 					if (_aimBot.AimState.bIsAutoAiming)
 					{
-						usercmd->iViewAngles[0] += AngleToShort(_aimBot.AimState.vAimbotAngles[0] - 5.7f);
+						usercmd->iViewAngles[0] += AngleToShort(_aimBot.AimState.vAimbotAngles[0] - 40.0f);
 						usercmd->iViewAngles[1] += AngleToShort(_aimBot.AimState.vAimbotAngles[1] - 180.0f);
 					}
 
 					else
 					{
-						usercmd->iViewAngles[0] += AngleToShort(-5.7f);
+						usercmd->iViewAngles[0] += AngleToShort(-40.0f);
 						usercmd->iViewAngles[1] += AngleToShort(-180.0f);
 					}
 				}

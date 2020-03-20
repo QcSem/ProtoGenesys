@@ -43,7 +43,7 @@ namespace ProtoGenesys
 		void GetInformation();
 		bool EntityIsValid(int index);
 		bool EntityIsEnemy(int index);
-		bool IsVisible(sEntity* entity, Vector3 position, bool autowall, float* damage);
+		bool IsVisible(sEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage);
 		bool Bonescan(sEntity* entity, Vector3 bones3d[BONE_MAX], bool autowall, int* index);
 		void ApplyPrediction(sEntity* entity, Vector3 position);
 	} extern _targetList;

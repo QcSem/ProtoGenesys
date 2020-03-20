@@ -379,7 +379,7 @@ namespace ProtoGenesys
 
 		for (int i = BONE_NECK; i < BONE_MAX; i++)
 		{
-			if (!_mathematics.WorldToScreen(bones3d[i], vTemp))
+			if (!WorldToScreen(bones3d[i], vTemp))
 				return false;
 
 			if (vTemp.x < vMinTemp.x)
@@ -466,7 +466,7 @@ namespace ProtoGenesys
 		{
 			_mathematics.RotatePoint(corners3d[i], center, entity->vAngles[1], corners3d[i]);
 
-			if (!_mathematics.WorldToScreen(corners3d[i], corners2d[i]))
+			if (!WorldToScreen(corners3d[i], corners2d[i]))
 				return false;
 		}
 

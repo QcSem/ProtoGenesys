@@ -71,7 +71,30 @@ namespace ProtoGenesys
 		BONE_LEFT_ANKLE,
 		BONE_RIGHT_ANKLE,
 		BONE_MAX
-	} eBone;
+	}  eBone;
+	/*
+	//=====================================================================================
+	*/
+	typedef enum
+	{
+		HITLOC_HEAD = 2,
+		HITLOC_NECK = 3,
+		HITLOC_UPPER_SPINE = 4,
+		HITLOC_LOWER_SPINE = 6,
+		HITLOC_RIGHT_SHOULDER = 7,
+		HITLOC_LEFT_SHOULDER = 8,
+		HITLOC_RIGHT_ELBOW = 9,
+		HITLOC_LEFT_ELBOW = 10,
+		HITLOC_RIGHT_WRIST = 11,
+		HITLOC_LEFT_WRIST = 12,
+		HITLOC_RIGHT_HIP = 13,
+		HITLOC_LEFT_HIP = 14,
+		HITLOC_RIGHT_KNEE = 15,
+		HITLOC_LEFT_KNEE = 16,
+		HITLOC_RIGHT_ANKLE = 17,
+		HITLOC_LEFT_ANKLE = 18,
+		HITLOC_MAX
+	} eHitLocation;
 	/*
 	//=====================================================================================
 	*/
@@ -144,7 +167,29 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static std::vector<std::pair<std::string, std::string>> vBones =
+	static std::vector<std::pair<eBone, eHitLocation>> vBones = 
+	{
+		std::make_pair(BONE_HEAD, HITLOC_HEAD),
+		std::make_pair(BONE_NECK, HITLOC_NECK),
+		std::make_pair(BONE_UPPER_SPINE, HITLOC_UPPER_SPINE),
+		std::make_pair(BONE_LOWER_SPINE, HITLOC_LOWER_SPINE),
+		std::make_pair(BONE_LEFT_SHOULDER, HITLOC_LEFT_SHOULDER),
+		std::make_pair(BONE_RIGHT_SHOULDER, HITLOC_RIGHT_SHOULDER),
+		std::make_pair(BONE_LEFT_HIP, HITLOC_LEFT_HIP),
+		std::make_pair(BONE_RIGHT_HIP, HITLOC_RIGHT_HIP),
+		std::make_pair(BONE_LEFT_ELBOW, HITLOC_LEFT_ELBOW),
+		std::make_pair(BONE_RIGHT_ELBOW, HITLOC_RIGHT_ELBOW),
+		std::make_pair(BONE_LEFT_KNEE, HITLOC_LEFT_KNEE),
+		std::make_pair(BONE_RIGHT_KNEE, HITLOC_RIGHT_KNEE),
+		std::make_pair(BONE_LEFT_WRIST, HITLOC_LEFT_WRIST),
+		std::make_pair(BONE_RIGHT_WRIST, HITLOC_RIGHT_WRIST),
+		std::make_pair(BONE_LEFT_ANKLE, HITLOC_LEFT_ANKLE),
+		std::make_pair(BONE_RIGHT_ANKLE, HITLOC_RIGHT_ANKLE)
+	};
+	/*
+	//=====================================================================================
+	*/
+	static std::vector<std::pair<std::string, std::string>> szBones =
 	{
 		std::make_pair("Head", "j_head"),
 		std::make_pair("Neck", "j_neck"),
@@ -254,7 +299,11 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
-		char _0x0[0x631];
+		char _0x0[0x1C];
+		int iWeaponType;
+		char _0x20[0x4];
+		ePenetrateType iPenetrateType;
+		char _0x28[0x609];
 		bool bRifleBullet;
 		char _0x632[0x1AE];
 		float flADSSpread;
@@ -542,6 +591,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwMaxClientsDvar = 0x25E456C;
 	static DWORD_PTR dwNoDeltaDvar = 0x11C3634;
 
+	static DWORD_PTR dwPenetrationMinFxDist = bIsSteamVersion ? *(DWORD_PTR*)0x324D65C : *(DWORD_PTR*)0x322C65C;
 	static DWORD_PTR dwPenetrationMultiplier = bIsSteamVersion ? *(DWORD_PTR*)0x325FC04 : *(DWORD_PTR*)0x323EC04;
 	static DWORD_PTR dwPenetrationCount = *(DWORD_PTR*)0x28FB870;
 	static DWORD_PTR dwOrbitalVsat = 0x12A0CA4;
@@ -569,6 +619,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
 	static DWORD_PTR dwGetDObj = bIsSteamVersion ? 0x5D2590 : 0x4DA190;
 	static DWORD_PTR dwGetTagPos = bIsSteamVersion ? 0x664930 : 0x4A1210;
+	static DWORD_PTR dwWorldToScreen = bIsSteamVersion ? 0x595690 : 0x429A80;
 	static DWORD_PTR dwGetPlayerViewOrigin = bIsSteamVersion ? 0x580890 : 0x640E80;
 	static DWORD_PTR dwLocationalTrace = bIsSteamVersion ? 0x6C6C00 : 0x50B870;
 	static DWORD_PTR dwBulletTrace = bIsSteamVersion ? 0x7E0170 : 0x7E0A00;
@@ -658,6 +709,13 @@ namespace ProtoGenesys
 	inline LPVOID GetTagPosition(sEntity* entity, WORD tag, LPVOID dobj, Vector3 position)
 	{
 		return VariadicCall<LPVOID>(dwGetTagPos, entity, dobj, tag, position);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline bool WorldToScreen(Vector3 world, Vector2 screen)
+	{
+		return VariadicCall<bool>(dwWorldToScreen, 0, world, screen);
 	}
 	/*
 	//=====================================================================================

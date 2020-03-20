@@ -120,7 +120,6 @@ VOID WINAPI SteamID(LPWSTR xuid)
 #pragma DLLEXPORT
 
 	_hooks.dwXuidOverride = _wtoi64(xuid);
-	_profiler.gXuidOverride->Custom.szValue = _strdup(_ui64toa(_hooks.dwXuidOverride, _hooks.szXuidOverride, 0x10));
 
 	HMODULE hSteamAPI = GetModuleHandle("steam_api.dll");
 

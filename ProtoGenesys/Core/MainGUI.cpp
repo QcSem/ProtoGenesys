@@ -323,7 +323,7 @@ namespace ProtoGenesys
 				_drawing.DrawCrosshair();
 			}
 
-			std::string szWatermark(VariadicText("PROTOGENESYS for Call of Duty: BO2 | Frametime: %s, Ping: %s",
+			std::string szWatermark(VariadicText("PROTOGENESYS - COD BO2 by: InUrFace | Frametime: %s, Ping: %s",
 				LocalClientIsInGame() ? VariadicText("%i ms", *(int*)(dwCG + 0x48088)).c_str() : "N/A",
 				LocalClientIsInGame() ? VariadicText("%i ms", *(int*)(*(DWORD_PTR*)dwClientActive + 0x68)).c_str() : "N/A"));
 
@@ -501,7 +501,7 @@ namespace ProtoGenesys
 
 				case cProfiler::MENU_TAB_TWEAKS:
 				{
-					if (ImGui::SliderInt(_profiler.gAimBone->szLabel.c_str(), &_profiler.gAimBone->Custom.iValue, _profiler.gAimBone->MinValue.iMin, _profiler.gAimBone->MaxValue.iMax, vBones[_profiler.gAimBone->Custom.iValue].first.c_str()))
+					if (ImGui::SliderInt(_profiler.gAimBone->szLabel.c_str(), &_profiler.gAimBone->Custom.iValue, _profiler.gAimBone->MinValue.iMin, _profiler.gAimBone->MaxValue.iMax, szBones[_profiler.gAimBone->Custom.iValue].first.c_str()))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();

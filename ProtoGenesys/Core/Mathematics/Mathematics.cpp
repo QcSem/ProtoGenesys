@@ -18,7 +18,7 @@ namespace ProtoGenesys
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
 
-		MakeVector(CG->vRefDefViewAngles, vAimAngles);
+		MakeVector(WeaponIsVehicle() || IsThirdPerson() ? CG->vRefDefViewAngles : CG->vWeaponAngles, vAimAngles);
 		MakeVector(vAngles, vAngles);
 
 		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
@@ -173,8 +173,8 @@ namespace ProtoGenesys
 
 		NormalizeAngles(angles);
 
-		angles[0] -= CG->vRefDefViewAngles[0];
-		angles[1] -= CG->vRefDefViewAngles[1];
+		angles[0] -= WeaponIsVehicle() || IsThirdPerson() ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
+		angles[1] -= WeaponIsVehicle() || IsThirdPerson() ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
 
 		NormalizeAngles(angles);
 	}
@@ -224,30 +224,6 @@ namespace ProtoGenesys
 			usercmd->szForwardMove = (char)(flForwardRatio * 127.0f);
 			usercmd->szRightMove = (char)(flRightRatio * 127.0f);
 		}
-	}
-	/*
-	//=====================================================================================
-	*/
-	bool cMathematics::WorldToScreen(Vector3 world, ImVec2& screen)
-	{
-		float flCenterX = CG->RefDef.iWidth / 2.0f,
-			flCenterY = CG->RefDef.iHeight / 2.0f;
-
-		Vector3 vLocal, vTransForm;
-
-		VectorSubtract(world, CG->RefDef.vViewOrg, vLocal);
-
-		vTransForm[0] = DotProduct(vLocal, CG->RefDef.vViewAxis[1]);
-		vTransForm[1] = DotProduct(vLocal, CG->RefDef.vViewAxis[2]);
-		vTransForm[2] = DotProduct(vLocal, CG->RefDef.vViewAxis[0]);
-
-		if (vTransForm[2] < 0.01f)
-			return false;
-
-		screen.x = flCenterX * (1.0f - (vTransForm[0] / CG->RefDef.flFovX / vTransForm[2]));
-		screen.y = flCenterY * (1.0f - (vTransForm[1] / CG->RefDef.flFovY / vTransForm[2]));
-
-		return true;
 	}
 	/*
 	//=====================================================================================

@@ -226,6 +226,8 @@ namespace ProtoGenesys
 
 		std::shared_ptr<sCvar> gOrbitalVsat = std::make_shared<sCvar>("Orbital VSAT", std::vector<std::string>(), false);
 		std::shared_ptr<sCvar> gThirdPerson = std::make_shared<sCvar>("Third Person", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gHardcoreHud = std::make_shared<sCvar>("Hardcore HUD", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gDisableEmp = std::make_shared<sCvar>("Disable EMP", std::vector<std::string>(), false);
 		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>(), false);
 
 		std::shared_ptr<sCvar> gKillspam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));

@@ -36,7 +36,7 @@ namespace ProtoGenesys
 
 				for (int j = BONE_HEAD; j < BONE_MAX; j++)
 				{
-					GetTagPosition(&CG->Entity[i], RegisterTag(vBones[j].second), pDObj, EntityList[i].vBones3D[j]);
+					GetTagPosition(&CG->Entity[i], RegisterTag(szBones[j].second), pDObj, EntityList[i].vBones3D[j]);
 
 					for (int k = 0; k < 3; k++)
 					{
@@ -64,9 +64,9 @@ namespace ProtoGenesys
 
 				EntityList[i].bW2SSuccess = _drawing.Calculate2D(EntityList[i].vBones3D, EntityList[i].vBones2D, EntityList[i].vPosition, EntityList[i].vDimentions) &&
 					_drawing.Calculate3D(&CG->Entity[i], EntityList[i].vCenter3D, EntityList[i].vCorners3D, EntityList[i].vCorners2D) &&
-					_mathematics.WorldToScreen(EntityList[i].vCenter3D, EntityList[i].vCenter2D) &&
-					_mathematics.WorldToScreen(CG->Entity[i].vOrigin, EntityList[i].vLower) &&
-					_mathematics.WorldToScreen(vViewOrigin, EntityList[i].vUpper);
+					WorldToScreen(EntityList[i].vCenter3D, EntityList[i].vCenter2D) &&
+					WorldToScreen(CG->Entity[i].vOrigin, EntityList[i].vLower) &&
+					WorldToScreen(vViewOrigin, EntityList[i].vUpper);
 
 				_mathematics.WorldToCompass(CG->Entity[i].vOrigin, _drawing.Compass.vCompassPosition, _drawing.Compass.flCompassSize, _drawing.Compass.vArrowPosition[i]);
 				_mathematics.WorldToRadar(CG->Entity[i].vOrigin, _drawing.Radar.vRadarPosition, _drawing.Radar.flScale, _drawing.Radar.flRadarSize, _drawing.Radar.flBlipSize, _drawing.Radar.vBlipPosition[i]);
@@ -82,7 +82,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				EntityList[i].bW2SSuccess = _mathematics.WorldToScreen(CG->Entity[i].vOrigin, EntityList[i].vCenter2D);
+				EntityList[i].bW2SSuccess = WorldToScreen(CG->Entity[i].vOrigin, EntityList[i].vCenter2D);
 				continue;
 			}
 
@@ -96,7 +96,7 @@ namespace ProtoGenesys
 
 				else
 				{
-					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D[EntityList[i].iBoneIndex], _profiler.gAutoWall->Custom.bValue, NULL);
+					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D[EntityList[i].iBoneIndex], vBones[EntityList[i].iBoneIndex].second, _profiler.gAutoWall->Custom.bValue, NULL);
 					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 				}
 			}
@@ -110,7 +110,7 @@ namespace ProtoGenesys
 			else
 			{
 				EntityList[i].iBoneIndex = _profiler.gAimBone->Custom.iValue;
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D[EntityList[i].iBoneIndex], _profiler.gAutoWall->Custom.bValue, NULL);
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D[EntityList[i].iBoneIndex], vBones[EntityList[i].iBoneIndex].second, _profiler.gAutoWall->Custom.bValue, NULL);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
@@ -244,7 +244,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisible(sEntity* entity, Vector3 position, bool autowall, float* damage)
+	bool cTargetList::IsVisible(sEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage)
 	{
 		Vector3 vViewOrigin;
 
@@ -263,7 +263,7 @@ namespace ProtoGenesys
 
 		else if (autowall)
 		{
-			float flDamage = _autoWall.Autowall(vViewOrigin, position);
+			float flDamage = _autoWall.Autowall(vViewOrigin, position, hitloc);
 
 			if (damage)
 				*damage = flDamage;
@@ -295,7 +295,7 @@ namespace ProtoGenesys
 		for (int i = BONE_HEAD; i < BONE_MAX; i++)
 		{
 			if (autowall) {
-				if (IsVisible(entity, bones3d[i], true, &DamageInfo.flDamage))
+				if (IsVisible(entity, bones3d[i], vBones[i].second, true, &DamageInfo.flDamage))
 				{
 					DamageInfo.iBoneIndex = i;
 					vDamageInfo.push_back(DamageInfo);
@@ -306,7 +306,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				if (IsVisible(entity, bones3d[i], false, NULL))
+				if (IsVisible(entity, bones3d[i], vBones[i].second, false, NULL))
 				{
 					*index = i;
 					return true;

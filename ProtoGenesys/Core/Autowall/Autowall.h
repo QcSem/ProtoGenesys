@@ -12,7 +12,7 @@ namespace ProtoGenesys
 	{
 	public:
 
-		float Autowall(Vector3 start, Vector3 end);
+		float Autowall(Vector3 start, Vector3 end, short hitloc);
 		bool TraceBullet(Vector3 start, Vector3 end, int entitynum);
 		bool TraceLine(Vector3 start, Vector3 end, int entitynum);
 		bool BulletTrace(sBulletTraceResults* traceresults, sBulletFireParams* fireparams, sEntity* attacker, int surfacetype);

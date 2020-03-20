@@ -204,6 +204,8 @@ namespace ProtoGenesys
 
 		gOrbitalVsat->Custom.bValue = gOrbitalVsat->Default.bValue;
 		gThirdPerson->Custom.bValue = gThirdPerson->Default.bValue;
+		gHardcoreHud->Custom.bValue = gHardcoreHud->Default.bValue;
+		gDisableEmp->Custom.bValue = gDisableEmp->Default.bValue;
 		gTrickShot->Custom.bValue = gTrickShot->Default.bValue;
 	}
 }

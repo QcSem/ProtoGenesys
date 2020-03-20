@@ -15,6 +15,12 @@ namespace ProtoGenesys
 		*(BYTE*)dwOrbitalVsat = _profiler.gOrbitalVsat->Custom.bValue;
 		*(BYTE*)(dwCG + 0x4809C) = _profiler.gThirdPerson->Custom.bValue;
 
+		if (_profiler.gHardcoreHud->Custom.bValue && *(DWORD*)(dwCG + 0x68958) & 0x200)
+			*(DWORD*)(dwCG + 0x68958) &= ~0x200;
+
+		if (_profiler.gDisableEmp->Custom.bValue && *(DWORD*)(dwCG + 0x480C0) & 0x40)
+			*(DWORD*)(dwCG + 0x480C0) &= ~0x40;
+
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_GUARD_PAGE)
 		{
 			if (ExceptionInfo->ContextRecord->Eip == dwPredictPlayerState)
