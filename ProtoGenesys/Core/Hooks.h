@@ -27,7 +27,7 @@ namespace ProtoGenesys
 		char szXuidOverride[0x11];
 		QWORD dwXuidOverride;
 
-		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwAddress;
+		DWORD dwSysValue, dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwAddress;
 		LPVOID pVectoredExceptionHandler;
 
 		LONG VectoredExceptionHandler(_In_ LPEXCEPTION_POINTERS ExceptionInfo);

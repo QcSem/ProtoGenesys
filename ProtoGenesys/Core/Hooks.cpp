@@ -21,6 +21,17 @@ namespace ProtoGenesys
 		if (_profiler.gDisableEmp->Custom.bValue && *(DWORD*)(dwCG + 0x480C0) & 0x40)
 			*(DWORD*)(dwCG + 0x480C0) &= ~0x40;
 
+		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
+		{
+			if (ExceptionInfo->ContextRecord->Eip == dwSysGetValueException)
+			{
+				ExceptionInfo->ContextRecord->Eax = dwSysValue;
+				ExceptionInfo->ContextRecord->Eip += 0x3;
+
+				return EXCEPTION_CONTINUE_EXECUTION;
+			}
+		}
+
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_GUARD_PAGE)
 		{
 			if (ExceptionInfo->ContextRecord->Eip == dwPredictPlayerState)
@@ -102,6 +113,8 @@ namespace ProtoGenesys
 
 			case VEH_INDEX_DRAWBIGFPS:
 				ExceptionInfo->ContextRecord->Eax = dwDrawBigFPS;
+
+				dwSysValue = Sys_GetValue(3);
 
 				DrawBigFPS();
 
@@ -289,7 +302,7 @@ namespace ProtoGenesys
 	{
 		if (!strcmp(key, "clanTag"))
 		{
-			if (strstr(value, "\x5E\x48") || strstr(value, "\x5E\x49"))
+			if (strstr(value, "^H") || strstr(value, "^I"))
 				strcpy_s(value, strlen(value) + 1, VariadicText("[%s]", acut::RandomANString(strlen(value) - 2).c_str()).c_str());
 		}
 	}

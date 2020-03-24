@@ -6,6 +6,7 @@
 #include <intrin.h>
 #include <Psapi.h>
 #include <cstdio>
+#include <future>
 #include <thread>
 #include <mutex>
 #include <ctime>

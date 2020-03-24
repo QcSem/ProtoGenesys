@@ -103,7 +103,7 @@ namespace ProtoGenesys
 				AdvanceTrace(&FP_Exit, &TR_Exit, 0.0099999998f);
 
 			bool bExitHit = BulletTrace(&TR_Exit, &FP_Exit, pCEntity, TR_Exit.iSurfaceType);
-			bool bSolid = bExitHit && TR_Exit.Trace.bAllSolid || TR_Enter.Trace.bStartSolid && TR_Exit.Trace.bStartSolid;
+			bool bStaticModel = bExitHit && TR_Exit.Trace.bAllSolid || TR_Enter.Trace.bStartSolid && TR_Exit.Trace.bStartSolid;
 
 			if (HitRiotshield(&TR_Exit))
 				return 0.0f;
@@ -112,7 +112,7 @@ namespace ProtoGenesys
 				if (HitTeammate(&TR_Exit))
 					return 0.0f;
 
-			if (!bExitHit && !bSolid)
+			if (!bExitHit && !bStaticModel)
 			{
 				if (!bEnterHit)
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
@@ -137,7 +137,7 @@ namespace ProtoGenesys
 				goto next;
 			}
 
-			if (bSolid)
+			if (bStaticModel)
 				flSurfaceDepth = _mathematics.CalculateDistance(FP_Exit.vEnd, FP_Exit.vStart);
 			else
 				flSurfaceDepth = _mathematics.CalculateDistance(vHitPos, TR_Exit.vHitPos);
@@ -165,7 +165,7 @@ namespace ProtoGenesys
 			if (FP_Enter.flPower <= 0.0f)
 				return 0.0f;
 
-			if (!bSolid && !WeaponDef->iWeaponType)
+			if (!bStaticModel && !WeaponDef->iWeaponType)
 			{
 				Vector3 vLength;
 
@@ -193,7 +193,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cAutowall::TraceBullet(Vector3 start, Vector3 end, int entitynum)
+	float cAutowall::TraceBullet(Vector3 start, Vector3 end, short hitloc, int entitynum)
 	{
 		int iIndex = CG->iClientNum;
 		sEntity* pCEntity = &CG->Entity[iIndex];
@@ -220,7 +220,10 @@ namespace ProtoGenesys
 
 		BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
-		return ((TR_Enter.Trace.wHitID == entitynum || TR_Enter.Trace.flFraction == 1.0f) && !HitRiotshield(&TR_Enter));
+		if ((TR_Enter.Trace.wHitID == entitynum || TR_Enter.Trace.flFraction == 1.0f) && !HitRiotshield(&TR_Enter))
+			return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
+
+		return 0.0f;
 	}
 	/*
 	//=====================================================================================

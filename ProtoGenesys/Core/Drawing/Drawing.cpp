@@ -282,13 +282,13 @@ namespace ProtoGenesys
 	{
 		float flWidth, flHeight, flPadding = 3.0f;
 
-		if (entity->NextEntityState.LerpEntityState.eFlags1 & EF_PRONE)
+		if (entity->NextEntityState.LerpEntityState.eFlags1 & EF1_PRONE)
 		{
 			flWidth = scale / 1.5f;
 			flHeight = scale / 2.0f;
 		}
 
-		else if (entity->NextEntityState.LerpEntityState.eFlags1 & EF_CROUCH)
+		else if (entity->NextEntityState.LerpEntityState.eFlags1 & EF1_CROUCH)
 		{
 			flWidth = scale / 2.0f;
 			flHeight = scale / 2.0f;
@@ -377,9 +377,9 @@ namespace ProtoGenesys
 	{
 		ImVec2 vTemp, vMaxTemp = { -FLT_MAX, -FLT_MAX }, vMinTemp = { FLT_MAX, FLT_MAX };
 
-		for (int i = BONE_NECK; i < BONE_MAX; i++)
+		for (auto& Bone : vBones)
 		{
-			if (!WorldToScreen(bones3d[i], vTemp))
+			if (!WorldToScreen(bones3d[Bone.first], vTemp))
 				return false;
 
 			if (vTemp.x < vMinTemp.x)
@@ -394,7 +394,7 @@ namespace ProtoGenesys
 			if (vTemp.y > vMaxTemp.y)
 				vMaxTemp.y = vTemp.y;
 
-			bones2d[i] = vTemp;
+			bones2d[Bone.first] = vTemp;
 		}
 
 		dimentions = vMaxTemp - vMinTemp;
@@ -409,7 +409,7 @@ namespace ProtoGenesys
 	{
 		Vector3 vMinimum, vMaximum;
 
-		if (entity->NextEntityState.LerpEntityState.eFlags1 & EF_PRONE)
+		if (entity->NextEntityState.LerpEntityState.eFlags1 & EF1_PRONE)
 		{
 			vMinimum[0] = center[0] - 32.5f;
 			vMinimum[1] = center[1] - 20.0f;
@@ -420,7 +420,7 @@ namespace ProtoGenesys
 			vMaximum[2] = center[2] + 10.0f;
 		}
 
-		else if (entity->NextEntityState.LerpEntityState.eFlags1 & EF_CROUCH)
+		else if (entity->NextEntityState.LerpEntityState.eFlags1 & EF1_CROUCH)
 		{
 			vMinimum[0] = center[0] - 20.0f;
 			vMinimum[1] = center[1] - 20.0f;
@@ -631,7 +631,7 @@ namespace ProtoGenesys
 	{
 		if (_profiler.gPlayerCrossHair->Custom.bValue)
 		{
-			if (!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_ZOOM))
+			if (!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM))
 			{
 				ImGui::GetWindowDrawList()->AddLine(ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 12.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 4.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImGui::GetColorU32(_profiler.gColorCrossHair->Custom.cValue));
 				ImGui::GetWindowDrawList()->AddLine(ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f + 3.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f + 11.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImGui::GetColorU32(_profiler.gColorCrossHair->Custom.cValue));

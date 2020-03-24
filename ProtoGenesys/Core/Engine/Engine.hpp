@@ -10,10 +10,15 @@
 
 #define MAX_CLIENTS 18
 #define MAX_ENTITIES 1024
-#define EF_CROUCH 0x4
-#define EF_PRONE 0x8
-#define EF_MANTLE 0x20000
-#define EF_ZOOM 0x80000
+#define EF1_CROUCH 0x4
+#define EF1_PRONE 0x8
+#define EF1_FIRE 0x40
+#define EF1_STREAK 0x4000
+#define EF1_SPRINT 0x20000
+#define EF1_DEAD 0x40000
+#define EF1_ZOOM 0x80000
+#define EF2_MANTLE 0x400
+#define EF2_MOVE 0x100000
 #define ID_ASSAULTSHIELD 89
 #define M_METERS 55.0f
 #define M_FEET (M_METERS*3.281f)
@@ -596,6 +601,8 @@ namespace ProtoGenesys
 	static DWORD_PTR dwPenetrationCount = *(DWORD_PTR*)0x28FB870;
 	static DWORD_PTR dwOrbitalVsat = 0x12A0CA4;
 
+	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
+	static DWORD_PTR dwSysGetValueException = bIsSteamVersion ? 0x635F09 : 0x5EFBB9;
 	static DWORD_PTR dwConnectPathsException1 = bIsSteamVersion ? 0x43B6DB : 0x53367B;
 	static DWORD_PTR dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
 	static DWORD_PTR dwObituaryException = bIsSteamVersion ? 0x7A345C : 0x7A40EC;
@@ -688,6 +695,13 @@ namespace ProtoGenesys
 	inline void Cbuf_AddText(std::string command)
 	{
 		return VariadicCall<void>(dwCbufAddText, 0, command.c_str());
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline DWORD Sys_GetValue(int value)
+	{
+		return VariadicCall<DWORD>(dwSysGetValue, value);
 	}
 	/*
 	//=====================================================================================

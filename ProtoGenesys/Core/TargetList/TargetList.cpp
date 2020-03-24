@@ -34,17 +34,17 @@ namespace ProtoGenesys
 
 				Vector3 vMinTemp = { FLT_MAX, FLT_MAX, FLT_MAX }, vMaxTemp = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
-				for (int j = BONE_HEAD; j < BONE_MAX; j++)
+				for (auto& Bone : vBones)
 				{
-					GetTagPosition(&CG->Entity[i], RegisterTag(szBones[j].second), pDObj, EntityList[i].vBones3D[j]);
+					GetTagPosition(&CG->Entity[i], RegisterTag(szBones[Bone.first].second), pDObj, EntityList[i].vBones3D[Bone.first]);
 
-					for (int k = 0; k < 3; k++)
+					for (int j = 0; j < 3; j++)
 					{
-						if (EntityList[i].vBones3D[j][k] < vMinTemp[k])
-							vMinTemp[k] = EntityList[i].vBones3D[j][k];
+						if (EntityList[i].vBones3D[Bone.first][j] < vMinTemp[j])
+							vMinTemp[j] = EntityList[i].vBones3D[Bone.first][j];
 
-						if (EntityList[i].vBones3D[j][k] > vMaxTemp[k])
-							vMaxTemp[k] = EntityList[i].vBones3D[j][k];
+						if (EntityList[i].vBones3D[Bone.first][j] > vMaxTemp[j])
+							vMaxTemp[j] = EntityList[i].vBones3D[Bone.first][j];
 					}
 				}
 
@@ -88,40 +88,28 @@ namespace ProtoGenesys
 
 			if (_profiler.gBoneScan->Custom.iValue == cProfiler::BONESCAN_ONTIMER)
 			{
-				if (iBonescanNum == i)
-				{
-					EntityList[i].bIsVisible = Bonescan(&CG->Entity[i], EntityList[i].vBones3D, _profiler.gAutoWall->Custom.bValue, &EntityList[i].iBoneIndex);
-					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
-				}
-
-				else
-				{
-					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D[EntityList[i].iBoneIndex], vBones[EntityList[i].iBoneIndex].second, _profiler.gAutoWall->Custom.bValue, NULL);
-					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
-				}
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Custom.bValue, &EntityList[i].iBoneIndex);
+				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
 			else if (_profiler.gBoneScan->Custom.iValue == cProfiler::BONESCAN_IMMEDIATE)
 			{
-				EntityList[i].bIsVisible = Bonescan(&CG->Entity[i], EntityList[i].vBones3D, _profiler.gAutoWall->Custom.bValue, &EntityList[i].iBoneIndex);
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Custom.bValue, &EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
 			else
 			{
-				EntityList[i].iBoneIndex = _profiler.gAimBone->Custom.iValue;
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D[EntityList[i].iBoneIndex], vBones[EntityList[i].iBoneIndex].second, _profiler.gAutoWall->Custom.bValue, NULL);
+				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Custom.iValue;
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Custom.bValue, &EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
-
-			if (_mathematics.CalculateFOV(EntityList[i].vHitLocation) > _profiler.gAimAngle->Custom.flValue)
-				EntityList[i].bIsVisible = false;
 
 			if (std::find(vIsTarget.begin(), vIsTarget.end(), TRUE) != vIsTarget.end())
 				if (!vIsTarget[i])
 					continue;
 
-			if (EntityList[i].bIsVisible)
+			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Custom.flValue)
 			{
 				TargetInfo.iIndex = i;
 
@@ -148,7 +136,7 @@ namespace ProtoGenesys
 		}
 
 		_aimBot.AimState.bTargetAcquired = (_aimBot.AimState.iTargetNum > -1);
-		_aimBot.AimState.bLockonTarget = (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF_ZOOM));
+		_aimBot.AimState.bLockonTarget = (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM));
 		_aimBot.AimState.bIsAutoAiming = (_aimBot.AimState.bTargetAcquired && _aimBot.AimState.bLockonTarget);
 		_aimBot.AimState.bIsAutoFiring = (_profiler.gAutoFire->Custom.bValue && _aimBot.AimState.bIsAutoAiming);
 
@@ -210,7 +198,7 @@ namespace ProtoGenesys
 	{
 		if (CG->Entity[index].NextEntityState.wEntityType == ET_PLAYER)
 		{
-			if (CG->Client[index].iInfoValid && (CG->Entity[index].iAlive & 2) && (&CG->Entity[index] != &CG->Entity[CG->iClientNum]))
+			if (CG->Client[index].iInfoValid && (CG->Entity[index].iAlive & 2) && (&CG->Entity[index] != &CG->Entity[CG->iClientNum]) && !(CG->Entity[index].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD))
 				return true;
 		}
 
@@ -244,7 +232,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisible(sEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage)
+	bool cTargetList::IsVisibleInternal(sEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage)
 	{
 		Vector3 vViewOrigin;
 
@@ -253,30 +241,19 @@ namespace ProtoGenesys
 		if (_profiler.gApplyPrediction->Custom.bValue)
 			ApplyPrediction(entity, position);
 
-		if (WeaponIsVehicle())
+		if (!WeaponIsVehicle() && autowall)
 		{
-			bool bTraceHit = _autoWall.TraceBullet(vViewOrigin, position, entity->NextEntityState.iEntityNum);
+			*damage = _autoWall.Autowall(vViewOrigin, position, hitloc);
 
-			if (bTraceHit)
-				return true;
-		}
-
-		else if (autowall)
-		{
-			float flDamage = _autoWall.Autowall(vViewOrigin, position, hitloc);
-
-			if (damage)
-				*damage = flDamage;
-
-			if (flDamage >= 1.0f)
+			if (*damage >= 1.0f)
 				return true;
 		}
 
 		else
 		{
-			bool bTraceHit = _autoWall.TraceBullet(vViewOrigin, position, entity->NextEntityState.iEntityNum);
+			*damage = _autoWall.TraceBullet(vViewOrigin, position, hitloc, entity->NextEntityState.iEntityNum);
 
-			if (bTraceHit)
+			if (*damage >= 1.0f)
 				return true;
 		}
 
@@ -285,38 +262,41 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::Bonescan(sEntity* entity, Vector3 bones3d[BONE_MAX], bool autowall, int* index)
+	bool cTargetList::IsVisible(sEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone* index)
 	{
 		bool bReturn = false;
 
 		sDamageInfo DamageInfo;
 		std::vector<sDamageInfo> vDamageInfo;
+		std::vector<std::future<bool>> vIsVisible(BONE_MAX);
 
-		for (int i = BONE_HEAD; i < BONE_MAX; i++)
+		if (bonescan)
 		{
-			if (autowall) {
-				if (IsVisible(entity, bones3d[i], vBones[i].second, true, &DamageInfo.flDamage))
+			for (auto& Bone : vBones)
+			{
+				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], vBones[Bone.first].second, autowall, &DamageInfo.flDamage);
+			}
+
+			for (auto& Bone : vBones)
+			{
+				if (vIsVisible[Bone.first].get())
 				{
-					DamageInfo.iBoneIndex = i;
+					DamageInfo.iBoneIndex = Bone.first;
 					vDamageInfo.push_back(DamageInfo);
 
 					bReturn = true;
 				}
 			}
+		}
 
-			else
-			{
-				if (IsVisible(entity, bones3d[i], vBones[i].second, false, NULL))
-				{
-					*index = i;
-					return true;
-				}
-			}
+		else
+		{
+			return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[*index], vBones[*index].second, autowall, &DamageInfo.flDamage).get();
 		}
 
 		if (!vDamageInfo.empty())
 		{
-			std::sort(vDamageInfo.begin(), vDamageInfo.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
+			std::stable_sort(vDamageInfo.begin(), vDamageInfo.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
 			*index = vDamageInfo.front().iBoneIndex;
 			vDamageInfo.clear();
 		}
