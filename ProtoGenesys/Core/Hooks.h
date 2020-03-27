@@ -23,9 +23,11 @@ namespace ProtoGenesys
 			VEH_INDEX_NODELTA = 33833
 		} eVehIndex;
 
-		bool bXuidOverride;
+		bool bUserHooked, bFriendsHooked;
 		char szXuidOverride[0x11];
 		QWORD dwXuidOverride;
+
+		std::vector<std::pair<int64_t, std::string>> vFriends;
 
 		DWORD dwSysValue, dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwAddress;
 		LPVOID pVectoredExceptionHandler;
@@ -42,6 +44,16 @@ namespace ProtoGenesys
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
 		void ProcessText(LPSTR key, LPSTR value, SIZE_T length);
+
+		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
+		int GetSteamID(DWORD steamID);
+		bool GetFriendGamePlayed(CSteamID steamIDFriend, int unk1, int unk2, FriendGameInfo_t* gameInfo);
+		int GetFriendPersonaState(DWORD** _this, void* edx, CSteamID steamIDFriend);
+		LPCSTR GetFriendPersonaName(DWORD** _this, void* edx, CSteamID steamIDFriend);
+		int GetFriendCount(DWORD** _this, void* edx, int iFriendFlags);
+		void GetFriendByIndex(DWORD** _this, void* edx, int64_t* pSteamID, int iFriend, int iFriendFlags);
+
+		void RefreshFriends();
 
 		cWin32Thunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;
 	} extern _hooks;

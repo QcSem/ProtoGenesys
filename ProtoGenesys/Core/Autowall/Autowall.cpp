@@ -154,7 +154,7 @@ namespace ProtoGenesys
 				flEnterDepth = min(flEnterDepth, flExitDepth);
 
 				if (TR_Exit.Trace.iSurfaceFlags & 0x4)
-					flEnterDepth = 200.0f;
+					flEnterDepth = 100.0f;
 
 				if (flEnterDepth <= 0.0f)
 					return 0.0f;

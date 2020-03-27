@@ -69,6 +69,7 @@ namespace ProtoGenesys
 		{
 			MENU_TAB_AIMBOT,
 			MENU_TAB_WALLHACK,
+			MENU_TAB_MISCELLANEOUS,
 			MENU_TAB_TWEAKS,
 			MENU_TAB_STYLES,
 			MENU_TAB_MAX
@@ -180,7 +181,7 @@ namespace ProtoGenesys
 			PLAYER_SNAPLINES_MAX
 		} ePlayerSnapLines;
 
-		std::shared_ptr<sCvar> gMenuTabs = std::make_shared<sCvar>("Menu Tab", std::vector<std::string>({ "Aimbot", "Wallhack", "Tweaks", "Styles" }), MENU_TAB_AIMBOT, MENU_TAB_AIMBOT, MENU_TAB_MAX);
+		std::shared_ptr<sCvar> gMenuTabs = std::make_shared<sCvar>("Menu Tab", std::vector<std::string>({ "Aimbot", "ESP", "Misc.", "Tweaks", "Styles" }), MENU_TAB_AIMBOT, MENU_TAB_AIMBOT, MENU_TAB_MAX);
 		std::shared_ptr<sCvar> gMenuColor = std::make_shared<sCvar>("Menu Color", std::vector<std::string>({ "Neutral", "Neutral (Neon)", "Red", "Red (Neon)", "Orange", "Orange (Neon)", "Yellow", "Yellow (Neon)", "Green", "Green (Neon)", "Blue", "Blue (Neon)", "Purple", "Purple (Neon)", "Rainbow", "Rainbow (Neon)" }), MENU_COLOR_NEUTRAL, MENU_COLOR_NEUTRAL, MENU_COLOR_MAX);
 		std::shared_ptr<sCvar> gMenuCursor = std::make_shared<sCvar>("Menu Cursor", std::vector<std::string>({ "Black", "White" }), MENU_CURSOR_BLACK, MENU_CURSOR_BLACK, MENU_CURSOR_MAX);
 		std::shared_ptr<sCvar> gMenuFont = std::make_shared<sCvar>("Menu Font", std::vector<std::string>({ "Light", "Medium", "Bold" }), MENU_FONT_LIGHT, MENU_FONT_LIGHT, MENU_FONT_MAX);
@@ -228,6 +229,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gThirdPerson = std::make_shared<sCvar>("Third Person", std::vector<std::string>(), false);
 		std::shared_ptr<sCvar> gHardcoreHud = std::make_shared<sCvar>("Hardcore HUD", std::vector<std::string>(), false);
 		std::shared_ptr<sCvar> gDisableEmp = std::make_shared<sCvar>("Disable EMP", std::vector<std::string>(), false);
+		std::shared_ptr<sCvar> gNameStealer = std::make_shared<sCvar>("Name Stealer", std::vector<std::string>(), false);
 		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>(), false);
 
 		std::shared_ptr<sCvar> gKillspam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));

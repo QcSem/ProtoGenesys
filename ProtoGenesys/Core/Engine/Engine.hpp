@@ -172,6 +172,36 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	typedef enum
+	{
+		k_EFriendFlagNone = 0x00,
+		k_EFriendFlagBlocked = 0x01,
+		k_EFriendFlagFriendshipRequested = 0x02,
+		k_EFriendFlagImmediate = 0x04,
+		k_EFriendFlagClanMember = 0x08,
+		k_EFriendFlagOnGameServer = 0x10,
+		k_EFriendFlagRequestingFriendship = 0x80,
+		k_EFriendFlagRequestingInfo = 0x100,
+		k_EFriendFlagIgnored = 0x200,
+		k_EFriendFlagIgnoredFriend = 0x400,
+		k_EFriendFlagChatMember = 0x1000,
+		k_EFriendFlagAll = 0xFFFF
+	} EFriendFlags;
+	/*
+	//=====================================================================================
+	*/
+	typedef enum
+	{
+		k_EUniverseInvalid = 0,
+		k_EUniversePublic = 1,
+		k_EUniverseBeta = 2,
+		k_EUniverseInternal = 3,
+		k_EUniverseDev = 4,
+		k_EUniverseMax
+	} EUniverse;
+	/*
+	//=====================================================================================
+	*/
 	static std::vector<std::pair<eBone, eHitLocation>> vBones = 
 	{
 		std::make_pair(BONE_HEAD, HITLOC_HEAD),
@@ -327,7 +357,10 @@ namespace ProtoGenesys
 		int iFFATeam;
 		char _0x38[0x28];
 		int iRank;
-		char _0x64[0x30];
+		char _0x64[0x14];
+		QWORD qwXuid;
+		char szClan[8];
+		char _0x88[0xC];
 		int iScore;
 		char _0x98[0x48];
 		char szModel[64];
@@ -585,8 +618,62 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	typedef struct
+	{
+		unsigned int m_nAppID : 24;
+		unsigned int m_nType : 8;
+		unsigned int m_nModID : 32;
+	} GameID_t;
+	/*
+	//=====================================================================================
+	*/
+	typedef union
+	{
+		unsigned __int64 m_ulGameID;
+		GameID_t m_gameID;
+	} CGameID;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
+		unsigned __int32 m_unAccountID : 32;
+		unsigned __int32 m_unAccountInstance : 20;
+		unsigned __int32 m_EAccountType : 4;
+		__int32 m_EUniverse : 8;
+	} SteamIDComponent_t;
+	/*
+	//=====================================================================================
+	*/
+	typedef union
+	{
+		SteamIDComponent_t m_comp;
+		unsigned __int64 m_unAll64Bits;
+	} SteamID_t;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
+		SteamID_t m_steamid;
+	} CSteamID;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
+		CGameID m_gameID;
+		unsigned int m_unGameIP;
+		unsigned __int16 m_usGamePort;
+		unsigned __int16 m_usQueryPort;
+		CSteamID m_steamIDLobby;
+	} FriendGameInfo_t;
+	/*
+	//=====================================================================================
+	*/
 	static MODULEINFO hT6mp = GetModuleInfo(NULL);
 	static MODULEINFO hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
+	static HMODULE hSteamAPI = GetModuleHandle("steam_api.dll");
 
 	static bool bIsSteamVersion = hT6mp.SizeOfImage == 0x400D000;
 
@@ -601,7 +688,6 @@ namespace ProtoGenesys
 	static DWORD_PTR dwPenetrationCount = *(DWORD_PTR*)0x28FB870;
 	static DWORD_PTR dwOrbitalVsat = 0x12A0CA4;
 
-	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
 	static DWORD_PTR dwSysGetValueException = bIsSteamVersion ? 0x635F09 : 0x5EFBB9;
 	static DWORD_PTR dwConnectPathsException1 = bIsSteamVersion ? 0x43B6DB : 0x53367B;
 	static DWORD_PTR dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
@@ -622,6 +708,8 @@ namespace ProtoGenesys
 	static DWORD_PTR dwLocalClientIsInGame = bIsSteamVersion ? 0x5922F0 : 0x402F80;
 	static DWORD_PTR dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
 	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
+	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
+	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 	static DWORD_PTR dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
 	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
 	static DWORD_PTR dwGetDObj = bIsSteamVersion ? 0x5D2590 : 0x4DA190;

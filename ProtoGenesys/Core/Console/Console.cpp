@@ -38,11 +38,6 @@ namespace ProtoGenesys
 			vCommands.push_back("proto_clan");
 			vCommands.push_back("proto_xuid");
 			vCommands.push_back("proto_killspam");
-			vCommands.push_back("proto_vsat");
-			vCommands.push_back("proto_thirdperson");
-			vCommands.push_back("proto_hardcorehud");
-			vCommands.push_back("proto_disableemp");
-			vCommands.push_back("proto_trickshot");
 
 			AddLog("Ready.");
 
@@ -79,6 +74,12 @@ namespace ProtoGenesys
 	*/
 	void cConsole::Draw(LPCSTR title, bool* open)
 	{
+		if (_mainGui.bConsoleLog)
+		{
+			ImGui::LogToFile();
+			_mainGui.bConsoleLog = false;
+		}
+
 		ImGui::SetNextWindowSize(ImVec2(510.0f, 350.0f));
 		if (!ImGui::Begin(title, open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
 		{
@@ -91,11 +92,11 @@ namespace ProtoGenesys
 			if (ImGui::MenuItem("Close"))
 			{
 				*open = false;
-				_mainGui.bWriteLog = true;
+				_mainGui.bConsoleLog = true;
 			}
 
 			ImGui::EndPopup();
-			_mainGui.bWriteLog = true;
+			_mainGui.bConsoleLog = true;
 		}
 
 		ImGui::TextWrapped("\t\t\tProtoGenesys");
@@ -109,21 +110,16 @@ namespace ProtoGenesys
 			AddLog("3. proto_endround\n\t\tEnd the current round.");
 			AddLog("4. proto_name <on|off> <name>\n\t\tChange your name.");
 			AddLog("5. proto_clan <on|off> <clan>\n\t\tChange your clan.");
-			AddLog("5. proto_xuid <on|off> <xuid>\n\t\tChange your xuid.");
-			AddLog("6. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
-			AddLog("7. proto_vsat <on|off>\n\t\tEnable/disable orbital vsat.");
-			AddLog("8. proto_thirdperson <on|off>\n\t\tEnable/disable third person camera.");
-			AddLog("7. proto_hardcorehud <on|off>\n\t\tEnable/disable hud in hardcore modes.");
-			AddLog("8. proto_disableemp <on|off>\n\t\tEnable/disable emp overlay.");
-			AddLog("9. proto_trickshot <on|off>\n\t\tImmediately end the round after your next kill.");
+			AddLog("6. proto_xuid <on|off> <xuid>\n\t\tChange your xuid.");
+			AddLog("7. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
 
-			_mainGui.bWriteLog = true;
+			_mainGui.bConsoleLog = true;
 		} ImGui::SameLine();
 
 		if (ImGui::Button("Clear", ImVec2(50, 0)))
 		{
 			ClearLog();
-			_mainGui.bWriteLog = true;
+			_mainGui.bConsoleLog = true;
 		} ImGui::SameLine();
 
 		bool bCopyToClipboard = ImGui::Button("Copy", ImVec2(50, 0));
@@ -137,11 +133,11 @@ namespace ProtoGenesys
 			if (ImGui::Selectable("Clear"))
 			{
 				ClearLog();
-				_mainGui.bWriteLog = true;
+				_mainGui.bConsoleLog = true;
 			}
 
 			ImGui::EndPopup();
-			_mainGui.bWriteLog = true;
+			_mainGui.bConsoleLog = true;
 		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
@@ -197,7 +193,7 @@ namespace ProtoGenesys
 			ZeroMemory(szInput, sizeof(szInput));
 			bReclaimFocus = true;
 
-			_mainGui.bWriteLog = true;
+			_mainGui.bConsoleLog = true;
 		}
 
 		ImGui::PopItemWidth();
@@ -463,8 +459,7 @@ namespace ProtoGenesys
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-					_hooks.dwXuidOverride = _atoi64(szXuidOverride);
-					_profiler.gXuidOverride->Custom.szValue = Strdup(_ui64toa(_hooks.dwXuidOverride, _hooks.szXuidOverride, 0x10));
+					_profiler.gXuidOverride->Custom.szValue = Strdup(_ui64toa(_atoi64(szXuidOverride), _hooks.szXuidOverride, 0x10));
 
 					std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
 					std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
@@ -544,156 +539,6 @@ namespace ProtoGenesys
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 					_profiler.gKillspam->Custom.szValue = Strdup("");
-					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-				}
-
-				else
-				{
-					AddLog("[ERROR] Invalid argument(s).");
-				}
-			}
-
-			else
-			{
-				AddLog("[ERROR] Missing argument(s).");
-			}
-		}
-
-		else if (!Stricmp(CmdLine.szCmdName, "proto_vsat"))
-		{
-			if (CmdLine.iArgNum > 0)
-			{
-				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
-				{
-					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_profiler.gOrbitalVsat->Custom.bValue = true;
-					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-				}
-
-				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
-				{
-					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_profiler.gOrbitalVsat->Custom.bValue = false;
-					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-				}
-
-				else
-				{
-					AddLog("[ERROR] Invalid argument(s).");
-				}
-			}
-
-			else
-			{
-				AddLog("[ERROR] Missing argument(s).");
-			}
-		}
-
-		else if (!Stricmp(CmdLine.szCmdName, "proto_thirdperson"))
-		{
-			if (CmdLine.iArgNum > 0)
-			{
-				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
-				{
-					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_profiler.gThirdPerson->Custom.bValue = true;
-					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-				}
-
-				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
-				{
-					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_profiler.gThirdPerson->Custom.bValue = false;
-					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-				}
-
-				else
-				{
-					AddLog("[ERROR] Invalid argument(s).");
-				}
-			}
-
-			else
-			{
-				AddLog("[ERROR] Missing argument(s).");
-			}
-		}
-
-		else if (!Stricmp(CmdLine.szCmdName, "proto_hardcorehud"))
-		{
-		if (CmdLine.iArgNum > 0)
-		{
-			if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
-			{
-				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-				_profiler.gHardcoreHud->Custom.bValue = true;
-				AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-			}
-
-			else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
-			{
-				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-				_profiler.gHardcoreHud->Custom.bValue = false;
-				AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-			}
-
-			else
-			{
-				AddLog("[ERROR] Invalid argument(s).");
-			}
-		}
-
-		else
-		{
-			AddLog("[ERROR] Missing argument(s).");
-		}
-		}
-
-		else if (!Stricmp(CmdLine.szCmdName, "proto_disableemp"))
-		{
-		if (CmdLine.iArgNum > 0)
-		{
-			if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
-			{
-				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-				_profiler.gDisableEmp->Custom.bValue = true;
-				AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-			}
-
-			else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
-			{
-				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-				_profiler.gDisableEmp->Custom.bValue = false;
-				AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-			}
-
-			else
-			{
-				AddLog("[ERROR] Invalid argument(s).");
-			}
-		}
-
-		else
-		{
-			AddLog("[ERROR] Missing argument(s).");
-		}
-		}
-
-		else if (!Stricmp(CmdLine.szCmdName, "proto_trickshot"))
-		{
-			if (CmdLine.iArgNum > 0)
-			{
-				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
-				{
-					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_profiler.gTrickShot->Custom.bValue = true;
-					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
-				}
-
-				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
-				{
-					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_profiler.gTrickShot->Custom.bValue = false;
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 

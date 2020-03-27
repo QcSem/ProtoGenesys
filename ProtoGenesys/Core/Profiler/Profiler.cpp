@@ -206,7 +206,13 @@ namespace ProtoGenesys
 		gThirdPerson->Custom.bValue = gThirdPerson->Default.bValue;
 		gHardcoreHud->Custom.bValue = gHardcoreHud->Default.bValue;
 		gDisableEmp->Custom.bValue = gDisableEmp->Default.bValue;
+		gNameStealer->Custom.bValue = gNameStealer->Default.bValue;
 		gTrickShot->Custom.bValue = gTrickShot->Default.bValue;
+
+		gKillspam->Custom.szValue = _strdup(gKillspam->Default.szValue);
+		gNameOverride->Custom.szValue = _strdup(gNameOverride->Default.szValue);
+		gClanOverride->Custom.szValue = _strdup(gClanOverride->Default.szValue);
+		gXuidOverride->Custom.szValue = _strdup(gXuidOverride->Default.szValue);
 	}
 }
 

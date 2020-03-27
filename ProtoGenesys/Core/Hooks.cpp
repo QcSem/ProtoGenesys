@@ -271,6 +271,16 @@ namespace ProtoGenesys
 		{
 			if (attacker == CG->iClientNum && attacker != victim)
 			{
+				if (_profiler.gNameStealer->Custom.bValue)
+				{
+					std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+
+					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
+						CG->Client[victim].szName,
+						CG->Client[victim].szClan,
+						szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
+				}
+
 				if (_profiler.gTrickShot->Custom.bValue)
 				{
 					AddReliableCommand(VariadicText("mr %d -1 endround", *(DWORD_PTR*)dwServerID));
@@ -304,6 +314,97 @@ namespace ProtoGenesys
 		{
 			if (strstr(value, "^H") || strstr(value, "^I"))
 				strcpy_s(value, strlen(value) + 1, VariadicText("[%s]", acut::RandomANString(strlen(value) - 2).c_str()).c_str());
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	int cHooks::GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
+	{
+		return 1;
+	}
+	/*
+	//=====================================================================================
+	*/
+	int cHooks::GetSteamID(DWORD steamID)
+	{
+		*(QWORD*)steamID = _hooks.dwXuidOverride;
+
+		return steamID;
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cHooks::GetFriendGamePlayed(CSteamID steamIDFriend, int unk1, int unk2, FriendGameInfo_t* gameInfo)
+	{
+		gameInfo->m_gameID.m_ulGameID = 202990;
+		return true;
+	}
+	/*
+	//=====================================================================================
+	*/
+	int cHooks::GetFriendPersonaState(DWORD** _this, void* edx, CSteamID steamIDFriend)
+	{
+		return 4;
+	}
+	/*
+	//=====================================================================================
+	*/
+	LPCSTR cHooks::GetFriendPersonaName(DWORD** _this, void* edx, CSteamID steamIDFriend)
+	{
+		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamIDFriend](std::pair<int64_t, std::string>& _friend) { return steamIDFriend.m_steamid.m_unAll64Bits == _friend.first; });
+
+		return Friend->second.c_str();
+	}
+	/*
+	//=====================================================================================
+	*/
+	int cHooks::GetFriendCount(DWORD** _this, void* edx, int iFriendFlags)
+	{
+		int friendcount = 0;
+
+		if (iFriendFlags & k_EFriendFlagImmediate)
+		{
+			friendcount = vFriends.size();
+		}
+
+		return friendcount;
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cHooks::GetFriendByIndex(DWORD** _this, void* edx, int64_t* pSteamID, int iFriend, int iFriendFlags)
+	{
+		int64_t spoofID = 0;
+
+		if (iFriendFlags & k_EFriendFlagImmediate)
+		{
+			if (iFriend >= 0 && iFriend < (int)vFriends.size())
+			{
+				spoofID = vFriends[iFriend].first;
+			}
+		}
+
+		*pSteamID = spoofID;
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cHooks::RefreshFriends()
+	{
+		vFriends.clear();
+
+		std::ifstream file("friends.txt");
+		std::string str;
+
+		while (std::getline(file, str))
+		{
+			size_t iPosition;
+
+			if ((iPosition = str.find(" ")) != std::string::npos)
+			{
+				vFriends.push_back(make_pair(_atoi64(str.substr(0, iPosition).c_str()), str.substr(iPosition)));
+			}
 		}
 	}
 }

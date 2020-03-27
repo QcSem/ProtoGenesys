@@ -240,7 +240,7 @@ namespace ProtoGenesys
 		}
 
 		if (GetKeyPress(VK_INSERT, false))
-			bShowWindow = !bShowWindow;
+			bShowProtoGenesys = !bShowProtoGenesys;
 
 		if (GetKeyPress(VK_HOME, false))
 			_profiler.LoadProfile("");
@@ -248,9 +248,9 @@ namespace ProtoGenesys
 		if (GetKeyPress(VK_END, false))
 			_profiler.DisableAll();
 
-		*(bool*)dwMouseInput = !bShowWindow;
+		*(bool*)dwMouseInput = !bShowProtoGenesys;
 
-		if (bInitialized && bShowWindow && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		if (bInitialized && bShowProtoGenesys && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 			return TRUE;
 
 		return CallWindowProc(oWindowProcess, hWnd, uMsg, wParam, lParam);
@@ -298,7 +298,7 @@ namespace ProtoGenesys
 				flHue += (60.0f / ImGui::GetIO().Framerate);
 			}
 
-			ImGui::GetIO().MouseDrawCursor = bShowWindow;
+			ImGui::GetIO().MouseDrawCursor = bShowProtoGenesys;
 
 			ImGui_ImplWin32_NewFrame();
 			ImGui_ImplDX11_NewFrame();
@@ -350,21 +350,21 @@ namespace ProtoGenesys
 
 			ImGui::End();
 
-			if (bShowWindow)
+			if (bShowProtoGenesys)
 			{
-				if (bWriteLog)
+				if (bProtoGenesysLog)
 				{
 					ImGui::LogToFile();
-					bWriteLog = false;
+					bProtoGenesysLog = false;
 				}
 
-				ImGui::SetNextWindowSize(ImVec2(487.0f, 324.0f));
-				ImGui::Begin("PROTOGENESYS", &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
+				ImGui::SetNextWindowSize(ImVec2(490.0f, 324.0f));
+				ImGui::Begin("PROTOGENESYS", &bShowProtoGenesys, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 				ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
 
-				if (ImGui::TabLabels(_profiler.gMenuTabs->MaxValue.iMax, acut::StringVectorToCharPointerArray(_profiler.gMenuTabs->szItems), _profiler.gMenuTabs->Custom.iValue, NULL, false, NULL, NULL, false, false, NULL, NULL, &ImVec2(117.0f, 25.0f)))
+				if (ImGui::TabLabels(_profiler.gMenuTabs->MaxValue.iMax, acut::StringVectorToCharPointerArray(_profiler.gMenuTabs->szItems), _profiler.gMenuTabs->Custom.iValue, NULL, false, NULL, NULL, false, false, NULL, NULL, &ImVec2(94.0f, 25.0f)))
 				{
-					bWriteLog = true;
+					bProtoGenesysLog = true;
 				}
 
 				ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 204.0f), true);
@@ -377,62 +377,62 @@ namespace ProtoGenesys
 				{
 					if (ImGui::RadioButton(_profiler.gAimBotMode->szItems[cProfiler::AIMBOT_MODE_OFF].c_str(), &_profiler.gAimBotMode->Custom.iValue, cProfiler::AIMBOT_MODE_OFF))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(147.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(148.0f);
 
 					if (ImGui::RadioButton(_profiler.gAimBotMode->szItems[cProfiler::AIMBOT_MODE_MANUAL].c_str(), &_profiler.gAimBotMode->Custom.iValue, cProfiler::AIMBOT_MODE_MANUAL))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(294.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::RadioButton(_profiler.gAimBotMode->szItems[cProfiler::AIMBOT_MODE_AUTO].c_str(), &_profiler.gAimBotMode->Custom.iValue, cProfiler::AIMBOT_MODE_AUTO))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gAutoZoom->szLabel.c_str(), &_profiler.gAutoZoom->Custom.bValue))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(294.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox(_profiler.gAutoFire->szLabel.c_str(), &_profiler.gAutoFire->Custom.bValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gAutoWall->szLabel.c_str(), &_profiler.gAutoWall->Custom.bValue))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(294.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox(_profiler.gApplyPrediction->szLabel.c_str(), &_profiler.gApplyPrediction->Custom.bValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gAntiTeamKill->szLabel.c_str(), &_profiler.gAntiTeamKill->Custom.bValue))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(294.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox(_profiler.gSilentAim->szLabel.c_str(), &_profiler.gSilentAim->Custom.bValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
 					if (ImGui::Combo(_profiler.gAntiAim->szLabel.c_str(), &_profiler.gAntiAim->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gAntiAim->szItems), _profiler.gAntiAim->MaxValue.iMax))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::Combo(_profiler.gBoneScan->szLabel.c_str(), &_profiler.gBoneScan->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gBoneScan->szItems), _profiler.gBoneScan->MaxValue.iMax))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::Combo(_profiler.gSortMethod->szLabel.c_str(), &_profiler.gSortMethod->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gSortMethod->szItems), _profiler.gSortMethod->MaxValue.iMax))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					}
 				} break;
 
@@ -440,62 +440,105 @@ namespace ProtoGenesys
 				{
 					if (ImGui::RadioButton(_profiler.gWallHackMode->szItems[cProfiler::WALLHACK_MODE_AXIS].c_str(), &_profiler.gWallHackMode->Custom.iValue, cProfiler::WALLHACK_MODE_AXIS))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(147.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(148.0f);
 
 					if (ImGui::RadioButton(_profiler.gWallHackMode->szItems[cProfiler::WALLHACK_MODE_ALLIES].c_str(), &_profiler.gWallHackMode->Custom.iValue, cProfiler::WALLHACK_MODE_ALLIES))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(294.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::RadioButton(_profiler.gWallHackMode->szItems[cProfiler::WALLHACK_MODE_ALL].c_str(), &_profiler.gWallHackMode->Custom.iValue, cProfiler::WALLHACK_MODE_ALL))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
 					if (ImGui::Combo(_profiler.gPlayerBoxes->szLabel.c_str(), &_profiler.gPlayerBoxes->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gPlayerBoxes->szItems), _profiler.gPlayerBoxes->MaxValue.iMax))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::Combo(_profiler.gPlayerBones->szLabel.c_str(), &_profiler.gPlayerBones->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gPlayerBones->szItems), _profiler.gPlayerBones->MaxValue.iMax))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::Combo(_profiler.gPlayerSnapLines->szLabel.c_str(), &_profiler.gPlayerSnapLines->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gPlayerSnapLines->szItems), _profiler.gPlayerSnapLines->MaxValue.iMax))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gPlayerInfo->szLabel.c_str(), &_profiler.gPlayerInfo->Custom.bValue))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(294.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox(_profiler.gPlayerWeapons->szLabel.c_str(), &_profiler.gPlayerWeapons->Custom.bValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gPlayerEntities->szLabel.c_str(), &_profiler.gPlayerEntities->Custom.bValue))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(294.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox(_profiler.gPlayerCrossHair->szLabel.c_str(), &_profiler.gPlayerCrossHair->Custom.bValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gPlayerCompass->szLabel.c_str(), &_profiler.gPlayerCompass->Custom.bValue))
 					{
-						bWriteLog = true;
-					} ImGui::SameLine(294.0f);
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox(_profiler.gPlayerRadar->szLabel.c_str(), &_profiler.gPlayerRadar->Custom.bValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
+					}
+				} break;
+
+				case cProfiler::MENU_TAB_MISCELLANEOUS:
+				{
+					if (ImGui::Checkbox(_profiler.gOrbitalVsat->szLabel.c_str(), &_profiler.gOrbitalVsat->Custom.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
+
+					if (ImGui::Checkbox(_profiler.gThirdPerson->szLabel.c_str(), &_profiler.gThirdPerson->Custom.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::NewLine();
+
+					if (ImGui::Checkbox(_profiler.gHardcoreHud->szLabel.c_str(), &_profiler.gHardcoreHud->Custom.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
+
+					if (ImGui::Checkbox(_profiler.gDisableEmp->szLabel.c_str(), &_profiler.gDisableEmp->Custom.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::NewLine();
+
+					if (ImGui::Checkbox(_profiler.gNameStealer->szLabel.c_str(), &_profiler.gNameStealer->Custom.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
+
+					if (ImGui::Checkbox(_profiler.gTrickShot->szLabel.c_str(), &_profiler.gTrickShot->Custom.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::NewLine();
+
+					if (ImGui::Checkbox("Console", &bShowConsole))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
+
+					if (ImGui::Checkbox("Player List", &bShowPlayerList))
+					{
+						bProtoGenesysLog = true;
 					}
 				} break;
 
@@ -503,50 +546,50 @@ namespace ProtoGenesys
 				{
 					if (ImGui::SliderInt(_profiler.gAimBone->szLabel.c_str(), &_profiler.gAimBone->Custom.iValue, _profiler.gAimBone->MinValue.iMin, _profiler.gAimBone->MaxValue.iMax, szBones[_profiler.gAimBone->Custom.iValue].first.c_str()))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::SliderFloat(_profiler.gAimAngle->szLabel.c_str(), &_profiler.gAimAngle->Custom.flValue, _profiler.gAimAngle->MinValue.flMin, _profiler.gAimAngle->MaxValue.flMax, "%.0f degrees"))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::SliderInt(_profiler.gAimPower->szLabel.c_str(), &_profiler.gAimPower->Custom.iValue, _profiler.gAimPower->MinValue.iMin, _profiler.gAimPower->MaxValue.iMax, "%d%%"))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::SliderInt(_profiler.gAutoAimTime->szLabel.c_str(), &_profiler.gAutoAimTime->Custom.iValue, _profiler.gAutoAimTime->MinValue.iMin, _profiler.gAutoAimTime->MaxValue.iMax, "%d ms"))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::SliderInt(_profiler.gAutoAimDelay->szLabel.c_str(), &_profiler.gAutoAimDelay->Custom.iValue, _profiler.gAutoAimDelay->MinValue.iMin, _profiler.gAutoAimDelay->MaxValue.iMax, "%d ms"))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::SliderInt(_profiler.gAutoZoomDelay->szLabel.c_str(), &_profiler.gAutoZoomDelay->Custom.iValue, _profiler.gAutoZoomDelay->MinValue.iMin, _profiler.gAutoZoomDelay->MaxValue.iMax, "%d ms"))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::SliderInt(_profiler.gAutoFireDelay->szLabel.c_str(), &_profiler.gAutoFireDelay->Custom.iValue, _profiler.gAutoFireDelay->MinValue.iMin, _profiler.gAutoFireDelay->MaxValue.iMax, "%d ms"))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::SliderFloat(_profiler.gRecoilFactor->szLabel.c_str(), &_profiler.gRecoilFactor->Custom.flValue, _profiler.gRecoilFactor->MinValue.flMin, _profiler.gRecoilFactor->MaxValue.flMax))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::SliderFloat(_profiler.gSpreadFactor->szLabel.c_str(), &_profiler.gSpreadFactor->Custom.flValue, _profiler.gSpreadFactor->MinValue.flMin, _profiler.gSpreadFactor->MaxValue.flMax))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
-					if (ImGui::Button("Reset to Default", ImVec2(444.0f, 35.0f)))
+					if (ImGui::Button("Reset to Default", ImVec2(446.0f, 35.0f)))
 					{
 						_profiler.gAimBone->Custom.iValue = _profiler.gAimBone->Default.iValue;
 						_profiler.gAimAngle->Custom.flValue = _profiler.gAimAngle->Default.flValue;
@@ -558,7 +601,7 @@ namespace ProtoGenesys
 						_profiler.gRecoilFactor->Custom.flValue = _profiler.gRecoilFactor->Default.flValue;
 						_profiler.gSpreadFactor->Custom.flValue = _profiler.gSpreadFactor->Default.flValue;
 
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					}
 				} break;
 
@@ -566,32 +609,32 @@ namespace ProtoGenesys
 				{
 					if (ImGui::ColorEdit3(_profiler.gColorAxis->szLabel.c_str(), _profiler.gColorAxis->Custom.cValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::ColorEdit3(_profiler.gColorAllies->szLabel.c_str(), _profiler.gColorAllies->Custom.cValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::ColorEdit3(_profiler.gColorRiotShield->szLabel.c_str(), _profiler.gColorRiotShield->Custom.cValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::ColorEdit3(_profiler.gColorCrossHair->szLabel.c_str(), _profiler.gColorCrossHair->Custom.cValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::ColorEdit3(_profiler.gColorText->szLabel.c_str(), _profiler.gColorText->Custom.cValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
 					if (ImGui::ColorEdit3(_profiler.gColorShadow->szLabel.c_str(), _profiler.gColorShadow->Custom.cValue))
 					{
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
 					if (ImGui::Combo(_profiler.gMenuColor->szLabel.c_str(), &_profiler.gMenuColor->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gMenuColor->szItems), _profiler.gMenuColor->MaxValue.iMax))
@@ -599,7 +642,7 @@ namespace ProtoGenesys
 						WritePrivateProfileString("MenuStyle", "COLOR", std::to_string(_profiler.gMenuColor->Custom.iValue).c_str(), (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
 
 						bStyleChanged = true;
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					}
 
 					if (ImGui::Combo(_profiler.gMenuCursor->szLabel.c_str(), &_profiler.gMenuCursor->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gMenuCursor->szItems), _profiler.gMenuCursor->MaxValue.iMax))
@@ -607,7 +650,7 @@ namespace ProtoGenesys
 						WritePrivateProfileString("MenuStyle", "CURSOR", std::to_string(_profiler.gMenuCursor->Custom.iValue).c_str(), (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
 
 						bStyleChanged = true;
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					}
 
 					if (ImGui::Combo(_profiler.gMenuFont->szLabel.c_str(), &_profiler.gMenuFont->Custom.iValue, acut::StringVectorToCharPointerArray(_profiler.gMenuFont->szItems), _profiler.gMenuFont->MaxValue.iMax))
@@ -615,10 +658,10 @@ namespace ProtoGenesys
 						WritePrivateProfileString("MenuStyle", "FONT", std::to_string(_profiler.gMenuFont->Custom.iValue).c_str(), (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
 
 						bStyleChanged = true;
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
-					if (ImGui::Button("Reset to Default", ImVec2(444.0f, 35.0f)))
+					if (ImGui::Button("Reset to Default", ImVec2(446.0f, 35.0f)))
 					{
 						_profiler.gColorAxis->Custom.cValue = _profiler.gColorAxis->Default.cValue;
 						_profiler.gColorAllies->Custom.cValue = _profiler.gColorAllies->Default.cValue;
@@ -627,7 +670,7 @@ namespace ProtoGenesys
 						_profiler.gColorText->Custom.cValue = _profiler.gColorText->Default.cValue;
 						_profiler.gColorShadow->Custom.cValue = _profiler.gColorShadow->Default.cValue;
 
-						bWriteLog = true;
+						bProtoGenesysLog = true;
 					}
 				} break;
 				}
@@ -636,16 +679,16 @@ namespace ProtoGenesys
 				ImGui::Separator();
 				ImGui::EndChild();
 
-				if (ImGui::Button("Set as Default", ImVec2(155.0f, 30.0f)))
+				if (ImGui::Button("Set as Default", ImVec2(156.0f, 30.0f)))
 				{
 					_profiler.SaveProfile("");
-					bWriteLog = true;
+					bProtoGenesysLog = true;
 				} ImGui::SameLine(0.0f, 3.0f);
 
 				static bool bSaveButton;
-				if ((bSaveButton = ImGui::Button("Save Profile", ImVec2(155.0f, 30.0f))))
+				if ((bSaveButton = ImGui::Button("Save Profile", ImVec2(156.0f, 30.0f))))
 				{
-					bWriteLog = true;
+					bProtoGenesysLog = true;
 				} ImGui::SameLine(0.0f, 3.0f);
 				LPCSTR szSavePath = SaveDialog.saveFileDialog(bSaveButton, SaveDialog.getLastDirectory(), NULL, ".xml", "Save Profile");
 
@@ -656,9 +699,9 @@ namespace ProtoGenesys
 				}
 
 				static bool bLoadButton;
-				if ((bLoadButton = ImGui::Button("Load Profile", ImVec2(155.0f, 30.0f))))
+				if ((bLoadButton = ImGui::Button("Load Profile", ImVec2(156.0f, 30.0f))))
 				{
-					bWriteLog = true;
+					bProtoGenesysLog = true;
 				}
 				LPCSTR szLoadPath = LoadDialog.chooseFileDialog(bLoadButton, LoadDialog.getLastDirectory(), ".xml", "Load Profile");
 
@@ -673,42 +716,72 @@ namespace ProtoGenesys
 				ImGui::PopItemWidth();
 				ImGui::End();
 
-				ImGui::SetNextWindowSize(ImVec2(400.0f, 480.0f));
-				ImGui::Begin("PLAYER LIST", &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
-				ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 0.0f), true);
-
-				for (int i = 0; i < MAX_CLIENTS; i++)
+				if (bShowConsole)
 				{
-					ImGui::PushID(i);
-
-					if (ImGui::RadioButton("", &_targetList.iRiotShieldTarget, i))
-					{
-						bWriteLog = true;
-					} ImGui::PopID(); ImGui::SameLine();
-
-					ImGui::PushID(i + MAX_CLIENTS);
-
-					if (ImGui::Checkbox("", (bool*)&_targetList.vIsTarget[i]))
-					{
-						bWriteLog = true;
-					} ImGui::PopID(); ImGui::SameLine();
-
-					ImGui::PushItemWidth(150.0f);
-					ImGui::InputText(VariadicText("%i: %s", i, ServerSession[i].szName).c_str(),
-						(LPSTR)VariadicText("%u.%u.%u.%u",
-							(BYTE)ServerSession[i].szIP[0],
-							(BYTE)ServerSession[i].szIP[1],
-							(BYTE)ServerSession[i].szIP[2],
-							(BYTE)ServerSession[i].szIP[3]).c_str(),
-						1024, ImGuiInputTextFlags_ReadOnly);
-					ImGui::PopItemWidth();
+					_console.Init();
+					_console.Draw("CONSOLE", &bShowConsole);
 				}
 
-				ImGui::EndChild();
-				ImGui::End();
+				if (bShowPlayerList && LocalClientIsInGame())
+				{
+					if (bPlayerListLog)
+					{
+						ImGui::LogToFile();
+						bPlayerListLog = false;
+					}
 
-				_console.Init();
-				_console.Draw("CONSOLE", &bShowWindow);
+					ImGui::SetNextWindowSize(ImVec2(400.0f, 480.0f));
+					ImGui::Begin("PLAYER LIST", &bShowPlayerList, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
+					ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 0.0f), true);
+
+					for (int i = 0; i < MAX_CLIENTS; i++)
+					{
+						if (CG->Client[i].iInfoValid)
+						{
+							ImGui::PushID(i);
+
+							if (ImGui::RadioButton("", &_targetList.iRiotShieldTarget, i))
+							{
+								bPlayerListLog = true;
+							} ImGui::PopID(); ImGui::SameLine();
+
+							ImGui::PushID(i + MAX_CLIENTS);
+
+							if (ImGui::Checkbox("", (bool*)&_targetList.vIsTarget[i]))
+							{
+								bPlayerListLog = true;
+							} ImGui::PopID(); ImGui::SameLine();
+
+							ImGui::PushID(i + MAX_CLIENTS * 2);
+
+							if (ImGui::Button("Add", ImVec2(50.0f, 0.0f)))
+							{
+								std::ofstream file("friends.txt", std::ios_base::out | std::ios_base::app);
+								file << (std::to_string(CG->Client[i].qwXuid) + " " + CG->Client[i].szName).c_str() << std::endl;
+
+								bPlayerListLog = true;
+							} ImGui::PopID(); ImGui::SameLine();
+
+							ImGui::PushItemWidth(150.0f);
+							ImGui::InputText(VariadicText("%i: %s", i, ServerSession[i].szName).c_str(),
+								(LPSTR)VariadicText("%u.%u.%u.%u",
+									(BYTE)ServerSession[i].szIP[0],
+									(BYTE)ServerSession[i].szIP[1],
+									(BYTE)ServerSession[i].szIP[2],
+									(BYTE)ServerSession[i].szIP[3]).c_str(),
+								1024, ImGuiInputTextFlags_ReadOnly);
+							ImGui::PopItemWidth();
+						}
+
+						else
+						{
+							_targetList.vIsTarget[i] = TRUE;
+						}
+					}
+
+					ImGui::EndChild();
+					ImGui::End();
+				}
 			}
 
 			ImGui::Render();
