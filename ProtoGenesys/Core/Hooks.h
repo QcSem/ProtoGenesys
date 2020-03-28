@@ -27,7 +27,7 @@ namespace ProtoGenesys
 		char szXuidOverride[0x11];
 		QWORD dwXuidOverride;
 
-		std::vector<std::pair<int64_t, std::string>> vFriends;
+		std::vector<std::pair<QWORD, std::string>> vFriends;
 
 		DWORD dwSysValue, dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwAddress;
 		LPVOID pVectoredExceptionHandler;
@@ -46,12 +46,12 @@ namespace ProtoGenesys
 		void ProcessText(LPSTR key, LPSTR value, SIZE_T length);
 
 		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
-		int GetSteamID(DWORD steamID);
-		bool GetFriendGamePlayed(CSteamID steamIDFriend, int unk1, int unk2, FriendGameInfo_t* gameInfo);
-		int GetFriendPersonaState(DWORD** _this, void* edx, CSteamID steamIDFriend);
-		LPCSTR GetFriendPersonaName(DWORD** _this, void* edx, CSteamID steamIDFriend);
-		int GetFriendCount(DWORD** _this, void* edx, int iFriendFlags);
-		void GetFriendByIndex(DWORD** _this, void* edx, int64_t* pSteamID, int iFriend, int iFriendFlags);
+		sSteamID GetSteamID(sSteamID steamid);
+		bool GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
+		ePersonaState GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid);
+		LPCSTR GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid);
+		int GetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags);
+		sSteamID GetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
 
 		void RefreshFriends();
 

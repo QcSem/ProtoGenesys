@@ -174,31 +174,46 @@ namespace ProtoGenesys
 	*/
 	typedef enum
 	{
-		k_EFriendFlagNone = 0x00,
-		k_EFriendFlagBlocked = 0x01,
-		k_EFriendFlagFriendshipRequested = 0x02,
-		k_EFriendFlagImmediate = 0x04,
-		k_EFriendFlagClanMember = 0x08,
-		k_EFriendFlagOnGameServer = 0x10,
-		k_EFriendFlagRequestingFriendship = 0x80,
-		k_EFriendFlagRequestingInfo = 0x100,
-		k_EFriendFlagIgnored = 0x200,
-		k_EFriendFlagIgnoredFriend = 0x400,
-		k_EFriendFlagChatMember = 0x1000,
-		k_EFriendFlagAll = 0xFFFF
-	} EFriendFlags;
+		FRIEND_FLAG_NONE = 0x0,
+		FRIEND_FLAG_BLOCKED = 1 << 0,
+		FRIEND_FLAG_FRIENDSHIPREQUESTED = 1 << 1,
+		FRIEND_FLAG_IMMEDIATE = 1 << 2,
+		FRIEND_FLAG_CLANMEMBER = 1 << 3,
+		FRIEND_FLAG_ONGAMESERVER = 1 << 4,
+		FRIEND_FLAG_REQUESTINGFRIENDSHIP = 1 << 7,
+		FRIEND_FLAG_REQUESTINGINFO = 1 << 8,
+		FRIEND_FLAG_IGNORED = 1 << 9,
+		FRIEND_FLAG_IGNOREDFRIEND = 1 << 10,
+		FRIEND_FLAG_CHATMEMBER = 1 << 12,
+		FRIEND_FLAG_All = 0xFFFF
+	} eFriendFlags;
 	/*
 	//=====================================================================================
 	*/
 	typedef enum
 	{
-		k_EUniverseInvalid = 0,
-		k_EUniversePublic = 1,
-		k_EUniverseBeta = 2,
-		k_EUniverseInternal = 3,
-		k_EUniverseDev = 4,
-		k_EUniverseMax
-	} EUniverse;
+		UNIVERSE_INVALID,
+		UNIVERSE_PUBLIC,
+		UNIVERSE_BETA,
+		UNIVERSE_INTERNAL,
+		UNIVERSE_DEV,
+		UNIVERSE_MAX
+	} eUniverse;
+	/*
+	//=====================================================================================
+	*/
+	typedef enum
+	{
+		PERSONA_STATE_OFFLINE,
+		PERSONA_STATE_ONLINE,
+		PERSONA_STATE_BUSY,
+		PERSONA_STATE_AWAY,
+		PERSONA_STATE_SNOOZE,
+		PERSONA_STATE_LOOKINGTOTRADE,
+		PERSONA_STATE_LOOKINGTOPLAY,
+		PERSONA_STATE_INVISIBLE,
+		PERSONA_STATE_MAX
+	} ePersonaState;
 	/*
 	//=====================================================================================
 	*/
@@ -620,54 +635,54 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
-		unsigned int m_nAppID : 24;
-		unsigned int m_nType : 8;
-		unsigned int m_nModID : 32;
-	} GameID_t;
+		DWORD iAppID : 24;
+		DWORD iType : 8;
+		DWORD iModID : 32;
+	} sGameID;
 	/*
 	//=====================================================================================
 	*/
 	typedef union
 	{
-		unsigned __int64 m_ulGameID;
-		GameID_t m_gameID;
-	} CGameID;
+		QWORD iGameID;
+		sGameID GameID;
+	} uGameID;
 	/*
 	//=====================================================================================
 	*/
 	typedef struct
 	{
-		unsigned __int32 m_unAccountID : 32;
-		unsigned __int32 m_unAccountInstance : 20;
-		unsigned __int32 m_EAccountType : 4;
-		__int32 m_EUniverse : 8;
-	} SteamIDComponent_t;
+		DWORD iAccountID : 32;
+		DWORD iAccountInstance : 20;
+		DWORD iAccountType : 4;
+		eUniverse iUniverse : 8;
+	} sSteamIDComponent;
 	/*
 	//=====================================================================================
 	*/
 	typedef union
 	{
-		SteamIDComponent_t m_comp;
-		unsigned __int64 m_unAll64Bits;
-	} SteamID_t;
+		sSteamIDComponent SteamIDComponent;
+		QWORD iAll64Bits;
+	} uSteamID;
 	/*
 	//=====================================================================================
 	*/
 	typedef struct
 	{
-		SteamID_t m_steamid;
-	} CSteamID;
+		uSteamID SteamID;
+	} sSteamID;
 	/*
 	//=====================================================================================
 	*/
 	typedef struct
 	{
-		CGameID m_gameID;
-		unsigned int m_unGameIP;
-		unsigned __int16 m_usGamePort;
-		unsigned __int16 m_usQueryPort;
-		CSteamID m_steamIDLobby;
-	} FriendGameInfo_t;
+		uGameID GameID;
+		DWORD iGameIP;
+		WORD iGamePort;
+		WORD iQueryPort;
+		sSteamID SteamID;
+	} sFriendGameInfo;
 	/*
 	//=====================================================================================
 	*/

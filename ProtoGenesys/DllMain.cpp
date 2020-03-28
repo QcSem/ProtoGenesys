@@ -33,28 +33,28 @@ int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 typedef int(USERCALL* tGetPlayerStatus)(int localnum, DWORD xuid1, DWORD xuid2);
 tGetPlayerStatus oGetPlayerStatus = (tGetPlayerStatus)dwGetPlayerStatus;
 
-int FASTCALL hGetSteamID(DWORD** _this, void* edx, int a2);
-typedef int (FASTCALL* tGetSteamID)(DWORD** _this, void* edx, int a2);
+sSteamID FASTCALL hGetSteamID(DWORD** _this, void* edx, int a2);
+typedef sSteamID(FASTCALL* tGetSteamID)(DWORD** _this, void* edx, int a2);
 tGetSteamID oGetSteamID;
 
-bool FASTCALL hGetFriendGamePlayed(CSteamID steamIDFriend, int unk1, int unk2, FriendGameInfo_t* gameInfo);
-typedef bool(FASTCALL* tGetFriendGamePlayed)(CSteamID steamIDFriend, int unk1, int unk2, FriendGameInfo_t* gameInfo);
+bool FASTCALL hGetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
+typedef bool(FASTCALL* tGetFriendGamePlayed)(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
 tGetFriendGamePlayed oGetFriendGamePlayed;
 
-int FASTCALL hGetFriendPersonaState(DWORD** _this, void* edx, CSteamID steamIDFriend);
-typedef int(FASTCALL* tGetFriendPersonaState)(DWORD** _this, void* edx, CSteamID steamIDFriend);
+ePersonaState FASTCALL hGetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid);
+typedef ePersonaState(FASTCALL* tGetFriendPersonaState)(DWORD** _this, void* edx, sSteamID steamid);
 tGetFriendPersonaState oGetFriendPersonaState;
 
-LPCSTR FASTCALL hGetFriendPersonaName(DWORD** _this, void* edx, CSteamID steamIDFriend);
-typedef LPCSTR(FASTCALL* tGetFriendPersonaName)(DWORD** _this, void* edx, CSteamID steamIDFriend);
+LPCSTR FASTCALL hGetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid);
+typedef LPCSTR(FASTCALL* tGetFriendPersonaName)(DWORD** _this, void* edx, sSteamID steamid);
 tGetFriendPersonaName oGetFriendPersonaName;
 
-int FASTCALL hGetFriendCount(DWORD** _this, void* edx, int iFriendFlags);
-typedef int(FASTCALL* tGetFriendCount)(DWORD** _this, void* edx, int iFriendFlags);
+int FASTCALL hGetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags);
+typedef int(FASTCALL* tGetFriendCount)(DWORD** _this, void* edx, eFriendFlags friendflags);
 tGetFriendCount oGetFriendCount;
 
-void FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, int64_t* pSteamID, int iFriend, int iFriendFlags);
-typedef void(FASTCALL* tGetFriendByIndex)(DWORD** _this, void* edx, int64_t* pSteamID, int iFriend, int iFriendFlags);
+sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
+typedef sSteamID(FASTCALL* tGetFriendByIndex)(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
 tGetFriendByIndex oGetFriendByIndex;
 
 //=====================================================================================
@@ -86,44 +86,44 @@ int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
 
 //=====================================================================================
 
-int FASTCALL hGetSteamID(DWORD** _this, void* edx, int a2)
+sSteamID FASTCALL hGetSteamID(DWORD** _this, void* edx, int a2)
 {
 	return _hooks.GetSteamID(oGetSteamID(_this, edx, a2));
 }
 
 //=====================================================================================
 
-bool FASTCALL hGetFriendGamePlayed(CSteamID steamIDFriend, int unk1, int unk2, FriendGameInfo_t* gameInfo)
+bool FASTCALL hGetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo)
 {
-	return _hooks.GetFriendGamePlayed(steamIDFriend, unk1, unk2, gameInfo);
+	return _hooks.GetFriendGamePlayed(steamid, unk1, unk2, friendgameinfo);
 }
 
 //=====================================================================================
 
-int FASTCALL hGetFriendPersonaState(DWORD** _this, void* edx, CSteamID steamIDFriend)
+ePersonaState FASTCALL hGetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid)
 {
-	return _hooks.GetFriendPersonaState(_this, edx, steamIDFriend);
+	return _hooks.GetFriendPersonaState(_this, edx, steamid);
 }
 
 //=====================================================================================
 
-LPCSTR FASTCALL hGetFriendPersonaName(DWORD** _this, void* edx, CSteamID steamIDFriend)
+LPCSTR FASTCALL hGetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid)
 {
-	return _hooks.GetFriendPersonaName(_this, edx, steamIDFriend);
+	return _hooks.GetFriendPersonaName(_this, edx, steamid);
 }
 
 //=====================================================================================
 
-int FASTCALL hGetFriendCount(DWORD** _this, void* edx, int iFriendFlags)
+int FASTCALL hGetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags)
 {
-	return _hooks.GetFriendCount(_this, edx, iFriendFlags);
+	return _hooks.GetFriendCount(_this, edx, friendflags);
 }
 
 //=====================================================================================
 
-void FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, int64_t* pSteamID, int iFriend, int iFriendFlags)
+sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags)
 {
-	return _hooks.GetFriendByIndex(_this, edx, pSteamID, iFriend, iFriendFlags);
+	return _hooks.GetFriendByIndex(_this, edx, steamid, _friend, friendflags);
 }
 
 //=====================================================================================
@@ -213,7 +213,7 @@ VOID WINAPI SteamFriends()
 	if (!dwSteamFriendsVTable)
 		return;
 
-	oGetFriendCount = *(tGetSteamID*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x3);
+	oGetFriendCount = *(tGetFriendCount*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x3);
 	oGetFriendByIndex = *(tGetFriendByIndex*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x4);
 	oGetFriendPersonaState = *(tGetFriendPersonaState*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x6);
 	oGetFriendPersonaName = *(tGetFriendPersonaName*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x7);

@@ -326,66 +326,68 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	int cHooks::GetSteamID(DWORD steamID)
+	sSteamID cHooks::GetSteamID(sSteamID steamid)
 	{
-		*(QWORD*)steamID = _hooks.dwXuidOverride;
+		*(QWORD*)steamid.SteamID.iAll64Bits = _hooks.dwXuidOverride;
 
-		return steamID;
+		return steamid;
 	}
 	/*
 	//=====================================================================================
 	*/
-	bool cHooks::GetFriendGamePlayed(CSteamID steamIDFriend, int unk1, int unk2, FriendGameInfo_t* gameInfo)
+	bool cHooks::GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo)
 	{
-		gameInfo->m_gameID.m_ulGameID = 202990;
+		friendgameinfo->GameID.iGameID = 202990;
 		return true;
 	}
 	/*
 	//=====================================================================================
 	*/
-	int cHooks::GetFriendPersonaState(DWORD** _this, void* edx, CSteamID steamIDFriend)
+	ePersonaState cHooks::GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid)
 	{
-		return 4;
+		return PERSONA_STATE_ONLINE;
 	}
 	/*
 	//=====================================================================================
 	*/
-	LPCSTR cHooks::GetFriendPersonaName(DWORD** _this, void* edx, CSteamID steamIDFriend)
+	LPCSTR cHooks::GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid)
 	{
-		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamIDFriend](std::pair<int64_t, std::string>& _friend) { return steamIDFriend.m_steamid.m_unAll64Bits == _friend.first; });
+		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamid](std::pair<QWORD, std::string>& _friend) { return steamid.SteamID.iAll64Bits == _friend.first; });
 
 		return Friend->second.c_str();
 	}
 	/*
 	//=====================================================================================
 	*/
-	int cHooks::GetFriendCount(DWORD** _this, void* edx, int iFriendFlags)
+	int cHooks::GetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags)
 	{
-		int friendcount = 0;
+		int iFriendCount = 0;
 
-		if (iFriendFlags & k_EFriendFlagImmediate)
+		if (friendflags & FRIEND_FLAG_IMMEDIATE)
 		{
-			friendcount = vFriends.size();
+			iFriendCount = vFriends.size();
 		}
 
-		return friendcount;
+		return iFriendCount;
 	}
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::GetFriendByIndex(DWORD** _this, void* edx, int64_t* pSteamID, int iFriend, int iFriendFlags)
+	sSteamID cHooks::GetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags)
 	{
-		int64_t spoofID = 0;
+		sSteamID SteamID;
+		QWORD qwSpoofID = 0;
 
-		if (iFriendFlags & k_EFriendFlagImmediate)
+		if (friendflags & FRIEND_FLAG_IMMEDIATE)
 		{
-			if (iFriend >= 0 && iFriend < (int)vFriends.size())
+			if (_friend >= 0 && _friend < (int)vFriends.size())
 			{
-				spoofID = vFriends[iFriend].first;
+				qwSpoofID = vFriends[_friend].first;
 			}
 		}
 
-		*pSteamID = spoofID;
+		*steamid = qwSpoofID;
+		return SteamID;
 	}
 	/*
 	//=====================================================================================
@@ -394,16 +396,16 @@ namespace ProtoGenesys
 	{
 		vFriends.clear();
 
-		std::ifstream file("friends.txt");
-		std::string str;
+		std::ifstream File("friends.txt");
+		std::string szLine;
 
-		while (std::getline(file, str))
+		while (std::getline(File, szLine))
 		{
 			size_t iPosition;
 
-			if ((iPosition = str.find(" ")) != std::string::npos)
+			if ((iPosition = szLine.find(" ")) != std::string::npos)
 			{
-				vFriends.push_back(make_pair(_atoi64(str.substr(0, iPosition).c_str()), str.substr(iPosition)));
+				vFriends.push_back(make_pair(_atoi64(szLine.substr(0, iPosition).c_str()), szLine.substr(iPosition)));
 			}
 		}
 	}
