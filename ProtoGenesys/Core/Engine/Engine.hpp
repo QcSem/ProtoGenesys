@@ -295,7 +295,8 @@ namespace ProtoGenesys
 		int iGravity;
 		char _0x90[0x4];
 		int iSpeed;
-		char _0x98[0x138];
+		Vector3 vDeltaAngles;
+		char _0xA4[0x12C];
 		int iWeaponState[2];
 		char _0x1D8[0x8];
 		float flZoomProgress;
@@ -724,6 +725,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
 	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
 	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
+	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 	static DWORD_PTR dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
 	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;

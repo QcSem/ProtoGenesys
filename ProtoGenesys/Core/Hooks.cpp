@@ -319,6 +319,17 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cHooks::CalcEntityLerpPositions(int localnum, sEntity* entity)
+	{
+		if (entity->NextEntityState.iEntityNum == CG->iClientNum)
+		{
+			CG->Client[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->vRefDefViewAngles[0];
+			entity->vAngles[1] = _antiAim.vAntiAimAngles[1] + CG->vRefDefViewAngles[1];
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
 	int cHooks::GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
 	{
 		return 1;

@@ -25,9 +25,13 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval,
 typedef HRESULT(WINAPI* tPresent)(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 tPresent oPresent = *(tPresent*)dwPresent;
 
-INT USERCALL hProcessText(LPSTR key, LPSTR value, SIZE_T length);
-typedef INT(USERCALL* tProcessText)(LPSTR key, LPSTR value, SIZE_T length);
+int USERCALL hProcessText(LPSTR key, LPSTR value, SIZE_T length);
+typedef int(USERCALL* tProcessText)(LPSTR key, LPSTR value, SIZE_T length);
 tProcessText oProcessText = (tProcessText)dwProcessText;
+
+int USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
+typedef int(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
+tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
 
 int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 typedef int(USERCALL* tGetPlayerStatus)(int localnum, DWORD xuid1, DWORD xuid2);
@@ -68,11 +72,22 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* swapchain, _In_ UINT syncinterval, 
 
 //=====================================================================================
 
-INT USERCALL hProcessText(LPSTR key, LPSTR value, SIZE_T length)
+int USERCALL hProcessText(LPSTR key, LPSTR value, SIZE_T length)
 {
 	_hooks.ProcessText(key, value, length);
 
 	return oProcessText(key, value, length);
+}
+
+//=====================================================================================
+
+int USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity)
+{
+	int iReturn = oCalcEntityLerpPositions(localnum, entity);
+
+	_hooks.CalcEntityLerpPositions(localnum, entity);
+
+	return iReturn;
 }
 
 //=====================================================================================
@@ -154,6 +169,7 @@ VOID Initialize()
 	Hook(oPresent, hPresent);
 	Hook(oProcessText, hProcessText);
 	Hook(oGetPlayerStatus, hGetPlayerStatus);
+	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 
 	SteamFriends();
 }
@@ -173,6 +189,7 @@ VOID Deallocate()
 	UnHook(oPresent, hPresent);
 	UnHook(oProcessText, hProcessText);
 	UnHook(oGetPlayerStatus, hGetPlayerStatus);
+	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 
 	if (_hooks.bUserHooked)
 		UnHook(oGetSteamID, hGetSteamID);

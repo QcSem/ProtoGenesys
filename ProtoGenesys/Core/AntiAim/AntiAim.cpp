@@ -21,8 +21,11 @@ namespace ProtoGenesys
 				if (flAngle > 360.0f)
 					flAngle -= 360.0f;
 
-				usercmd->iViewAngles[0] += AngleToShort(70.0f - CG->vRefDefViewAngles[0]);
-				usercmd->iViewAngles[1] += AngleToShort(flAngle - CG->vRefDefViewAngles[1]);
+				vAntiAimAngles[0] = 70.0f - CG->vRefDefViewAngles[0];
+				vAntiAimAngles[1] = flAngle - CG->vRefDefViewAngles[1];
+
+				usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+				usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 
 				flAngle += 40.0f;
 			}
@@ -34,26 +37,38 @@ namespace ProtoGenesys
 				switch (iMode)
 				{
 				case 1:
-					usercmd->iViewAngles[0] += AngleToShort(-80.0f - CG->vRefDefViewAngles[0]);
-					usercmd->iViewAngles[1] += AngleToShort(0.0f - CG->vRefDefViewAngles[1]);
+					vAntiAimAngles[0] = -80.0f - CG->vRefDefViewAngles[0];
+					vAntiAimAngles[1] = 0.0f - CG->vRefDefViewAngles[1];
+
+					usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+					usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 					iMode = 2;
 					break;
 
 				case 2:
-					usercmd->iViewAngles[0] += AngleToShort(80.0f - CG->vRefDefViewAngles[0]);
-					usercmd->iViewAngles[1] += AngleToShort(90.0f - CG->vRefDefViewAngles[1]);
+					vAntiAimAngles[0] = 80.0f - CG->vRefDefViewAngles[0];
+					vAntiAimAngles[1] = 90.0f - CG->vRefDefViewAngles[1];
+
+					usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+					usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 					iMode = 3;
 					break;
 
 				case 3:
-					usercmd->iViewAngles[0] += AngleToShort(-80.0f - CG->vRefDefViewAngles[0]);
-					usercmd->iViewAngles[1] += AngleToShort(180.0f - CG->vRefDefViewAngles[1]);
+					vAntiAimAngles[0] = -80.0f - CG->vRefDefViewAngles[0];
+					vAntiAimAngles[1] = 180.0f - CG->vRefDefViewAngles[1];
+
+					usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+					usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 					iMode = 4;
 					break;
 
 				case 4:
-					usercmd->iViewAngles[0] += AngleToShort(80.0f - CG->vRefDefViewAngles[0]);
-					usercmd->iViewAngles[1] += AngleToShort(270.0f - CG->vRefDefViewAngles[1]);
+					vAntiAimAngles[0] = 80.0f - CG->vRefDefViewAngles[0];
+					vAntiAimAngles[1] = 270.0f - CG->vRefDefViewAngles[1];
+
+					usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+					usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 					iMode = 1;
 					break;
 				}
@@ -64,8 +79,11 @@ namespace ProtoGenesys
 				std::random_device Device;
 				std::uniform_real_distribution<float> RandomPitch(-80.0f, 80.0f), RandomYaw(0.0f, 360.0f);
 
-				usercmd->iViewAngles[0] += AngleToShort(RandomPitch(Device) - CG->vRefDefViewAngles[0]);
-				usercmd->iViewAngles[1] += AngleToShort(RandomYaw(Device) - CG->vRefDefViewAngles[1]);
+				vAntiAimAngles[0] = RandomPitch(Device) - CG->vRefDefViewAngles[0];
+				vAntiAimAngles[1] = RandomYaw(Device) - CG->vRefDefViewAngles[1];
+
+				usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+				usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 			}
 
 			else if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_REVERSED)
@@ -74,22 +92,31 @@ namespace ProtoGenesys
 				{
 					_mathematics.CalculateAngles(CG->vOrigin, CG->Entity[_targetList.iRiotShieldTarget].vOrigin, _targetList.vRiotShieldTarget);
 
-					usercmd->iViewAngles[0] += AngleToShort(_targetList.vRiotShieldTarget[0] - 40.0f);
-					usercmd->iViewAngles[1] += AngleToShort(_targetList.vRiotShieldTarget[1] - 180.0f);
+					vAntiAimAngles[0] = _targetList.vRiotShieldTarget[0] - 40.0f;
+					vAntiAimAngles[1] = _targetList.vRiotShieldTarget[1] - 180.0f;
+
+					usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+					usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 				}
 				
 				else
 				{
 					if (_aimBot.AimState.bIsAutoAiming)
 					{
-						usercmd->iViewAngles[0] += AngleToShort(_aimBot.AimState.vAimbotAngles[0] - 40.0f);
-						usercmd->iViewAngles[1] += AngleToShort(_aimBot.AimState.vAimbotAngles[1] - 180.0f);
+						vAntiAimAngles[0] = _aimBot.AimState.vAimbotAngles[0] - 40.0f;
+						vAntiAimAngles[1] = _aimBot.AimState.vAimbotAngles[1] - 180.0f;
+
+						usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+						usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 					}
 
 					else
 					{
-						usercmd->iViewAngles[0] += AngleToShort(-40.0f);
-						usercmd->iViewAngles[1] += AngleToShort(-180.0f);
+						vAntiAimAngles[0] = -40.0f;
+						vAntiAimAngles[1] = -180.0f;
+
+						usercmd->iViewAngles[0] += AngleToShort(vAntiAimAngles[0]);
+						usercmd->iViewAngles[1] += AngleToShort(vAntiAimAngles[1]);
 					}
 				}
 			}

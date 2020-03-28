@@ -44,6 +44,7 @@ namespace ProtoGenesys
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
 		void ProcessText(LPSTR key, LPSTR value, SIZE_T length);
+		void CalcEntityLerpPositions(int localnum, sEntity* entity);
 
 		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 		sSteamID GetSteamID(sSteamID steamid);

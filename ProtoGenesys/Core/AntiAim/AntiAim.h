@@ -12,6 +12,8 @@ namespace ProtoGenesys
 	{
 	public:
 
+		Vector3 vAntiAimAngles;
+
 		void AntiAim(sUserCmd* usercmd);
 	} extern _antiAim;
 }
