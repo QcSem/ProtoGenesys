@@ -321,10 +321,13 @@ namespace ProtoGenesys
 	*/
 	void cHooks::CalcEntityLerpPositions(int localnum, sEntity* entity)
 	{
-		if (entity->NextEntityState.iEntityNum == CG->iClientNum)
+		if (LocalClientIsInGame() && _profiler.gAntiAim->Custom.bValue > cProfiler::ANTIAIM_OFF)
 		{
-			CG->Client[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->vRefDefViewAngles[0];
-			entity->vAngles[1] = _antiAim.vAntiAimAngles[1] + CG->vRefDefViewAngles[1];
+			if (entity->NextEntityState.iEntityNum == CG->iClientNum)
+			{
+				CG->Client[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->vRefDefViewAngles[0];
+				entity->vViewAngles[1] = _antiAim.vAntiAimAngles[1] + CG->vRefDefViewAngles[1];
+			}
 		}
 	}
 	/*

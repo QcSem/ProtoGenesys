@@ -442,7 +442,7 @@ namespace ProtoGenesys
 		short wUsedForPlayerMesh;
 		char _0x6[0x26];
 		Vector3 vOrigin;
-		Vector3 vAngles;
+		Vector3 vViewAngles;
 		char _0x44[0x11C];
 		sLerpEntityState CurrentEntityState;
 		sEntityState NextEntityState;
