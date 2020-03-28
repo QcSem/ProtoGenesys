@@ -10,9 +10,7 @@ namespace ProtoGenesys
 
 	void cAntiAim::AntiAim(sUserCmd* usercmd)
 	{
-		if (GetWeaponDef(CG->Entity[CG->iClientNum].NextEntityState.iWeaponID) && !WeaponIsVehicle() && 
-			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_PRONE) &&
-			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags2 & EF2_MANTLE))
+		if (IsAntiAiming())
 		{
 			if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_SPINBOT)
 			{
@@ -121,6 +119,15 @@ namespace ProtoGenesys
 				}
 			}
 		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cAntiAim::IsAntiAiming()
+	{
+		return (GetWeaponDef(CG->Entity[CG->iClientNum].NextEntityState.iWeaponID) && !WeaponIsVehicle() &&
+			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_PRONE) &&
+			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags2 & EF2_MANTLE));
 	}
 }
 
