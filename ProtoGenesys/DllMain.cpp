@@ -29,9 +29,13 @@ int USERCALL hProcessText(LPSTR key, LPSTR value, SIZE_T length);
 typedef int(USERCALL* tProcessText)(LPSTR key, LPSTR value, SIZE_T length);
 tProcessText oProcessText = (tProcessText)dwProcessText;
 
-int USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
-typedef int(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
+void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
+typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
+
+void USERCALL hOffsetThirdPersonView(int localnum1, int localnum2);
+typedef void(USERCALL* tOffsetThirdPersonView)(int localnum1, int localnum2);
+tOffsetThirdPersonView oOffsetThirdPersonView = (tOffsetThirdPersonView)dwOffsetThirdPersonView;
 
 int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 typedef int(USERCALL* tGetPlayerStatus)(int localnum, DWORD xuid1, DWORD xuid2);
@@ -81,13 +85,20 @@ int USERCALL hProcessText(LPSTR key, LPSTR value, SIZE_T length)
 
 //=====================================================================================
 
-int USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity)
+void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity)
 {
-	int iReturn = oCalcEntityLerpPositions(localnum, entity);
+	oCalcEntityLerpPositions(localnum, entity);
 
-	_hooks.CalcEntityLerpPositions(localnum, entity);
+	return _hooks.CalcEntityLerpPositions(localnum, entity);
+}
 
-	return iReturn;
+//=====================================================================================
+
+void USERCALL hOffsetThirdPersonView(int localnum1, int localnum2)
+{
+	oOffsetThirdPersonView(localnum1, localnum2);
+
+	return _hooks.OffsetThirdPersonView(localnum1, localnum2);
 }
 
 //=====================================================================================
@@ -170,6 +181,7 @@ VOID Initialize()
 	Hook(oProcessText, hProcessText);
 	Hook(oGetPlayerStatus, hGetPlayerStatus);
 	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
+	Hook(oOffsetThirdPersonView, hOffsetThirdPersonView);
 
 	SteamFriends();
 }
@@ -190,6 +202,7 @@ VOID Deallocate()
 	UnHook(oProcessText, hProcessText);
 	UnHook(oGetPlayerStatus, hGetPlayerStatus);
 	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
+	UnHook(oOffsetThirdPersonView, hOffsetThirdPersonView);
 
 	if (_hooks.bUserHooked)
 		UnHook(oGetSteamID, hGetSteamID);

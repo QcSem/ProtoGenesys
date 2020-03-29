@@ -339,6 +339,33 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cHooks::OffsetThirdPersonView(int localnum1, int localnum2)
+	{
+		if (LocalClientIsInGame())
+		{
+			if (_antiAim.IsAntiAiming())
+			{
+				if (_profiler.gAntiAim->Custom.iValue > cProfiler::ANTIAIM_OFF)
+				{
+					Vector3 vHead;
+					LPVOID pDObj = GetDObj(&CG->Entity[CG->iClientNum]);
+
+					if (pDObj)
+					{
+						GetTagPosition(&CG->Entity[CG->iClientNum], RegisterTag(szBones[BONE_HEAD].second.c_str()), GetDObj(&CG->Entity[CG->iClientNum]), vHead);
+
+						VectorSubtract(vHead, CG->Entity[CG->iClientNum].vOrigin, vHead);
+						VectorSubtract(CG->RefDef.vViewOrg, vHead, CG->RefDef.vViewOrg);
+
+						CG->RefDef.vViewOrg[2] += M_METERS;
+					}
+				}
+			}
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
 	int cHooks::GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
 	{
 		return 1;

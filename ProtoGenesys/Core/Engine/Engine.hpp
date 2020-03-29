@@ -494,7 +494,9 @@ namespace ProtoGenesys
 		Vector3 vRefDefViewAngles;
 		char _0x648FC[0x130];
 		Vector3 vWeaponAngles;
-		char _0x64A38[0x5028];
+		char _0x64A38[0x4D90];
+		Vector3 vKickAngles;
+		char _0x697D4[0x28C];
 		sClientInfo Client[MAX_CLIENTS];
 		char _0x72AF0[0xE06C];
 		float flSpread;
@@ -726,6 +728,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
 	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
 	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
+	static DWORD_PTR dwOffsetThirdPersonView = bIsSteamVersion ? 0x7D5360 : 0x7D5C50;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 	static DWORD_PTR dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
 	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
