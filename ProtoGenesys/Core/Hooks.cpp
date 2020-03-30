@@ -325,13 +325,10 @@ namespace ProtoGenesys
 		{
 			if (_antiAim.IsAntiAiming())
 			{
-				if (_profiler.gAntiAim->Custom.iValue > cProfiler::ANTIAIM_OFF)
+				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
-					if (entity->NextEntityState.iEntityNum == CG->iClientNum)
-					{
-						CG->Client[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->vRefDefViewAngles[0];
-						entity->vViewAngles[1] = _antiAim.vAntiAimAngles[1] + CG->vRefDefViewAngles[1];
-					}
+					CG->Client[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->vRefDefViewAngles[0];
+					entity->vViewAngles[1] = _antiAim.vAntiAimAngles[1] + CG->vRefDefViewAngles[1];
 				}
 			}
 		}
@@ -343,22 +340,19 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame())
 		{
-			if (_antiAim.IsAntiAiming())
+			if (_antiAim.IsAntiAiming() && (CG->Entity[CG->iClientNum].iAlive & 2))
 			{
-				if (_profiler.gAntiAim->Custom.iValue > cProfiler::ANTIAIM_OFF)
+				Vector3 vHead;
+				LPVOID pDObj = GetDObj(&CG->Entity[CG->iClientNum]);
+
+				if (pDObj)
 				{
-					Vector3 vHead;
-					LPVOID pDObj = GetDObj(&CG->Entity[CG->iClientNum]);
+					GetTagPosition(&CG->Entity[CG->iClientNum], RegisterTag(szBones[BONE_HEAD].second.c_str()), pDObj, vHead);
 
-					if (pDObj)
-					{
-						GetTagPosition(&CG->Entity[CG->iClientNum], RegisterTag(szBones[BONE_HEAD].second.c_str()), GetDObj(&CG->Entity[CG->iClientNum]), vHead);
+					VectorSubtract(vHead, CG->Entity[CG->iClientNum].vOrigin, vHead);
+					VectorSubtract(CG->RefDef.vViewOrg, vHead, CG->RefDef.vViewOrg);
 
-						VectorSubtract(vHead, CG->Entity[CG->iClientNum].vOrigin, vHead);
-						VectorSubtract(CG->RefDef.vViewOrg, vHead, CG->RefDef.vViewOrg);
-
-						CG->RefDef.vViewOrg[2] += M_METERS;
-					}
+					CG->RefDef.vViewOrg[2] += M_METERS;
 				}
 			}
 		}
