@@ -321,7 +321,7 @@ namespace ProtoGenesys
 	*/
 	void cHooks::CalcEntityLerpPositions(int localnum, sEntity* entity)
 	{
-		if (LocalClientIsInGame())
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
 			if (_antiAim.IsAntiAiming())
 			{
@@ -338,9 +338,9 @@ namespace ProtoGenesys
 	*/
 	void cHooks::OffsetThirdPersonView(int localnum1, int localnum2)
 	{
-		if (LocalClientIsInGame())
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_antiAim.IsAntiAiming() && (CG->Entity[CG->iClientNum].iAlive & 2))
+			if (_antiAim.IsAntiAiming() && _targetList.IsLocalPlayerValid())
 			{
 				Vector3 vHead;
 				LPVOID pDObj = GetDObj(&CG->Entity[CG->iClientNum]);

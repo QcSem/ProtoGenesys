@@ -22,7 +22,7 @@ namespace ProtoGenesys
 		{
 			EntityList[i].bIsValid = false;
 
-			if (!EntityIsValid(i))
+			if (!IsValid(i))
 				continue;
 
 			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
@@ -71,7 +71,7 @@ namespace ProtoGenesys
 				_mathematics.WorldToCompass(CG->Entity[i].vOrigin, _drawing.Compass.vCompassPosition, _drawing.Compass.flCompassSize, _drawing.Compass.vArrowPosition[i]);
 				_mathematics.WorldToRadar(CG->Entity[i].vOrigin, _drawing.Radar.vRadarPosition, _drawing.Radar.flScale, _drawing.Radar.flRadarSize, _drawing.Radar.flBlipSize, _drawing.Radar.vBlipPosition[i]);
 
-				if (!EntityIsEnemy(i))
+				if (!IsEnemy(i))
 				{
 					EntityList[i].cColor = _profiler.gColorAllies->Custom.cValue;
 					continue;
@@ -194,7 +194,14 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::EntityIsValid(int index)
+	bool cTargetList::IsLocalPlayerValid()
+	{
+		return ((CG->Entity[CG->iClientNum].iAlive & 2) && !(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cTargetList::IsValid(int index)
 	{
 		if (CG->Entity[index].NextEntityState.wEntityType == ET_PLAYER)
 		{
@@ -213,7 +220,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::EntityIsEnemy(int index)
+	bool cTargetList::IsEnemy(int index)
 	{
 		if (CG->Entity[index].NextEntityState.wEntityType == ET_PLAYER)
 		{

@@ -485,8 +485,8 @@ namespace ProtoGenesys
 				{
 				case ET_PLAYER:
 				{
-					if ((_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.EntityIsEnemy(i)) ||
-						(_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.EntityIsEnemy(i)) ||
+					if ((_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.IsEnemy(i)) ||
+						(_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.IsEnemy(i)) ||
 						_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
 						DrawClient(&CG->Entity[i], _targetList.EntityList[i].vBones2D, _targetList.EntityList[i].vCorners2D, _targetList.EntityList[i].vCenter2D, _targetList.EntityList[i].vLower.y - _targetList.EntityList[i].vUpper.y, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->vOrigin), CG->Client[i].szName, _targetList.EntityList[i].cColor);
@@ -554,8 +554,8 @@ namespace ProtoGenesys
 			{
 				if (_targetList.EntityList[i].bIsValid)
 				{
-					if ((_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.EntityIsEnemy(i)) ||
-						(_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.EntityIsEnemy(i)) ||
+					if ((_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.IsEnemy(i)) ||
+						(_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.IsEnemy(i)) ||
 						_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
 						float flAngle = (((CG->vRefDefViewAngles[1] - CG->Entity[i].vViewAngles[1]) + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
@@ -608,8 +608,8 @@ namespace ProtoGenesys
 			{
 				if (_targetList.EntityList[i].bIsValid)
 				{
-					if ((_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.EntityIsEnemy(i)) ||
-						(_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.EntityIsEnemy(i)) ||
+					if ((_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.IsEnemy(i)) ||
+						(_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.IsEnemy(i)) ||
 						_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
 						ImGui::GetWindowDrawList()->AddCircleFilled(Radar.vBlipPosition[i], Radar.flBlipSize / 2.0f,

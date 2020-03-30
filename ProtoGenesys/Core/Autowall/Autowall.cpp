@@ -320,7 +320,7 @@ namespace ProtoGenesys
 
 		if (wHitID < MAX_CLIENTS)
 		{
-			if (!_targetList.EntityIsEnemy(wHitID))
+			if (!_targetList.IsEnemy(wHitID))
 			{
 				return true;
 			}
