@@ -18,7 +18,7 @@ namespace ProtoGenesys
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
 
-		MakeVector((WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles : CG->vWeaponAngles, vAimAngles);
+		MakeVector(CG->vRefDefViewAngles, vAimAngles);
 		MakeVector(vAngles, vAngles);
 
 		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
@@ -173,8 +173,8 @@ namespace ProtoGenesys
 
 		NormalizeAngles(angles);
 
-		angles[0] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
-		angles[1] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
+		angles[0] -= CG->vRefDefViewAngles[0];
+		angles[1] -= CG->vRefDefViewAngles[1];
 
 		NormalizeAngles(angles);
 	}
