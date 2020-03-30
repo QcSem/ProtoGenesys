@@ -291,8 +291,8 @@ namespace ProtoGenesys
 
 				if (!szKillspam.empty())
 				{
-					szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", std::string(CG->Client[attacker].szClan) + std::string(CG->Client[attacker].szName));
-					szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", std::string(CG->Client[victim].szClan) + std::string(CG->Client[victim].szName));
+					szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", CG->Client[attacker].szName);
+					szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", CG->Client[victim].szName);
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", 
 						VariadicText("%u.%u.%u.%u", 
 							(BYTE)ServerSession[victim].szIP[0], 
