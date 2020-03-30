@@ -763,7 +763,7 @@ namespace ProtoGenesys
 							} ImGui::PopID(); ImGui::SameLine();
 
 							ImGui::PushItemWidth(150.0f);
-							ImGui::InputText(VariadicText("%i: %s", i, ServerSession[i].szName).c_str(),
+							ImGui::InputText(VariadicText("%i: %s", CG->Client[i].iClientNum, CG->Client[i].szName).c_str(),
 								(LPSTR)VariadicText("%u.%u.%u.%u",
 									(BYTE)ServerSession[i].szIP[0],
 									(BYTE)ServerSession[i].szIP[1],
