@@ -556,7 +556,7 @@ namespace ProtoGenesys
 
 		else
 		{
-			Cbuf_AddText(command);
+			AddReliableCommand(command);
 		}
 	}
 	/*
