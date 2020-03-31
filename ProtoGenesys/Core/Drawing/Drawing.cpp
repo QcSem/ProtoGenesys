@@ -568,12 +568,14 @@ namespace ProtoGenesys
 						ImVec2 vFinalY = Compass.vArrowPosition[i] + ImRotate(vBaseY, ImCos(flAngle), ImSin(flAngle));
 						ImVec2 vFinalZ = Compass.vArrowPosition[i] + ImRotate(vBaseZ, ImCos(flAngle), ImSin(flAngle));
 
+						bool bHasRiotShield = EntityHasRiotShield(&CG->Entity[i]);
+
 						ImGui::GetWindowDrawList()->AddTriangleFilled(vFinalX, vFinalY, vFinalZ,
 							ImGui::GetColorU32(_targetList.EntityList[i].cColor * ImVec4(1.0f, 1.0f, 1.0f, 0.25f)));
 
-						ImGui::GetWindowDrawList()->AddLine(vFinalX, vFinalY, ImGui::GetColorU32(_targetList.EntityList[i].cColor));
-						ImGui::GetWindowDrawList()->AddLine(vFinalY, vFinalZ, ImGui::GetColorU32(_targetList.EntityList[i].cColor));
-						ImGui::GetWindowDrawList()->AddLine(vFinalZ, vFinalX, ImGui::GetColorU32(_targetList.EntityList[i].cColor));
+						ImGui::GetWindowDrawList()->AddLine(vFinalX, vFinalY, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorRiotShield->Custom.cValue : _targetList.EntityList[i].cColor));
+						ImGui::GetWindowDrawList()->AddLine(vFinalY, vFinalZ, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorRiotShield->Custom.cValue : _targetList.EntityList[i].cColor));
+						ImGui::GetWindowDrawList()->AddLine(vFinalZ, vFinalX, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorRiotShield->Custom.cValue : _targetList.EntityList[i].cColor));
 					}
 				}
 			}
@@ -612,11 +614,13 @@ namespace ProtoGenesys
 						(_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.IsEnemy(i)) ||
 						_profiler.gWallHackMode->Custom.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
+						bool bHasRiotShield = EntityHasRiotShield(&CG->Entity[i]);
+
 						ImGui::GetWindowDrawList()->AddCircleFilled(Radar.vBlipPosition[i], Radar.flBlipSize / 2.0f,
 							ImGui::GetColorU32(_targetList.EntityList[i].cColor * ImVec4(1.0f, 1.0f, 1.0f, 0.25f)));
 
 						ImGui::GetWindowDrawList()->AddCircle(Radar.vBlipPosition[i], Radar.flBlipSize / 2.0f,
-							ImGui::GetColorU32(_targetList.EntityList[i].cColor));
+							ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorRiotShield->Custom.cValue : _targetList.EntityList[i].cColor));
 					}
 				}
 			}

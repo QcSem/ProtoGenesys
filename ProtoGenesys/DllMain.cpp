@@ -25,10 +25,6 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval,
 typedef HRESULT(WINAPI* tPresent)(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 tPresent oPresent = *(tPresent*)dwPresent;
 
-int USERCALL hProcessText(LPSTR key, LPSTR value, SIZE_T length);
-typedef int(USERCALL* tProcessText)(LPSTR key, LPSTR value, SIZE_T length);
-tProcessText oProcessText = (tProcessText)dwProcessText;
-
 void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
 typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
@@ -72,15 +68,6 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* swapchain, _In_ UINT syncinterval, 
 	_mainGui.Present(swapchain, syncinterval, flags);
 
 	return oPresent(swapchain, syncinterval, flags);
-}
-
-//=====================================================================================
-
-int USERCALL hProcessText(LPSTR key, LPSTR value, SIZE_T length)
-{
-	_hooks.ProcessText(key, value, length);
-
-	return oProcessText(key, value, length);
 }
 
 //=====================================================================================
@@ -178,7 +165,6 @@ VOID Initialize()
 	*(DWORD_PTR*)dwNoDeltaDvar = cHooks::VEH_INDEX_NODELTA;
 
 	Hook(oPresent, hPresent);
-	Hook(oProcessText, hProcessText);
 	Hook(oGetPlayerStatus, hGetPlayerStatus);
 	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	Hook(oOffsetThirdPersonView, hOffsetThirdPersonView);
@@ -199,7 +185,6 @@ VOID Deallocate()
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 
 	UnHook(oPresent, hPresent);
-	UnHook(oProcessText, hProcessText);
 	UnHook(oGetPlayerStatus, hGetPlayerStatus);
 	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	UnHook(oOffsetThirdPersonView, hOffsetThirdPersonView);

@@ -30,6 +30,14 @@ namespace ProtoGenesys
 
 				return EXCEPTION_CONTINUE_EXECUTION;
 			}
+
+			if (ExceptionInfo->ContextRecord->Eip == dwRegisterShaderException)
+			{
+				ExceptionInfo->ContextRecord->Edx = dwShader;
+				ExceptionInfo->ContextRecord->Eip += 0x2;
+
+				return EXCEPTION_CONTINUE_EXECUTION;
+			}
 		}
 
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_GUARD_PAGE)
@@ -115,6 +123,7 @@ namespace ProtoGenesys
 				ExceptionInfo->ContextRecord->Eax = dwDrawBigFPS;
 
 				dwSysValue = Sys_GetValue(3);
+				dwShader = RegisterShader("white");
 
 				DrawBigFPS();
 
@@ -303,17 +312,6 @@ namespace ProtoGenesys
 					AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
 				}
 			}
-		}
-	}
-	/*
-	//=====================================================================================
-	*/
-	void cHooks::ProcessText(LPSTR key, LPSTR value, SIZE_T length)
-	{
-		if (!strcmp(key, "clanTag"))
-		{
-			if (strstr(value, "^H") || strstr(value, "^I"))
-				strcpy_s(value, strlen(value) + 1, VariadicText("[%s]", acut::RandomANString(strlen(value) - 2).c_str()).c_str());
 		}
 	}
 	/*

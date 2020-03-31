@@ -29,7 +29,9 @@ namespace ProtoGenesys
 
 		std::vector<std::pair<QWORD, std::string>> vFriends;
 
-		DWORD dwSysValue, dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwAddress;
+		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta,
+			dwSysValue, dwShader, dwAddress;
+
 		LPVOID pVectoredExceptionHandler;
 
 		LONG VectoredExceptionHandler(_In_ LPEXCEPTION_POINTERS ExceptionInfo);
@@ -43,7 +45,6 @@ namespace ProtoGenesys
 		void PredictPlayerState();
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
-		void ProcessText(LPSTR key, LPSTR value, SIZE_T length);
 		void CalcEntityLerpPositions(int localnum, sEntity* entity);
 		void OffsetThirdPersonView(int localnum1, int localnum2);
 

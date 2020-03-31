@@ -707,6 +707,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwOrbitalVsat = 0x12A0CA4;
 
 	static DWORD_PTR dwSysGetValueException = bIsSteamVersion ? 0x635F09 : 0x5EFBB9;
+	static DWORD_PTR dwRegisterShaderException = bIsSteamVersion ? 0x6874E9 : 0x45A8C9;
 	static DWORD_PTR dwConnectPathsException1 = bIsSteamVersion ? 0x43B6DB : 0x53367B;
 	static DWORD_PTR dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
 	static DWORD_PTR dwObituaryException = bIsSteamVersion ? 0x7A345C : 0x7A40EC;
@@ -727,9 +728,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
 	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
 	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
-	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
-	static DWORD_PTR dwOffsetThirdPersonView = bIsSteamVersion ? 0x7D5360 : 0x7D5C50;
-	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
+	static DWORD_PTR dwRegisterShader = bIsSteamVersion ? 0x734000 : 0x734CC0;
 	static DWORD_PTR dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
 	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
 	static DWORD_PTR dwGetDObj = bIsSteamVersion ? 0x5D2590 : 0x4DA190;
@@ -764,6 +763,9 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
 	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
 	static DWORD_PTR dwProcessText = bIsSteamVersion ? 0x66AFA0 : 0x546D30;
+	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
+	static DWORD_PTR dwOffsetThirdPersonView = bIsSteamVersion ? 0x7D5360 : 0x7D5C50;
+	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 
 	static DWORD_PTR dwSwapchain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
 	static DWORD_PTR dwMouseInput = 0x2B69969;
@@ -810,6 +812,13 @@ namespace ProtoGenesys
 	inline DWORD Sys_GetValue(int value)
 	{
 		return VariadicCall<DWORD>(dwSysGetValue, value);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline DWORD RegisterShader(std::string name)
+	{
+		return VariadicCall<DWORD>(dwRegisterShader, name.c_str(), 7, 1, -1);
 	}
 	/*
 	//=====================================================================================
