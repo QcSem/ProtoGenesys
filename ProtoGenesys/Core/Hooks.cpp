@@ -435,7 +435,7 @@ namespace ProtoGenesys
 	{
 		vFriends.clear();
 
-		std::ifstream File("friends.txt");
+		std::ifstream File(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::in);
 		std::string szLine;
 
 		while (std::getline(File, szLine))

@@ -12,6 +12,7 @@
 #define DEFAULT_INI "\\ProtoGenesys.ini"
 #define DEFAULT_LOG "\\ProtoGenesys.log"
 #define DEFAULT_XML "\\ProtoGenesys.xml"
+#define DEFAULT_TXT "\\ProtoGenesys.txt"
 
 //=====================================================================================
 

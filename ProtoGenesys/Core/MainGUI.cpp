@@ -756,7 +756,7 @@ namespace ProtoGenesys
 
 							if (ImGui::Button("Add", ImVec2(50.0f, 0.0f)))
 							{
-								std::ofstream file("friends.txt", std::ios_base::out | std::ios_base::app);
+								std::ofstream file(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::out | std::ios_base::app);
 								file << (std::to_string(CG->Client[i].qwXuid) + " " + CG->Client[i].szName).c_str() << std::endl;
 
 								bPlayerListLog = true;
