@@ -712,7 +712,7 @@ namespace ProtoGenesys
 				}
 
 				ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
-				ImGui::InputText("", szProfilePath, sizeof(szProfilePath), ImGuiInputTextFlags_ReadOnly);
+				ImGui::InputText("", szProfilePath, IM_ARRAYSIZE(szProfilePath), ImGuiInputTextFlags_ReadOnly);
 				ImGui::PopItemWidth();
 				ImGui::End();
 
