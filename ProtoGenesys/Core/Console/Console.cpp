@@ -556,7 +556,7 @@ namespace ProtoGenesys
 
 		else
 		{
-			std::string szCommand = command;
+			std::string szCommand(command);
 
 			szCommand = acut::FindAndReplaceString(szCommand, "%n", "\n");
 			szCommand = acut::FindAndReplaceString(szCommand, "%t", "\t");
