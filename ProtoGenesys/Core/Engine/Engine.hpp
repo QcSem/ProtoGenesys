@@ -364,6 +364,15 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
+		int iSlot;
+		sWeaponDef* WeaponDef;
+		char _0x8[0x8];
+	} sModelMask;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
 		int iInfoValid;
 		int iNextValid;
 		int iClientNum;
@@ -384,11 +393,9 @@ namespace ProtoGenesys
 		Vector3 vViewAngles;
 		char _0x4D0[0xF4];
 		int iWeaponID;
-		char _0x5C8[0x1C0];
-		sWeaponDef* pCurrentWeapon;
-		char _0x78C[0xC];
-		sWeaponDef* pPrimaryWeapon;
-		char _0x79C[0x6C];
+		char _0x5C8[0x1BC];
+		sModelMask ModelMask[8];
+		int iOffHandWeaponID;
 	} sClientInfo;
 	/*
 	//=====================================================================================
@@ -411,9 +418,11 @@ namespace ProtoGenesys
 		sTrajectory PositionTrajectory;
 		sTrajectory AngleTrajectory;
 		char _0x50[0xC];
-		int iWeaponID1;
-		int iWeaponID2;
-		char _0x64[0x18];
+		int iPrimaryWeaponID;
+		int iStowedWeaponID;
+		int iOffHandWeaponID;
+		int iMeleeWeaponID;
+		char _0x6C[0x10];
 	} sLerpEntityState;
 	/*
 	//=====================================================================================
@@ -1033,16 +1042,28 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline bool EntityHasRiotShield(sEntity* entity)
+	inline bool IsPlayerReloading(sPlayerState* playerstate)
 	{
-		return ((BYTE)entity->NextEntityState.iWeaponID == ID_ASSAULTSHIELD || (BYTE)entity->NextEntityState.LerpEntityState.iWeaponID2 == ID_ASSAULTSHIELD);
+		return 
+			(playerstate->iWeaponState[0] == 11 || playerstate->iWeaponState[1] == 11 ||
+			playerstate->iWeaponState[0] == 12 || playerstate->iWeaponState[1] == 12 ||
+			playerstate->iWeaponState[0] == 13 || playerstate->iWeaponState[1] == 13 ||
+			playerstate->iWeaponState[0] == 14 || playerstate->iWeaponState[1] == 14 ||
+			playerstate->iWeaponState[0] == 15 || playerstate->iWeaponState[1] == 15 ||
+			playerstate->iWeaponState[0] == 16 || playerstate->iWeaponState[1] == 16 ||
+			playerstate->iWeaponState[0] == 17 || playerstate->iWeaponState[1] == 17 ||
+			playerstate->iWeaponState[0] == 18 || playerstate->iWeaponState[1] == 18);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool IsPlayerReloading(sPlayerState* playerstate)
+	inline bool EntityHasRiotShield(int entitynum)
 	{
-		return ((UINT)(playerstate->iWeaponState[0] - 11) < 8 || (UINT)(playerstate->iWeaponState[1] - 11) < 8);
+		return 
+			(CG->Client[entitynum].ModelMask[0].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) || CG->Client[entitynum].ModelMask[1].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) ||
+			CG->Client[entitynum].ModelMask[2].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) || CG->Client[entitynum].ModelMask[3].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) ||
+			CG->Client[entitynum].ModelMask[4].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) || CG->Client[entitynum].ModelMask[5].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) ||
+			CG->Client[entitynum].ModelMask[6].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) || CG->Client[entitynum].ModelMask[7].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD));
 	}
 	/*
 	//=====================================================================================
