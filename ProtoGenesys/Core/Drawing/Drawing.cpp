@@ -651,10 +651,10 @@ namespace ProtoGenesys
 	void cDrawing::ColorPicker(std::string label, ImVec4& color)
 	{
 		int iMiscFlags = (false ? ImGuiColorEditFlags_HDR : 0) | (true ? 0 : ImGuiColorEditFlags_NoDragDrop) | (false ? ImGuiColorEditFlags_AlphaPreviewHalf : (true ? ImGuiColorEditFlags_AlphaPreview : 0)) | (true ? 0 : ImGuiColorEditFlags_NoOptions);
-		static bool bSavedPaletteInitialized = false;
+		static bool bSavedPaletteInited = false;
 		static ImVec4 cSavedPalette[40];
 
-		if (!bSavedPaletteInitialized)
+		if (!bSavedPaletteInited)
 		{
 			for (int n = 0; n < IM_ARRAYSIZE(cSavedPalette); n++)
 			{
@@ -663,7 +663,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		bSavedPaletteInitialized = true;
+		bSavedPaletteInited = true;
 
 		static ImVec4 cBackupColor;
 
