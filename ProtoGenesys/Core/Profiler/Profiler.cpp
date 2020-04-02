@@ -56,26 +56,32 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.Colors.Axis.Red", gColorAxis->Custom.cValue[0]);
 			XML.set("ProtoGenesys.Colors.Axis.Green", gColorAxis->Custom.cValue[1]);
 			XML.set("ProtoGenesys.Colors.Axis.Blue", gColorAxis->Custom.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Axis.Alpha", gColorAxis->Custom.cValue[3]);
 
 			XML.set("ProtoGenesys.Colors.Allies.Red", gColorAllies->Custom.cValue[0]);
 			XML.set("ProtoGenesys.Colors.Allies.Green", gColorAllies->Custom.cValue[1]);
 			XML.set("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Custom.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Custom.cValue[3]);
 
 			XML.set("ProtoGenesys.Colors.RiotShield.Red", gColorRiotShield->Custom.cValue[0]);
 			XML.set("ProtoGenesys.Colors.RiotShield.Green", gColorRiotShield->Custom.cValue[1]);
 			XML.set("ProtoGenesys.Colors.RiotShield.Blue", gColorRiotShield->Custom.cValue[2]);
+			XML.set("ProtoGenesys.Colors.RiotShield.Alpha", gColorRiotShield->Custom.cValue[3]);
 
 			XML.set("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Custom.cValue[0]);
 			XML.set("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Custom.cValue[1]);
 			XML.set("ProtoGenesys.Colors.CrossHair.Blue", gColorCrossHair->Custom.cValue[2]);
+			XML.set("ProtoGenesys.Colors.CrossHair.Alpha", gColorCrossHair->Custom.cValue[3]);
 
 			XML.set("ProtoGenesys.Colors.Text.Red", gColorText->Custom.cValue[0]);
 			XML.set("ProtoGenesys.Colors.Text.Green", gColorText->Custom.cValue[1]);
 			XML.set("ProtoGenesys.Colors.Text.Blue", gColorText->Custom.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Text.Alpha", gColorText->Custom.cValue[3]);
 
 			XML.set("ProtoGenesys.Colors.Shadow.Red", gColorShadow->Custom.cValue[0]);
 			XML.set("ProtoGenesys.Colors.Shadow.Green", gColorShadow->Custom.cValue[1]);
 			XML.set("ProtoGenesys.Colors.Shadow.Blue", gColorShadow->Custom.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Shadow.Alpha", gColorShadow->Custom.cValue[3]);
 
 			XML.write_document(szFilePath);
 
@@ -144,26 +150,32 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.Colors.Axis.Red", gColorAxis->Custom.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.Axis.Green", gColorAxis->Custom.cValue[1]);
 			XML.get_if_present("ProtoGenesys.Colors.Axis.Blue", gColorAxis->Custom.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Axis.Alpha", gColorAxis->Custom.cValue[3]);
 
 			XML.get_if_present("ProtoGenesys.Colors.Allies.Red", gColorAllies->Custom.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.Allies.Green", gColorAllies->Custom.cValue[1]);
 			XML.get_if_present("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Custom.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Custom.cValue[3]);
 
 			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Red", gColorRiotShield->Custom.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Green", gColorRiotShield->Custom.cValue[1]);
 			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Blue", gColorRiotShield->Custom.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Alpha", gColorRiotShield->Custom.cValue[3]);
 
 			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Custom.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Custom.cValue[1]);
 			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Blue", gColorCrossHair->Custom.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Alpha", gColorCrossHair->Custom.cValue[3]);
 
 			XML.get_if_present("ProtoGenesys.Colors.Text.Red", gColorText->Custom.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.Text.Green", gColorText->Custom.cValue[1]);
 			XML.get_if_present("ProtoGenesys.Colors.Text.Blue", gColorText->Custom.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Text.Alpha", gColorText->Custom.cValue[3]);
 
 			XML.get_if_present("ProtoGenesys.Colors.Shadow.Red", gColorShadow->Custom.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.Shadow.Green", gColorShadow->Custom.cValue[1]);
 			XML.get_if_present("ProtoGenesys.Colors.Shadow.Blue", gColorShadow->Custom.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Shadow.Alpha", gColorShadow->Custom.cValue[3]);
 
 			return true;
 		}
@@ -202,8 +214,9 @@ namespace ProtoGenesys
 		gPlayerCompass->Custom.bValue = gPlayerCompass->Default.bValue;
 		gPlayerRadar->Custom.bValue = gPlayerRadar->Default.bValue;
 
-		gOrbitalVsat->Custom.bValue = gOrbitalVsat->Default.bValue;
 		gThirdPerson->Custom.bValue = gThirdPerson->Default.bValue;
+		gThirdPersonAntiAim->Custom.bValue = gThirdPersonAntiAim->Default.bValue;
+		gOrbitalVsat->Custom.bValue = gOrbitalVsat->Default.bValue;
 		gHardcoreHud->Custom.bValue = gHardcoreHud->Default.bValue;
 		gDisableEmp->Custom.bValue = gDisableEmp->Default.bValue;
 		gNameStealer->Custom.bValue = gNameStealer->Default.bValue;

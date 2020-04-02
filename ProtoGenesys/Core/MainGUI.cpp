@@ -360,7 +360,7 @@ namespace ProtoGenesys
 
 				ImGui::SetNextWindowSize(ImVec2(490.0f, 324.0f));
 				ImGui::Begin("PROTOGENESYS", &bShowProtoGenesys, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
-				ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
+				ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
 
 				if (ImGui::TabLabels(_profiler.gMenuTabs->MaxValue.iMax, acut::StringVectorToCharPointerArray(_profiler.gMenuTabs->szItems), _profiler.gMenuTabs->Custom.iValue, NULL, false, NULL, NULL, false, false, NULL, NULL, &ImVec2(94.0f, 25.0f)))
 				{
@@ -501,42 +501,52 @@ namespace ProtoGenesys
 
 				case cProfiler::MENU_TAB_MISCELLANEOUS:
 				{
+					if (ImGui::Checkbox(_profiler.gThirdPerson->szLabel.c_str(), &_profiler.gThirdPerson->Custom.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
+
+					if (ImGui::Checkbox(_profiler.gThirdPersonAntiAim->szLabel.c_str(), &_profiler.gThirdPersonAntiAim->Custom.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::NewLine();
+
 					if (ImGui::Checkbox(_profiler.gOrbitalVsat->szLabel.c_str(), &_profiler.gOrbitalVsat->Custom.bValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::SameLine(296.0f);
 
-					if (ImGui::Checkbox(_profiler.gThirdPerson->szLabel.c_str(), &_profiler.gThirdPerson->Custom.bValue))
-					{
-						bProtoGenesysLog = true;
-					} ImGui::NewLine();
-
 					if (ImGui::Checkbox(_profiler.gHardcoreHud->szLabel.c_str(), &_profiler.gHardcoreHud->Custom.bValue))
 					{
 						bProtoGenesysLog = true;
-					} ImGui::SameLine(296.0f);
+					} ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gDisableEmp->szLabel.c_str(), &_profiler.gDisableEmp->Custom.bValue))
 					{
 						bProtoGenesysLog = true;
-					} ImGui::NewLine();
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox(_profiler.gNameStealer->szLabel.c_str(), &_profiler.gNameStealer->Custom.bValue))
 					{
 						bProtoGenesysLog = true;
-					} ImGui::SameLine(296.0f);
+					} ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gTrickShot->szLabel.c_str(), &_profiler.gTrickShot->Custom.bValue))
 					{
 						bProtoGenesysLog = true;
-					} ImGui::NewLine();
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox("Console", &bShowConsole))
 					{
 						bProtoGenesysLog = true;
-					} ImGui::SameLine(296.0f);
+					} ImGui::NewLine();
 
 					if (ImGui::Checkbox("Player List", &bShowPlayerList))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::SameLine(296.0f);
+
+					if (ImGui::Checkbox("Memory Editor", &bShowMemoryEditor))
 					{
 						bProtoGenesysLog = true;
 					}
@@ -607,32 +617,50 @@ namespace ProtoGenesys
 
 				case cProfiler::MENU_TAB_STYLES:
 				{
-					if (ImGui::ColorEdit3(_profiler.gColorAxis->szLabel.c_str(), _profiler.gColorAxis->Custom.cValue))
+					_drawing.ColorPicker(_profiler.gColorAxis->szLabel, _profiler.gColorAxis->Custom.cValue);
+					ImGui::SameLine(0.0f, 4.0f);
+
+					if (ImGui::ColorEdit4(_profiler.gColorAxis->szLabel.c_str(), _profiler.gColorAxis->Custom.cValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::ColorEdit3(_profiler.gColorAllies->szLabel.c_str(), _profiler.gColorAllies->Custom.cValue))
+					_drawing.ColorPicker(_profiler.gColorAllies->szLabel, _profiler.gColorAllies->Custom.cValue);
+					ImGui::SameLine(0.0f, 4.0f);
+
+					if (ImGui::ColorEdit4(_profiler.gColorAllies->szLabel.c_str(), _profiler.gColorAllies->Custom.cValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::ColorEdit3(_profiler.gColorRiotShield->szLabel.c_str(), _profiler.gColorRiotShield->Custom.cValue))
+					_drawing.ColorPicker(_profiler.gColorRiotShield->szLabel, _profiler.gColorRiotShield->Custom.cValue);
+					ImGui::SameLine(0.0f, 4.0f);
+
+					if (ImGui::ColorEdit4(_profiler.gColorRiotShield->szLabel.c_str(), _profiler.gColorRiotShield->Custom.cValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::ColorEdit3(_profiler.gColorCrossHair->szLabel.c_str(), _profiler.gColorCrossHair->Custom.cValue))
+					_drawing.ColorPicker(_profiler.gColorCrossHair->szLabel, _profiler.gColorCrossHair->Custom.cValue);
+					ImGui::SameLine(0.0f, 4.0f);
+
+					if (ImGui::ColorEdit4(_profiler.gColorCrossHair->szLabel.c_str(), _profiler.gColorCrossHair->Custom.cValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::ColorEdit3(_profiler.gColorText->szLabel.c_str(), _profiler.gColorText->Custom.cValue))
+					_drawing.ColorPicker(_profiler.gColorText->szLabel, _profiler.gColorText->Custom.cValue);
+					ImGui::SameLine(0.0f, 4.0f);
+
+					if (ImGui::ColorEdit4(_profiler.gColorText->szLabel.c_str(), _profiler.gColorText->Custom.cValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::ColorEdit3(_profiler.gColorShadow->szLabel.c_str(), _profiler.gColorShadow->Custom.cValue))
+					_drawing.ColorPicker(_profiler.gColorShadow->szLabel, _profiler.gColorShadow->Custom.cValue);
+					ImGui::SameLine(0.0f, 4.0f);
+
+					if (ImGui::ColorEdit4(_profiler.gColorShadow->szLabel.c_str(), _profiler.gColorShadow->Custom.cValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
@@ -715,6 +743,11 @@ namespace ProtoGenesys
 				ImGui::InputText("", szProfilePath, IM_ARRAYSIZE(szProfilePath), ImGuiInputTextFlags_ReadOnly);
 				ImGui::PopItemWidth();
 				ImGui::End();
+
+				if (bShowMemoryEditor)
+				{
+					MemEdit.DrawWindow("MEMORY EDITOR", &bShowMemoryEditor, hT6mp.lpBaseOfDll, hT6mp.SizeOfImage, (size_t)hT6mp.lpBaseOfDll);
+				}
 
 				if (bShowConsole)
 				{

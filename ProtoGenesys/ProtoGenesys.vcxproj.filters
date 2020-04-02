@@ -167,6 +167,9 @@
     <ClInclude Include="ImGui\Fonts\Eurostile_Regular.hpp">
       <Filter>ImGui\Fonts</Filter>
     </ClInclude>
+    <ClInclude Include="ImGui\imgui_memory_editor.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">

@@ -28,7 +28,7 @@ namespace ProtoGenesys
 
 		cMainGUI() : _thunkWindowProcess(&cMainGUI::WindowProcess, this) {}
 
-		bool bInitialized, bStyleChanged, 
+		bool bInitialized, bStyleChanged, bShowMemoryEditor, 
 			bShowProtoGenesys, bShowConsole, bShowPlayerList,
 			bProtoGenesysLog, bConsoleLog, bPlayerListLog;
 
@@ -36,6 +36,7 @@ namespace ProtoGenesys
 
 		std::string szIniFileName, szLogFileName;
 		ImGuiFs::Dialog SaveDialog, LoadDialog;
+		MemoryEditor MemEdit;
 
 		ImFont* Eurostile_Bold, * Eurostile_Extended, * Eurostile_Regular;
 		float flEurostile_Bold, flEurostile_Extended, flEurostile_Regular;

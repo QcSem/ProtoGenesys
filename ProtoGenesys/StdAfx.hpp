@@ -23,6 +23,7 @@
 #include "ImGui/Win32/imgui_impl_win32.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
+#include "ImGui/imgui_memory_editor.h"
 
 #include "Core/Aimbot/Aimbot.h"
 #include "Core/AntiAim/AntiAim.h"

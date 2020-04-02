@@ -321,7 +321,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_antiAim.IsAntiAiming())
+			if (_profiler.gThirdPersonAntiAim->Custom.bValue && _antiAim.IsAntiAiming())
 			{
 				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
@@ -338,7 +338,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_antiAim.IsAntiAiming() && _targetList.IsLocalPlayerValid())
+			if (_profiler.gThirdPersonAntiAim->Custom.bValue && _antiAim.IsAntiAiming() && _targetList.IsLocalPlayerValid())
 			{
 				Vector3 vHead;
 				LPVOID pDObj = GetDObj(&CG->Entity[CG->iClientNum]);

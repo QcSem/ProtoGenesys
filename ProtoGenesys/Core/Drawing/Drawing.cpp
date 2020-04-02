@@ -348,7 +348,7 @@ namespace ProtoGenesys
 		{
 			std::string szText(acut::StripColorCodes(VariadicText("[%im] %s", (int)(distance / M_METERS), name.c_str())));
 			ImVec2 vStringSize = ImGui::GetIO().FontDefault->CalcTextSizeA(ImGui::GetIO().FontDefault->FontSize, FLT_MAX, 0.0f, szText.c_str());
-			
+
 			DrawString(szText, ImVec2(center.x - vStringSize.x / 2.0f, center.y - flHeight / 2.0f - flPadding - vStringSize.y), false, _profiler.gColorText->Custom.cValue);
 		}
 
@@ -356,7 +356,7 @@ namespace ProtoGenesys
 		{
 			std::string szText(acut::StripColorCodes(_targetList.EntityList[entity->NextEntityState.iEntityNum].szWeapon));
 			ImVec2 vStringSize = ImGui::GetIO().FontDefault->CalcTextSizeA(ImGui::GetIO().FontDefault->FontSize, FLT_MAX, 0.0f, szText.c_str());
-			
+
 			DrawString(szText, ImVec2(center.x - vStringSize.x / 2.0f, center.y + flHeight / 2.0f + flPadding), false, _profiler.gColorText->Custom.cValue);
 		}
 	}
@@ -643,6 +643,79 @@ namespace ProtoGenesys
 				ImGui::GetWindowDrawList()->AddLine(ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 1.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 12.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 1.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 4.0f), ImGui::GetColorU32(_profiler.gColorCrossHair->Custom.cValue));
 				ImGui::GetWindowDrawList()->AddLine(ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 1.0f, ImGui::GetIO().DisplaySize.y / 2.0f + 3.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 1.0f, ImGui::GetIO().DisplaySize.y / 2.0f + 11.0f), ImGui::GetColorU32(_profiler.gColorCrossHair->Custom.cValue));
 			}
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cDrawing::ColorPicker(std::string label, ImVec4& color)
+	{
+		int iMiscFlags = (false ? ImGuiColorEditFlags_HDR : 0) | (true ? 0 : ImGuiColorEditFlags_NoDragDrop) | (false ? ImGuiColorEditFlags_AlphaPreviewHalf : (true ? ImGuiColorEditFlags_AlphaPreview : 0)) | (true ? 0 : ImGuiColorEditFlags_NoOptions);
+		static bool bSavedPaletteInitialized = false;
+		static ImVec4 cSavedPalette[40];
+
+		if (!bSavedPaletteInitialized)
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(cSavedPalette); n++)
+			{
+				ImGui::ColorConvertHSVtoRGB(n / 39.0f, 0.8f, 0.8f, cSavedPalette[n].x, cSavedPalette[n].y, cSavedPalette[n].z);
+				cSavedPalette[n].w = 1.0f;
+			}
+		}
+
+		bSavedPaletteInitialized = true;
+
+		static ImVec4 cBackupColor;
+
+		if (ImGui::ColorButton(label.c_str(), color, iMiscFlags))
+		{
+			ImGui::OpenPopup(label.c_str());
+			cBackupColor = color;
+		}
+
+		if (ImGui::BeginPopup(label.c_str()))
+		{
+			ImGui::Text(("CUSTOM COLOR PICKER FOR " + acut::ToUpper(label)).c_str());
+			ImGui::Separator();
+			ImGui::ColorPicker4("##picker", (float*)&color, iMiscFlags | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+			ImGui::SameLine();
+			ImGui::BeginGroup();
+			ImGui::Text("Current");
+			ImGui::ColorButton("##current", color, ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf, ImVec2(60, 40));
+			ImGui::Text("Previous");
+
+			if (ImGui::ColorButton("##previous", cBackupColor, ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf, ImVec2(60, 40)))
+				color = cBackupColor;
+
+			ImGui::Separator();
+			ImGui::Text("Palette");
+
+			for (int i = 0; i < IM_ARRAYSIZE(cSavedPalette); i++)
+			{
+				ImGui::PushID(i);
+
+				if ((i % 8) != 0)
+					ImGui::SameLine(0.0f, ImGui::GetStyle().ItemSpacing.y);
+
+				if (ImGui::ColorButton("##palette", cSavedPalette[i], ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20)))
+					color = ImVec4(cSavedPalette[i].x, cSavedPalette[i].y, cSavedPalette[i].z, color.w);
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_3F))
+						memcpy((float*)&cSavedPalette[i], payload->Data, sizeof(float) * 3);
+
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_4F))
+						memcpy((float*)&cSavedPalette[i], payload->Data, sizeof(float) * 4);
+
+					ImGui::EndDragDropTarget();
+				}
+
+				ImGui::PopID();
+			}
+
+			ImGui::EndGroup();
+			ImGui::EndPopup();
 		}
 	}
 }
