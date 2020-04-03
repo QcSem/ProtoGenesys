@@ -182,11 +182,12 @@ namespace ProtoGenesys
 		if (_aimBot.AimState.bTargetAcquired)
 		{
 			Vector3 vViewOrigin;
-
 			GetPlayerViewOrigin(vViewOrigin);
 
-			VectorCopy(EntityList[_aimBot.AimState.iTargetNum].vHitLocation, _aimBot.AimState.vAimbotPosition);
-			_mathematics.CalculateAngles(vViewOrigin, _aimBot.AimState.vAimbotPosition, _aimBot.AimState.vAimbotAngles);
+			VectorCopy(EntityList[_aimBot.AimState.iTargetNum].vHitLocation, _aimBot.AimState.vAimPosition);
+
+			_mathematics.CalculateAimAngles(_aimBot.AimState.vAimPosition, vViewOrigin, _aimBot.AimState.vAimAngles);
+			_mathematics.CalculateAntiAimAngles(_aimBot.AimState.vAimPosition, vViewOrigin, _aimBot.AimState.vAntiAimAngles);
 		}
 
 		iCounter++;

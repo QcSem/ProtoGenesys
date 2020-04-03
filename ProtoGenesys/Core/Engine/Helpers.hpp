@@ -98,4 +98,24 @@ namespace ProtoGenesys
 
 		return (DWORD_PTR)*(DWORD*)(address + offset);
 	}
+	/*
+	//=====================================================================================
+	*/
+	static DWORD_PTR SwapVMT(DWORD_PTR _interface, DWORD_PTR hook, int index)
+	{
+		DWORD_PTR* dwVTable = (DWORD_PTR*)*(DWORD_PTR*)_interface;
+		DWORD_PTR dwBackup = NULL;
+
+		MEMORY_BASIC_INFORMATION MBI;
+
+		VirtualQuery((LPCVOID)dwVTable, &MBI, sizeof(MEMORY_BASIC_INFORMATION));
+		VirtualProtect(MBI.BaseAddress, MBI.RegionSize, PAGE_READWRITE, &MBI.Protect);
+
+		dwBackup = dwVTable[index];
+		dwVTable[index] = (DWORD_PTR)hook;
+
+		VirtualProtect(MBI.BaseAddress, MBI.RegionSize, MBI.Protect, &MBI.Protect);
+
+		return dwBackup;
+	}
 }

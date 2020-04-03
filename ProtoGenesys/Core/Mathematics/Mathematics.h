@@ -18,7 +18,8 @@ namespace ProtoGenesys
 		void AngleVectors(Vector3 angles, Vector3 forward, Vector3 right, Vector3 up);
 		void VectorNormalize(Vector3 direction);
 		void NormalizeAngles(Vector3 angles);
-		void CalculateAngles(Vector3 start, Vector3 end, Vector3 angles);
+		void CalculateAimAngles(Vector3 start, Vector3 end, Vector3 angles);
+		void CalculateAntiAimAngles(Vector3 start, Vector3 end, Vector3 angles);
 		void MakeVector(Vector3 angles, Vector3 out);
 		void MovementFix(sUserCmd* usercmd, float yaw);
 		void WorldToCompass(Vector3 world, ImVec2 compasspos, float compasssize, ImVec2& screen);

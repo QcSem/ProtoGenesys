@@ -18,7 +18,7 @@ namespace ProtoGenesys
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
 
-		MakeVector(CG->vRefDefViewAngles, vAimAngles);
+		MakeVector((WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles : CG->vWeaponAngles, vAimAngles);
 		MakeVector(vAngles, vAngles);
 
 		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
@@ -163,18 +163,36 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::CalculateAngles(Vector3 start, Vector3 end, Vector3 angles)
+	void cMathematics::CalculateAimAngles(Vector3 start, Vector3 end, Vector3 angles)
 	{
 		Vector3 vDirection;
-		VectorSubtract(end, start, vDirection);
+		VectorSubtract(start, end, vDirection);
 
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, angles);
 
 		NormalizeAngles(angles);
 
-		angles[0] -= CG->vRefDefViewAngles[0];
-		angles[1] -= CG->vRefDefViewAngles[1];
+		angles[0] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
+		angles[1] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
+
+		NormalizeAngles(angles);
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cMathematics::CalculateAntiAimAngles(Vector3 start, Vector3 end, Vector3 angles)
+	{
+		Vector3 vDirection;
+		VectorSubtract(start, end, vDirection);
+
+		VectorNormalize(vDirection);
+		VectorAngles(vDirection, angles);
+
+		NormalizeAngles(angles);
+
+		angles[0] -= CG->PlayerState.vDeltaAngles[0];
+		angles[1] -= CG->PlayerState.vDeltaAngles[1];
 
 		NormalizeAngles(angles);
 	}

@@ -16,14 +16,9 @@ using namespace ProtoGenesys;
 
 //=====================================================================================
 
-VOID WINAPI SteamFriends();
-VOID WINAPI SteamUser(LPWSTR xuid);
-
-//=====================================================================================
-
 HRESULT WINAPI hPresent(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 typedef HRESULT(WINAPI* tPresent)(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
-tPresent oPresent = *(tPresent*)dwPresent;
+tPresent oPresent;
 
 void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
 typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
@@ -143,7 +138,6 @@ sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, in
 
 VOID Initialize()
 {
-	_hooks.RefreshFriends();
 	_hooks.PatchAntiCheat();
 
 	SetUnhandledExceptionFilter(NULL);
@@ -164,12 +158,11 @@ VOID Initialize()
 	_hooks.dwNoDelta = *(DWORD_PTR*)dwNoDeltaDvar;
 	*(DWORD_PTR*)dwNoDeltaDvar = cHooks::VEH_INDEX_NODELTA;
 
-	Hook(oPresent, hPresent);
+	oPresent = (tPresent)SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)&hPresent, bGameOverlayRenderer ? 0 : 8);
+
 	Hook(oGetPlayerStatus, hGetPlayerStatus);
 	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	Hook(oOffsetThirdPersonView, hOffsetThirdPersonView);
-
-	SteamFriends();
 }
 
 //=====================================================================================
@@ -184,21 +177,22 @@ VOID Deallocate()
 
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 
-	UnHook(oPresent, hPresent);
+	SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, bGameOverlayRenderer ? 0 : 8);
+
 	UnHook(oGetPlayerStatus, hGetPlayerStatus);
 	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	UnHook(oOffsetThirdPersonView, hOffsetThirdPersonView);
 
 	if (_hooks.bUserHooked)
-		UnHook(oGetSteamID, hGetSteamID);
+		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)&oGetSteamID, 2);
 
 	if (_hooks.bFriendsHooked)
 	{
-		UnHook(oGetFriendCount, hGetFriendCount);
-		UnHook(oGetFriendByIndex, hGetFriendByIndex);
-		UnHook(oGetFriendPersonaState, hGetFriendPersonaState);
-		UnHook(oGetFriendPersonaName, hGetFriendPersonaName);
-		UnHook(oGetFriendGamePlayed, hGetFriendGamePlayed);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendCount, 3);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendByIndex, 4);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendPersonaState, 6);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendPersonaName, 7);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendGamePlayed, 8);
 	}
 
 	_mainGui.pDevice->Release();
@@ -213,35 +207,31 @@ VOID Deallocate()
 
 //=====================================================================================
 
-VOID WINAPI SteamFriends()
+void SteamFriends()
 {
+	_hooks.RefreshFriends();
+
 	if (!hSteamAPI)
 		return;
 
-	DWORD_PTR dwSteamFriendsFunc = (DWORD_PTR)GetProcAddress(hSteamAPI, "SteamFriends");
+	_hooks.dwSteamFriendsFunc = (DWORD_PTR)GetProcAddress(hSteamAPI, "SteamFriends");
 
-	if (!dwSteamFriendsFunc)
+	if (!_hooks.dwSteamFriendsFunc)
 		return;
 
-	DWORD_PTR dwSteamFriendsVTable = VariadicCall<DWORD_PTR>(dwSteamFriendsFunc);
+	_hooks.dwSteamFriendsVTable = VariadicCall<DWORD_PTR>(_hooks.dwSteamFriendsFunc);
 
-	if (!dwSteamFriendsVTable)
+	if (!_hooks.dwSteamFriendsVTable)
 		return;
-
-	oGetFriendCount = *(tGetFriendCount*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x3);
-	oGetFriendByIndex = *(tGetFriendByIndex*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x4);
-	oGetFriendPersonaState = *(tGetFriendPersonaState*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x6);
-	oGetFriendPersonaName = *(tGetFriendPersonaName*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x7);
-	oGetFriendGamePlayed = *(tGetFriendGamePlayed*)(*(DWORD_PTR*)dwSteamFriendsVTable + sizeof(DWORD_PTR) * 0x8);
+	
+	oGetFriendCount = (tGetFriendCount)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendCount, 3);
+	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendByIndex, 4);
+	oGetFriendPersonaState = (tGetFriendPersonaState)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendPersonaState, 6);
+	oGetFriendPersonaName = (tGetFriendPersonaName)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendPersonaName, 7);
+	oGetFriendGamePlayed = (tGetFriendGamePlayed)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendGamePlayed, 8);
 
 	if (!oGetFriendCount || !oGetFriendByIndex || !oGetFriendPersonaState || !oGetFriendPersonaName || !oGetFriendGamePlayed)
 		return;
-
-	Hook(oGetFriendCount, hGetFriendCount);
-	Hook(oGetFriendByIndex, hGetFriendByIndex);
-	Hook(oGetFriendPersonaState, hGetFriendPersonaState);
-	Hook(oGetFriendPersonaName, hGetFriendPersonaName);
-	Hook(oGetFriendGamePlayed, hGetFriendGamePlayed);
 
 	_hooks.bFriendsHooked = true;
 }
@@ -255,32 +245,33 @@ VOID WINAPI SteamUser(LPWSTR xuid)
 	if (!hSteamAPI)
 		return;
 
-	DWORD_PTR dwSteamUserFunc = (DWORD_PTR)GetProcAddress(hSteamAPI, "SteamUser");
+	_hooks.dwSteamUserFunc = (DWORD_PTR)GetProcAddress(hSteamAPI, "SteamUser");
 
-	if (!dwSteamUserFunc)
+	if (!_hooks.dwSteamUserFunc)
 		return;
 
-	DWORD_PTR dwSteamUserVTable = VariadicCall<DWORD_PTR>(dwSteamUserFunc);
+	_hooks.dwSteamUserVTable = VariadicCall<DWORD_PTR>(_hooks.dwSteamUserFunc);
 
-	if (!dwSteamUserVTable)
+	if (!_hooks.dwSteamUserVTable)
 		return;
 
-	oGetSteamID = *(tGetSteamID*)(*(DWORD_PTR*)dwSteamUserVTable + sizeof(DWORD_PTR) * 0x2);
+	oGetSteamID = (tGetSteamID)SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)&hGetSteamID, 2);
 
 	if (!oGetSteamID)
 		return;
 
 	_hooks.dwXuidOverride = _wtoi64(xuid);
-
-	Hook(oGetSteamID, hGetSteamID);
-
 	_hooks.bUserHooked = true;
+
+	SteamFriends();
 }
 
 //=====================================================================================
 
 BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID lpvReserved)
 {
+	DisableThreadLibraryCalls(hinstDLL);
+
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:

@@ -12,21 +12,21 @@ namespace ProtoGenesys
 	{
 		if ((!_profiler.gSilentAim->Custom.bValue || WeaponIsVehicle()) && AimState.bTargetAcquired)
 		{
-			AimState.vAimbotAngles[0] *= _profiler.gAimPower->Custom.iValue / 100.0f;
-			AimState.vAimbotAngles[1] *= _profiler.gAimPower->Custom.iValue / 100.0f;
+			AimState.vAimAngles[0] *= _profiler.gAimPower->Custom.iValue / 100.0f;
+			AimState.vAimAngles[1] *= _profiler.gAimPower->Custom.iValue / 100.0f;
 
 			if (_profiler.gAutoAimTime->Custom.iValue)
 			{
-				AimState.vAimbotAngles[0] *= (float)AimState.iCurrentAimTime / (float)_profiler.gAutoAimTime->Custom.iValue;
-				AimState.vAimbotAngles[1] *= (float)AimState.iCurrentAimTime / (float)_profiler.gAutoAimTime->Custom.iValue;
+				AimState.vAimAngles[0] *= (float)AimState.iCurrentAimTime / (float)_profiler.gAutoAimTime->Custom.iValue;
+				AimState.vAimAngles[1] *= (float)AimState.iCurrentAimTime / (float)_profiler.gAutoAimTime->Custom.iValue;
 			}
 
 			if (AimState.iCurrentAimDelay == _profiler.gAutoAimDelay->Custom.iValue)
 			{
 				if (AimState.bLockonTarget)
 				{
-					ViewAngles->vAngles[0] += AimState.vAimbotAngles[0];
-					ViewAngles->vAngles[1] += AimState.vAimbotAngles[1];
+					ViewAngles->vAngles[0] += AimState.vAimAngles[0];
+					ViewAngles->vAngles[1] += AimState.vAimAngles[1];
 				}
 			}
 
@@ -44,8 +44,8 @@ namespace ProtoGenesys
 		{
 			if (AimState.bLockonTarget)
 			{
-				usercmd->iViewAngles[0] += AngleToShort(AimState.vAimbotAngles[0]);
-				usercmd->iViewAngles[1] += AngleToShort(AimState.vAimbotAngles[1]);
+				usercmd->iViewAngles[0] += AngleToShort(AimState.vAimAngles[0]);
+				usercmd->iViewAngles[1] += AngleToShort(AimState.vAimAngles[1]);
 			}
 
 			if (AimState.iCurrentZoomDelay == _profiler.gAutoZoomDelay->Custom.iValue)

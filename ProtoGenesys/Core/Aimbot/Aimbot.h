@@ -16,7 +16,7 @@ namespace ProtoGenesys
 		{
 			bool bTargetAcquired, bLockonTarget, bIsAutoAiming, bIsAutoFiring;
 			int iCurrentAimTime, iCurrentAimDelay, iCurrentZoomDelay, iCurrentFireDelay, iDeltaTMR, iTargetNum, iLastTarget;
-			Vector3 vAimbotPosition, vAimbotAngles;
+			Vector3 vAimPosition, vAimAngles, vAntiAimAngles;
 		} AimState;
 
 		void StandardAim();

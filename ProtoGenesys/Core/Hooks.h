@@ -32,6 +32,8 @@ namespace ProtoGenesys
 		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta,
 			dwSysValue, dwShader, dwAddress;
 
+		DWORD_PTR dwSteamUserFunc, dwSteamUserVTable, dwSteamFriendsFunc, dwSteamFriendsVTable;
+
 		LPVOID pVectoredExceptionHandler;
 
 		LONG VectoredExceptionHandler(_In_ LPEXCEPTION_POINTERS ExceptionInfo);
