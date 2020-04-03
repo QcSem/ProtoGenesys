@@ -184,15 +184,15 @@ VOID Deallocate()
 	UnHook(oOffsetThirdPersonView, hOffsetThirdPersonView);
 
 	if (_hooks.bUserHooked)
-		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)&oGetSteamID, 2);
+		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)oGetSteamID, 2);
 
 	if (_hooks.bFriendsHooked)
 	{
-		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendCount, 3);
-		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendByIndex, 4);
-		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendPersonaState, 6);
-		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendPersonaName, 7);
-		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&oGetFriendGamePlayed, 8);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendCount, 3);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendByIndex, 4);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendPersonaState, 6);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendPersonaName, 7);
+		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendGamePlayed, 8);
 	}
 
 	_mainGui.pDevice->Release();
