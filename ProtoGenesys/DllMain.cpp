@@ -140,7 +140,7 @@ VOID Initialize()
 {
 	_hooks.PatchAntiCheat();
 
-	SetUnhandledExceptionFilter(NULL);
+	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
 	_hooks.pVectoredExceptionHandler = AddVectoredExceptionHandler(TRUE, _hooks._thunkVectoredExceptionHandler.GetThunk());
 
 	_hooks.dwConnectPaths = *(DWORD_PTR*)dwConnectPathsDvar;
@@ -176,6 +176,7 @@ VOID Deallocate()
 	*(DWORD_PTR*)dwNoDeltaDvar = _hooks.dwNoDelta;
 
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
+	SetUnhandledExceptionFilter(_hooks.pUnhandledExceptionFilter);
 
 	SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, bGameOverlayRenderer ? 0 : 8);
 

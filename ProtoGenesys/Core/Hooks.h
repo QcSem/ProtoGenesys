@@ -34,6 +34,7 @@ namespace ProtoGenesys
 
 		DWORD_PTR dwSteamUserFunc, dwSteamUserVTable, dwSteamFriendsFunc, dwSteamFriendsVTable;
 
+		LPTOP_LEVEL_EXCEPTION_FILTER pUnhandledExceptionFilter;
 		LPVOID pVectoredExceptionHandler;
 
 		LONG VectoredExceptionHandler(_In_ LPEXCEPTION_POINTERS ExceptionInfo);
