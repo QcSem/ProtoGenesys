@@ -70,9 +70,6 @@ namespace ProtoGenesys
 			if (bHasFMJ)
 				flEnterDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
 
-			if (TR_Enter.Trace.iSurfaceFlags & 0x4)
-				flEnterDepth = 100.0f;
-
 			if (flEnterDepth <= 0.0)
 				return 0.0f;
 
@@ -152,9 +149,6 @@ namespace ProtoGenesys
 					flExitDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
 
 				flEnterDepth = min(flEnterDepth, flExitDepth);
-
-				if (TR_Exit.Trace.iSurfaceFlags & 0x4)
-					flEnterDepth = 100.0f;
 
 				if (flEnterDepth <= 0.0f)
 					return 0.0f;
