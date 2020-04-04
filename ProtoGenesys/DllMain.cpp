@@ -184,17 +184,23 @@ VOID Deallocate()
 	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	UnHook(oOffsetThirdPersonView, hOffsetThirdPersonView);
 
-	if (_hooks.bUserHooked)
+	if (oGetSteamID)
 		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)oGetSteamID, 2);
 
-	if (_hooks.bFriendsHooked)
-	{
+	if (oGetFriendCount)
 		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendCount, 3);
+
+	if (oGetFriendByIndex)
 		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendByIndex, 4);
+
+	if (oGetFriendPersonaState)
 		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendPersonaState, 6);
+
+	if (oGetFriendPersonaName)
 		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendPersonaName, 7);
+
+	if (oGetFriendGamePlayed)
 		SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)oGetFriendGamePlayed, 8);
-	}
 
 	_mainGui.pDevice->Release();
 	_mainGui.pDeviceContext->Release();
@@ -224,24 +230,21 @@ void SteamFriends()
 
 	if (!_hooks.dwSteamFriendsVTable)
 		return;
-	
+
 	oGetFriendCount = (tGetFriendCount)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendCount, 3);
 	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendByIndex, 4);
 	oGetFriendPersonaState = (tGetFriendPersonaState)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendPersonaState, 6);
 	oGetFriendPersonaName = (tGetFriendPersonaName)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendPersonaName, 7);
 	oGetFriendGamePlayed = (tGetFriendGamePlayed)SwapVMT(_hooks.dwSteamFriendsVTable, (DWORD_PTR)&hGetFriendGamePlayed, 8);
-
-	if (!oGetFriendCount || !oGetFriendByIndex || !oGetFriendPersonaState || !oGetFriendPersonaName || !oGetFriendGamePlayed)
-		return;
-
-	_hooks.bFriendsHooked = true;
 }
 
 //=====================================================================================
 
 VOID WINAPI SteamUser(LPWSTR xuid)
-{ 
+{
 #pragma DLLEXPORT
+
+	_hooks.dwXuidOverride = _wtoi64(xuid);
 
 	if (!hSteamAPI)
 		return;
@@ -257,12 +260,6 @@ VOID WINAPI SteamUser(LPWSTR xuid)
 		return;
 
 	oGetSteamID = (tGetSteamID)SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)&hGetSteamID, 2);
-
-	if (!oGetSteamID)
-		return;
-
-	_hooks.dwXuidOverride = _wtoi64(xuid);
-	_hooks.bUserHooked = true;
 
 	SteamFriends();
 }

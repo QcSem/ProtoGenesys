@@ -23,15 +23,12 @@ namespace ProtoGenesys
 			VEH_INDEX_NODELTA = 33833
 		} eVehIndex;
 
-		bool bUserHooked, bFriendsHooked;
 		char szXuidOverride[0x11];
 		QWORD dwXuidOverride;
 
 		std::vector<std::pair<QWORD, std::string>> vFriends;
 
-		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta,
-			dwSysValue, dwShader, dwAddress;
-
+		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwSysValue, dwShader, dwAddress;
 		DWORD_PTR dwSteamUserFunc, dwSteamUserVTable, dwSteamFriendsFunc, dwSteamFriendsVTable;
 
 		LPTOP_LEVEL_EXCEPTION_FILTER pUnhandledExceptionFilter;
