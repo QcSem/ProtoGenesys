@@ -84,8 +84,8 @@ namespace ProtoGenesys
 
 				else
 				{
-					vAntiAimAngles[0] = -40.0f;
-					vAntiAimAngles[1] = -180.0f;
+					vAntiAimAngles[0] = -40.0f - CG->PlayerState.vDeltaAngles[0];
+					vAntiAimAngles[1] = -180.0f - CG->PlayerState.vDeltaAngles[1];
 				}
 			}
 		}
