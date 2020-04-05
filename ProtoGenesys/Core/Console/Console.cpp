@@ -283,8 +283,8 @@ namespace ProtoGenesys
 			std::random_device rd;
 			std::uniform_int_distribution<> dist(0x48, 0x49);
 
-			std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
-			std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+			std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+			std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
 
 			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\^%c%s\\xuid\\%s\"",
 				szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
@@ -325,11 +325,11 @@ namespace ProtoGenesys
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-						_profiler.gNameOverride->Custom.szValue = Strdup(szNameOverride);
+						_profiler.gNameOverride->Current.szValue = Strdup(szNameOverride);
 
-						std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
-						std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
-						std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+						std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+						std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
+						std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
 
 						AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 							szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
@@ -349,11 +349,11 @@ namespace ProtoGenesys
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-					_profiler.gNameOverride->Custom.szValue = Strdup("");
+					_profiler.gNameOverride->Current.szValue = Strdup("");
 
-					std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
-					std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
-					std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+					std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+					std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
+					std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
 
 					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 						szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
@@ -392,11 +392,11 @@ namespace ProtoGenesys
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-						_profiler.gClanOverride->Custom.szValue = Strdup(szClanOverride);
+						_profiler.gClanOverride->Current.szValue = Strdup(szClanOverride);
 
-						std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
-						std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
-						std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+						std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+						std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
+						std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
 
 						AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 							szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
@@ -416,11 +416,11 @@ namespace ProtoGenesys
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-					_profiler.gClanOverride->Custom.szValue = Strdup("");
+					_profiler.gClanOverride->Current.szValue = Strdup("");
 
-					std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
-					std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
-					std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+					std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+					std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
+					std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
 
 					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 						szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
@@ -459,11 +459,11 @@ namespace ProtoGenesys
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-					_profiler.gXuidOverride->Custom.szValue = Strdup(_ui64toa(_atoi64(szXuidOverride), _hooks.szXuidOverride, 0x10));
+					_profiler.gXuidOverride->Current.szValue = Strdup(_ui64toa(_atoi64(szXuidOverride), _hooks.szXuidOverride, 0x10));
 
-					std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
-					std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
-					std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+					std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+					std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
+					std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
 
 					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 						szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
@@ -483,11 +483,11 @@ namespace ProtoGenesys
 			{
 				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-				_profiler.gXuidOverride->Custom.szValue = Strdup("");
+				_profiler.gXuidOverride->Current.szValue = Strdup("");
 
-				std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
-				std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
-				std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+				std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+				std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
+				std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
 
 				AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 					szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
@@ -525,7 +525,7 @@ namespace ProtoGenesys
 					if (szKillspam)
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-						_profiler.gKillspam->Custom.szValue = Strdup(strtok(szArgBuff, "\n"));
+						_profiler.gKillspam->Current.szValue = Strdup(strtok(szArgBuff, "\n"));
 						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 					}
 
@@ -538,7 +538,7 @@ namespace ProtoGenesys
 				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-					_profiler.gKillspam->Custom.szValue = Strdup("");
+					_profiler.gKillspam->Current.szValue = Strdup("");
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 

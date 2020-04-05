@@ -10,9 +10,9 @@ namespace ProtoGenesys
 
 	void cRemovals::RecoilCompensation()
 	{
-		RecoilAngles->vAngles[0] *= _profiler.gRecoilFactor->Custom.flValue;
-		RecoilAngles->vAngles[1] *= _profiler.gRecoilFactor->Custom.flValue;
-		RecoilAngles->vAngles[2] *= _profiler.gRecoilFactor->Custom.flValue;
+		RecoilAngles->vAngles[0] *= _profiler.gRecoilFactor->Current.flValue;
+		RecoilAngles->vAngles[1] *= _profiler.gRecoilFactor->Current.flValue;
+		RecoilAngles->vAngles[2] *= _profiler.gRecoilFactor->Current.flValue;
 	}
 	/*
 	//=====================================================================================
@@ -44,8 +44,8 @@ namespace ProtoGenesys
 		flSpreadX = cosf(flRandom1) * flRandom2 * flSpread;
 		flSpreadY = sinf(flRandom1) * flRandom2 * flSpread;
 
-		usercmd->iViewAngles[0] += AngleToShort(flSpreadY * (1.0f - _profiler.gSpreadFactor->Custom.flValue));
-		usercmd->iViewAngles[1] += AngleToShort(flSpreadX * (1.0f - _profiler.gSpreadFactor->Custom.flValue));
+		usercmd->iViewAngles[0] += AngleToShort(flSpreadY * (1.0f - _profiler.gSpreadFactor->Current.flValue));
+		usercmd->iViewAngles[1] += AngleToShort(flSpreadX * (1.0f - _profiler.gSpreadFactor->Current.flValue));
 	}
 }
 

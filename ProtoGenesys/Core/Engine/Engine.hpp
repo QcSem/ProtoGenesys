@@ -59,9 +59,11 @@ namespace ProtoGenesys
 	*/
 	typedef enum
 	{
+		BONE_HELMET,
 		BONE_HEAD,
 		BONE_NECK,
 		BONE_UPPER_SPINE,
+		BONE_MIDDLE_SPINE,
 		BONE_LOWER_SPINE,
 		BONE_LEFT_SHOULDER,
 		BONE_RIGHT_SHOULDER,
@@ -82,22 +84,25 @@ namespace ProtoGenesys
 	*/
 	typedef enum
 	{
-		HITLOC_HEAD = 2,
-		HITLOC_NECK = 3,
-		HITLOC_UPPER_SPINE = 4,
-		HITLOC_LOWER_SPINE = 6,
-		HITLOC_RIGHT_SHOULDER = 7,
-		HITLOC_LEFT_SHOULDER = 8,
-		HITLOC_RIGHT_ELBOW = 9,
-		HITLOC_LEFT_ELBOW = 10,
-		HITLOC_RIGHT_WRIST = 11,
-		HITLOC_LEFT_WRIST = 12,
-		HITLOC_RIGHT_HIP = 13,
-		HITLOC_LEFT_HIP = 14,
-		HITLOC_RIGHT_KNEE = 15,
-		HITLOC_LEFT_KNEE = 16,
-		HITLOC_RIGHT_ANKLE = 17,
-		HITLOC_LEFT_ANKLE = 18,
+		HITLOC_NONE,
+		HITLOC_HELMET,
+		HITLOC_HEAD,
+		HITLOC_NECK,
+		HITLOC_UPPER_SPINE,
+		HITLOC_MIDDLE_SPINE,
+		HITLOC_LOWER_SPINE,
+		HITLOC_RIGHT_SHOULDER,
+		HITLOC_LEFT_SHOULDER,
+		HITLOC_RIGHT_ELBOW,
+		HITLOC_LEFT_ELBOW,
+		HITLOC_RIGHT_WRIST,
+		HITLOC_LEFT_WRIST,
+		HITLOC_RIGHT_HIP,
+		HITLOC_LEFT_HIP,
+		HITLOC_RIGHT_KNEE,
+		HITLOC_LEFT_KNEE,
+		HITLOC_RIGHT_ANKLE,
+		HITLOC_LEFT_ANKLE,
 		HITLOC_MAX
 	} eHitLocation;
 	/*
@@ -217,11 +222,13 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static std::vector<std::pair<eBone, eHitLocation>> vBones = 
+	static std::vector<std::pair<eBone, eHitLocation>> vBones =
 	{
+		std::make_pair(BONE_HELMET, HITLOC_HELMET),
 		std::make_pair(BONE_HEAD, HITLOC_HEAD),
 		std::make_pair(BONE_NECK, HITLOC_NECK),
 		std::make_pair(BONE_UPPER_SPINE, HITLOC_UPPER_SPINE),
+		std::make_pair(BONE_MIDDLE_SPINE, HITLOC_MIDDLE_SPINE),
 		std::make_pair(BONE_LOWER_SPINE, HITLOC_LOWER_SPINE),
 		std::make_pair(BONE_LEFT_SHOULDER, HITLOC_LEFT_SHOULDER),
 		std::make_pair(BONE_RIGHT_SHOULDER, HITLOC_RIGHT_SHOULDER),
@@ -241,9 +248,11 @@ namespace ProtoGenesys
 	*/
 	static std::vector<std::pair<std::string, std::string>> szBones =
 	{
+		std::make_pair("Helmet", "j_helmet"),
 		std::make_pair("Head", "j_head"),
 		std::make_pair("Neck", "j_neck"),
-		std::make_pair("Upper Spine", "j_spineupper"),
+		std::make_pair("Upper Spine", "j_spine4"),
+		std::make_pair("Middle Spine", "j_spineupper"),
 		std::make_pair("Lower Spine", "j_spinelower"),
 		std::make_pair("Left Shoulder", "j_shoulder_le"),
 		std::make_pair("Right Shoulder", "j_shoulder_ri"),
@@ -276,7 +285,28 @@ namespace ProtoGenesys
 			LPSTR szValue;
 		} Current, Latched, Reset;
 
-		char _0x48[0x18];
+		union uDvarLimits
+		{
+			struct
+			{
+				DWORD dwMin;
+				DWORD dwMax;
+			};
+
+			struct
+			{
+				QWORD qwMin;
+				QWORD qwMax;
+			};
+
+			struct
+			{
+				FLOAT flMin;
+				FLOAT flMax;
+			};
+		} Domain;
+
+		char _0x58[0x8];
 	} sDvar;
 	/*
 	//=====================================================================================
@@ -291,7 +321,9 @@ namespace ProtoGenesys
 		Vector3 vVelocity;
 		char _0x40[0xC];
 		float flWeaponTime;
-		char _0x50[0x3C];
+		char _0x50[0x34];
+		int iThirdPerson;
+		char _0x88[0x4];
 		int iGravity;
 		char _0x90[0x4];
 		int iSpeed;
@@ -323,7 +355,9 @@ namespace ProtoGenesys
 		int iPrimaryAmmoClip;
 		int iLethalAmmo;
 		int iTacticalAmmo;
-		char _0x450[0x100];
+		char _0x450[0x5C];
+		int iSatalliteTypeEnabled;
+		char _0x4B0[0xA0];
 		int iPerkFlags;
 	}  sPlayerState;
 	/*
@@ -496,14 +530,20 @@ namespace ProtoGenesys
 		float flZoomProgress;
 		char _0x274[0x54];
 		int iHealth;
-		char _0x2CC[0x47DDC];
+		char _0x2CC[0x47DBC];
+		int iFrameTime;
+		char _0x4808C[0x10];
+		int iThirdPerson;
+		char _0x480A0[0x8];
 		sPlayerState PlayerState;
 		char _0x485FC[0x5294];
 		sRefDef RefDef;
 		Vector3 vRefDefViewAngles;
 		char _0x648FC[0x130];
 		Vector3 vWeaponAngles;
-		char _0x64A38[0x4D90];
+		char _0x64A38[0x3F20];
+		int iMatchUIVisibilityFlags;
+		char _0x3F24[0xE6C];
 		Vector3 vKickAngles;
 		char _0x697D4[0x28C];
 		sClientInfo Client[MAX_CLIENTS];
@@ -532,6 +572,10 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
+		char _0x0[0x68];
+		int iPing;
+		char _0x6C[0x42C3C];
+
 		sUserCmd UserCmd[128];
 		int iCurrentCmd;
 
@@ -728,7 +772,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwRecoilAngles = dwCG + 0xFE6438B0;
 	static DWORD_PTR dwWeaponNames = *(DWORD_PTR*)0x10A7E28;
 	static DWORD_PTR dwWindowHandle = 0x2B6ED88;
-	static DWORD_PTR dwServerSession = 0x12A7000;
+	static DWORD_PTR dwServerSession = 0x12A7248;
 	static DWORD_PTR dwServerID = 0x11D0ACC;
 	static DWORD_PTR dwWindow = 0x2956244;
 
@@ -791,11 +835,11 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	static sCG* CG = (sCG*)dwCG;
-	static sClientActive* ClientActive;
+	static sClientActive* ClientActive = *(sClientActive**)dwClientActive;
 	static sWeaponName* WeaponNames = (sWeaponName*)dwWeaponNames;
 	static sViewAngles* ViewAngles = (sViewAngles*)dwViewAngles;
 	static sRecoilAngles* RecoilAngles = (sRecoilAngles*)dwRecoilAngles;
-	static sServerSession* ServerSession = (sServerSession*)(dwServerSession + 0x248);
+	static sServerSession* ServerSession = (sServerSession*)dwServerSession;
 	static sWindow* Window = (sWindow*)dwWindow;
 	/*
 	//=====================================================================================
@@ -1073,7 +1117,7 @@ namespace ProtoGenesys
 	*/
 	inline bool IsThirdPerson()
 	{
-		return (*(BYTE*)(dwCG + 0x4809C) || *(BYTE*)(dwCG + 0x4812C));
+		return (CG->iThirdPerson || CG->PlayerState.iThirdPerson);
 	}
 }
 

@@ -10,7 +10,7 @@ namespace ProtoGenesys
 
 	void cAntiAim::AntiAim(sUserCmd* usercmd)
 	{
-		if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_SPINBOT)
+		if (_profiler.gAntiAim->Current.iValue == cProfiler::ANTIAIM_SPINBOT)
 		{
 			static float flAngle = 0.0f;
 
@@ -23,7 +23,7 @@ namespace ProtoGenesys
 			flAngle += 40.0f;
 		}
 
-		else if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_JITTERBOT)
+		else if (_profiler.gAntiAim->Current.iValue == cProfiler::ANTIAIM_JITTERBOT)
 		{
 			static int iMode = 1;
 
@@ -55,7 +55,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_RANDOMIZED)
+		else if (_profiler.gAntiAim->Current.iValue == cProfiler::ANTIAIM_RANDOMIZED)
 		{
 			std::random_device Device;
 			std::uniform_real_distribution<float> RandomPitch(-85.0f, 85.0f), RandomYaw(0.0f, 360.0f);
@@ -64,21 +64,21 @@ namespace ProtoGenesys
 			vAntiAimAngles[1] = RandomYaw(Device) - CG->PlayerState.vDeltaAngles[1];
 		}
 
-		else if (_profiler.gAntiAim->Custom.iValue == cProfiler::ANTIAIM_REVERSED)
+		else if (_profiler.gAntiAim->Current.iValue == cProfiler::ANTIAIM_REVERSED)
 		{
 			if (_targetList.vIsTarget[_targetList.iRiotShieldTarget] && _targetList.iRiotShieldTarget != CG->iClientNum)
 			{
-				_mathematics.CalculateAntiAimAngles(CG->Entity[_targetList.iRiotShieldTarget].vOrigin, CG->vOrigin, _targetList.vRiotShieldTarget);
+				_mathematics.CalculateAntiAimAngles(CG->Entity[_targetList.iRiotShieldTarget].vOrigin, CG->vOrigin, _targetList.vRiotShieldAimAngles);
 
-				vAntiAimAngles[0] = _targetList.vRiotShieldTarget[0] - 40.0f;
-				vAntiAimAngles[1] = _targetList.vRiotShieldTarget[1] - 180.0f;
+				vAntiAimAngles[0] = -_targetList.vRiotShieldAimAngles[0] - 40.0f;
+				vAntiAimAngles[1] = _targetList.vRiotShieldAimAngles[1] - 180.0f;
 			}
 
 			else
 			{
 				if (_aimBot.AimState.bIsAutoAiming)
 				{
-					vAntiAimAngles[0] = _aimBot.AimState.vAntiAimAngles[0] - 40.0f;
+					vAntiAimAngles[0] = -_aimBot.AimState.vAntiAimAngles[0] - 40.0f;
 					vAntiAimAngles[1] = _aimBot.AimState.vAntiAimAngles[1] - 180.0f;
 				}
 
@@ -104,7 +104,7 @@ namespace ProtoGenesys
 		return (GetWeaponDef(CG->Entity[CG->iClientNum].NextEntityState.iWeaponID) && !WeaponIsVehicle() &&
 			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_PRONE) &&
 			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags2 & EF2_MANTLE) &&
-			(_profiler.gAntiAim->Custom.iValue > cProfiler::ANTIAIM_OFF));
+			(_profiler.gAntiAim->Current.iValue > cProfiler::ANTIAIM_OFF));
 	}
 }
 

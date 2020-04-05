@@ -12,14 +12,14 @@ namespace ProtoGenesys
 	{
 		*(DWORD_PTR*)dwTacSSHandle = 0x1;
 
-		*(BYTE*)dwOrbitalVsat = _profiler.gOrbitalVsat->Custom.bValue;
-		*(BYTE*)(dwCG + 0x4809C) = _profiler.gThirdPerson->Custom.bValue;
+		CG->iThirdPerson = _profiler.gThirdPerson->Current.bValue;
+		CG->PlayerState.iSatalliteTypeEnabled = _profiler.gOrbitalVsat->Current.bValue;
 
-		if (_profiler.gHardcoreHud->Custom.bValue && *(DWORD*)(dwCG + 0x68958) & 0x200)
-			*(DWORD*)(dwCG + 0x68958) &= ~0x200;
+		if (_profiler.gHardcoreHud->Current.bValue && CG->iMatchUIVisibilityFlags & 0x200)
+			CG->iMatchUIVisibilityFlags &= ~0x200;
 
-		if (_profiler.gDisableEmp->Custom.bValue && *(DWORD*)(dwCG + 0x480C0) & 0x40)
-			*(DWORD*)(dwCG + 0x480C0) &= ~0x40;
+		if (_profiler.gDisableEmp->Current.bValue && CG->PlayerState.iOtherFlags & 0x40)
+			CG->PlayerState.iOtherFlags &= ~0x40;
 
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
 		{
@@ -59,7 +59,7 @@ namespace ProtoGenesys
 
 				if (szKey.find("name") != std::string::npos)
 				{
-					std::string szNameOverride(_profiler.gNameOverride->Custom.szValue);
+					std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
 
 					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szNameOverride.empty() ? GetUsername() : szNameOverride.c_str();
 					PageGuardAddress(dwGetClantag);
@@ -67,7 +67,7 @@ namespace ProtoGenesys
 
 				if (szKey.find("clanAbbrev") != std::string::npos)
 				{
-					std::string szClanOverride(_profiler.gClanOverride->Custom.szValue);
+					std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
 
 					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szClanOverride.empty() ? GetClantag() : szClanOverride.c_str();
 					PageGuardAddress(dwGetXuidstring);
@@ -225,7 +225,7 @@ namespace ProtoGenesys
 		{
 			static int iBackupAngles[3];
 
-			ClientActive = (sClientActive*)(*(DWORD_PTR*)dwClientActive + 0x42CA8);
+			ClientActive = *(sClientActive**)dwClientActive;
 
 			sUserCmd* pOldCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd - 1);
 			sUserCmd* pCurrentCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
@@ -261,7 +261,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			ClientActive = (sClientActive*)(*(DWORD_PTR*)dwClientActive + 0x42CA8);
+			ClientActive = *(sClientActive**)dwClientActive;
 
 			sUserCmd* pUserCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
 
@@ -280,9 +280,9 @@ namespace ProtoGenesys
 		{
 			if (attacker == CG->iClientNum && attacker != victim)
 			{
-				if (_profiler.gNameStealer->Custom.bValue)
+				if (_profiler.gNameStealer->Current.bValue)
 				{
-					std::string szXuidOverride(_profiler.gXuidOverride->Custom.szValue);
+					std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
 
 					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 						CG->Client[victim].szName,
@@ -290,13 +290,13 @@ namespace ProtoGenesys
 						szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
 				}
 
-				if (_profiler.gTrickShot->Custom.bValue)
+				if (_profiler.gTrickShot->Current.bValue)
 				{
 					AddReliableCommand(VariadicText("mr %d -1 endround", *(DWORD_PTR*)dwServerID));
-					_profiler.gTrickShot->Custom.bValue = false;
+					_profiler.gTrickShot->Current.bValue = false;
 				}
 
-				std::string szKillspam(_profiler.gKillspam->Custom.szValue);
+				std::string szKillspam(_profiler.gKillspam->Current.szValue);
 
 				if (!szKillspam.empty())
 				{
@@ -321,7 +321,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Custom.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true))
+			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true))
 			{
 				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
@@ -338,7 +338,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Custom.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true) && _targetList.IsLocalPlayerValid())
+			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true) && _targetList.IsLocalPlayerValid())
 			{
 				Vector3 vHead;
 				LPVOID pDObj = GetDObj(&CG->Entity[CG->iClientNum]);

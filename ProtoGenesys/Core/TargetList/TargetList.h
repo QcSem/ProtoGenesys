@@ -15,7 +15,6 @@ namespace ProtoGenesys
 		typedef struct
 		{
 			int iIndex;
-
 			float flFOV = FLT_MAX, flDistance = FLT_MAX;
 		} sTargetInfo;
 
@@ -36,7 +35,7 @@ namespace ProtoGenesys
 		} EntityList[MAX_ENTITIES];
 
 		int iRiotShieldTarget;
-		Vector3 vRiotShieldTarget;
+		Vector3 vRiotShieldAimAngles;
 
 		std::vector<BOOL> vIsTarget = std::vector<BOOL>(MAX_CLIENTS, TRUE);
 

@@ -15,7 +15,7 @@ namespace ProtoGenesys
 
 		struct sCvar
 		{
-			std::string szLabel;
+			std::string szName;
 			std::vector<std::string> szItems;
 
 			union uCvarValue
@@ -33,36 +33,39 @@ namespace ProtoGenesys
 				uCvarValue(DWORD value) : dwValue(value) {}
 				uCvarValue(ImVec4 value) : cValue(value) {}
 				uCvarValue(LPSTR value) : szValue(value) {}
-			} Custom, Default;
+			} Current, Reset;
 
-			union uMinValue
+			union uCvarLimits
 			{
-				int	iMin;
-				float flMin;
-				DWORD dwMin;
+				struct
+				{
+					int iMin;
+					int iMax;
+				};
 
-				uMinValue(int min) : iMin(min) {}
-				uMinValue(float min) : flMin(min) {}
-				uMinValue(DWORD min) : dwMin(min) {}
-			} MinValue;
+				struct
+				{
+					float flMin;
+					float flMax;
+				};
 
-			union uMaxValue
-			{
-				int	iMax;
-				float flMax;
-				DWORD dwMax;
+				struct
+				{
+					DWORD dwMin;
+					DWORD dwMax;
+				};
 
-				uMaxValue(int max) : iMax(max) {}
-				uMaxValue(float max) : flMax(max) {}
-				uMaxValue(DWORD max) : dwMax(max) {}
-			} MaxValue;
+				uCvarLimits(int min, int max) : iMin(min), iMax(max) {}
+				uCvarLimits(float min, float max) : flMin(min), flMax(max) {}
+				uCvarLimits(DWORD min, DWORD max) : dwMin(min), dwMax(max) {}
+			} Domain;
 
-			sCvar(std::string name, std::vector<std::string> items, bool value) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(NULL), MaxValue(NULL) {}
-			sCvar(std::string name, std::vector<std::string> items, int value, int min, int max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
-			sCvar(std::string name, std::vector<std::string> items, float value, float min, float max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
-			sCvar(std::string name, std::vector<std::string> items, DWORD value, DWORD min, DWORD max) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(min), MaxValue(max) {}
-			sCvar(std::string name, std::vector<std::string> items, ImVec4 value) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(NULL), MaxValue(NULL) {}
-			sCvar(std::string name, std::vector<std::string> items, LPSTR value) : szLabel(name), szItems(items), Custom(value), Default(value), MinValue(NULL), MaxValue(NULL) {}
+			sCvar(std::string name, std::vector<std::string> items, bool value) : szName(name), szItems(items), Current(value), Reset(value), Domain(NULL, NULL) {}
+			sCvar(std::string name, std::vector<std::string> items, int value, int min, int max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
+			sCvar(std::string name, std::vector<std::string> items, float value, float min, float max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
+			sCvar(std::string name, std::vector<std::string> items, DWORD value, DWORD min, DWORD max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
+			sCvar(std::string name, std::vector<std::string> items, ImVec4 value) : szName(name), szItems(items), Current(value), Reset(value), Domain(NULL, NULL) {}
+			sCvar(std::string name, std::vector<std::string> items, LPSTR value) : szName(name), szItems(items), Current(value), Reset(value), Domain(NULL, NULL) {}
 		};
 
 		typedef enum
@@ -208,7 +211,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gPlayerCompass = std::make_shared<sCvar>("Compass", std::vector<std::string>(), false);
 		std::shared_ptr<sCvar> gPlayerRadar = std::make_shared<sCvar>("Radar", std::vector<std::string>(), false);
 
-		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HEAD, BONE_HEAD, BONE_MAX - 1);
+		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HELMET, BONE_HELMET, BONE_MAX - 1);
 		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180.0f, 5.0f, 180.0f);
 		std::shared_ptr<sCvar> gAimPower = std::make_shared<sCvar>("Aimpower", std::vector<std::string>(), 100, 5, 100);
 		std::shared_ptr<sCvar> gAutoAimTime = std::make_shared<sCvar>("Autoaim Time", std::vector<std::string>(), 0, 0, 1000);

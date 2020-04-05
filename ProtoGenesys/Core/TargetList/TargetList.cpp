@@ -73,11 +73,11 @@ namespace ProtoGenesys
 
 				if (!IsEnemy(i))
 				{
-					EntityList[i].cColor = _profiler.gColorAllies->Custom.cValue;
+					EntityList[i].cColor = _profiler.gColorAllies->Current.cValue;
 					continue;
 				}
 
-				EntityList[i].cColor = _profiler.gColorAxis->Custom.cValue;
+				EntityList[i].cColor = _profiler.gColorAxis->Current.cValue;
 			}
 
 			else
@@ -86,22 +86,22 @@ namespace ProtoGenesys
 				continue;
 			}
 
-			if (_profiler.gBoneScan->Custom.iValue == cProfiler::BONESCAN_ONTIMER)
+			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 			{
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Custom.bValue, &EntityList[i].iBoneIndex);
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, &EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
-			else if (_profiler.gBoneScan->Custom.iValue == cProfiler::BONESCAN_IMMEDIATE)
+			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
 			{
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Custom.bValue, &EntityList[i].iBoneIndex);
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, &EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
 			else
 			{
-				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Custom.iValue;
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Custom.bValue, &EntityList[i].iBoneIndex);
+				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, &EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
@@ -109,7 +109,7 @@ namespace ProtoGenesys
 				if (!vIsTarget[i])
 					continue;
 
-			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Custom.flValue)
+			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.flValue)
 			{
 				TargetInfo.iIndex = i;
 
@@ -122,13 +122,13 @@ namespace ProtoGenesys
 
 		if (!vTargetInfo.empty())
 		{
-			if (_profiler.gSortMethod->Custom.iValue == cProfiler::SORT_METHOD_FOV)
+			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
 			{
 				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flFOV < b.flFOV; });
 				_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
 
-			else if (_profiler.gSortMethod->Custom.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
 			{
 				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDistance < b.flDistance; });
 				_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
@@ -136,13 +136,13 @@ namespace ProtoGenesys
 		}
 
 		_aimBot.AimState.bTargetAcquired = (_aimBot.AimState.iTargetNum > -1);
-		_aimBot.AimState.bLockonTarget = (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Custom.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM));
+		_aimBot.AimState.bLockonTarget = (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM));
 		_aimBot.AimState.bIsAutoAiming = (_aimBot.AimState.bTargetAcquired && _aimBot.AimState.bLockonTarget);
-		_aimBot.AimState.bIsAutoFiring = (_profiler.gAutoFire->Custom.bValue && _aimBot.AimState.bIsAutoAiming);
+		_aimBot.AimState.bIsAutoFiring = (_profiler.gAutoFire->Current.bValue && _aimBot.AimState.bIsAutoAiming);
 
 		if (_aimBot.AimState.bLockonTarget)
 		{
-			if (_aimBot.AimState.iCurrentAimDelay == _profiler.gAutoAimDelay->Custom.iValue)
+			if (_aimBot.AimState.iCurrentAimDelay == _profiler.gAutoAimDelay->Current.iValue)
 				_aimBot.AimState.iCurrentAimTime += clock() - _aimBot.AimState.iDeltaTMR;
 
 			_aimBot.AimState.iCurrentAimDelay += clock() - _aimBot.AimState.iDeltaTMR;
@@ -167,17 +167,17 @@ namespace ProtoGenesys
 		if (!_aimBot.AimState.bTargetAcquired)
 			_aimBot.AimState.iCurrentAimDelay = _aimBot.AimState.iCurrentZoomDelay = _aimBot.AimState.iCurrentFireDelay = 0;
 
-		if (_aimBot.AimState.iCurrentAimTime > _profiler.gAutoAimTime->Custom.iValue)
-			_aimBot.AimState.iCurrentAimTime = _profiler.gAutoAimTime->Custom.iValue;
+		if (_aimBot.AimState.iCurrentAimTime > _profiler.gAutoAimTime->Current.iValue)
+			_aimBot.AimState.iCurrentAimTime = _profiler.gAutoAimTime->Current.iValue;
 
-		if (_aimBot.AimState.iCurrentAimDelay > _profiler.gAutoAimDelay->Custom.iValue)
-			_aimBot.AimState.iCurrentAimDelay = _profiler.gAutoAimDelay->Custom.iValue;
+		if (_aimBot.AimState.iCurrentAimDelay > _profiler.gAutoAimDelay->Current.iValue)
+			_aimBot.AimState.iCurrentAimDelay = _profiler.gAutoAimDelay->Current.iValue;
 
-		if (_aimBot.AimState.iCurrentZoomDelay > _profiler.gAutoZoomDelay->Custom.iValue)
-			_aimBot.AimState.iCurrentZoomDelay = _profiler.gAutoZoomDelay->Custom.iValue;
+		if (_aimBot.AimState.iCurrentZoomDelay > _profiler.gAutoZoomDelay->Current.iValue)
+			_aimBot.AimState.iCurrentZoomDelay = _profiler.gAutoZoomDelay->Current.iValue;
 
-		if (_aimBot.AimState.iCurrentFireDelay > _profiler.gAutoFireDelay->Custom.iValue)
-			_aimBot.AimState.iCurrentFireDelay = _profiler.gAutoFireDelay->Custom.iValue;
+		if (_aimBot.AimState.iCurrentFireDelay > _profiler.gAutoFireDelay->Current.iValue)
+			_aimBot.AimState.iCurrentFireDelay = _profiler.gAutoFireDelay->Current.iValue;
 
 		if (_aimBot.AimState.bTargetAcquired)
 		{
@@ -246,7 +246,7 @@ namespace ProtoGenesys
 
 		GetPlayerViewOrigin(vViewOrigin);
 
-		if (_profiler.gApplyPrediction->Custom.bValue)
+		if (_profiler.gApplyPrediction->Current.bValue)
 			ApplyPrediction(entity, position);
 
 		if (!WeaponIsVehicle() && autowall)
@@ -330,8 +330,10 @@ namespace ProtoGenesys
 
 		VectorSubtract(vNewPosition, vOldPosition, vVelocity);
 
-		VectorMA(position, *(int*)(dwCG + 0x48088) / 1000.0f, vVelocity, position);
-		VectorMA(position, *(int*)(*(DWORD_PTR*)dwClientActive + 0x68) / 1000.0f, vVelocity, position);
+		ClientActive = *(sClientActive**)dwClientActive;
+
+		VectorMA(position, CG->iFrameTime / 1000.0f, vVelocity, position);
+		VectorMA(position, ClientActive->iPing / 1000.0f, vVelocity, position);
 	}
 }
 

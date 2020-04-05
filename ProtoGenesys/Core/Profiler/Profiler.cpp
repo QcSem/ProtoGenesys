@@ -21,67 +21,67 @@ namespace ProtoGenesys
 			else
 				szFilePath = acut::AnsiToWstring(path, CP_ACP);
 
-			XML.set("ProtoGenesys.AimBot.Mode", gAimBotMode->Custom.iValue);
-			XML.set("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Custom.bValue);
-			XML.set("ProtoGenesys.AimBot.AutoFire", gAutoFire->Custom.bValue);
-			XML.set("ProtoGenesys.AimBot.AutoWall", gAutoWall->Custom.bValue);
-			XML.set("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Custom.bValue);
-			XML.set("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Custom.bValue);
-			XML.set("ProtoGenesys.AimBot.SilentAim", gSilentAim->Custom.bValue);
-			XML.set("ProtoGenesys.AimBot.AntiAim", gAntiAim->Custom.iValue);
-			XML.set("ProtoGenesys.AimBot.BoneScan", gBoneScan->Custom.iValue);
-			XML.set("ProtoGenesys.AimBot.SortMethod", gSortMethod->Custom.iValue);
+			XML.set("ProtoGenesys.AimBot.Mode", gAimBotMode->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Current.bValue);
+			XML.set("ProtoGenesys.AimBot.AutoFire", gAutoFire->Current.bValue);
+			XML.set("ProtoGenesys.AimBot.AutoWall", gAutoWall->Current.bValue);
+			XML.set("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.bValue);
+			XML.set("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.bValue);
+			XML.set("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.bValue);
+			XML.set("ProtoGenesys.AimBot.AntiAim", gAntiAim->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.BoneScan", gBoneScan->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.SortMethod", gSortMethod->Current.iValue);
 
-			XML.set("ProtoGenesys.WallHack.Mode", gWallHackMode->Custom.iValue);
-			XML.set("ProtoGenesys.WallHack.Boxes", gPlayerBoxes->Custom.iValue);
-			XML.set("ProtoGenesys.WallHack.Bones", gPlayerBones->Custom.iValue);
-			XML.set("ProtoGenesys.WallHack.SnapLines", gPlayerSnapLines->Custom.iValue);
-			XML.set("ProtoGenesys.WallHack.Info", gPlayerInfo->Custom.bValue);
-			XML.set("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Custom.bValue);
-			XML.set("ProtoGenesys.WallHack.Entities", gPlayerEntities->Custom.bValue);
-			XML.set("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Custom.bValue);
-			XML.set("ProtoGenesys.WallHack.Compass", gPlayerCompass->Custom.bValue);
-			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Custom.bValue);
+			XML.set("ProtoGenesys.WallHack.Mode", gWallHackMode->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.Boxes", gPlayerBoxes->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.Bones", gPlayerBones->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.SnapLines", gPlayerSnapLines->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.Info", gPlayerInfo->Current.bValue);
+			XML.set("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Current.bValue);
+			XML.set("ProtoGenesys.WallHack.Entities", gPlayerEntities->Current.bValue);
+			XML.set("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.bValue);
+			XML.set("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.bValue);
+			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
 
-			XML.set("ProtoGenesys.Tweaks.AimBone", gAimBone->Custom.iValue);
-			XML.set("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Custom.flValue);
-			XML.set("ProtoGenesys.Tweaks.AimPower", gAimPower->Custom.iValue);
-			XML.set("ProtoGenesys.Tweaks.AutoAimTime", gAutoAimTime->Custom.iValue);
-			XML.set("ProtoGenesys.Tweaks.AutoAimDelay", gAutoAimDelay->Custom.iValue);
-			XML.set("ProtoGenesys.Tweaks.AutoZoomDelay", gAutoZoomDelay->Custom.iValue);
-			XML.set("ProtoGenesys.Tweaks.AutoFireDelay", gAutoFireDelay->Custom.iValue);
-			XML.set("ProtoGenesys.Tweaks.RecoilFactor", gRecoilFactor->Custom.flValue);
-			XML.set("ProtoGenesys.Tweaks.SpreadFactor", gSpreadFactor->Custom.flValue);
+			XML.set("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
+			XML.set("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.flValue);
+			XML.set("ProtoGenesys.Tweaks.AimPower", gAimPower->Current.iValue);
+			XML.set("ProtoGenesys.Tweaks.AutoAimTime", gAutoAimTime->Current.iValue);
+			XML.set("ProtoGenesys.Tweaks.AutoAimDelay", gAutoAimDelay->Current.iValue);
+			XML.set("ProtoGenesys.Tweaks.AutoZoomDelay", gAutoZoomDelay->Current.iValue);
+			XML.set("ProtoGenesys.Tweaks.AutoFireDelay", gAutoFireDelay->Current.iValue);
+			XML.set("ProtoGenesys.Tweaks.RecoilFactor", gRecoilFactor->Current.flValue);
+			XML.set("ProtoGenesys.Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
 
-			XML.set("ProtoGenesys.Colors.Axis.Red", gColorAxis->Custom.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Axis.Green", gColorAxis->Custom.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Axis.Blue", gColorAxis->Custom.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Axis.Alpha", gColorAxis->Custom.cValue[3]);
+			XML.set("ProtoGenesys.Colors.Axis.Red", gColorAxis->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.Axis.Green", gColorAxis->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.Axis.Blue", gColorAxis->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Axis.Alpha", gColorAxis->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.Allies.Red", gColorAllies->Custom.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Allies.Green", gColorAllies->Custom.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Custom.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Custom.cValue[3]);
+			XML.set("ProtoGenesys.Colors.Allies.Red", gColorAllies->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.Allies.Green", gColorAllies->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.RiotShield.Red", gColorRiotShield->Custom.cValue[0]);
-			XML.set("ProtoGenesys.Colors.RiotShield.Green", gColorRiotShield->Custom.cValue[1]);
-			XML.set("ProtoGenesys.Colors.RiotShield.Blue", gColorRiotShield->Custom.cValue[2]);
-			XML.set("ProtoGenesys.Colors.RiotShield.Alpha", gColorRiotShield->Custom.cValue[3]);
+			XML.set("ProtoGenesys.Colors.RiotShield.Red", gColorRiotShield->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.RiotShield.Green", gColorRiotShield->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.RiotShield.Blue", gColorRiotShield->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.RiotShield.Alpha", gColorRiotShield->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Custom.cValue[0]);
-			XML.set("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Custom.cValue[1]);
-			XML.set("ProtoGenesys.Colors.CrossHair.Blue", gColorCrossHair->Custom.cValue[2]);
-			XML.set("ProtoGenesys.Colors.CrossHair.Alpha", gColorCrossHair->Custom.cValue[3]);
+			XML.set("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.CrossHair.Blue", gColorCrossHair->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.CrossHair.Alpha", gColorCrossHair->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.Text.Red", gColorText->Custom.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Text.Green", gColorText->Custom.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Text.Blue", gColorText->Custom.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Text.Alpha", gColorText->Custom.cValue[3]);
+			XML.set("ProtoGenesys.Colors.Text.Red", gColorText->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.Text.Green", gColorText->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.Text.Blue", gColorText->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Text.Alpha", gColorText->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.Shadow.Red", gColorShadow->Custom.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Shadow.Green", gColorShadow->Custom.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Shadow.Blue", gColorShadow->Custom.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Shadow.Alpha", gColorShadow->Custom.cValue[3]);
+			XML.set("ProtoGenesys.Colors.Shadow.Red", gColorShadow->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.Shadow.Green", gColorShadow->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.Shadow.Blue", gColorShadow->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Shadow.Alpha", gColorShadow->Current.cValue[3]);
 
 			XML.write_document(szFilePath);
 
@@ -115,67 +115,67 @@ namespace ProtoGenesys
 
 			XML.read_from_file(szFilePath);
 
-			XML.get_if_present("ProtoGenesys.AimBot.Mode", gAimBotMode->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoFire", gAutoFire->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoWall", gAutoWall->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.SilentAim", gSilentAim->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AntiAim", gAntiAim->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.BoneScan", gBoneScan->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.SortMethod", gSortMethod->Custom.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.Mode", gAimBotMode->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Current.bValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AutoFire", gAutoFire->Current.bValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AutoWall", gAutoWall->Current.bValue);
+			XML.get_if_present("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.bValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.bValue);
+			XML.get_if_present("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.bValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AntiAim", gAntiAim->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.BoneScan", gBoneScan->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.SortMethod", gSortMethod->Current.iValue);
 
-			XML.get_if_present("ProtoGenesys.WallHack.Mode", gWallHackMode->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Boxes", gPlayerBoxes->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Bones", gPlayerBones->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.SnapLines", gPlayerSnapLines->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Info", gPlayerInfo->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Entities", gPlayerEntities->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Compass", gPlayerCompass->Custom.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Custom.bValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Mode", gWallHackMode->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Boxes", gPlayerBoxes->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Bones", gPlayerBones->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.SnapLines", gPlayerSnapLines->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Info", gPlayerInfo->Current.bValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Current.bValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Entities", gPlayerEntities->Current.bValue);
+			XML.get_if_present("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.bValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.bValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
 
-			XML.get_if_present("ProtoGenesys.Tweaks.AimBone", gAimBone->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Custom.flValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AimPower", gAimPower->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AutoAimTime", gAutoAimTime->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AutoAimDelay", gAutoAimDelay->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AutoZoomDelay", gAutoZoomDelay->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AutoFireDelay", gAutoFireDelay->Custom.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.RecoilFactor", gRecoilFactor->Custom.flValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.SpreadFactor", gSpreadFactor->Custom.flValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.flValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AimPower", gAimPower->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AutoAimTime", gAutoAimTime->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AutoAimDelay", gAutoAimDelay->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AutoZoomDelay", gAutoZoomDelay->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AutoFireDelay", gAutoFireDelay->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.RecoilFactor", gRecoilFactor->Current.flValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
 
-			XML.get_if_present("ProtoGenesys.Colors.Axis.Red", gColorAxis->Custom.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Axis.Green", gColorAxis->Custom.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Axis.Blue", gColorAxis->Custom.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Axis.Alpha", gColorAxis->Custom.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.Axis.Red", gColorAxis->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.Axis.Green", gColorAxis->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.Axis.Blue", gColorAxis->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Axis.Alpha", gColorAxis->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.Allies.Red", gColorAllies->Custom.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Allies.Green", gColorAllies->Custom.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Custom.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Custom.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.Allies.Red", gColorAllies->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.Allies.Green", gColorAllies->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Red", gColorRiotShield->Custom.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Green", gColorRiotShield->Custom.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Blue", gColorRiotShield->Custom.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Alpha", gColorRiotShield->Custom.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Red", gColorRiotShield->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Green", gColorRiotShield->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Blue", gColorRiotShield->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Alpha", gColorRiotShield->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Custom.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Custom.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Blue", gColorCrossHair->Custom.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Alpha", gColorCrossHair->Custom.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Blue", gColorCrossHair->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Alpha", gColorCrossHair->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.Text.Red", gColorText->Custom.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Text.Green", gColorText->Custom.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Text.Blue", gColorText->Custom.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Text.Alpha", gColorText->Custom.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.Text.Red", gColorText->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.Text.Green", gColorText->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.Text.Blue", gColorText->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Text.Alpha", gColorText->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.Shadow.Red", gColorShadow->Custom.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Shadow.Green", gColorShadow->Custom.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Shadow.Blue", gColorShadow->Custom.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Shadow.Alpha", gColorShadow->Custom.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.Shadow.Red", gColorShadow->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.Shadow.Green", gColorShadow->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.Shadow.Blue", gColorShadow->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Shadow.Alpha", gColorShadow->Current.cValue[3]);
 
 			return true;
 		}
@@ -192,40 +192,40 @@ namespace ProtoGenesys
 	*/
 	void cProfiler::DisableAll()
 	{
-		gAimBotMode->Custom.iValue = gAimBotMode->Default.iValue;
-		gAutoZoom->Custom.bValue = gAutoZoom->Default.bValue;
-		gAutoFire->Custom.bValue = gAutoFire->Default.bValue;
-		gAutoWall->Custom.bValue = gAutoWall->Default.bValue;
-		gApplyPrediction->Custom.bValue = gApplyPrediction->Default.bValue;
-		gAntiTeamKill->Custom.bValue = gAntiTeamKill->Default.bValue;
-		gSilentAim->Custom.bValue = gSilentAim->Default.bValue;
-		gAntiAim->Custom.iValue = gAntiAim->Default.iValue;
-		gBoneScan->Custom.iValue = gBoneScan->Default.iValue;
-		gSortMethod->Custom.iValue = gSortMethod->Default.iValue;
+		gAimBotMode->Current.iValue = gAimBotMode->Reset.iValue;
+		gAutoZoom->Current.bValue = gAutoZoom->Reset.bValue;
+		gAutoFire->Current.bValue = gAutoFire->Reset.bValue;
+		gAutoWall->Current.bValue = gAutoWall->Reset.bValue;
+		gApplyPrediction->Current.bValue = gApplyPrediction->Reset.bValue;
+		gAntiTeamKill->Current.bValue = gAntiTeamKill->Reset.bValue;
+		gSilentAim->Current.bValue = gSilentAim->Reset.bValue;
+		gAntiAim->Current.iValue = gAntiAim->Reset.iValue;
+		gBoneScan->Current.iValue = gBoneScan->Reset.iValue;
+		gSortMethod->Current.iValue = gSortMethod->Reset.iValue;
 
-		gWallHackMode->Custom.iValue = gWallHackMode->Default.iValue;
-		gPlayerBoxes->Custom.iValue = gPlayerBoxes->Default.iValue;
-		gPlayerBones->Custom.iValue = gPlayerBones->Default.iValue;
-		gPlayerSnapLines->Custom.iValue = gPlayerSnapLines->Default.iValue;
-		gPlayerInfo->Custom.bValue = gPlayerInfo->Default.bValue;
-		gPlayerWeapons->Custom.bValue = gPlayerWeapons->Default.bValue;
-		gPlayerEntities->Custom.bValue = gPlayerEntities->Default.bValue;
-		gPlayerCrossHair->Custom.bValue = gPlayerCrossHair->Default.bValue;
-		gPlayerCompass->Custom.bValue = gPlayerCompass->Default.bValue;
-		gPlayerRadar->Custom.bValue = gPlayerRadar->Default.bValue;
+		gWallHackMode->Current.iValue = gWallHackMode->Reset.iValue;
+		gPlayerBoxes->Current.iValue = gPlayerBoxes->Reset.iValue;
+		gPlayerBones->Current.iValue = gPlayerBones->Reset.iValue;
+		gPlayerSnapLines->Current.iValue = gPlayerSnapLines->Reset.iValue;
+		gPlayerInfo->Current.bValue = gPlayerInfo->Reset.bValue;
+		gPlayerWeapons->Current.bValue = gPlayerWeapons->Reset.bValue;
+		gPlayerEntities->Current.bValue = gPlayerEntities->Reset.bValue;
+		gPlayerCrossHair->Current.bValue = gPlayerCrossHair->Reset.bValue;
+		gPlayerCompass->Current.bValue = gPlayerCompass->Reset.bValue;
+		gPlayerRadar->Current.bValue = gPlayerRadar->Reset.bValue;
 
-		gThirdPerson->Custom.bValue = gThirdPerson->Default.bValue;
-		gThirdPersonAntiAim->Custom.bValue = gThirdPersonAntiAim->Default.bValue;
-		gOrbitalVsat->Custom.bValue = gOrbitalVsat->Default.bValue;
-		gHardcoreHud->Custom.bValue = gHardcoreHud->Default.bValue;
-		gDisableEmp->Custom.bValue = gDisableEmp->Default.bValue;
-		gNameStealer->Custom.bValue = gNameStealer->Default.bValue;
-		gTrickShot->Custom.bValue = gTrickShot->Default.bValue;
+		gThirdPerson->Current.bValue = gThirdPerson->Reset.bValue;
+		gThirdPersonAntiAim->Current.bValue = gThirdPersonAntiAim->Reset.bValue;
+		gOrbitalVsat->Current.bValue = gOrbitalVsat->Reset.bValue;
+		gHardcoreHud->Current.bValue = gHardcoreHud->Reset.bValue;
+		gDisableEmp->Current.bValue = gDisableEmp->Reset.bValue;
+		gNameStealer->Current.bValue = gNameStealer->Reset.bValue;
+		gTrickShot->Current.bValue = gTrickShot->Reset.bValue;
 
-		gKillspam->Custom.szValue = _strdup(gKillspam->Default.szValue);
-		gNameOverride->Custom.szValue = _strdup(gNameOverride->Default.szValue);
-		gClanOverride->Custom.szValue = _strdup(gClanOverride->Default.szValue);
-		gXuidOverride->Custom.szValue = _strdup(gXuidOverride->Default.szValue);
+		gKillspam->Current.szValue = _strdup(gKillspam->Reset.szValue);
+		gNameOverride->Current.szValue = _strdup(gNameOverride->Reset.szValue);
+		gClanOverride->Current.szValue = _strdup(gClanOverride->Reset.szValue);
+		gXuidOverride->Current.szValue = _strdup(gXuidOverride->Reset.szValue);
 	}
 }
 
