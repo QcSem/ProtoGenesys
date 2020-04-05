@@ -321,7 +321,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true))
+			if (_antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true))
 			{
 				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
@@ -338,7 +338,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true) && _targetList.IsLocalPlayerValid())
+			if (_antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true) && _targetList.IsLocalPlayerValid())
 			{
 				Vector3 vHead;
 				LPVOID pDObj = GetDObj(&CG->Entity[CG->iClientNum]);

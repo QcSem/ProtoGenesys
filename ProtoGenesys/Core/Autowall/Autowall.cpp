@@ -10,6 +10,26 @@ namespace ProtoGenesys
 
 	float cAutowall::Autowall(Vector3 start, Vector3 end, short hitloc)
 	{
+		static bool bHostAutoWall = _profiler.gHostAutoWall->Current.bValue;
+
+		if (_profiler.gHostAutoWall->Current.bValue && !bHostAutoWall)
+		{
+			((sDvar*)dwPenetrationMultiplier)->Current.flValue = 30.0f;
+			((sDvar*)dwPenetrationMinFxDist)->Current.flValue = 1024.0f;
+			((sDvar*)dwPenetrationCount)->Current.iValue = 10;
+
+			bHostAutoWall = true;
+		}
+
+		else if (!_profiler.gHostAutoWall->Current.bValue && bHostAutoWall)
+		{
+			((sDvar*)dwPenetrationMultiplier)->Current.flValue = ((sDvar*)dwPenetrationMultiplier)->Reset.flValue;
+			((sDvar*)dwPenetrationMinFxDist)->Current.flValue = ((sDvar*)dwPenetrationMinFxDist)->Reset.flValue;
+			((sDvar*)dwPenetrationCount)->Current.iValue = ((sDvar*)dwPenetrationCount)->Reset.iValue;
+
+			bHostAutoWall = false;
+		}
+
 		int iIndex = CG->iClientNum;
 		sEntity* pCEntity = &CG->Entity[iIndex];
 		int iWeaponID = pCEntity->NextEntityState.iWeaponID;

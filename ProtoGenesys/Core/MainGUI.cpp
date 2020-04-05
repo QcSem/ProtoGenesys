@@ -508,22 +508,22 @@ namespace ProtoGenesys
 						bProtoGenesysLog = true;
 					} ImGui::SameLine(296.0f);
 
-					if (ImGui::Checkbox(_profiler.gThirdPersonAntiAim->szName.c_str(), &_profiler.gThirdPersonAntiAim->Current.bValue))
-					{
-						bProtoGenesysLog = true;
-					} ImGui::NewLine();
-
 					if (ImGui::Checkbox(_profiler.gOrbitalVsat->szName.c_str(), &_profiler.gOrbitalVsat->Current.bValue))
 					{
 						bProtoGenesysLog = true;
-					} ImGui::SameLine(296.0f);
+					} ImGui::NewLine();
 
 					if (ImGui::Checkbox(_profiler.gHardcoreHud->szName.c_str(), &_profiler.gHardcoreHud->Current.bValue))
 					{
 						bProtoGenesysLog = true;
-					} ImGui::NewLine();
+					} ImGui::SameLine(296.0f);
 
 					if (ImGui::Checkbox(_profiler.gDisableEmp->szName.c_str(), &_profiler.gDisableEmp->Current.bValue))
+					{
+						bProtoGenesysLog = true;
+					} ImGui::NewLine();
+
+					if (ImGui::Checkbox(_profiler.gHostAutoWall->szName.c_str(), &_profiler.gHostAutoWall->Current.bValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::SameLine(296.0f);
@@ -599,21 +599,6 @@ namespace ProtoGenesys
 					if (ImGui::SliderFloat(_profiler.gSpreadFactor->szName.c_str(), &_profiler.gSpreadFactor->Current.flValue, _profiler.gSpreadFactor->Domain.flMin, _profiler.gSpreadFactor->Domain.flMax))
 					{
 						bProtoGenesysLog = true;
-					} ImGui::NewLine();
-
-					if (ImGui::SliderFloat(((sDvar*)dwPenetrationMultiplier)->szName, &((sDvar*)dwPenetrationMultiplier)->Current.flValue, ((sDvar*)dwPenetrationMultiplier)->Domain.flMin, ((sDvar*)dwPenetrationMultiplier)->Domain.flMax))
-					{
-						bProtoGenesysLog = true;
-					} ImGui::NewLine();
-
-					if (ImGui::SliderFloat(((sDvar*)dwPenetrationMinFxDist)->szName, &((sDvar*)dwPenetrationMinFxDist)->Current.flValue, ((sDvar*)dwPenetrationMinFxDist)->Domain.flMin, ((sDvar*)dwPenetrationMinFxDist)->Domain.flMax))
-					{
-						bProtoGenesysLog = true;
-					} ImGui::NewLine();
-
-					if (ImGui::SliderInt(((sDvar*)dwPenetrationCount)->szName, (int*)&((sDvar*)dwPenetrationCount)->Current.dwValue, ((sDvar*)dwPenetrationCount)->Domain.dwMin, ((sDvar*)dwPenetrationCount)->Domain.dwMax))
-					{
-						bProtoGenesysLog = true;
 					} ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
 
 					if (ImGui::Button("Reset to Default", ImVec2(446.0f, 35.0f)))
@@ -627,10 +612,6 @@ namespace ProtoGenesys
 						_profiler.gAutoFireDelay->Current.iValue = _profiler.gAutoFireDelay->Reset.iValue;
 						_profiler.gRecoilFactor->Current.flValue = _profiler.gRecoilFactor->Reset.flValue;
 						_profiler.gSpreadFactor->Current.flValue = _profiler.gSpreadFactor->Reset.flValue;
-
-						((sDvar*)dwPenetrationMultiplier)->Current.flValue = ((sDvar*)dwPenetrationMultiplier)->Reset.flValue;
-						((sDvar*)dwPenetrationMinFxDist)->Current.flValue = ((sDvar*)dwPenetrationMinFxDist)->Reset.flValue;
-						((sDvar*)dwPenetrationCount)->Current.dwValue = ((sDvar*)dwPenetrationCount)->Reset.dwValue;
 
 						bProtoGenesysLog = true;
 					}

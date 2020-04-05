@@ -215,10 +215,10 @@ namespace ProtoGenesys
 		gPlayerRadar->Current.bValue = gPlayerRadar->Reset.bValue;
 
 		gThirdPerson->Current.bValue = gThirdPerson->Reset.bValue;
-		gThirdPersonAntiAim->Current.bValue = gThirdPersonAntiAim->Reset.bValue;
 		gOrbitalVsat->Current.bValue = gOrbitalVsat->Reset.bValue;
 		gHardcoreHud->Current.bValue = gHardcoreHud->Reset.bValue;
 		gDisableEmp->Current.bValue = gDisableEmp->Reset.bValue;
+		gHostAutoWall->Current.bValue = gHostAutoWall->Reset.bValue;
 		gNameStealer->Current.bValue = gNameStealer->Reset.bValue;
 		gTrickShot->Current.bValue = gTrickShot->Reset.bValue;
 
