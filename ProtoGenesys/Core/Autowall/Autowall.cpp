@@ -12,7 +12,7 @@ namespace ProtoGenesys
 	{
 		static bool bHostAutoWall = _profiler.gHostAutoWall->Current.bValue;
 
-		if (_profiler.gHostAutoWall->Current.bValue && !bHostAutoWall)
+		if (_profiler.gHostAutoWall->Current.bValue)
 		{
 			((sDvar*)dwPenetrationMultiplier)->Current.flValue = 30.0f;
 			((sDvar*)dwPenetrationMinFxDist)->Current.flValue = 1024.0f;
