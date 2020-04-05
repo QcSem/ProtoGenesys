@@ -561,7 +561,7 @@ namespace ProtoGenesys
 			szCommand = acut::FindAndReplaceString(szCommand, "%n", "\n");
 			szCommand = acut::FindAndReplaceString(szCommand, "%t", "\t");
 
-			AddReliableCommand(szCommand);
+			Cbuf_AddText(szCommand);
 		}
 	}
 	/*
