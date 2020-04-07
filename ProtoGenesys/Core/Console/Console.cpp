@@ -525,7 +525,7 @@ namespace ProtoGenesys
 					if (szKillspam)
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-						_profiler.gKillspam->Current.szValue = Strdup(strtok(szArgBuff, "\n"));
+						_profiler.gKillspam->Current.szValue = Strdup(szKillspam);
 						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 					}
 
