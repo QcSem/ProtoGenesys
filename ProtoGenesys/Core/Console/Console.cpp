@@ -182,7 +182,7 @@ namespace ProtoGenesys
 		{
 			LPSTR szInputEnd = szInput + strlen(szInput);
 
-			while (szInputEnd > szInput&& szInputEnd[-1] == ' ')
+			while (szInputEnd > szInput && szInputEnd[-1] == ' ')
 			{
 				szInputEnd--;
 			} *szInputEnd = 0;
@@ -444,22 +444,46 @@ namespace ProtoGenesys
 
 		else if (!Stricmp(CmdLine.szCmdName, "proto_xuid"))
 		{
-		if (CmdLine.iArgNum > 0)
-		{
-			if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
+			if (CmdLine.iArgNum > 0)
 			{
-				char szArgBuff[512] = { NULL };
+				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
+				{
+					char szArgBuff[512] = { NULL };
 
-				for (int i = 1; i < CmdLine.iArgNum; i++)
-					strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
+					for (int i = 1; i < CmdLine.iArgNum; i++)
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
-				LPSTR szXuidOverride = strtok(szArgBuff, "\n");
+					LPSTR szXuidOverride = strtok(szArgBuff, "\n");
 
-				if (szXuidOverride)
+					if (szXuidOverride)
+					{
+						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+
+						_profiler.gXuidOverride->Current.szValue = Strdup(_ui64toa(_atoi64(szXuidOverride), _hooks.szXuidOverride, 0x10));
+
+						std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+						std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
+						std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
+
+						AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
+							szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
+							szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
+							szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
+
+						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+					}
+
+					else
+					{
+						AddLog("[ERROR] Null argument(s).");
+					}
+				}
+
+				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-					_profiler.gXuidOverride->Current.szValue = Strdup(_ui64toa(_atoi64(szXuidOverride), _hooks.szXuidOverride, 0x10));
+					_profiler.gXuidOverride->Current.szValue = Strdup("");
 
 					std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
 					std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
@@ -475,38 +499,14 @@ namespace ProtoGenesys
 
 				else
 				{
-					AddLog("[ERROR] Null argument(s).");
+					AddLog("[ERROR] Invalid argument(s).");
 				}
-			}
-
-			else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
-			{
-				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-
-				_profiler.gXuidOverride->Current.szValue = Strdup("");
-
-				std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
-				std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
-				std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
-
-				AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
-					szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
-					szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
-					szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
-
-				AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 			}
 
 			else
 			{
-				AddLog("[ERROR] Invalid argument(s).");
+				AddLog("[ERROR] Missing argument(s).");
 			}
-		}
-
-		else
-		{
-			AddLog("[ERROR] Missing argument(s).");
-		}
 		}
 
 		else if (!Stricmp(CmdLine.szCmdName, "proto_killspam"))
@@ -556,12 +556,7 @@ namespace ProtoGenesys
 
 		else
 		{
-			std::string szCommand(command);
-
-			szCommand = acut::FindAndReplaceString(szCommand, "%n", "\n");
-			szCommand = acut::FindAndReplaceString(szCommand, "%t", "\t");
-
-			Cbuf_AddText(szCommand);
+			AddReliableCommand(acut::FindAndReplaceString(command, "%n", "\n"));
 		}
 	}
 	/*
