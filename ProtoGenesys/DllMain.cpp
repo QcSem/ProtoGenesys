@@ -24,9 +24,9 @@ void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
 typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
 
-void USERCALL hOffsetThirdPersonView(int localnum1, int localnum2);
-typedef void(USERCALL* tOffsetThirdPersonView)(int localnum1, int localnum2);
-tOffsetThirdPersonView oOffsetThirdPersonView = (tOffsetThirdPersonView)dwOffsetThirdPersonView;
+int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position);
+typedef int (USERCALL* tGetWorldTagMatrix)(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position);
+tGetWorldTagMatrix oGetWorldTagMatrix = (tGetWorldTagMatrix)dwGetWorldTagMatrix;
 
 int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 typedef int(USERCALL* tGetPlayerStatus)(int localnum, DWORD xuid1, DWORD xuid2);
@@ -76,11 +76,13 @@ void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity)
 
 //=====================================================================================
 
-void USERCALL hOffsetThirdPersonView(int localnum1, int localnum2)
+int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position)
 {
-	oOffsetThirdPersonView(localnum1, localnum2);
+	int iReturn = oGetWorldTagMatrix(pose, dobj, tag, matrix, position);
 
-	return _hooks.OffsetThirdPersonView(localnum1, localnum2);
+	_hooks.GetWorldTagMatrix(pose, dobj, tag, matrix, position);
+
+	return iReturn;
 }
 
 //=====================================================================================
@@ -162,7 +164,7 @@ VOID Initialize()
 
 	Hook(oGetPlayerStatus, hGetPlayerStatus);
 	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
-	Hook(oOffsetThirdPersonView, hOffsetThirdPersonView);
+	Hook(oGetWorldTagMatrix, hGetWorldTagMatrix);
 }
 
 //=====================================================================================
@@ -182,7 +184,7 @@ VOID Deallocate()
 
 	UnHook(oGetPlayerStatus, hGetPlayerStatus);
 	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
-	UnHook(oOffsetThirdPersonView, hOffsetThirdPersonView);
+	UnHook(oGetWorldTagMatrix, hGetWorldTagMatrix);
 
 	if (oGetSteamID)
 		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)oGetSteamID, 2);

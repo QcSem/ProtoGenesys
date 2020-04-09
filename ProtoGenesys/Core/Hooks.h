@@ -46,7 +46,7 @@ namespace ProtoGenesys
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
 		void CalcEntityLerpPositions(int localnum, sEntity* entity);
-		void OffsetThirdPersonView(int localnum1, int localnum2);
+		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position);
 
 		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 		sSteamID GetSteamID(sSteamID steamid);

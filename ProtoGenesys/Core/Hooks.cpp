@@ -334,23 +334,15 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::OffsetThirdPersonView(int localnum1, int localnum2)
+	void cHooks::GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position)
 	{
-		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+		if (_ReturnAddress() == (LPVOID)dwGetWorldTagMatrixReturnAddress)
 		{
-			if (_antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true) && _targetList.IsLocalPlayerValid())
+			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 			{
-				Vector3 vHead;
-				LPVOID pDObj = GetDObj(&CG->Entity[CG->iClientNum]);
-
-				if (pDObj)
+				if (_antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true) && _targetList.IsLocalPlayerValid())
 				{
-					GetTagPosition(&CG->Entity[CG->iClientNum], RegisterTag(szBones[BONE_HEAD].second.c_str()), pDObj, vHead);
-
-					VectorSubtract(vHead, CG->Entity[CG->iClientNum].vOrigin, vHead);
-					VectorSubtract(CG->RefDef.vViewOrg, vHead, CG->RefDef.vViewOrg);
-
-					CG->RefDef.vViewOrg[2] += M_METERS;
+					GetPlayerViewOrigin(position);
 				}
 			}
 		}
