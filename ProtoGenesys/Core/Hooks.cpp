@@ -334,7 +334,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position)
+	void cHooks::GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin)
 	{
 		if (_ReturnAddress() == (LPVOID)dwGetWorldTagMatrixReturnAddress)
 		{
@@ -342,7 +342,7 @@ namespace ProtoGenesys
 			{
 				if (_antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true) && _targetList.IsLocalPlayerValid())
 				{
-					GetPlayerViewOrigin(position);
+					GetPlayerViewOrigin(origin);
 				}
 			}
 		}

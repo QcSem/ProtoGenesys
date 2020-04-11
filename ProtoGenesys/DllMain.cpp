@@ -24,8 +24,8 @@ void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
 typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
 
-int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position);
-typedef int (USERCALL* tGetWorldTagMatrix)(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position);
+int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
+typedef int (USERCALL* tGetWorldTagMatrix)(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
 tGetWorldTagMatrix oGetWorldTagMatrix = (tGetWorldTagMatrix)dwGetWorldTagMatrix;
 
 int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
@@ -76,11 +76,11 @@ void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity)
 
 //=====================================================================================
 
-int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 position)
+int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin)
 {
-	int iReturn = oGetWorldTagMatrix(pose, dobj, tag, matrix, position);
+	int iReturn = oGetWorldTagMatrix(pose, dobj, tag, matrix, origin);
 
-	_hooks.GetWorldTagMatrix(pose, dobj, tag, matrix, position);
+	_hooks.GetWorldTagMatrix(pose, dobj, tag, matrix, origin);
 
 	return iReturn;
 }
