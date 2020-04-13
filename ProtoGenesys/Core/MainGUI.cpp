@@ -839,6 +839,12 @@ namespace ProtoGenesys
 
 				bInitialized = false;
 			}
+
+			if (!LocalClientIsInGame())
+			{
+				for (auto& IsTarget : _targetList.vIsTarget)
+					IsTarget = TRUE;
+			}
 		}
 	}
 }

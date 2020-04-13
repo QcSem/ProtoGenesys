@@ -22,7 +22,7 @@ namespace ProtoGenesys
 		{
 			EntityList[i].bIsValid = false;
 
-			if (!IsValid(i))
+			if (!IsEntityValid(i))
 				continue;
 
 			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
@@ -71,7 +71,7 @@ namespace ProtoGenesys
 				_mathematics.WorldToCompass(CG->Entity[i].vOrigin, _drawing.Compass.vCompassPosition, _drawing.Compass.flCompassSize, _drawing.Compass.vArrowPosition[i]);
 				_mathematics.WorldToRadar(CG->Entity[i].vOrigin, _drawing.Radar.vRadarPosition, _drawing.Radar.flScale, _drawing.Radar.flRadarSize, _drawing.Radar.flBlipSize, _drawing.Radar.vBlipPosition[i]);
 
-				if (!IsEnemy(i))
+				if (EntityIsTeammate(&CG->Entity[i]))
 				{
 					EntityList[i].cColor = _profiler.gColorAllies->Current.cValue;
 					continue;
@@ -202,36 +202,17 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsValid(int index)
+	bool cTargetList::IsEntityValid(int index)
 	{
 		if (CG->Entity[index].NextEntityState.wEntityType == ET_PLAYER)
 		{
-			if (CG->Client[index].iInfoValid && (CG->Entity[index].iAlive & 2) && (&CG->Entity[index] != &CG->Entity[CG->iClientNum]) && !(CG->Entity[index].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD))
+			if ((index != CG->iClientNum) && (CG->Entity[index].iAlive & 2) && CG->Client[index].iInfoValid && !(CG->Entity[index].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD))
 				return true;
 		}
 
 		else
 		{
-			if (CG->Entity[index].wValid && (CG->Entity[index].iAlive & 2) && (&CG->Entity[index] != &CG->Entity[CG->iClientNum]))
-				return true;
-		}
-
-		return false;
-	}
-	/*
-	//=====================================================================================
-	*/
-	bool cTargetList::IsEnemy(int index)
-	{
-		if (CG->Entity[index].NextEntityState.wEntityType == ET_PLAYER)
-		{
-			if (((CG->Client[index].iTeam1 != TEAM_ALLIES) && (CG->Client[index].iTeam1 != TEAM_AXIS)) || (CG->Client[index].iTeam1 != CG->Client[CG->iClientNum].iTeam1))
-				return true;
-		}
-
-		else
-		{
-			if (((CG->Client[CG->Entity[index].NextEntityState.wOtherEntityNum].iTeam1 != TEAM_ALLIES) && (CG->Client[CG->Entity[index].NextEntityState.wOtherEntityNum].iTeam1 != TEAM_AXIS)) || (CG->Client[CG->Entity[index].NextEntityState.wOtherEntityNum].iTeam1 != CG->Client[CG->iClientNum].iTeam1))
+			if ((index != CG->iClientNum) && (CG->Entity[index].iAlive & 2) && CG->Entity[index].wValid)
 				return true;
 		}
 
@@ -249,7 +230,15 @@ namespace ProtoGenesys
 		if (_profiler.gApplyPrediction->Current.bValue)
 			ApplyPrediction(entity, position);
 
-		if (!WeaponIsVehicle() && autowall)
+		if (WeaponIsVehicle())
+		{
+			*damage = _autoWall.TraceBullet(vViewOrigin, position, hitloc, entity->NextEntityState.iEntityNum);
+
+			if (*damage >= 1.0f)
+				return true;
+		}
+
+		else if (autowall)
 		{
 			*damage = _autoWall.Autowall(vViewOrigin, position, hitloc);
 

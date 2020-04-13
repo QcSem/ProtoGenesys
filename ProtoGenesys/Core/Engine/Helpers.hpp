@@ -101,6 +101,39 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	static DWORD_PTR FindDmaAddy(DWORD_PTR address, std::vector<DWORD_PTR> offsets)
+	{
+		DWORD_PTR dwPointer = *(DWORD_PTR*)address;
+
+		if (!dwPointer)
+			return NULL;
+
+		for (auto Offset : offsets)
+		{
+			if (Offset == offsets.back())
+			{
+				dwPointer = (DWORD_PTR)(dwPointer + Offset);
+
+				if (!dwPointer) 
+					return NULL;
+
+				return dwPointer;
+			}
+
+			else
+			{
+				dwPointer = *(DWORD_PTR*)(dwPointer + Offset);
+
+				if (!dwPointer) 
+					return NULL;
+			}
+		}
+
+		return dwPointer;
+	}
+	/*
+	//=====================================================================================
+	*/
 	static DWORD_PTR SwapVMT(DWORD_PTR _interface, DWORD_PTR hook, int index)
 	{
 		DWORD_PTR* dwVTable = (DWORD_PTR*)*(DWORD_PTR*)_interface;

@@ -487,61 +487,61 @@ namespace ProtoGenesys
 	{
 		for (int i = 0; i < MAX_ENTITIES; i++)
 		{
-			if (_targetList.EntityList[i].bW2SSuccess && _targetList.EntityList[i].bIsValid)
+			if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->Entity[i])) ||
+				(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->Entity[i])) ||
+				_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
 			{
-				switch (CG->Entity[i].NextEntityState.wEntityType)
+				if (_targetList.EntityList[i].bW2SSuccess && _targetList.EntityList[i].bIsValid)
 				{
-				case ET_PLAYER:
-				{
-					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.IsEnemy(i)) ||
-						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.IsEnemy(i)) ||
-						_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
+					switch (CG->Entity[i].NextEntityState.wEntityType)
+					{
+					case ET_PLAYER:
 					{
 						DrawClient(&CG->Entity[i], _targetList.EntityList[i].vBones2D, _targetList.EntityList[i].vCorners2D, _targetList.EntityList[i].vCenter2D, _targetList.EntityList[i].vLower.y - _targetList.EntityList[i].vUpper.y, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->vOrigin), CG->Client[i].szName, _targetList.EntityList[i].cColor);
+					} break;
+
+					case ET_ITEM:
+					{
+						if (_profiler.gPlayerEntities->Current.bValue)
+							DrawEntity("Item", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+					} break;
+
+					case ET_MISSILE:
+					{
+						if (_profiler.gPlayerEntities->Current.bValue)
+							DrawEntity("Missile", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+					} break;
+
+					case ET_TURRET:
+					{
+						if (_profiler.gPlayerEntities->Current.bValue)
+							DrawEntity("Turret", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+					} break;
+
+					case ET_HELICOPTER:
+					{
+						if (_profiler.gPlayerEntities->Current.bValue)
+							DrawEntity("Helicopter", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+					} break;
+
+					case ET_PLANE:
+					{
+						if (_profiler.gPlayerEntities->Current.bValue)
+							DrawEntity("Plane", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+					} break;
+
+					case ET_VEHICLE:
+					{
+						if (_profiler.gPlayerEntities->Current.bValue)
+							DrawEntity("Vehicle", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+					} break;
+
+					case ET_ACTOR:
+					{
+						if (_profiler.gPlayerEntities->Current.bValue)
+							DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+					} break;
 					}
-				} break;
-
-				case ET_ITEM:
-				{
-					if (_profiler.gPlayerEntities->Current.bValue)
-						DrawEntity("Item", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
-				} break;
-
-				case ET_MISSILE:
-				{
-					if (_profiler.gPlayerEntities->Current.bValue)
-						DrawEntity("Missile", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
-				} break;
-
-				case ET_TURRET:
-				{
-					if (_profiler.gPlayerEntities->Current.bValue)
-						DrawEntity("Turret", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
-				} break;
-
-				case ET_HELICOPTER:
-				{
-					if (_profiler.gPlayerEntities->Current.bValue)
-						DrawEntity("Helicopter", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
-				} break;
-
-				case ET_PLANE:
-				{
-					if (_profiler.gPlayerEntities->Current.bValue)
-						DrawEntity("Plane", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
-				} break;
-
-				case ET_VEHICLE:
-				{
-					if (_profiler.gPlayerEntities->Current.bValue)
-						DrawEntity("Vehicle", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
-				} break;
-
-				case ET_ACTOR:
-				{
-					if (_profiler.gPlayerEntities->Current.bValue)
-						DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
-				} break;
 				}
 			}
 		}
@@ -562,8 +562,8 @@ namespace ProtoGenesys
 			{
 				if (_targetList.EntityList[i].bIsValid)
 				{
-					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.IsEnemy(i)) ||
-						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.IsEnemy(i)) ||
+					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->Entity[i])) ||
+						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->Entity[i])) ||
 						_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
 						float flAngle = (((CG->vRefDefViewAngles[1] - CG->Entity[i].vViewAngles[1]) + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
@@ -618,8 +618,8 @@ namespace ProtoGenesys
 			{
 				if (_targetList.EntityList[i].bIsValid)
 				{
-					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && _targetList.IsEnemy(i)) ||
-						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && !_targetList.IsEnemy(i)) ||
+					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->Entity[i])) ||
+						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->Entity[i])) ||
 						_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
 						bool bHasRiotShield = EntityHasRiotShield(i);

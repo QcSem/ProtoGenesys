@@ -63,7 +63,7 @@ namespace ProtoGenesys
 		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
 		if (!bEnterHit)
-			return 0.0f;
+			return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 
 		if (iPenetrateType <= 0)
 			return 0.0f;
@@ -334,7 +334,7 @@ namespace ProtoGenesys
 
 		if (wHitID < MAX_CLIENTS)
 		{
-			if (!_targetList.IsEnemy(wHitID))
+			if (EntityIsTeammate(&CG->Entity[wHitID]))
 			{
 				return true;
 			}

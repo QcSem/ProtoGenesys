@@ -350,6 +350,33 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cHooks::GetAddr(bool renew)
+	{
+		std::string szIpOverride(_profiler.gIpOverride->Current.szValue);
+
+		if (!szIpOverride.empty())
+		{
+			std::vector<std::string> vIpOverride = acut::SplitStringWithDelimiter(szIpOverride, ".");
+			std::vector<DWORD_PTR> vOffsets = { 0xE0, 0x90, 0x38, 0x58, 0x14 };
+
+			PBYTE pIP = (PBYTE)FindDmaAddy(dwXnAddr, vOffsets);
+
+			pIP[0] = (BYTE)atoi(vIpOverride[0].c_str());
+			pIP[1] = (BYTE)atoi(vIpOverride[1].c_str());
+			pIP[2] = (BYTE)atoi(vIpOverride[2].c_str());
+			pIP[3] = (BYTE)atoi(vIpOverride[3].c_str());
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	int cHooks::GetItemEquipCount(LPVOID root, int _class)
+	{
+		return -1;
+	}
+	/*
+	//=====================================================================================
+	*/
 	int cHooks::GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
 	{
 		return 1;

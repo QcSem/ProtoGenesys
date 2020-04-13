@@ -154,6 +154,23 @@ namespace acut
 	/*
 	//=====================================================================================
 	*/
+	static std::vector<std::string> SplitStringWithDelimiter(std::string text, std::string delimiter)
+	{
+		std::vector<std::string> vStringParts;
+
+		size_t iStart, iEnd = 0;
+
+		while ((iStart = text.find_first_not_of(delimiter, iEnd)) != std::string::npos)
+		{
+			iEnd = text.find(delimiter, iStart);
+			vStringParts.push_back(text.substr(iStart, iEnd - iStart));
+		}
+
+		return vStringParts;
+	}
+	/*
+	//=====================================================================================
+	*/
 	static LPCSTR* StringVectorToCharPointerArray(const std::vector<std::string>& strvec)
 	{
 		static std::vector<LPCSTR> buf;

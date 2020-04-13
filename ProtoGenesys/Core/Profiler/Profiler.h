@@ -236,10 +236,11 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gNameStealer = std::make_shared<sCvar>("Name Stealer", std::vector<std::string>(), false);
 		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>(), false);
 
-		std::shared_ptr<sCvar> gKillspam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gNameOverride = std::make_shared<sCvar>("Name Override", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gClanOverride = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gXuidOverride = std::make_shared<sCvar>("XUID Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gIpOverride = std::make_shared<sCvar>("IP Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gKillspam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));
 
 		acut::XmlDoc<char> XML;
 

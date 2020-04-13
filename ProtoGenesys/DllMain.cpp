@@ -25,8 +25,16 @@ typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
 
 int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
-typedef int (USERCALL* tGetWorldTagMatrix)(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
+typedef int(USERCALL* tGetWorldTagMatrix)(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
 tGetWorldTagMatrix oGetWorldTagMatrix = (tGetWorldTagMatrix)dwGetWorldTagMatrix;
+
+LPVOID USERCALL hGetAddr(bool renew);
+typedef LPVOID(USERCALL* tGetAddr)(bool renew);
+tGetAddr oGetAddr = (tGetAddr)dwGetAddr;
+
+int USERCALL hGetItemEquipCount(LPVOID root, int _class);
+typedef int(USERCALL* tGetItemEquipCount)(LPVOID root, int _class);
+tGetItemEquipCount oGetItemEquipCount = (tGetItemEquipCount)dwGetItemEquipCount;
 
 int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 typedef int(USERCALL* tGetPlayerStatus)(int localnum, DWORD xuid1, DWORD xuid2);
@@ -87,6 +95,24 @@ int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matr
 
 //=====================================================================================
 
+LPVOID USERCALL hGetAddr(bool renew)
+{
+	_hooks.GetAddr(renew);
+
+	return oGetAddr(renew);
+}
+
+//=====================================================================================
+
+int USERCALL hGetItemEquipCount(LPVOID root, int _class)
+{
+	oGetItemEquipCount(root, _class);
+
+	return _hooks.GetItemEquipCount(root, _class);
+}
+
+//=====================================================================================
+
 int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
 {
 	oGetPlayerStatus(localnum, xuid1, xuid2);
@@ -138,7 +164,7 @@ sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, in
 
 //=====================================================================================
 
-VOID Initialize()
+void Initialize()
 {
 	_hooks.PatchAntiCheat();
 
@@ -162,14 +188,16 @@ VOID Initialize()
 
 	oPresent = (tPresent)SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)&hPresent, bGameOverlayRenderer ? 0 : 8);
 
-	Hook(oGetPlayerStatus, hGetPlayerStatus);
 	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	Hook(oGetWorldTagMatrix, hGetWorldTagMatrix);
+	Hook(oGetAddr, hGetAddr);
+	Hook(oGetItemEquipCount, hGetItemEquipCount);
+	Hook(oGetPlayerStatus, hGetPlayerStatus);
 }
 
 //=====================================================================================
 
-VOID Deallocate()
+void Deallocate()
 {
 	*(DWORD_PTR*)dwConnectPathsDvar = _hooks.dwConnectPaths;
 	*(DWORD_PTR*)dwMouseAccelerationDvar = _hooks.dwMouseAccel;
@@ -182,9 +210,11 @@ VOID Deallocate()
 
 	SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, bGameOverlayRenderer ? 0 : 8);
 
-	UnHook(oGetPlayerStatus, hGetPlayerStatus);
 	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	UnHook(oGetWorldTagMatrix, hGetWorldTagMatrix);
+	UnHook(oGetAddr, hGetAddr);
+	UnHook(oGetItemEquipCount, hGetItemEquipCount);
+	UnHook(oGetPlayerStatus, hGetPlayerStatus);
 
 	if (oGetSteamID)
 		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)oGetSteamID, 2);
@@ -242,7 +272,7 @@ void SteamFriends()
 
 //=====================================================================================
 
-VOID WINAPI SteamUser(LPWSTR xuid)
+void WINAPI SteamUser(LPWSTR xuid)
 {
 #pragma DLLEXPORT
 

@@ -37,6 +37,7 @@ namespace ProtoGenesys
 			vCommands.push_back("proto_name");
 			vCommands.push_back("proto_clan");
 			vCommands.push_back("proto_xuid");
+			vCommands.push_back("proto_ip");
 			vCommands.push_back("proto_killspam");
 
 			AddLog("Ready.");
@@ -111,7 +112,8 @@ namespace ProtoGenesys
 			AddLog("4. proto_name <on|off> <name>\n\t\tChange your name.");
 			AddLog("5. proto_clan <on|off> <clan>\n\t\tChange your clan.");
 			AddLog("6. proto_xuid <on|off> <xuid>\n\t\tChange your xuid.");
-			AddLog("7. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
+			AddLog("7. proto_ip <on|off> <ip>\n\t\tChange your ip.");
+			AddLog("8. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
 
 			_mainGui.bConsoleLog = true;
 		} ImGui::SameLine();
@@ -494,6 +496,52 @@ namespace ProtoGenesys
 						szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
 						szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
 
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else
+				{
+					AddLog("[ERROR] Invalid argument(s).");
+				}
+			}
+
+			else
+			{
+				AddLog("[ERROR] Missing argument(s).");
+			}
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, "proto_ip"))
+		{
+			if (CmdLine.iArgNum > 0)
+			{
+				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
+				{
+					if (!acut::SplitStringWithDelimiter(CmdLine.szCmdArgs[1], ".").empty())
+					{
+						if (acut::SplitStringWithDelimiter(CmdLine.szCmdArgs[1], ".").size() == 4)
+						{
+							AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+							_profiler.gIpOverride->Current.szValue = Strdup(CmdLine.szCmdArgs[1]);
+							AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+						}
+
+						else
+						{
+							AddLog("[ERROR] Invalid argument(s).");
+						}
+					}
+
+					else
+					{
+						AddLog("[ERROR] Null argument(s).");
+					}
+				}
+
+				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_profiler.gIpOverride->Current.szValue = Strdup("");
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 

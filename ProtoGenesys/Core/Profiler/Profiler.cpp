@@ -222,10 +222,11 @@ namespace ProtoGenesys
 		gNameStealer->Current.bValue = gNameStealer->Reset.bValue;
 		gTrickShot->Current.bValue = gTrickShot->Reset.bValue;
 
-		gKillspam->Current.szValue = _strdup(gKillspam->Reset.szValue);
 		gNameOverride->Current.szValue = _strdup(gNameOverride->Reset.szValue);
 		gClanOverride->Current.szValue = _strdup(gClanOverride->Reset.szValue);
 		gXuidOverride->Current.szValue = _strdup(gXuidOverride->Reset.szValue);
+		gIpOverride->Current.szValue = _strdup(gIpOverride->Reset.szValue);
+		gKillspam->Current.szValue = _strdup(gKillspam->Reset.szValue);
 	}
 }
 

@@ -47,8 +47,10 @@ namespace ProtoGenesys
 		void KillSpam(DWORD attacker, DWORD victim);
 		void CalcEntityLerpPositions(int localnum, sEntity* entity);
 		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
-
+		void GetAddr(bool renew);
+		int GetItemEquipCount(LPVOID root, int _class);
 		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
+
 		sSteamID GetSteamID(sSteamID steamid);
 		bool GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
 		ePersonaState GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid);
