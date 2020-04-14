@@ -357,9 +357,7 @@ namespace ProtoGenesys
 		if (!szIpOverride.empty())
 		{
 			std::vector<std::string> vIpOverride = acut::SplitStringWithDelimiter(szIpOverride, ".");
-			std::vector<DWORD_PTR> vOffsets = { 0xE0, 0x90, 0x38, 0x58, 0x14 };
-
-			PBYTE pIP = (PBYTE)FindDmaAddy(dwXnAddr, vOffsets);
+			PBYTE pIP = (PBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
 
 			pIP[0] = (BYTE)atoi(vIpOverride[0].c_str());
 			pIP[1] = (BYTE)atoi(vIpOverride[1].c_str());
