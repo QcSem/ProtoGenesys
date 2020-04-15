@@ -74,6 +74,7 @@
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="ImGui\Addons\FileSystem\imguifilesystem.cpp" />
     <ClCompile Include="ImGui\Addons\TabWindow\imguitabwindow.cpp" />
+    <ClCompile Include="ImGui\Addons\WICTextureLoader.cpp" />
     <ClCompile Include="ImGui\DX11\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -102,9 +103,11 @@
     <ClInclude Include="Core\Profiler\RapidXML\Utilities\StringUtility.hpp" />
     <ClInclude Include="Core\Removals\Removals.h" />
     <ClInclude Include="Core\TargetList\TargetList.h" />
+    <ClInclude Include="Detours\detours.h" />
     <ClInclude Include="ImGui\Addons\dirent_portable.h" />
     <ClInclude Include="ImGui\Addons\FileSystem\imguifilesystem.h" />
     <ClInclude Include="ImGui\Addons\TabWindow\imguitabwindow.h" />
+    <ClInclude Include="ImGui\Addons\WICTextureLoader.h" />
     <ClInclude Include="ImGui\DX11\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\Fonts\Eurostile_Bold.hpp" />
     <ClInclude Include="ImGui\Fonts\Eurostile_Extended.hpp" />
@@ -118,6 +121,12 @@
     <ClInclude Include="ImGui\STB\imstb_truetype.h" />
     <ClInclude Include="ImGui\Win32\imgui_impl_win32.h" />
     <ClInclude Include="StdAfx.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Detours\detours.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Detours\detours.pdb" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

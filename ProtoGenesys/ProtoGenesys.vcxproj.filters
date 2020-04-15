@@ -59,6 +59,7 @@
     <ClCompile Include="ImGui\Addons\TabWindow\imguitabwindow.cpp">
       <Filter>ImGui\Addons\TabWindow</Filter>
     </ClCompile>
+    <ClCompile Include="ImGui\Addons\WICTextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.hpp" />
@@ -170,6 +171,8 @@
     <ClInclude Include="ImGui\imgui_memory_editor.h">
       <Filter>ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="ImGui\Addons\WICTextureLoader.h" />
+    <ClInclude Include="Detours\detours.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -235,5 +238,11 @@
     <Filter Include="ImGui\Fonts">
       <UniqueIdentifier>{f7fbee61-f00c-4a21-bbc9-85ca42013c53}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Detours\detours.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Detours\detours.pdb" />
   </ItemGroup>
 </Project>
