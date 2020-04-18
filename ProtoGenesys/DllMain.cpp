@@ -164,8 +164,9 @@ sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, in
 
 //=====================================================================================
 
-void Initialize()
+void Initialize(HINSTANCE hinstDLL)
 {
+	_mainGui.hInstDll = hinstDLL;
 	_hooks.PatchAntiCheat();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
@@ -305,7 +306,7 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Initialize();
+		Initialize(hinstDLL);
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:

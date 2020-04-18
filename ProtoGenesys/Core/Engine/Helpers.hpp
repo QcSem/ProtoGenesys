@@ -93,10 +93,10 @@ namespace ProtoGenesys
 		if (!address)
 			return 0;
 
-		if (sizeof(DWORD_PTR) == 0x8)
+		if (sizeof(LPVOID) == 0x8)
 			return address + (int)((*(int*)(address + offset) + offset) + sizeof(int));
 
-		return (DWORD_PTR)*(DWORD*)(address + offset);
+		return *(DWORD_PTR*)(address + offset);
 	}
 	/*
 	//=====================================================================================
@@ -114,7 +114,7 @@ namespace ProtoGenesys
 			{
 				dwPointer = (DWORD_PTR)(dwPointer + Offset);
 
-				if (!dwPointer) 
+				if (!dwPointer)
 					return NULL;
 
 				return dwPointer;
@@ -124,7 +124,7 @@ namespace ProtoGenesys
 			{
 				dwPointer = *(DWORD_PTR*)(dwPointer + Offset);
 
-				if (!dwPointer) 
+				if (!dwPointer)
 					return NULL;
 			}
 		}
@@ -134,15 +134,15 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static DWORD_PTR SwapVMT(DWORD_PTR _interface, DWORD_PTR hook, int index)
+	static DWORD_PTR SwapVMT(DWORD_PTR address, DWORD_PTR hook, int index)
 	{
-		DWORD_PTR* dwVTable = (DWORD_PTR*)*(DWORD_PTR*)_interface;
+		DWORD_PTR* dwVTable = *(DWORD_PTR**)address;
 		DWORD_PTR dwBackup = NULL;
 
 		MEMORY_BASIC_INFORMATION MBI;
 
 		VirtualQuery((LPCVOID)dwVTable, &MBI, sizeof(MEMORY_BASIC_INFORMATION));
-		VirtualProtect(MBI.BaseAddress, MBI.RegionSize, PAGE_READWRITE, &MBI.Protect);
+		VirtualProtect(MBI.BaseAddress, MBI.RegionSize, PAGE_EXECUTE_READWRITE, &MBI.Protect);
 
 		dwBackup = dwVTable[index];
 		dwVTable[index] = (DWORD_PTR)hook;

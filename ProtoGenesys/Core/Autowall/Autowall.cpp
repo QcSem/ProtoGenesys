@@ -14,9 +14,9 @@ namespace ProtoGenesys
 
 		if (_profiler.gHostAutoWall->Current.bValue)
 		{
-			((sDvar*)dwPenetrationMultiplier)->Current.flValue = 30.0f;
-			((sDvar*)dwPenetrationMinFxDist)->Current.flValue = 1024.0f;
-			((sDvar*)dwPenetrationCount)->Current.iValue = 10;
+			((sDvar*)dwPenetrationMultiplier)->Current.flValue = ((sDvar*)dwPenetrationMultiplier)->Domain.flMax;
+			((sDvar*)dwPenetrationMinFxDist)->Current.flValue = ((sDvar*)dwPenetrationMinFxDist)->Domain.flMax;
+			((sDvar*)dwPenetrationCount)->Current.iValue = ((sDvar*)dwPenetrationCount)->Domain.dwMax;
 
 			bHostAutoWall = true;
 		}

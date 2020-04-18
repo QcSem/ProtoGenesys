@@ -47,10 +47,15 @@ namespace ProtoGenesys
 		} VirtualKeys[MAX_VIRTUALKEYS];
 
 		HWND hWindow;
+		HINSTANCE hInstDll;
 		ID3D11Device* pDevice;
 		ID3D11DeviceContext* pDeviceContext;
 
+		ID3D11Resource* pD3D11Resource;
+		ID3D11ShaderResourceView* pD3D11ShaderResourceView;
+
 		void InitInterface();
+		void LoadBackgroundImage();
 		void SetMenuColor(int index);
 		void SetMenuCursor(int index);
 		void SetMenuFont(int index);
