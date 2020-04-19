@@ -563,9 +563,8 @@ namespace ProtoGenesys
 		int iButtons[2];
 		int iViewAngles[3];
 		char _0x18[0xC];
-		char szForwardMove;
-		char szRightMove;
-		char _0x26[0x16];
+		char szMove[3];
+		char _0x27[0x15];
 	} sUserCmd;
 	/*
 	//=====================================================================================
@@ -821,9 +820,10 @@ namespace ProtoGenesys
 	static DWORD_PTR dwProcessText = bIsSteamVersion ? 0x66AFA0 : 0x546D30;
 	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
 	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
+	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
 	static DWORD_PTR dwGetItemEquipCount = bIsSteamVersion ? 0x94A750 : 0x94A8E0;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
-	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
+	static DWORD_PTR dwIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
 
 	static DWORD_PTR dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
 	static DWORD_PTR dwMouseInput = 0x2B69969;

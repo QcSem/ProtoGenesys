@@ -44,8 +44,12 @@ namespace ProtoGenesys
 		{
 			if (AimState.bLockonTarget)
 			{
+				float flOldYaw = ShortToAngle(usercmd->iViewAngles[1]);
+
 				usercmd->iViewAngles[0] += AngleToShort(AimState.vAimAngles[0]);
 				usercmd->iViewAngles[1] += AngleToShort(AimState.vAimAngles[1]);
+
+				_mathematics.MovementFix(usercmd, ShortToAngle(usercmd->iViewAngles[1]), flOldYaw, usercmd->szMove[0], usercmd->szMove[1]);
 			}
 
 			if (AimState.iCurrentZoomDelay == _profiler.gAutoZoomDelay->Current.iValue)

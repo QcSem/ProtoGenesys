@@ -143,7 +143,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::NormalizeAngles(Vector3 angles)
+	void cMathematics::ClampAngles(Vector3 angles)
 	{
 		while (angles[0] > 180.0f)
 			angles[0] -= 360.0f;
@@ -163,6 +163,26 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cMathematics::ClampMove(char value[])
+	{
+		while (value[0] < -128)
+			value[0] = -128;
+
+		while (value[0] > 127)
+			value[0] = 127;
+
+		while (value[1] < -128)
+			value[1] = -128;
+
+		while (value[1] > 127)
+			value[1] = 127;
+
+		if (value[2] != 0)
+			value[2] = 0;
+	}
+	/*
+	//=====================================================================================
+	*/
 	void cMathematics::CalculateAimAngles(Vector3 start, Vector3 end, Vector3 angles)
 	{
 		Vector3 vDirection;
@@ -171,12 +191,12 @@ namespace ProtoGenesys
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, angles);
 
-		NormalizeAngles(angles);
+		ClampAngles(angles);
 
 		angles[0] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
 		angles[1] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
 
-		NormalizeAngles(angles);
+		ClampAngles(angles);
 	}
 	/*
 	//=====================================================================================
@@ -189,7 +209,7 @@ namespace ProtoGenesys
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, angles);
 
-		NormalizeAngles(angles);
+		ClampAngles(angles);
 
 		angles[0] = -40.0f - angles[0];
 		angles[1] = angles[1] - 170.0f;
@@ -197,7 +217,7 @@ namespace ProtoGenesys
 		angles[0] -= CG->PlayerState.vDeltaAngles[0];
 		angles[1] -= CG->PlayerState.vDeltaAngles[1];
 
-		NormalizeAngles(angles);
+		ClampAngles(angles);
 	}
 	/*
 	//=====================================================================================
@@ -214,37 +234,14 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::MovementFix(sUserCmd* usercmd, float yaw)
+	void cMathematics::MovementFix(sUserCmd* usercmd, float yaw, float oldyaw, float forward, float right)
 	{
-		if (usercmd->szForwardMove || usercmd->szRightMove)
-		{
-			float flMove = AngleNormalize(RadiansToDegrees(atan2(-usercmd->szRightMove / 127.0f, usercmd->szForwardMove / 127.0f))),
-				flDelta = AngleNormalize(yaw),
-				flDestination = AngleNormalize(flMove - flDelta),
-				flForwardRatio = cos(DegreesToRadians(flDestination)),
-				flRightRatio = -sin(DegreesToRadians(flDestination));
+		float flDelta = DegreesToRadians(yaw - oldyaw);
 
-			if (abs(flForwardRatio) < abs(flRightRatio))
-			{
-				flForwardRatio *= 1.0f / abs(flRightRatio);
-				flRightRatio = flRightRatio > 0.0f ? 1.0f : -1.0f;
-			}
+		usercmd->szMove[0] = (char)(cosf(flDelta) * forward - sinf(flDelta) * right);
+		usercmd->szMove[1] = (char)(sinf(flDelta) * forward + cosf(flDelta) * right);
 
-			else if (abs(flForwardRatio) > abs(flRightRatio))
-			{
-				flRightRatio *= 1.0f / abs(flForwardRatio);
-				flForwardRatio = flForwardRatio > 0.0f ? 1.0f : -1.0f;
-			}
-
-			else
-			{
-				flForwardRatio = 1.0f;
-				flRightRatio = 1.0f;
-			}
-
-			usercmd->szForwardMove = (char)(flForwardRatio * 127.0f);
-			usercmd->szRightMove = (char)(flRightRatio * 127.0f);
-		}
+		ClampMove(usercmd->szMove);
 	}
 	/*
 	//=====================================================================================
@@ -262,7 +259,7 @@ namespace ProtoGenesys
 		VectorAngles(vDirection, vAngles);
 
 		VectorSubtract(CG->vRefDefViewAngles, vAngles, vAngles);
-		_mathematics.NormalizeAngles(vAngles);
+		_mathematics.ClampAngles(vAngles);
 
 		flAngle = ((vAngles[1] + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
 

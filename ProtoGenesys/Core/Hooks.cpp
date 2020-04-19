@@ -380,6 +380,13 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	bool cHooks::IsValid(DWORD** _this)
+	{
+		return true;
+	}
+	/*
+	//=====================================================================================
+	*/
 	sSteamID cHooks::GetSteamID(sSteamID steamid)
 	{
 		*(QWORD*)steamid.SteamID.iAll64Bits = dwXuidOverride;
