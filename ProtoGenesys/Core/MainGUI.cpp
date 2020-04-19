@@ -574,7 +574,7 @@ namespace ProtoGenesys
 						bProtoGenesysLog = true;
 					} ImGui::SameLine(296.0f);
 
-					if (ImGui::Checkbox(_profiler.gNameStealer->szName.c_str(), &_profiler.gNameStealer->Current.bValue))
+					if (ImGui::Checkbox(_profiler.gIdStealer->szName.c_str(), &_profiler.gIdStealer->Current.bValue))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();

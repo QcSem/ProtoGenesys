@@ -219,7 +219,7 @@ namespace ProtoGenesys
 		gHardcoreHud->Current.bValue = gHardcoreHud->Reset.bValue;
 		gDisableEmp->Current.bValue = gDisableEmp->Reset.bValue;
 		gHostAutoWall->Current.bValue = gHostAutoWall->Reset.bValue;
-		gNameStealer->Current.bValue = gNameStealer->Reset.bValue;
+		gIdStealer->Current.bValue = gIdStealer->Reset.bValue;
 		gTrickShot->Current.bValue = gTrickShot->Reset.bValue;
 
 		gNameOverride->Current.szValue = _strdup(gNameOverride->Reset.szValue);

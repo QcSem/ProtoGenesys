@@ -280,14 +280,12 @@ namespace ProtoGenesys
 		{
 			if (attacker == CG->iClientNum && attacker != victim)
 			{
-				if (_profiler.gNameStealer->Current.bValue)
+				if (_profiler.gIdStealer->Current.bValue)
 				{
-					std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
-
 					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 						CG->Client[victim].szName,
 						CG->Client[victim].szClan,
-						szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
+						_ui64toa(CG->Client[victim].qwXuid, szXuidOverride, 0x10)));
 				}
 
 				if (_profiler.gTrickShot->Current.bValue)
@@ -384,7 +382,7 @@ namespace ProtoGenesys
 	*/
 	sSteamID cHooks::GetSteamID(sSteamID steamid)
 	{
-		*(QWORD*)steamid.SteamID.iAll64Bits = _hooks.dwXuidOverride;
+		*(QWORD*)steamid.SteamID.iAll64Bits = dwXuidOverride;
 
 		return steamid;
 	}
@@ -401,7 +399,7 @@ namespace ProtoGenesys
 	*/
 	ePersonaState cHooks::GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid)
 	{
-		return PERSONA_STATE_ONLINE;
+		return PERSONA_STATE_SNOOZE;
 	}
 	/*
 	//=====================================================================================
