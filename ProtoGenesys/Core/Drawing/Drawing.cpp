@@ -311,7 +311,7 @@ namespace ProtoGenesys
 		flWidth *= 2.0f;
 		flHeight *= 2.0f;
 
-		bool bHasRiotShield = EntityHasRiotShield(entity->NextEntityState.iEntityNum);
+		bool bHasRiotShield = EntityHasRiotShield(entity);
 
 		if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER)
 			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color);
@@ -576,7 +576,7 @@ namespace ProtoGenesys
 						ImVec2 vFinalY = Compass.vArrowPosition[i] + ImRotate(vBaseY, ImCos(flAngle), ImSin(flAngle));
 						ImVec2 vFinalZ = Compass.vArrowPosition[i] + ImRotate(vBaseZ, ImCos(flAngle), ImSin(flAngle));
 
-						bool bHasRiotShield = EntityHasRiotShield(i);
+						bool bHasRiotShield = EntityHasRiotShield(&CG->Entity[i]);
 
 						ImGui::GetWindowDrawList()->AddTriangleFilled(vFinalX, vFinalY, vFinalZ,
 							ImGui::GetColorU32(_targetList.EntityList[i].cColor * ImVec4(1.0f, 1.0f, 1.0f, 0.25f)));
@@ -622,7 +622,7 @@ namespace ProtoGenesys
 						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->Entity[i])) ||
 						_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
-						bool bHasRiotShield = EntityHasRiotShield(i);
+						bool bHasRiotShield = EntityHasRiotShield(&CG->Entity[i]);
 
 						ImGui::GetWindowDrawList()->AddCircleFilled(Radar.vBlipPosition[i], Radar.flBlipSize / 2.0f,
 							ImGui::GetColorU32(_targetList.EntityList[i].cColor * ImVec4(1.0f, 1.0f, 1.0f, 0.25f)));

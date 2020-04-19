@@ -452,11 +452,9 @@ namespace ProtoGenesys
 		sTrajectory PositionTrajectory;
 		sTrajectory AngleTrajectory;
 		char _0x50[0xC];
-		int iPrimaryWeaponID;
-		int iStowedWeaponID;
-		int iOffHandWeaponID;
-		int iMeleeWeaponID;
-		char _0x6C[0x10];
+		int iWeaponID1;
+		int iWeaponID2;
+		char _0x64[0x18];
 	} sLerpEntityState;
 	/*
 	//=====================================================================================
@@ -1103,26 +1101,14 @@ namespace ProtoGenesys
 	*/
 	inline bool IsPlayerReloading(sPlayerState* playerstate)
 	{
-		return 
-			(playerstate->iWeaponState[0] == 11 || playerstate->iWeaponState[1] == 11 ||
-			playerstate->iWeaponState[0] == 12 || playerstate->iWeaponState[1] == 12 ||
-			playerstate->iWeaponState[0] == 13 || playerstate->iWeaponState[1] == 13 ||
-			playerstate->iWeaponState[0] == 14 || playerstate->iWeaponState[1] == 14 ||
-			playerstate->iWeaponState[0] == 15 || playerstate->iWeaponState[1] == 15 ||
-			playerstate->iWeaponState[0] == 16 || playerstate->iWeaponState[1] == 16 ||
-			playerstate->iWeaponState[0] == 17 || playerstate->iWeaponState[1] == 17 ||
-			playerstate->iWeaponState[0] == 18 || playerstate->iWeaponState[1] == 18);
+		return ((UINT)(playerstate->iWeaponState[0] - 11) < 8 || (UINT)(playerstate->iWeaponState[1] - 11) < 8);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool EntityHasRiotShield(int entitynum)
+	inline bool EntityHasRiotShield(sEntity* entity)
 	{
-		return 
-			(CG->Client[entitynum].ModelMask[0].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) || CG->Client[entitynum].ModelMask[1].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) ||
-			CG->Client[entitynum].ModelMask[2].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) || CG->Client[entitynum].ModelMask[3].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) ||
-			CG->Client[entitynum].ModelMask[4].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) || CG->Client[entitynum].ModelMask[5].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) ||
-			CG->Client[entitynum].ModelMask[6].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD) || CG->Client[entitynum].ModelMask[7].WeaponDef == GetWeaponDef(ID_ASSAULTSHIELD));
+		return ((BYTE)entity->NextEntityState.iWeaponID == ID_ASSAULTSHIELD || (BYTE)entity->NextEntityState.LerpEntityState.iWeaponID2 == ID_ASSAULTSHIELD);
 	}
 	/*
 	//=====================================================================================
