@@ -377,7 +377,10 @@ namespace ProtoGenesys
 		Vector3 vViewOrg;
 		char _0x40[0x4];
 		Vector3 vViewAxis[3];
-		char _0x68[0x16FF8];
+		char _0x68[0x16D18];
+		int iSplitScreenBlurEdges;
+		int iPlayerTeleported;
+		char _0x16D88[0x2D8];
 	} sRefDef;
 	/*
 	//=====================================================================================
@@ -539,13 +542,28 @@ namespace ProtoGenesys
 		Vector3 vRefDefViewAngles;
 		char _0x648FC[0x130];
 		Vector3 vWeaponAngles;
-		char _0x64A38[0x3F20];
+		char _0x64A38[0x3890];
+		float flZoomSensitivity;
+		char _0x682CC[0x68C];
 		int iMatchUIVisibilityFlags;
-		char _0x3F24[0xE6C];
+		char _0x6895C[0xD18];
+		int iWeaponSelect;
+		char _0x69678[0x54];
+		int iEquippedOffhand;
+		char _0x696D0[0xF8];
 		Vector3 vKickAngles;
-		char _0x697D4[0x28C];
+		Vector3 vOffsetAngles;
+		float flGunPitch;
+		float flGunYaw;
+		char _0x697E8[0xB4];
+		float flShockSensitivity;
+		char _0x698A0[0x1C0];
 		sClientInfo Client[MAX_CLIENTS];
-		char _0x72AF0[0xE06C];
+		char _0x72AF0[0xE04C];
+		int iExtraButtonBits[2];
+		char _0x80B44[0x8];
+		int iPlayerTeleported;
+		char _0x80B50[0xC];
 		float flSpread;
 		char _0x80B60[0x6BD0];
 		char szGameType[4];
@@ -764,6 +782,22 @@ namespace ProtoGenesys
 	static DWORD_PTR dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
 	static DWORD_PTR dwObituaryException = bIsSteamVersion ? 0x7A345C : 0x7A40EC;
 
+	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
+	static DWORD_PTR dwRegisterShader = bIsSteamVersion ? 0x734000 : 0x734CC0;
+	static DWORD_PTR dwPredictPlayerState = bIsSteamVersion ? 0x5B3C40 : 0x5B4F40;
+	static DWORD_PTR dwSetValueForKey = bIsSteamVersion ? 0x406830 : 0x551B00;
+	static DWORD_PTR dwGetUsername = bIsSteamVersion ? 0x65FDE0 : 0x4B58D0;
+	static DWORD_PTR dwGetClantag = bIsSteamVersion ? 0x5ACDA0 : 0x6D2900;
+	static DWORD_PTR dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
+	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
+	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
+	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
+	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
+	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
+	static DWORD_PTR dwGetItemEquipCount = bIsSteamVersion ? 0x94A750 : 0x94A8E0;
+	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
+	static DWORD_PTR dwIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
+
 	static DWORD_PTR dwCG = *(DWORD_PTR*)0x113F18C;
 	static DWORD_PTR dwClientActive = 0x11C7D74;
 	static DWORD_PTR dwViewAngles = dwCG + 0xFE64393C;
@@ -774,54 +808,46 @@ namespace ProtoGenesys
 	static DWORD_PTR dwServerID = 0x11D0ACC;
 	static DWORD_PTR dwWindow = 0x2956244;
 
-	static DWORD_PTR dwSetValueForKey = bIsSteamVersion ? 0x406830 : 0x551B00;
-	static DWORD_PTR dwPredictPlayerState = bIsSteamVersion ? 0x5B3C40 : 0x5B4F40;
 	static DWORD_PTR dwLocalClientIsInGame = bIsSteamVersion ? 0x5922F0 : 0x402F80;
-	static DWORD_PTR dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
-	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
-	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
-	static DWORD_PTR dwRegisterShader = bIsSteamVersion ? 0x734000 : 0x734CC0;
-	static DWORD_PTR dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
-	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
 	static DWORD_PTR dwGetDObj = bIsSteamVersion ? 0x5D2590 : 0x4DA190;
-	static DWORD_PTR dwGetTagPos = bIsSteamVersion ? 0x664930 : 0x4A1210;
+	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
+	static DWORD_PTR dwGetTagPosition = bIsSteamVersion ? 0x664930 : 0x4A1210;
 	static DWORD_PTR dwWorldToScreen = bIsSteamVersion ? 0x595690 : 0x429A80;
+	static DWORD_PTR dwEntityIsTeammate = bIsSteamVersion ? 0x50EC80 : 0x4309A0;
 	static DWORD_PTR dwGetPlayerViewOrigin = bIsSteamVersion ? 0x580890 : 0x640E80;
-	static DWORD_PTR dwLocationalTrace = bIsSteamVersion ? 0x6C6C00 : 0x50B870;
-	static DWORD_PTR dwBulletTrace = bIsSteamVersion ? 0x7E0170 : 0x7E0A00;
-	static DWORD_PTR dwGetTraceHitType = bIsSteamVersion ? 0x4AC3D0 : 0x6A32F0;
-	static DWORD_PTR dwAdvanceTrace = bIsSteamVersion ? 0x5B0F60 : 0x703090;
+	static DWORD_PTR dwEvaluateTrajectory = bIsSteamVersion ? 0x47F7A0 : 0x44CE20;
+	static DWORD_PTR dwWeaponIsVehicle = bIsSteamVersion ? 0x5B8AD0 : 0x5AE8C0;
+	static DWORD_PTR dwWeaponAmmoAvailable = bIsSteamVersion ? 0x557C40 : 0x6DF580;
+	static DWORD_PTR dwSetZoomState = bIsSteamVersion ? 0x42BD00 : 0x583950;
+	static DWORD_PTR dwWeaponIsAkimbo = bIsSteamVersion ? 0x6625B0 : 0x52E780;
+	static DWORD_PTR dwGetWeaponDef = bIsSteamVersion ? 0x5846F0 : 0x5225F0;
 	static DWORD_PTR dwGetPenetrateType = bIsSteamVersion ? 0x62E290 : 0x4AC220;
-	static DWORD_PTR dwGetSurfacePenetrationDepth = bIsSteamVersion ? 0x572480 : 0x622CE0;
+	static DWORD_PTR dwBulletTrace = bIsSteamVersion ? 0x7E0170 : 0x7E0A00;
 	static DWORD_PTR dwGetWeaponDamageForRange = bIsSteamVersion ? 0x6D85B0 : 0x676160;
 	static DWORD_PTR dwGetWeaponHitLocationMultiplier = bIsSteamVersion ? 0x472780 : 0x669830;
+	static DWORD_PTR dwGetTraceHitType = bIsSteamVersion ? 0x4AC3D0 : 0x6A32F0;
 	static DWORD_PTR dwEntityIsDeployedRiotshield = bIsSteamVersion ? 0x45D4D0 : 0x501160;
 	static DWORD_PTR dwHasPerk = bIsSteamVersion ? 0x42BD20 : 0x530C10;
-	static DWORD_PTR dwGetWeaponName = bIsSteamVersion ? 0x458190 : 0x9502B0;
-	static DWORD_PTR dwWeaponAmmoAvailable = bIsSteamVersion ? 0x557C40 : 0x6DF580;
-	static DWORD_PTR dwWeaponIsAkimbo = bIsSteamVersion ? 0x6625B0 : 0x52E780;
-	static DWORD_PTR dwWeaponIsVehicle = bIsSteamVersion ? 0x5B8AD0 : 0x5AE8C0;
-	static DWORD_PTR dwEntityIsTeammate = bIsSteamVersion ? 0x50EC80 : 0x4309A0;
+	static DWORD_PTR dwGetSurfacePenetrationDepth = bIsSteamVersion ? 0x572480 : 0x622CE0;
+	static DWORD_PTR dwAdvanceTrace = bIsSteamVersion ? 0x5B0F60 : 0x703090;
+	static DWORD_PTR dwLocationalTrace = bIsSteamVersion ? 0x6C6C00 : 0x50B870;
+	static DWORD_PTR dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
+	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
+	static DWORD_PTR dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
 	static DWORD_PTR dwHashSeed = bIsSteamVersion ? 0x543CE0 : 0x6AACC0;
-	static DWORD_PTR dwGetWeaponDef = bIsSteamVersion ? 0x5846F0 : 0x5225F0;
 	static DWORD_PTR dwRandomFloat = bIsSteamVersion ? 0x6A3490 : 0x4947E0;
 	static DWORD_PTR dwSeedRandom = bIsSteamVersion ? 0x4F38A0 : 0x556180;
-	static DWORD_PTR dwEvaluateTrajectory = bIsSteamVersion ? 0x47F7A0 : 0x44CE20;
-	static DWORD_PTR dwSetZoomState = bIsSteamVersion ? 0x42BD00 : 0x583950;
-	static DWORD_PTR dwGetUsername = bIsSteamVersion ? 0x65FDE0 : 0x4B58D0;
-	static DWORD_PTR dwGetClantag = bIsSteamVersion ? 0x5ACDA0 : 0x6D2900;
-	static DWORD_PTR dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
+	static DWORD_PTR dwSetFovSensitivityScale = bIsSteamVersion ? 0x40BB00 : 0x437730;
+	static DWORD_PTR dwGetViewmodelWeaponIndex = bIsSteamVersion ? 0x625770 : 0x54A0D0;
+	static DWORD_PTR dwWeaponHasPerk = bIsSteamVersion ? 0x449D90 : 0x47ED20;
+	static DWORD_PTR dwUsingSniperScope = bIsSteamVersion ? 0x646700 : 0x6C5960;
+	static DWORD_PTR dwSetUserCmdAimValues = bIsSteamVersion ? 0x6E7F80 : 0x67ACC0;
+	static DWORD_PTR dwGetLastWeaponForAlt = bIsSteamVersion ? 0x4760B0 : 0x480290;
+	static DWORD_PTR dwSetUserCmdWeapons = bIsSteamVersion ? 0x552A60 : 0x518D70;
+	static DWORD_PTR dwSetExtraButtons = bIsSteamVersion ? 0x4840B0 : 0x6994D0;
+	static DWORD_PTR dwGetWeaponName = bIsSteamVersion ? 0x458190 : 0x9502B0;
 	static DWORD_PTR dwGetCurrentSession = bIsSteamVersion ? 0x4823F0 : 0x534520;
 	static DWORD_PTR dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
-	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
-	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
-	static DWORD_PTR dwProcessText = bIsSteamVersion ? 0x66AFA0 : 0x546D30;
-	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
-	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
-	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
-	static DWORD_PTR dwGetItemEquipCount = bIsSteamVersion ? 0x94A750 : 0x94A8E0;
-	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
-	static DWORD_PTR dwIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
 
 	static DWORD_PTR dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
 	static DWORD_PTR dwMouseInput = 0x2B69969;
@@ -831,8 +857,8 @@ namespace ProtoGenesys
 	static DWORD_PTR dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
 	static DWORD_PTR dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
 
-	static DWORD_PTR dwPresent = bGameOverlayRenderer ? 
-		ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2) : 
+	static DWORD_PTR dwPresent = bGameOverlayRenderer ?
+		ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2) :
 		*(DWORD_PTR*)dwSwapChain;
 	/*
 	//=====================================================================================
@@ -844,27 +870,6 @@ namespace ProtoGenesys
 	static sRecoilAngles* RecoilAngles = (sRecoilAngles*)dwRecoilAngles;
 	static sServerSession* ServerSession = (sServerSession*)dwServerSession;
 	static sWindow* Window = (sWindow*)dwWindow;
-	/*
-	//=====================================================================================
-	*/
-	inline bool LocalClientIsInGame()
-	{
-		return VariadicCall<bool>(dwLocalClientIsInGame, 0);
-	}
-	/*
-	//=====================================================================================
-	*/
-	inline void AddReliableCommand(std::string command)
-	{
-		return VariadicCall<void>(dwAddReliableCommand, 0, command.c_str());
-	}
-	/*
-	//=====================================================================================
-	*/
-	inline void Cbuf_AddText(std::string command)
-	{
-		return VariadicCall<void>(dwCbufAddText, 0, command.c_str());
-	}
 	/*
 	//=====================================================================================
 	*/
@@ -882,9 +887,30 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline WORD RegisterTag(std::string name)
+	inline LPSTR GetUsername()
 	{
-		return VariadicCall<WORD>(dwRegisterTag, name.c_str());
+		return VariadicCall<LPSTR>(dwGetUsername, 0);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline LPSTR GetClantag()
+	{
+		return VariadicCall<LPSTR>(dwGetClantag, 0);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline LPSTR GetXuidstring()
+	{
+		return VariadicCall<LPSTR>(dwGetXuidstring, 0);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline bool LocalClientIsInGame()
+	{
+		return VariadicCall<bool>(dwLocalClientIsInGame, 0);
 	}
 	/*
 	//=====================================================================================
@@ -896,9 +922,16 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	inline WORD RegisterTag(std::string name)
+	{
+		return VariadicCall<WORD>(dwRegisterTag, name.c_str());
+	}
+	/*
+	//=====================================================================================
+	*/
 	inline LPVOID GetTagPosition(sEntity* entity, WORD tag, LPVOID dobj, Vector3 position)
 	{
-		return VariadicCall<LPVOID>(dwGetTagPos, entity, dobj, tag, position);
+		return VariadicCall<LPVOID>(dwGetTagPosition, entity, dobj, tag, position);
 	}
 	/*
 	//=====================================================================================
@@ -910,6 +943,13 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	inline bool EntityIsTeammate(sEntity* entity)
+	{
+		return VariadicCall<bool>(dwEntityIsTeammate, 0, entity);
+	}
+	/*
+	//=====================================================================================
+	*/
 	inline void GetPlayerViewOrigin(Vector3 position)
 	{
 		return VariadicCall<void>(dwGetPlayerViewOrigin, 0, &CG->PlayerState, position);
@@ -917,30 +957,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline bool HasPerk(int perk)
+	inline void EvaluateTrajectory(sTrajectory* trajectory, int time, Vector3 result)
 	{
-		return VariadicCall<bool>(dwHasPerk, 0, CG->iClientNum, perk);
-	}
-	/*
-	//=====================================================================================
-	*/
-	inline LPSTR GetWeaponName(int weapon, LPSTR name, int length)
-	{
-		return VariadicCall<LPSTR>(dwGetWeaponName, weapon, name, length);
-	}
-	/*
-	//=====================================================================================
-	*/
-	inline int WeaponAmmoAvailable()
-	{
-		return VariadicCall<int>(dwWeaponAmmoAvailable, &CG->PlayerState);
-	}
-	/*
-	//=====================================================================================
-	*/
-	inline bool WeaponIsAkimbo()
-	{
-		return VariadicCall<bool>(dwWeaponIsAkimbo, CG->iWeaponID);
+		return VariadicCall<void>(dwEvaluateTrajectory, trajectory, time, result);
 	}
 	/*
 	//=====================================================================================
@@ -952,9 +971,23 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline bool EntityIsTeammate(sEntity* entity)
+	inline int WeaponAmmoAvailable()
 	{
-		return VariadicCall<bool>(dwEntityIsTeammate, 0, entity);
+		return VariadicCall<int>(dwWeaponAmmoAvailable, &CG->PlayerState);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline int SetZoomState(bool enable)
+	{
+		return VariadicCall<int>(dwSetZoomState, 0, enable);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline bool WeaponIsAkimbo()
+	{
+		return VariadicCall<bool>(dwWeaponIsAkimbo, CG->iWeaponID);
 	}
 	/*
 	//=====================================================================================
@@ -973,30 +1006,16 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline float GetSurfacePenetrationDepth(ePenetrateType penetration, int surface)
+	inline int GetWeaponDamageForRange(int weapon, Vector3 vieworigin, Vector3 hitpos)
 	{
-		return VariadicCall<float>(dwGetSurfacePenetrationDepth, penetration, surface);
+		return VariadicCall<int>(dwGetWeaponDamageForRange, weapon, vieworigin, hitpos);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool EntityIsDeployedRiotshield(sEntity* entity)
+	inline float GetWeaponHitLocationMultiplier(int partgroup, int weapon)
 	{
-		return VariadicCall<bool>(dwEntityIsDeployedRiotshield, entity);
-	}
-	/*
-	//=====================================================================================
-	*/
-	inline int LocationalTrace(sTrace* trace, Vector3 from, Vector3 to, int skip, int mask)
-	{
-		return VariadicCall<int>(dwLocationalTrace, trace, from, to, skip, mask, 0, 0);
-	}
-	/*
-	//=====================================================================================
-	*/
-	inline bool AdvanceTrace(sBulletFireParams* fireparams, sBulletTraceResults* traceresults, float distance)
-	{
-		return VariadicCall<bool>(dwAdvanceTrace, fireparams, traceresults, distance);
+		return VariadicCall<float>(dwGetWeaponHitLocationMultiplier, partgroup, weapon);
 	}
 	/*
 	//=====================================================================================
@@ -1008,16 +1027,51 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline int GetWeaponDamageForRange(int weapon, Vector3 vieworigin, Vector3 hitpos)
+	inline bool EntityIsDeployedRiotshield(sEntity* entity)
 	{
-		return VariadicCall<int>(dwGetWeaponDamageForRange, weapon, vieworigin, hitpos);
+		return VariadicCall<bool>(dwEntityIsDeployedRiotshield, entity);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline float GetWeaponHitLocationMultiplier(int partgroup, int weapon)
+	inline bool HasPerk(int perk)
 	{
-		return VariadicCall<float>(dwGetWeaponHitLocationMultiplier, partgroup, weapon);
+		return VariadicCall<bool>(dwHasPerk, 0, CG->iClientNum, perk);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline float GetSurfacePenetrationDepth(ePenetrateType penetration, int surface)
+	{
+		return VariadicCall<float>(dwGetSurfacePenetrationDepth, penetration, surface);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline bool AdvanceTrace(sBulletFireParams* fireparams, sBulletTraceResults* traceresults, float distance)
+	{
+		return VariadicCall<bool>(dwAdvanceTrace, fireparams, traceresults, distance);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline int LocationalTrace(sTrace* trace, Vector3 from, Vector3 to, int skip, int mask)
+	{
+		return VariadicCall<int>(dwLocationalTrace, trace, from, to, skip, mask, 0, 0);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline void AddReliableCommand(std::string command)
+	{
+		return VariadicCall<void>(dwAddReliableCommand, 0, command.c_str());
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline void Cbuf_AddText(std::string command)
+	{
+		return VariadicCall<void>(dwCbufAddText, 0, command.c_str());
 	}
 	/*
 	//=====================================================================================
@@ -1050,37 +1104,65 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline void EvaluateTrajectory(sTrajectory* trajectory, int time, Vector3 result)
+	inline void SetFovSensitivityScale(float scale)
 	{
-		return VariadicCall<void>(dwEvaluateTrajectory, trajectory, time, result);
+		return VariadicCall<void>(dwSetFovSensitivityScale, 0, scale);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int SetZoomState(bool enable)
+	inline int GetViewmodelWeaponIndex()
 	{
-		return VariadicCall<int>(dwSetZoomState, 0, enable);
+		return VariadicCall<int>(dwGetViewmodelWeaponIndex, &CG->PlayerState);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPSTR GetUsername()
+	inline bool WeaponHasPerk(int weapon, int perk)
 	{
-		return VariadicCall<LPSTR>(dwGetUsername, 0);
+		return VariadicCall<bool>(dwWeaponHasPerk, weapon, perk);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPSTR GetClantag()
+	inline int UsingSniperScope()
 	{
-		return VariadicCall<LPSTR>(dwGetClantag, 0);
+		return VariadicCall<int>(dwUsingSniperScope, &CG->PlayerState);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPSTR GetXuidstring()
+	inline void SetUserCmdAimValues(Vector3 angles)
 	{
-		return VariadicCall<LPSTR>(dwGetXuidstring, 0);
+		return VariadicCall<void>(dwSetUserCmdAimValues, 0, angles);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline int GetLastWeaponForAlt()
+	{
+		return VariadicCall<int>(dwGetLastWeaponForAlt, &CG, &CG->PlayerState, CG->iWeaponSelect);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline void SetUserCmdWeapons(int weapon)
+	{
+		return VariadicCall<void>(dwSetUserCmdWeapons, 0, CG->iWeaponSelect, CG->iEquippedOffhand, weapon);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline void SetExtraButtons()
+	{
+		return VariadicCall<void>(dwSetExtraButtons, 0, &CG->iExtraButtonBits);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline LPSTR GetWeaponName(int weapon, LPSTR name, int length)
+	{
+		return VariadicCall<LPSTR>(dwGetWeaponName, weapon, name, length);
 	}
 	/*
 	//=====================================================================================

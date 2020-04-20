@@ -19,6 +19,8 @@ namespace ProtoGenesys
 	*/
 	void cRemovals::SpreadCompensation(sUserCmd* usercmd, int servertime)
 	{
+		FirstBulletFix();
+
 		int iSeed = servertime;
 
 		float flSpreadMultiplier = ByteToFloat(CG->flSpread),
@@ -46,6 +48,43 @@ namespace ProtoGenesys
 
 		usercmd->iViewAngles[0] += AngleToShort(flSpreadY * (1.0f - _profiler.gSpreadFactor->Current.flValue));
 		usercmd->iViewAngles[1] += AngleToShort(flSpreadX * (1.0f - _profiler.gSpreadFactor->Current.flValue));
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cRemovals::FirstBulletFix()
+	{
+		Vector3 vAngles;
+
+		if (CG->flShockSensitivity != 0.0)
+			CG->flZoomSensitivity *= CG->flShockSensitivity;
+
+		SetFovSensitivityScale(CG->flZoomSensitivity);
+
+		if (WeaponHasPerk(GetViewmodelWeaponIndex(), 7) &&
+			UsingSniperScope() && CG->PlayerState.flZoomProgress == 1.0f)
+		{
+			vAngles[0] = CG->vOffsetAngles[0] + CG->vKickAngles[0] * 0.25f;
+			vAngles[1] = CG->vOffsetAngles[1] + CG->vKickAngles[1] * 0.25f;
+			vAngles[2] = CG->vOffsetAngles[2] + CG->vKickAngles[2] * 0.25f;
+		}
+
+		else
+		{
+			vAngles[0] = CG->vOffsetAngles[0] + CG->vKickAngles[0];
+			vAngles[1] = CG->vOffsetAngles[1] + CG->vKickAngles[1];
+			vAngles[2] = CG->vOffsetAngles[2] + CG->vKickAngles[2];
+		}
+
+		SetUserCmdAimValues(vAngles);
+		SetUserCmdWeapons(GetLastWeaponForAlt());
+		SetExtraButtons();
+
+		CG->iExtraButtonBits[0] = 0;
+		CG->iExtraButtonBits[1] = 0;
+
+		CG->RefDef.iSplitScreenBlurEdges = 0;
+		CG->RefDef.iPlayerTeleported = CG->iPlayerTeleported;
 	}
 }
 
