@@ -156,21 +156,36 @@ ePersonaState FASTCALL hGetFriendPersonaState(DWORD** _this, void* edx, sSteamID
 
 LPCSTR FASTCALL hGetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid)
 {
-	return _hooks.GetFriendPersonaName(_this, edx, steamid);
+	LPCSTR szName = _hooks.GetFriendPersonaName(_this, edx, steamid);
+
+	if (szName)
+		return szName;
+
+	return oGetFriendPersonaName(_this, edx, steamid);
 }
 
 //=====================================================================================
 
 int FASTCALL hGetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags)
 {
-	return _hooks.GetFriendCount(_this, edx, friendflags);
+	_hooks.iFriendCount = oGetFriendCount(_this, edx, friendflags);
+
+	return _hooks.GetFriendCount(_this, edx, friendflags) + _hooks.iFriendCount;
 }
 
 //=====================================================================================
 
 sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags)
 {
-	return _hooks.GetFriendByIndex(_this, edx, steamid, _friend, friendflags);
+	sSteamID SteamID;
+
+	if (_friend >= 0 && _friend < _hooks.iFriendCount)
+		SteamID = oGetFriendByIndex(_this, edx, steamid, _friend, friendflags);
+
+	if (_friend >= _hooks.iFriendCount && _friend < _hooks.iFriendCount + (int)_hooks.vFriends.size())
+		SteamID = _hooks.GetFriendByIndex(_this, edx, steamid, _friend, friendflags);
+
+	return SteamID;
 }
 
 //=====================================================================================

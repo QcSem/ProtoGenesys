@@ -26,6 +26,7 @@ namespace ProtoGenesys
 		char szXuidOverride[0x11];
 		QWORD dwXuidOverride;
 
+		int iFriendCount;
 		std::vector<std::pair<QWORD, std::string>> vFriends;
 
 		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwSysValue, dwShader, dwAddress;

@@ -406,7 +406,7 @@ namespace ProtoGenesys
 	*/
 	ePersonaState cHooks::GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid)
 	{
-		return PERSONA_STATE_SNOOZE;
+		return PERSONA_STATE_ONLINE;
 	}
 	/*
 	//=====================================================================================
@@ -415,7 +415,10 @@ namespace ProtoGenesys
 	{
 		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamid](std::pair<QWORD, std::string>& _friend) { return steamid.SteamID.iAll64Bits == _friend.first; });
 
-		return Friend->second.c_str();
+		if (Friend != vFriends.end())
+			return Friend->second.c_str();
+
+		return NULL;
 	}
 	/*
 	//=====================================================================================
@@ -425,9 +428,7 @@ namespace ProtoGenesys
 		int iFriendCount = 0;
 
 		if (friendflags & FRIEND_FLAG_IMMEDIATE)
-		{
 			iFriendCount = vFriends.size();
-		}
 
 		return iFriendCount;
 	}
@@ -441,13 +442,11 @@ namespace ProtoGenesys
 
 		if (friendflags & FRIEND_FLAG_IMMEDIATE)
 		{
-			if (_friend >= 0 && _friend < (int)vFriends.size())
-			{
-				qwSpoofID = vFriends[_friend].first;
-			}
+			qwSpoofID = vFriends[_friend - iFriendCount].first;
+			*steamid = qwSpoofID;
+			SteamID.SteamID.iAll64Bits = *steamid;
 		}
 
-		*steamid = qwSpoofID;
 		return SteamID;
 	}
 	/*
