@@ -25,7 +25,7 @@ namespace ProtoGenesys
 			if (!IsEntityValid(i))
 				continue;
 
-			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
+			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER || CG->Entity[i].NextEntityState.wEntityType == ET_ACTOR)
 			{
 				LPVOID pDObj = GetDObj(&CG->Entity[i]);
 
@@ -80,28 +80,46 @@ namespace ProtoGenesys
 				EntityList[i].cColor = _profiler.gColorAxis->Current.cValue;
 			}
 
+			else if (CG->Entity[i].NextEntityState.wEntityType == ET_ACTOR)
+			{
+				EntityList[i].bW2SSuccess = WorldToScreen(EntityList[i].vBones3D[vBones[BONE_HEAD].first], EntityList[i].vCenter2D);
+
+				if (EntityIsTeammate(&CG->Entity[i]))
+					continue;
+			}
+
 			else
 			{
 				EntityList[i].bW2SSuccess = WorldToScreen(CG->Entity[i].vOrigin, EntityList[i].vCenter2D);
 				continue;
 			}
 
-			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
+			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, &EntityList[i].iBoneIndex);
-				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
+				if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
+				{
+					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
+				}
+
+				else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
+				{
+					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
+				}
+
+				else
+				{
+					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
+					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
+				}
 			}
 
-			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
+			else if (CG->Entity[i].NextEntityState.wEntityType == ET_ACTOR)
 			{
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, &EntityList[i].iBoneIndex);
-				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
-			}
-
-			else
-			{
-				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, &EntityList[i].iBoneIndex);
+				EntityList[i].iBoneIndex = vBones[BONE_HEAD].first;
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
@@ -204,19 +222,7 @@ namespace ProtoGenesys
 	*/
 	bool cTargetList::IsEntityValid(int index)
 	{
-		if (CG->Entity[index].NextEntityState.wEntityType == ET_PLAYER)
-		{
-			if ((index != CG->iClientNum) && (CG->Entity[index].iAlive & 2) && CG->Client[index].iInfoValid && !(CG->Entity[index].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD))
-				return true;
-		}
-
-		else
-		{
-			if ((index != CG->iClientNum) && (CG->Entity[index].iAlive & 2) && CG->Entity[index].wValid)
-				return true;
-		}
-
-		return false;
+		return ((index != CG->iClientNum) && (CG->Entity[index].iAlive & 2) && !(CG->Entity[index].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
 	}
 	/*
 	//=====================================================================================
@@ -232,25 +238,34 @@ namespace ProtoGenesys
 
 		if (WeaponIsVehicle())
 		{
-			*damage = _autoWall.TraceBullet(vViewOrigin, position, hitloc, entity->NextEntityState.iEntityNum);
+			float flDamage = _autoWall.TraceBullet(vViewOrigin, position, hitloc, entity->NextEntityState.iEntityNum);
 
-			if (*damage >= 1.0f)
+			if (damage)
+				*damage = flDamage;
+
+			if (flDamage >= 1.0f)
 				return true;
 		}
 
 		else if (autowall)
 		{
-			*damage = _autoWall.Autowall(vViewOrigin, position, hitloc);
+			float flDamage = _autoWall.Autowall(vViewOrigin, position, hitloc);
 
-			if (*damage >= 1.0f)
+			if (damage)
+				*damage = flDamage;
+
+			if (flDamage >= 1.0f)
 				return true;
 		}
 
 		else
 		{
-			*damage = _autoWall.TraceBullet(vViewOrigin, position, hitloc, entity->NextEntityState.iEntityNum);
+			float flDamage = _autoWall.TraceBullet(vViewOrigin, position, hitloc, entity->NextEntityState.iEntityNum);
 
-			if (*damage >= 1.0f)
+			if (damage)
+				*damage = flDamage;
+
+			if (flDamage >= 1.0f)
 				return true;
 		}
 
@@ -259,7 +274,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisible(sEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone* index)
+	bool cTargetList::IsVisible(sEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index)
 	{
 		bool bReturn = false;
 
@@ -288,13 +303,13 @@ namespace ProtoGenesys
 
 		else
 		{
-			return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[*index], vBones[*index].second, autowall, &DamageInfo.flDamage).get();
+			return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], vBones[index].second, autowall, nullptr).get();
 		}
 
 		if (!vDamageInfo.empty())
 		{
 			std::stable_sort(vDamageInfo.begin(), vDamageInfo.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
-			*index = vDamageInfo.front().iBoneIndex;
+			index = vDamageInfo.front().iBoneIndex;
 			vDamageInfo.clear();
 		}
 

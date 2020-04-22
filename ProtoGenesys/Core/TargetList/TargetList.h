@@ -43,7 +43,7 @@ namespace ProtoGenesys
 		bool IsLocalPlayerValid();
 		bool IsEntityValid(int index);
 		bool IsVisibleInternal(sEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage);
-		bool IsVisible(sEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone* index);
+		bool IsVisible(sEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index);
 		void ApplyPrediction(sEntity* entity, Vector3 position);
 	} extern _targetList;
 }

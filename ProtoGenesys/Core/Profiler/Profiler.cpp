@@ -43,6 +43,11 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.bValue);
 			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
 
+			XML.set("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
+
 			XML.set("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
 			XML.set("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.flValue);
 			XML.set("ProtoGenesys.Tweaks.AimPower", gAimPower->Current.iValue);
@@ -136,6 +141,11 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.bValue);
 			XML.get_if_present("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.bValue);
 			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
+
+			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
 
 			XML.get_if_present("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.flValue);

@@ -604,7 +604,7 @@ namespace ProtoGenesys
 
 		else
 		{
-			AddReliableCommand(acut::FindAndReplaceString(command, "%n", "\n"));
+			Cbuf_AddText(acut::FindAndReplaceString(command, "%n", "\n"));
 		}
 	}
 	/*
