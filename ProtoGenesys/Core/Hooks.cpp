@@ -380,7 +380,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cHooks::IsValid(DWORD** _this)
+	bool cHooks::SteamIDIsValid(DWORD** _this)
 	{
 		return true;
 	}

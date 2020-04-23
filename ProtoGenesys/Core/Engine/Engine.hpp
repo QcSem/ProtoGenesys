@@ -796,7 +796,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
 	static DWORD_PTR dwGetItemEquipCount = bIsSteamVersion ? 0x94A750 : 0x94A8E0;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
-	static DWORD_PTR dwIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
+	static DWORD_PTR dwSteamIDIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
 
 	static DWORD_PTR dwCG = *(DWORD_PTR*)0x113F18C;
 	static DWORD_PTR dwClientActive = 0x11C7D74;

@@ -52,7 +52,7 @@ namespace ProtoGenesys
 		
 		int GetItemEquipCount(LPVOID root, int _class);
 		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
-		bool IsValid(DWORD** _this);
+		bool SteamIDIsValid(DWORD** _this);
 
 		sSteamID GetSteamID(sSteamID steamid);
 		bool GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);

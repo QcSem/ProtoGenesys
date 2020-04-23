@@ -40,9 +40,9 @@ int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 typedef int(USERCALL* tGetPlayerStatus)(int localnum, DWORD xuid1, DWORD xuid2);
 tGetPlayerStatus oGetPlayerStatus = (tGetPlayerStatus)dwGetPlayerStatus;
 
-bool FASTCALL hIsValid(DWORD** _this);
-typedef bool(FASTCALL* tIsValid)(DWORD** _this);
-tIsValid oIsValid = (tIsValid)dwIsValid;
+bool FASTCALL hSteamIDIsValid(DWORD** _this);
+typedef bool(FASTCALL* tSteamIDIsValid)(DWORD** _this);
+tSteamIDIsValid oSteamIDIsValid = (tSteamIDIsValid)dwSteamIDIsValid;
 
 sSteamID FASTCALL hGetSteamID(DWORD** _this, void* edx, int a2);
 typedef sSteamID(FASTCALL* tGetSteamID)(DWORD** _this, void* edx, int a2);
@@ -126,9 +126,9 @@ int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
 
 //=====================================================================================
 
-bool FASTCALL hIsValid(DWORD** _this)
+bool FASTCALL hSteamIDIsValid(DWORD** _this)
 {
-	return _hooks.IsValid(_this);
+	return _hooks.SteamIDIsValid(_this);
 }
 
 //=====================================================================================
@@ -220,7 +220,7 @@ void Initialize(HINSTANCE hinstDLL)
 	Hook(oGetAddr, hGetAddr);
 	Hook(oGetItemEquipCount, hGetItemEquipCount);
 	Hook(oGetPlayerStatus, hGetPlayerStatus);
-	Hook(oIsValid, hIsValid);
+	Hook(oSteamIDIsValid, hSteamIDIsValid);
 }
 
 //=====================================================================================
@@ -243,7 +243,7 @@ void Deallocate()
 	UnHook(oGetAddr, hGetAddr);
 	UnHook(oGetItemEquipCount, hGetItemEquipCount);
 	UnHook(oGetPlayerStatus, hGetPlayerStatus);
-	UnHook(oIsValid, hIsValid);
+	UnHook(oSteamIDIsValid, hSteamIDIsValid);
 
 	if (oGetSteamID)
 		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)oGetSteamID, 2);
