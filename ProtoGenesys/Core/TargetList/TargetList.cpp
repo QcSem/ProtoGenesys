@@ -286,7 +286,7 @@ namespace ProtoGenesys
 		{
 			for (auto& Bone : vBones)
 			{
-				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], vBones[Bone.first].second, autowall, &DamageInfo.flDamage);
+				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage);
 			}
 
 			for (auto& Bone : vBones)

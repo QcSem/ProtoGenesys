@@ -133,131 +133,131 @@ namespace ProtoGenesys
 	{
 		if (skeleton)
 		{
-			DrawLine(bones2d[BONE_NECK],
-				bones2d[BONE_LEFT_SHOULDER],
+			DrawLine(bones2d[vBones[BONE_NECK].first],
+				bones2d[vBones[BONE_LEFT_SHOULDER].first],
 				color);
 
-			DrawLine(bones2d[BONE_LEFT_SHOULDER],
-				bones2d[BONE_LEFT_ELBOW],
+			DrawLine(bones2d[vBones[BONE_LEFT_SHOULDER].first],
+				bones2d[vBones[BONE_LEFT_ELBOW].first],
 				color);
 
-			DrawLine(bones2d[BONE_LEFT_ELBOW],
-				bones2d[BONE_LEFT_WRIST],
+			DrawLine(bones2d[vBones[BONE_LEFT_ELBOW].first],
+				bones2d[vBones[BONE_LEFT_WRIST].first],
 				color);
 
-			DrawLine(bones2d[BONE_NECK],
-				bones2d[BONE_RIGHT_SHOULDER],
+			DrawLine(bones2d[vBones[BONE_NECK].first],
+				bones2d[vBones[BONE_RIGHT_SHOULDER].first],
 				color);
 
-			DrawLine(bones2d[BONE_RIGHT_SHOULDER],
-				bones2d[BONE_RIGHT_ELBOW],
+			DrawLine(bones2d[vBones[BONE_RIGHT_SHOULDER].first],
+				bones2d[vBones[BONE_RIGHT_ELBOW].first],
 				color);
 
-			DrawLine(bones2d[BONE_RIGHT_ELBOW],
-				bones2d[BONE_RIGHT_WRIST],
+			DrawLine(bones2d[vBones[BONE_RIGHT_ELBOW].first],
+				bones2d[vBones[BONE_RIGHT_WRIST].first],
 				color);
 
-			DrawLine(bones2d[BONE_NECK],
-				bones2d[BONE_UPPER_SPINE],
+			DrawLine(bones2d[vBones[BONE_NECK].first],
+				bones2d[vBones[BONE_UPPER_SPINE].first],
 				color);
 
-			DrawLine(bones2d[BONE_UPPER_SPINE],
-				bones2d[BONE_MIDDLE_SPINE],
+			DrawLine(bones2d[vBones[BONE_UPPER_SPINE].first],
+				bones2d[vBones[BONE_MIDDLE_SPINE].first],
 				color);
 
-			DrawLine(bones2d[BONE_MIDDLE_SPINE],
-				bones2d[BONE_LOWER_SPINE],
+			DrawLine(bones2d[vBones[BONE_MIDDLE_SPINE].first],
+				bones2d[vBones[BONE_LOWER_SPINE].first],
 				color);
 
-			DrawLine(bones2d[BONE_LOWER_SPINE],
-				bones2d[BONE_LEFT_HIP],
+			DrawLine(bones2d[vBones[BONE_LOWER_SPINE].first],
+				bones2d[vBones[BONE_LEFT_HIP].first],
 				color);
 
-			DrawLine(bones2d[BONE_LEFT_HIP],
-				bones2d[BONE_LEFT_KNEE],
+			DrawLine(bones2d[vBones[BONE_LEFT_HIP].first],
+				bones2d[vBones[BONE_LEFT_KNEE].first],
 				color);
 
-			DrawLine(bones2d[BONE_LEFT_KNEE],
-				bones2d[BONE_LEFT_ANKLE],
+			DrawLine(bones2d[vBones[BONE_LEFT_KNEE].first],
+				bones2d[vBones[BONE_LEFT_ANKLE].first],
 				color);
 
-			DrawLine(bones2d[BONE_LOWER_SPINE],
-				bones2d[BONE_RIGHT_HIP],
+			DrawLine(bones2d[vBones[BONE_LOWER_SPINE].first],
+				bones2d[vBones[BONE_RIGHT_HIP].first],
 				color);
 
-			DrawLine(bones2d[BONE_RIGHT_HIP],
-				bones2d[BONE_RIGHT_KNEE],
+			DrawLine(bones2d[vBones[BONE_RIGHT_HIP].first],
+				bones2d[vBones[BONE_RIGHT_KNEE].first],
 				color);
 
-			DrawLine(bones2d[BONE_RIGHT_KNEE],
-				bones2d[BONE_RIGHT_ANKLE],
+			DrawLine(bones2d[vBones[BONE_RIGHT_KNEE].first],
+				bones2d[vBones[BONE_RIGHT_ANKLE].first],
 				color);
 		}
 
 		else
 		{
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_NECK],
-				bones2d[BONE_NECK] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_NECK].first],
+				bones2d[vBones[BONE_NECK].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_UPPER_SPINE],
-				bones2d[BONE_UPPER_SPINE] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_UPPER_SPINE].first],
+				bones2d[vBones[BONE_UPPER_SPINE].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_MIDDLE_SPINE],
-				bones2d[BONE_MIDDLE_SPINE] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_MIDDLE_SPINE].first],
+				bones2d[vBones[BONE_MIDDLE_SPINE].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_LOWER_SPINE],
-				bones2d[BONE_LOWER_SPINE] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LOWER_SPINE].first],
+				bones2d[vBones[BONE_LOWER_SPINE].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_LEFT_SHOULDER],
-				bones2d[BONE_LEFT_SHOULDER] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_SHOULDER].first],
+				bones2d[vBones[BONE_LEFT_SHOULDER].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_RIGHT_SHOULDER],
-				bones2d[BONE_RIGHT_SHOULDER] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_SHOULDER].first],
+				bones2d[vBones[BONE_RIGHT_SHOULDER].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_LEFT_HIP],
-				bones2d[BONE_LEFT_HIP] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_HIP].first],
+				bones2d[vBones[BONE_LEFT_HIP].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_RIGHT_HIP],
-				bones2d[BONE_RIGHT_HIP] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_HIP].first],
+				bones2d[vBones[BONE_RIGHT_HIP].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_LEFT_ELBOW],
-				bones2d[BONE_LEFT_ELBOW] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_ELBOW].first],
+				bones2d[vBones[BONE_LEFT_ELBOW].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_RIGHT_ELBOW],
-				bones2d[BONE_RIGHT_ELBOW] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_ELBOW].first],
+				bones2d[vBones[BONE_RIGHT_ELBOW].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_LEFT_KNEE],
-				bones2d[BONE_LEFT_KNEE] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_KNEE].first],
+				bones2d[vBones[BONE_LEFT_KNEE].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_RIGHT_KNEE],
-				bones2d[BONE_RIGHT_KNEE] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_KNEE].first],
+				bones2d[vBones[BONE_RIGHT_KNEE].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_LEFT_WRIST],
-				bones2d[BONE_LEFT_WRIST] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_WRIST].first],
+				bones2d[vBones[BONE_LEFT_WRIST].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_RIGHT_WRIST],
-				bones2d[BONE_RIGHT_WRIST] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_WRIST].first],
+				bones2d[vBones[BONE_RIGHT_WRIST].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_LEFT_ANKLE],
-				bones2d[BONE_LEFT_ANKLE] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_ANKLE].first],
+				bones2d[vBones[BONE_LEFT_ANKLE].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[BONE_RIGHT_ANKLE],
-				bones2d[BONE_RIGHT_ANKLE] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_ANKLE].first],
+				bones2d[vBones[BONE_RIGHT_ANKLE].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 		}
 	}
@@ -658,7 +658,7 @@ namespace ProtoGenesys
 	*/
 	void cDrawing::ColorPicker(std::string label, ImVec4& color)
 	{
-		int iMiscFlags = (false ? ImGuiColorEditFlags_HDR : 0) | (true ? 0 : ImGuiColorEditFlags_NoDragDrop) | (false ? ImGuiColorEditFlags_AlphaPreviewHalf : (true ? ImGuiColorEditFlags_AlphaPreview : 0)) | (true ? 0 : ImGuiColorEditFlags_NoOptions);
+		int iMiscFlags = ImGuiColorEditFlags_AlphaPreview;
 		static bool bSavedPaletteInited = false;
 		static ImVec4 cSavedPalette[40];
 

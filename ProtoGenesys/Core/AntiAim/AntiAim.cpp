@@ -20,7 +20,7 @@ namespace ProtoGenesys
 			vAntiAimAngles[0] = 85.0f - CG->PlayerState.vDeltaAngles[0];
 			vAntiAimAngles[1] = flAngle - CG->PlayerState.vDeltaAngles[1];
 
-			flAngle += 40.0f;
+			flAngle += 45.0f;
 		}
 
 		else if (_profiler.gAntiAim->Current.iValue == cProfiler::ANTIAIM_JITTERBOT)
@@ -85,7 +85,7 @@ namespace ProtoGenesys
 				else
 				{
 					vAntiAimAngles[0] = -40.0f - CG->PlayerState.vDeltaAngles[0];
-					vAntiAimAngles[1] = -180.0f - CG->PlayerState.vDeltaAngles[1];
+					vAntiAimAngles[1] = -170.0f - CG->PlayerState.vDeltaAngles[1];
 				}
 			}
 		}
