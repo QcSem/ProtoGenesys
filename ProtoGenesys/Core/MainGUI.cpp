@@ -607,12 +607,12 @@ namespace ProtoGenesys
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::SliderFloat(_profiler.gAimAngle->szName.c_str(), &_profiler.gAimAngle->Current.flValue, _profiler.gAimAngle->Domain.flMin, _profiler.gAimAngle->Domain.flMax, "%.0f degrees"))
+					if (ImGui::SliderInt(_profiler.gAimAngle->szName.c_str(), &_profiler.gAimAngle->Current.iValue, _profiler.gAimAngle->Domain.iMin, _profiler.gAimAngle->Domain.iMax, "%d degrees"))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();
 
-					if (ImGui::SliderInt(_profiler.gAimPower->szName.c_str(), &_profiler.gAimPower->Current.iValue, _profiler.gAimPower->Domain.iMin, _profiler.gAimPower->Domain.iMax, "%d%%"))
+					if (ImGui::SliderInt(_profiler.gAimPower->szName.c_str(), &_profiler.gAimPower->Current.iValue, _profiler.gAimPower->Domain.iMin, _profiler.gAimPower->Domain.iMax, "%d percent"))
 					{
 						bProtoGenesysLog = true;
 					} ImGui::NewLine();
@@ -650,7 +650,7 @@ namespace ProtoGenesys
 					if (ImGui::Button("Reset to Default", ImVec2(446.0f, 35.0f)))
 					{
 						_profiler.gAimBone->Current.iValue = _profiler.gAimBone->Reset.iValue;
-						_profiler.gAimAngle->Current.flValue = _profiler.gAimAngle->Reset.flValue;
+						_profiler.gAimAngle->Current.iValue = _profiler.gAimAngle->Reset.iValue;
 						_profiler.gAimPower->Current.iValue = _profiler.gAimPower->Reset.iValue;
 						_profiler.gAutoAimTime->Current.iValue = _profiler.gAutoAimTime->Reset.iValue;
 						_profiler.gAutoAimDelay->Current.iValue = _profiler.gAutoAimDelay->Reset.iValue;

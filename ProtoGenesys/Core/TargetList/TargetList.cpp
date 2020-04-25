@@ -127,7 +127,7 @@ namespace ProtoGenesys
 				if (!vIsTarget[i])
 					continue;
 
-			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.flValue)
+			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
 			{
 				TargetInfo.iIndex = i;
 
@@ -151,61 +151,6 @@ namespace ProtoGenesys
 				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDistance < b.flDistance; });
 				_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
-		}
-
-		_aimBot.AimState.bTargetAcquired = (_aimBot.AimState.iTargetNum > -1);
-		_aimBot.AimState.bLockonTarget = (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM));
-		_aimBot.AimState.bIsAutoAiming = (_aimBot.AimState.bTargetAcquired && _aimBot.AimState.bLockonTarget);
-		_aimBot.AimState.bIsAutoFiring = (_profiler.gAutoFire->Current.bValue && _aimBot.AimState.bIsAutoAiming);
-
-		if (_aimBot.AimState.bLockonTarget)
-		{
-			if (_aimBot.AimState.iCurrentAimDelay == _profiler.gAutoAimDelay->Current.iValue)
-				_aimBot.AimState.iCurrentAimTime += clock() - _aimBot.AimState.iDeltaTMR;
-
-			_aimBot.AimState.iCurrentAimDelay += clock() - _aimBot.AimState.iDeltaTMR;
-			_aimBot.AimState.iCurrentZoomDelay += clock() - _aimBot.AimState.iDeltaTMR;
-			_aimBot.AimState.iCurrentFireDelay += clock() - _aimBot.AimState.iDeltaTMR;
-		}
-
-		_aimBot.AimState.iDeltaTMR = clock();
-
-		if (_aimBot.AimState.iLastTarget != _aimBot.AimState.iTargetNum)
-		{
-			_aimBot.AimState.iLastTarget = _aimBot.AimState.iTargetNum;
-			_aimBot.AimState.iCurrentAimTime = 0;
-		}
-
-		if (EntityList[_aimBot.AimState.iTargetNum].iLastBone != EntityList[_aimBot.AimState.iTargetNum].iBoneIndex)
-		{
-			EntityList[_aimBot.AimState.iTargetNum].iLastBone = EntityList[_aimBot.AimState.iTargetNum].iBoneIndex;
-			_aimBot.AimState.iCurrentAimTime = 0;
-		}
-
-		if (!_aimBot.AimState.bTargetAcquired)
-			_aimBot.AimState.iCurrentAimDelay = _aimBot.AimState.iCurrentZoomDelay = _aimBot.AimState.iCurrentFireDelay = 0;
-
-		if (_aimBot.AimState.iCurrentAimTime > _profiler.gAutoAimTime->Current.iValue)
-			_aimBot.AimState.iCurrentAimTime = _profiler.gAutoAimTime->Current.iValue;
-
-		if (_aimBot.AimState.iCurrentAimDelay > _profiler.gAutoAimDelay->Current.iValue)
-			_aimBot.AimState.iCurrentAimDelay = _profiler.gAutoAimDelay->Current.iValue;
-
-		if (_aimBot.AimState.iCurrentZoomDelay > _profiler.gAutoZoomDelay->Current.iValue)
-			_aimBot.AimState.iCurrentZoomDelay = _profiler.gAutoZoomDelay->Current.iValue;
-
-		if (_aimBot.AimState.iCurrentFireDelay > _profiler.gAutoFireDelay->Current.iValue)
-			_aimBot.AimState.iCurrentFireDelay = _profiler.gAutoFireDelay->Current.iValue;
-
-		if (_aimBot.AimState.bTargetAcquired)
-		{
-			Vector3 vViewOrigin;
-			GetPlayerViewOrigin(vViewOrigin);
-
-			VectorCopy(EntityList[_aimBot.AimState.iTargetNum].vHitLocation, _aimBot.AimState.vAimPosition);
-
-			_mathematics.CalculateAimAngles(_aimBot.AimState.vAimPosition, vViewOrigin, _aimBot.AimState.vAimAngles);
-			_mathematics.CalculateAntiAimAngles(_aimBot.AimState.vAimPosition, vViewOrigin, _aimBot.AimState.vAntiAimAngles);
 		}
 
 		iCounter++;
@@ -282,28 +227,53 @@ namespace ProtoGenesys
 		std::vector<sDamageInfo> vDamageInfo;
 		std::vector<std::future<bool>> vIsVisible(BONE_MAX);
 
-		if (bonescan)
+		if (bIsSteamVersion)
 		{
-			for (auto& Bone : vBones)
+			if (bonescan)
 			{
-				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage);
+				for (auto& Bone : vBones)
+				{
+					vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage);
+				}
+
+				for (auto& Bone : vBones)
+				{
+					if (vIsVisible[Bone.first].get())
+					{
+						DamageInfo.iBoneIndex = Bone.first;
+						vDamageInfo.push_back(DamageInfo);
+
+						bReturn = true;
+					}
+				}
 			}
 
-			for (auto& Bone : vBones)
+			else
 			{
-				if (vIsVisible[Bone.first].get())
-				{
-					DamageInfo.iBoneIndex = Bone.first;
-					vDamageInfo.push_back(DamageInfo);
-
-					bReturn = true;
-				}
+				return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], vBones[index].second, autowall, nullptr).get();
 			}
 		}
 
 		else
 		{
-			return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], vBones[index].second, autowall, nullptr).get();
+			if (bonescan)
+			{
+				for (auto& Bone : vBones)
+				{
+					if (IsVisibleInternal(entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage))
+					{
+						DamageInfo.iBoneIndex = Bone.first;
+						vDamageInfo.push_back(DamageInfo);
+
+						bReturn = true;
+					}
+				}
+			}
+
+			else
+			{
+				return IsVisibleInternal(entity, bones3d[index], vBones[index].second, autowall, NULL);
+			}
 		}
 
 		if (!vDamageInfo.empty())

@@ -212,8 +212,8 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gPlayerRadar = std::make_shared<sCvar>("Radar", std::vector<std::string>(), false);
 
 		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HELMET, BONE_HELMET, BONE_MAX - 1);
-		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180.0f, 5.0f, 180.0f);
-		std::shared_ptr<sCvar> gAimPower = std::make_shared<sCvar>("Aimpower", std::vector<std::string>(), 100, 5, 100);
+		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180, 1, 180);
+		std::shared_ptr<sCvar> gAimPower = std::make_shared<sCvar>("Aimpower", std::vector<std::string>(), 100, 1, 100);
 		std::shared_ptr<sCvar> gAutoAimTime = std::make_shared<sCvar>("Autoaim Time", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoAimDelay = std::make_shared<sCvar>("Autoaim Delay", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoZoomDelay = std::make_shared<sCvar>("Autozoom Delay", std::vector<std::string>(), 0, 0, 1000);

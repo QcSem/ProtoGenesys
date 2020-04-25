@@ -66,7 +66,7 @@ namespace ProtoGenesys
 		{
 			if (AimState.iCurrentFireDelay == _profiler.gAutoFireDelay->Current.iValue)
 			{
-				if (_aimBot.AimState.bLockonTarget)
+				if (AimState.bLockonTarget)
 				{
 					usercmd->iButtons[0] |= 0x80000000;
 					usercmd->iButtons[1] |= 0x20000000;
@@ -75,6 +75,66 @@ namespace ProtoGenesys
 						usercmd->iButtons[0] |= 0x100080;
 				}
 			}
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cAimbot::SetAimState()
+	{
+		AimState.bTargetAcquired = (AimState.iTargetNum > -1);
+		AimState.bLockonTarget = (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM));
+		AimState.bIsAutoAiming = (AimState.bTargetAcquired && AimState.bLockonTarget);
+		AimState.bIsAutoFiring = (_profiler.gAutoFire->Current.bValue && AimState.bIsAutoAiming);
+
+		if (AimState.bLockonTarget)
+		{
+			if (AimState.iCurrentAimDelay == _profiler.gAutoAimDelay->Current.iValue)
+				AimState.iCurrentAimTime += clock() - AimState.iDeltaTMR;
+
+			AimState.iCurrentAimDelay += clock() - AimState.iDeltaTMR;
+			AimState.iCurrentZoomDelay += clock() - AimState.iDeltaTMR;
+			AimState.iCurrentFireDelay += clock() - AimState.iDeltaTMR;
+		}
+
+		AimState.iDeltaTMR = clock();
+
+		if (AimState.iLastTarget != AimState.iTargetNum)
+		{
+			AimState.iLastTarget = AimState.iTargetNum;
+			AimState.iCurrentAimTime = 0;
+		}
+
+		if (_targetList.EntityList[AimState.iTargetNum].iLastBone != _targetList.EntityList[AimState.iTargetNum].iBoneIndex)
+		{
+			_targetList.EntityList[AimState.iTargetNum].iLastBone = _targetList.EntityList[AimState.iTargetNum].iBoneIndex;
+			AimState.iCurrentAimTime = 0;
+		}
+
+		if (!AimState.bTargetAcquired || _mainGui.GetKeyPress(VK_DELETE, true))
+			AimState.iCurrentAimDelay = AimState.iCurrentZoomDelay = AimState.iCurrentFireDelay = 0;
+
+		if (AimState.iCurrentAimTime > _profiler.gAutoAimTime->Current.iValue)
+			AimState.iCurrentAimTime = _profiler.gAutoAimTime->Current.iValue;
+
+		if (AimState.iCurrentAimDelay > _profiler.gAutoAimDelay->Current.iValue)
+			AimState.iCurrentAimDelay = _profiler.gAutoAimDelay->Current.iValue;
+
+		if (AimState.iCurrentZoomDelay > _profiler.gAutoZoomDelay->Current.iValue)
+			AimState.iCurrentZoomDelay = _profiler.gAutoZoomDelay->Current.iValue;
+
+		if (AimState.iCurrentFireDelay > _profiler.gAutoFireDelay->Current.iValue)
+			AimState.iCurrentFireDelay = _profiler.gAutoFireDelay->Current.iValue;
+
+		if (AimState.bTargetAcquired)
+		{
+			Vector3 vViewOrigin;
+			GetPlayerViewOrigin(vViewOrigin);
+
+			VectorCopy(_targetList.EntityList[AimState.iTargetNum].vHitLocation, AimState.vAimPosition);
+
+			_mathematics.CalculateAimAngles(AimState.vAimPosition, vViewOrigin, AimState.vAimAngles);
+			_mathematics.CalculateAntiAimAngles(AimState.vAimPosition, vViewOrigin, AimState.vAntiAimAngles);
 		}
 	}
 }

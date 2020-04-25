@@ -259,7 +259,7 @@ namespace ProtoGenesys
 		VectorAngles(vDirection, vAngles);
 
 		VectorSubtract(CG->vRefDefViewAngles, vAngles, vAngles);
-		_mathematics.ClampAngles(vAngles);
+		ClampAngles(vAngles);
 
 		flAngle = ((vAngles[1] + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
 

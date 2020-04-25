@@ -49,7 +49,7 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
 
 			XML.set("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
-			XML.set("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.flValue);
+			XML.set("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.iValue);
 			XML.set("ProtoGenesys.Tweaks.AimPower", gAimPower->Current.iValue);
 			XML.set("ProtoGenesys.Tweaks.AutoAimTime", gAutoAimTime->Current.iValue);
 			XML.set("ProtoGenesys.Tweaks.AutoAimDelay", gAutoAimDelay->Current.iValue);
@@ -148,7 +148,7 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
 
 			XML.get_if_present("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.flValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.iValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.AimPower", gAimPower->Current.iValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.AutoAimTime", gAutoAimTime->Current.iValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.AutoAimDelay", gAutoAimDelay->Current.iValue);

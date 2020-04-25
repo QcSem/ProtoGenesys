@@ -209,6 +209,7 @@ namespace ProtoGenesys
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
 			_targetList.GetInformation();
+			_aimBot.SetAimState();
 
 			if (!IsPlayerReloading(&CG->PlayerState) && WeaponAmmoAvailable())
 				_aimBot.StandardAim();

@@ -553,10 +553,10 @@ namespace ProtoGenesys
 	{
 		if (_profiler.gPlayerCompass->Current.bValue)
 		{
-			_drawing.Compass.flArrowSize = ImGui::GetIO().DisplaySize.y / 40.0f;
-			_drawing.Compass.flCompassSize = ImGui::GetIO().DisplaySize.y / 1.5f;
+			Compass.flArrowSize = ImGui::GetIO().DisplaySize.y / 40.0f;
+			Compass.flCompassSize = ImGui::GetIO().DisplaySize.y / 1.5f;
 
-			_drawing.Compass.vCompassPosition = ImGui::GetIO().DisplaySize / 2.0f;
+			Compass.vCompassPosition = ImGui::GetIO().DisplaySize / 2.0f;
 
 			for (int i = 0; i < MAX_CLIENTS; i++)
 			{
