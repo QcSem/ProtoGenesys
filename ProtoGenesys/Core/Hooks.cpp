@@ -337,9 +337,9 @@ namespace ProtoGenesys
 					GetTagPosition(&CG->Entity[sourcenum], RegisterTag("tag_flash"), GetDObj(&CG->Entity[sourcenum]), Tracer.vStartPos3D);
 					VectorCopy(position, Tracer.vHitPos3D);
 
-					Tracer.cColor1 = _profiler.gColorAccents->Current.cValue;
-					Tracer.cColor2 = _profiler.gColorText->Current.cValue;
-					Tracer.cColor3 = _profiler.gColorShadow->Current.cValue;
+					Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
+					Tracer.cColorHitPos = _profiler.gColorText->Current.cValue;
+					Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
 					Tracer.iStartTime = CG->PlayerState.iServerTime;
 					
 					_drawing.vTracers.push_back(Tracer);
