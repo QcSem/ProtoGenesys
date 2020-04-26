@@ -224,6 +224,9 @@ namespace ProtoGenesys
 
 			_removals.RecoilCompensation();
 		}
+
+		else
+			_drawing.vTracers.clear();
 	}
 	/*
 	//=====================================================================================
@@ -345,11 +348,6 @@ namespace ProtoGenesys
 					_drawing.vTracers.push_back(Tracer);
 				}
 			}
-		}
-
-		else
-		{
-			_drawing.vTracers.clear();
 		}
 	}
 	/*
