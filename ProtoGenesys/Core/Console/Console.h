@@ -59,7 +59,7 @@ namespace ProtoGenesys
 		void Init();
 		void ClearLog();
 		void AddLog(LPCSTR format, ...) IM_FMTARGS(2);
-		void Draw(LPCSTR title, bool* open);
+		void Draw();
 
 		void SplitCommandLine(LPCSTR in, sCmdLine* out);
 		void ExecCommand(LPCSTR command);

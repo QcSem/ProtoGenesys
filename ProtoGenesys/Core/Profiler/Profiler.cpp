@@ -42,6 +42,7 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.bValue);
 			XML.set("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.bValue);
 			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
+			XML.set("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
 
 			XML.set("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
@@ -68,10 +69,10 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Current.cValue[2]);
 			XML.set("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.RiotShield.Red", gColorRiotShield->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.RiotShield.Green", gColorRiotShield->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.RiotShield.Blue", gColorRiotShield->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.RiotShield.Alpha", gColorRiotShield->Current.cValue[3]);
+			XML.set("ProtoGenesys.Colors.RiotShields.Red", gColorAccents->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.RiotShields.Green", gColorAccents->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.RiotShields.Blue", gColorAccents->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.RiotShields.Alpha", gColorAccents->Current.cValue[3]);
 
 			XML.set("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
 			XML.set("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
@@ -141,6 +142,7 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.bValue);
 			XML.get_if_present("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.bValue);
 			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
+			XML.get_if_present("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
 
 			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
@@ -167,10 +169,10 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Current.cValue[2]);
 			XML.get_if_present("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Red", gColorRiotShield->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Green", gColorRiotShield->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Blue", gColorRiotShield->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShield.Alpha", gColorRiotShield->Current.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShields.Red", gColorAccents->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShields.Green", gColorAccents->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShields.Blue", gColorAccents->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.RiotShields.Alpha", gColorAccents->Current.cValue[3]);
 
 			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
@@ -223,6 +225,7 @@ namespace ProtoGenesys
 		gPlayerCrossHair->Current.bValue = gPlayerCrossHair->Reset.bValue;
 		gPlayerCompass->Current.bValue = gPlayerCompass->Reset.bValue;
 		gPlayerRadar->Current.bValue = gPlayerRadar->Reset.bValue;
+		gPlayerBulletTracers->Current.bValue = gPlayerBulletTracers->Reset.bValue;
 
 		gThirdPerson->Current.bValue = gThirdPerson->Reset.bValue;
 		gOrbitalVsat->Current.bValue = gOrbitalVsat->Reset.bValue;

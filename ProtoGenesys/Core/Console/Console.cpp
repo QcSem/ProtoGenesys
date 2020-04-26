@@ -73,31 +73,12 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cConsole::Draw(LPCSTR title, bool* open)
+	void cConsole::Draw()
 	{
-		if (_mainGui.bConsoleLog)
+		if (_mainGui.bWriteLog)
 		{
 			ImGui::LogToFile();
-			_mainGui.bConsoleLog = false;
-		}
-
-		ImGui::SetNextWindowSize(ImVec2(510.0f, 350.0f));
-		if (!ImGui::Begin(title, open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
-		{
-			ImGui::End();
-			return;
-		}
-
-		if (ImGui::BeginPopupContextItem())
-		{
-			if (ImGui::MenuItem("Close"))
-			{
-				*open = false;
-				_mainGui.bConsoleLog = true;
-			}
-
-			ImGui::EndPopup();
-			_mainGui.bConsoleLog = true;
+			_mainGui.bWriteLog = false;
 		}
 
 		ImGui::TextWrapped("\t\t\tProtoGenesys");
@@ -115,31 +96,30 @@ namespace ProtoGenesys
 			AddLog("7. proto_ip <on|off> <ip>\n\t\tChange your ip.");
 			AddLog("8. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
 
-			_mainGui.bConsoleLog = true;
+			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
 
 		if (ImGui::Button("Clear", ImVec2(50, 0)))
 		{
 			ClearLog();
-			_mainGui.bConsoleLog = true;
+			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
 
 		bool bCopyToClipboard = ImGui::Button("Copy", ImVec2(50, 0));
-		const float flFooterHeightToReserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
 
 		ImGui::Separator();
-		ImGui::BeginChild("ScrollingRegion", ImVec2(0, -flFooterHeightToReserve), false, ImGuiWindowFlags_HorizontalScrollbar);
+		ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetStyle().ItemSpacing.y), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 		if (ImGui::BeginPopupContextWindow())
 		{
 			if (ImGui::Selectable("Clear"))
 			{
 				ClearLog();
-				_mainGui.bConsoleLog = true;
+				_mainGui.bWriteLog = true;
 			}
 
 			ImGui::EndPopup();
-			_mainGui.bConsoleLog = true;
+			_mainGui.bWriteLog = true;
 		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
@@ -176,10 +156,9 @@ namespace ProtoGenesys
 		ImGui::PopStyleVar();
 		ImGui::EndChild();
 		ImGui::Separator();
-
+		/*
 		bool bReclaimFocus = false;
 		ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
-
 		if (ImGui::InputText("", szInput, IM_ARRAYSIZE(szInput), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, &TextEditCallbackStub, (void*)this))
 		{
 			LPSTR szInputEnd = szInput + strlen(szInput);
@@ -195,16 +174,15 @@ namespace ProtoGenesys
 			ZeroMemory(szInput, sizeof(szInput));
 			bReclaimFocus = true;
 
-			_mainGui.bConsoleLog = true;
+			_mainGui.bWriteLog = true;
 		}
-
+		
 		ImGui::PopItemWidth();
 		ImGui::SetItemDefaultFocus();
 
 		if (bReclaimFocus)
 			ImGui::SetKeyboardFocusHere(-1);
-
-		ImGui::End();
+		*/
 	}
 	/*
 	//=====================================================================================

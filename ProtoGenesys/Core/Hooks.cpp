@@ -21,25 +21,6 @@ namespace ProtoGenesys
 		if (_profiler.gDisableEmp->Current.bValue && CG->PlayerState.iOtherFlags & 0x40)
 			CG->PlayerState.iOtherFlags &= ~0x40;
 
-		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
-		{
-			if (ExceptionInfo->ContextRecord->Eip == dwSysGetValueException)
-			{
-				ExceptionInfo->ContextRecord->Eax = dwSysValue;
-				ExceptionInfo->ContextRecord->Eip += 0x3;
-
-				return EXCEPTION_CONTINUE_EXECUTION;
-			}
-
-			if (ExceptionInfo->ContextRecord->Eip == dwRegisterShaderException)
-			{
-				ExceptionInfo->ContextRecord->Edx = dwShader;
-				ExceptionInfo->ContextRecord->Eip += 0x2;
-
-				return EXCEPTION_CONTINUE_EXECUTION;
-			}
-		}
-
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_GUARD_PAGE)
 		{
 			if (ExceptionInfo->ContextRecord->Eip == dwPredictPlayerState)
@@ -155,6 +136,32 @@ namespace ProtoGenesys
 					return EXCEPTION_CONTINUE_EXECUTION;
 				}
 			}
+
+			if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
+			{
+				if (ExceptionInfo->ContextRecord->Eip == dwSysGetValueException)
+				{
+					ExceptionInfo->ContextRecord->Eax = dwSysValue;
+					ExceptionInfo->ContextRecord->Eip += 0x3;
+
+					return EXCEPTION_CONTINUE_EXECUTION;
+				}
+
+				if (ExceptionInfo->ContextRecord->Eip == dwRegisterShaderException)
+				{
+					ExceptionInfo->ContextRecord->Edx = dwShader;
+					ExceptionInfo->ContextRecord->Eip += 0x2;
+
+					return EXCEPTION_CONTINUE_EXECUTION;
+				}
+
+				if (ExceptionInfo->ContextRecord->Eip != 0x9B389B && ExceptionInfo->ContextRecord->Eip != 0x9B389C)
+				{
+					Com_Error(ERR_DROP, "STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
+
+					return EXCEPTION_CONTINUE_EXECUTION;
+				}
+			}
 		}
 
 		return EXCEPTION_CONTINUE_SEARCH;
@@ -209,6 +216,7 @@ namespace ProtoGenesys
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
 			_targetList.GetInformation();
+			_drawing.CalculateTracers();
 			_aimBot.SetAimState();
 
 			if (!IsPlayerReloading(&CG->PlayerState) && WeaponAmmoAvailable())
@@ -311,6 +319,37 @@ namespace ProtoGenesys
 					AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
 				}
 			}
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone)
+	{
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+		{
+			if (_profiler.gPlayerBulletTracers->Current.bValue)
+			{
+				if (sourcenum == CG->iClientNum && targetnum < MAX_CLIENTS && bone >= 0)
+				{
+					cDrawing::sTracer Tracer;
+
+					GetTagPosition(&CG->Entity[sourcenum], RegisterTag("tag_flash"), GetDObj(&CG->Entity[sourcenum]), Tracer.vStartPos3D);
+					VectorCopy(position, Tracer.vHitPos3D);
+
+					Tracer.cColor1 = _profiler.gColorAccents->Current.cValue;
+					Tracer.cColor2 = _profiler.gColorText->Current.cValue;
+					Tracer.cColor3 = _profiler.gColorShadow->Current.cValue;
+					Tracer.iStartTime = CG->PlayerState.iServerTime;
+					
+					_drawing.vTracers.push_back(Tracer);
+				}
+			}
+		}
+
+		else
+		{
+			_drawing.vTracers.clear();
 		}
 	}
 	/*

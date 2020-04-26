@@ -59,9 +59,6 @@
     <ClCompile Include="ImGui\Addons\TabWindow\imguitabwindow.cpp">
       <Filter>ImGui\Addons\TabWindow</Filter>
     </ClCompile>
-    <ClCompile Include="ImGui\Addons\WICTextureLoader.cpp">
-      <Filter>ImGui\Addons</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.hpp" />
@@ -170,15 +167,6 @@
     <ClInclude Include="ImGui\Fonts\Eurostile_Regular.hpp">
       <Filter>ImGui\Fonts</Filter>
     </ClInclude>
-    <ClInclude Include="ImGui\imgui_memory_editor.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Resources\Resource.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\Addons\WICTextureLoader.h">
-      <Filter>ImGui\Addons</Filter>
-    </ClInclude>
     <ClInclude Include="Detours\detours.h">
       <Filter>Detours</Filter>
     </ClInclude>
@@ -253,16 +241,6 @@
     <Filter Include="Detours">
       <UniqueIdentifier>{d0a7c3b8-58a4-48aa-9ea4-8258e258ff48}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Resources\Resource.png">
-      <Filter>Resources</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resources\Resource.rc">
-      <Filter>Resources</Filter>
-    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Detours\detours.pdb">

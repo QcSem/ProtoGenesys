@@ -314,28 +314,28 @@ namespace ProtoGenesys
 		bool bHasRiotShield = EntityHasRiotShield(entity);
 
 		if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER)
-			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color);
+			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
 		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER)
-			DrawCorners(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), 3.0f, false, bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color);
+			DrawCorners(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), 3.0f, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
 		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER_FILLED)
 		{
-			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, (bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
-			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color);
+			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, (bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
+			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 		}
 
 		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER_FILLED)
 		{
-			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, (bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
-			DrawCorners(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), 3.0f, false, bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color);
+			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, (bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
+			DrawCorners(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), 3.0f, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 		}
 
 		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER_3D)
-			DrawBorder3D(corners2d, bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color);
+			DrawBorder3D(corners2d, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
 		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER_3D)
-			DrawCorners3D(corners2d, 3.0f, bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : color);
+			DrawCorners3D(corners2d, 3.0f, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
 		if (_profiler.gPlayerBones->Current.iValue == cProfiler::PLAYER_BONES_DOTS)
 			DrawBones(bones2d, false, color);
@@ -483,6 +483,31 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cDrawing::CalculateTracers()
+	{
+		for (auto Tracer = vTracers.begin(); Tracer != vTracers.end();)
+		{
+			int iDeltaTime = CG->PlayerState.iServerTime - Tracer->iStartTime;
+
+			if (Tracer->bW2SSuccess = WorldToScreen(Tracer->vHitPos3D, Tracer->vHitPos2D))
+			{
+				WorldToScreen(Tracer->vStartPos3D, Tracer->vStartPos2D);
+
+				Tracer->cColor1[3] = 1.0f - ((float)iDeltaTime / 3000);
+				Tracer->cColor2[3] = 1.0f - ((float)iDeltaTime / 3000);
+				Tracer->cColor3[3] = 1.0f - ((float)iDeltaTime / 3000);
+			}
+
+			if (Tracer->cColor1[3] <= 0.0f || Tracer->cColor2[3] <= 0.0f || Tracer->cColor3[3] <= 0.0f)
+				Tracer = vTracers.erase(Tracer);
+
+			else
+				++Tracer;
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
 	void cDrawing::DrawESP()
 	{
 		for (int i = 0; i < MAX_ENTITIES; i++)
@@ -581,9 +606,9 @@ namespace ProtoGenesys
 						ImGui::GetWindowDrawList()->AddTriangleFilled(vFinalX, vFinalY, vFinalZ,
 							ImGui::GetColorU32(_targetList.EntityList[i].cColor * ImVec4(1.0f, 1.0f, 1.0f, 0.25f)));
 
-						ImGui::GetWindowDrawList()->AddLine(vFinalX, vFinalY, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : _targetList.EntityList[i].cColor));
-						ImGui::GetWindowDrawList()->AddLine(vFinalY, vFinalZ, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : _targetList.EntityList[i].cColor));
-						ImGui::GetWindowDrawList()->AddLine(vFinalZ, vFinalX, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : _targetList.EntityList[i].cColor));
+						ImGui::GetWindowDrawList()->AddLine(vFinalX, vFinalY, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorAccents->Current.cValue : _targetList.EntityList[i].cColor));
+						ImGui::GetWindowDrawList()->AddLine(vFinalY, vFinalZ, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorAccents->Current.cValue : _targetList.EntityList[i].cColor));
+						ImGui::GetWindowDrawList()->AddLine(vFinalZ, vFinalX, ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorAccents->Current.cValue : _targetList.EntityList[i].cColor));
 					}
 				}
 			}
@@ -628,7 +653,7 @@ namespace ProtoGenesys
 							ImGui::GetColorU32(_targetList.EntityList[i].cColor * ImVec4(1.0f, 1.0f, 1.0f, 0.25f)));
 
 						ImGui::GetWindowDrawList()->AddCircle(Radar.vBlipPosition[i], Radar.flBlipSize / 2.0f,
-							ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorRiotShield->Current.cValue : _targetList.EntityList[i].cColor));
+							ImGui::GetColorU32(bHasRiotShield ? _profiler.gColorAccents->Current.cValue : _targetList.EntityList[i].cColor));
 					}
 				}
 			}
@@ -656,8 +681,29 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cDrawing::ColorPicker(std::string label, ImVec4& color)
+	void cDrawing::DrawTracers()
 	{
+		for (auto& Tracer : vTracers)
+		{
+			if (Tracer.bW2SSuccess)
+			{
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vStartPos2D, Tracer.vHitPos2D, ImGui::GetColorU32(Tracer.cColor1), 1.0f);
+
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+6.0f, +6.0f), Tracer.vHitPos2D + ImVec2(-6.0f, -6.0f), ImGui::GetColorU32(Tracer.cColor3), 3.0f);
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+6.0f, -6.0f), Tracer.vHitPos2D + ImVec2(-6.0f, +6.0f), ImGui::GetColorU32(Tracer.cColor3), 3.0f);
+
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+5.0f, +5.0f), Tracer.vHitPos2D + ImVec2(-5.0f, -5.0f), ImGui::GetColorU32(Tracer.cColor2), 1.0f);
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+5.0f, -5.0f), Tracer.vHitPos2D + ImVec2(-5.0f, +5.0f), ImGui::GetColorU32(Tracer.cColor2), 1.0f);
+			}
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cDrawing::ColorPicker(std::string label, ImVec4& color)
+	{
+		bool bReturn = false;
+
 		int iMiscFlags = ImGuiColorEditFlags_AlphaPreview;
 		static bool bSavedPaletteInited = false;
 		static ImVec4 cSavedPalette[40];
@@ -679,6 +725,8 @@ namespace ProtoGenesys
 		{
 			ImGui::OpenPopup(label.c_str());
 			cBackupColor = color;
+
+			bReturn = true;
 		}
 
 		if (ImGui::BeginPopup(label.c_str()))
@@ -725,6 +773,8 @@ namespace ProtoGenesys
 			ImGui::EndGroup();
 			ImGui::EndPopup();
 		}
+
+		return bReturn;
 	}
 }
 

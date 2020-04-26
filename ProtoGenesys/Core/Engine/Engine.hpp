@@ -179,6 +179,21 @@ namespace ProtoGenesys
 	*/
 	typedef enum
 	{
+		ERR_FATAL,
+		ERR_DROP,
+		ERR_FROM_STARTUP,
+		ERR_SERVERDISCONNECT,
+		ERR_DISCONNECT,
+		FERR_SCRIPT,
+		ERR_SCRIPT_DROP,
+		ERR_LOCALIZATION,
+		ERR_MAX
+	} eErrorParam;
+	/*
+	//=====================================================================================
+	*/
+	typedef enum
+	{
 		FRIEND_FLAG_NONE = 0x0,
 		FRIEND_FLAG_BLOCKED = 1 << 0,
 		FRIEND_FLAG_FRIENDSHIPREQUESTED = 1 << 1,
@@ -782,6 +797,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
 	static DWORD_PTR dwObituaryException = bIsSteamVersion ? 0x7A345C : 0x7A40EC;
 
+	static DWORD_PTR dwComError = bIsSteamVersion ? 0x4ECFD0 : 0x58FC30;
 	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
 	static DWORD_PTR dwRegisterShader = bIsSteamVersion ? 0x734000 : 0x734CC0;
 	static DWORD_PTR dwPredictPlayerState = bIsSteamVersion ? 0x5B3C40 : 0x5B4F40;
@@ -791,6 +807,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
 	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
 	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
+	static DWORD_PTR dwBulletHitEvent = bIsSteamVersion ? 0x57CED0 : 0x5F72B0;
 	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
 	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
 	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
@@ -870,6 +887,14 @@ namespace ProtoGenesys
 	static sRecoilAngles* RecoilAngles = (sRecoilAngles*)dwRecoilAngles;
 	static sServerSession* ServerSession = (sServerSession*)dwServerSession;
 	static sWindow* Window = (sWindow*)dwWindow;
+	/*
+	//=====================================================================================
+	*/
+	template <typename... Parameters>
+	inline void Com_Error(eErrorParam code, LPCSTR format, Parameters... params)
+	{
+		return VariadicCall<void>(dwComError, code, format, params...);
+	}
 	/*
 	//=====================================================================================
 	*/

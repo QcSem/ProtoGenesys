@@ -27,16 +27,11 @@ namespace ProtoGenesys
 
 			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER || CG->Entity[i].NextEntityState.wEntityType == ET_ACTOR)
 			{
-				LPVOID pDObj = GetDObj(&CG->Entity[i]);
-
-				if (!pDObj)
-					continue;
-
 				Vector3 vMinTemp = { FLT_MAX, FLT_MAX, FLT_MAX }, vMaxTemp = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 				for (auto& Bone : vBones)
 				{
-					GetTagPosition(&CG->Entity[i], RegisterTag(szBones[Bone.first].second), pDObj, EntityList[i].vBones3D[Bone.first]);
+					GetTagPosition(&CG->Entity[i], RegisterTag(szBones[Bone.first].second), GetDObj(&CG->Entity[i]), EntityList[i].vBones3D[Bone.first]);
 
 					for (int j = 0; j < 3; j++)
 					{

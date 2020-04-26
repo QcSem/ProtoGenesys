@@ -20,6 +20,10 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval,
 typedef HRESULT(WINAPI* tPresent)(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 tPresent oPresent;
 
+void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
+typedef void(USERCALL* tBulletHitEvent)(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
+tBulletHitEvent oBulletHitEvent = (tBulletHitEvent)dwBulletHitEvent;
+
 void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
 typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
@@ -75,6 +79,15 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* swapchain, _In_ UINT syncinterval, 
 	_mainGui.Present(swapchain, syncinterval, flags);
 
 	return oPresent(swapchain, syncinterval, flags);
+}
+
+//=====================================================================================
+
+void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone)
+{
+	oBulletHitEvent(localnum, sourcenum, targetnum, weapon, start, position, normal, alphanormal, surface, _event, param, contents, bone);
+
+	_hooks.BulletHitEvent(localnum, sourcenum, targetnum, weapon, start, position, normal, alphanormal, surface, _event, param, contents, bone);
 }
 
 //=====================================================================================
@@ -190,9 +203,8 @@ sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, in
 
 //=====================================================================================
 
-void Initialize(HINSTANCE hinstDLL)
+void Initialize()
 {
-	_mainGui.hInstDll = hinstDLL;
 	_hooks.PatchAntiCheat();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
@@ -215,6 +227,7 @@ void Initialize(HINSTANCE hinstDLL)
 
 	oPresent = (tPresent)SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)&hPresent, bGameOverlayRenderer ? 0 : 8);
 
+	Hook(oBulletHitEvent, hBulletHitEvent);
 	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	Hook(oGetWorldTagMatrix, hGetWorldTagMatrix);
 	Hook(oGetAddr, hGetAddr);
@@ -238,6 +251,7 @@ void Deallocate()
 
 	SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, bGameOverlayRenderer ? 0 : 8);
 
+	UnHook(oBulletHitEvent, hBulletHitEvent);
 	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	UnHook(oGetWorldTagMatrix, hGetWorldTagMatrix);
 	UnHook(oGetAddr, hGetAddr);
@@ -334,7 +348,7 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Initialize(hinstDLL);
+		Initialize();
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:
