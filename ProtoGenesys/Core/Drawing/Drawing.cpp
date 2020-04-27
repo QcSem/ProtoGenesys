@@ -494,11 +494,11 @@ namespace ProtoGenesys
 				WorldToScreen(Tracer->vStartPos3D, Tracer->vStartPos2D);
 
 				Tracer->cColorShadow[3] = 1.0f - ((float)iDeltaTime / 1000);
-				Tracer->cColorHitPos[3] = 1.0f - ((float)iDeltaTime / 1000);
+				Tracer->cColorHitMarker[3] = 1.0f - ((float)iDeltaTime / 1000);
 				Tracer->cColorTracer[3] = 1.0f - ((float)iDeltaTime / 1000);
 			}
 
-			if (Tracer->cColorShadow[3] <= 0.0f || Tracer->cColorHitPos[3] <= 0.0f || Tracer->cColorTracer[3] <= 0.0f)
+			if (Tracer->cColorShadow[3] <= 0.0f || Tracer->cColorHitMarker[3] <= 0.0f || Tracer->cColorTracer[3] <= 0.0f)
 				Tracer = vTracers.erase(Tracer);
 
 			else
@@ -690,8 +690,8 @@ namespace ProtoGenesys
 				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+5.0f, +5.0f), Tracer.vHitPos2D + ImVec2(-5.0f, -5.0f), ImGui::GetColorU32(Tracer.cColorShadow), 3.0f);
 				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+5.0f, -5.0f), Tracer.vHitPos2D + ImVec2(-5.0f, +5.0f), ImGui::GetColorU32(Tracer.cColorShadow), 3.0f);
 
-				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+4.0f, +4.0f), Tracer.vHitPos2D + ImVec2(-4.0f, -4.0f), ImGui::GetColorU32(Tracer.cColorHitPos), 1.0f);
-				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+4.0f, -4.0f), Tracer.vHitPos2D + ImVec2(-4.0f, +4.0f), ImGui::GetColorU32(Tracer.cColorHitPos), 1.0f);
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+4.0f, +4.0f), Tracer.vHitPos2D + ImVec2(-4.0f, -4.0f), ImGui::GetColorU32(Tracer.cColorHitMarker), 1.0f);
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+4.0f, -4.0f), Tracer.vHitPos2D + ImVec2(-4.0f, +4.0f), ImGui::GetColorU32(Tracer.cColorHitMarker), 1.0f);
 
 				ImGui::GetWindowDrawList()->AddLine(Tracer.vStartPos2D, Tracer.vHitPos2D, ImGui::GetColorU32(Tracer.cColorTracer), 1.0f);
 			}

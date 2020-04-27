@@ -357,7 +357,7 @@ namespace ProtoGenesys
 					VectorCopy(position, Tracer.vHitPos3D);
 
 					Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
-					Tracer.cColorHitPos = _profiler.gColorText->Current.cValue;
+					Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
 					Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
 					Tracer.iStartTime = CG->PlayerState.iServerTime;
 					
