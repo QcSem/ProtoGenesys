@@ -14,9 +14,16 @@ namespace ProtoGenesys
 
 		typedef struct
 		{
+			bool bIsPriority;
 			int iIndex;
 			float flFOV = FLT_MAX, flDistance = FLT_MAX;
 		} sTargetInfo;
+
+		typedef struct
+		{
+			int iIndex;
+			float flFOV = FLT_MAX, flDistance = FLT_MAX;
+		} sAntiAimTargetInfo;
 
 		typedef struct
 		{
@@ -34,10 +41,7 @@ namespace ProtoGenesys
 			ImVec4 cColor;
 		} EntityList[MAX_ENTITIES];
 
-		int iRiotShieldTarget;
-		Vector3 vRiotShieldAimAngles;
-
-		std::vector<BOOL> vIsTarget = std::vector<BOOL>(MAX_CLIENTS, TRUE);
+		bool bIsPriority[MAX_CLIENTS] = { false };
 
 		void GetInformation();
 		bool IsLocalPlayerValid();

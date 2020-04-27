@@ -66,27 +66,16 @@ namespace ProtoGenesys
 
 		else if (_profiler.gAntiAim->Current.iValue == cProfiler::ANTIAIM_REVERSED)
 		{
-			if (_targetList.vIsTarget[_targetList.iRiotShieldTarget] && _targetList.iRiotShieldTarget != CG->iClientNum)
+			if (_aimBot.AimState.bAntiAimTargetAcquired || _aimBot.AimState.bIsAutoAiming)
 			{
-				_mathematics.CalculateAntiAimAngles(CG->Entity[_targetList.iRiotShieldTarget].vOrigin, CG->vOrigin, _targetList.vRiotShieldAimAngles);
-
-				vAntiAimAngles[0] = _targetList.vRiotShieldAimAngles[0];
-				vAntiAimAngles[1] = _targetList.vRiotShieldAimAngles[1];
+				vAntiAimAngles[0] = _aimBot.AimState.vAntiAimAngles[0];
+				vAntiAimAngles[1] = _aimBot.AimState.vAntiAimAngles[1];
 			}
 
 			else
 			{
-				if (_aimBot.AimState.bIsAutoAiming)
-				{
-					vAntiAimAngles[0] = _aimBot.AimState.vAntiAimAngles[0];
-					vAntiAimAngles[1] = _aimBot.AimState.vAntiAimAngles[1];
-				}
-
-				else
-				{
-					vAntiAimAngles[0] = -40.0f - CG->PlayerState.vDeltaAngles[0];
-					vAntiAimAngles[1] = -170.0f - CG->PlayerState.vDeltaAngles[1];
-				}
+				vAntiAimAngles[0] = -40.0f - CG->PlayerState.vDeltaAngles[0];
+				vAntiAimAngles[1] = -170.0f - CG->PlayerState.vDeltaAngles[1];
 			}
 		}
 

@@ -14,8 +14,8 @@ namespace ProtoGenesys
 
 		struct sAimState
 		{
-			bool bTargetAcquired, bLockonTarget, bIsAutoAiming, bIsAutoFiring;
-			int iCurrentAimTime, iCurrentAimDelay, iCurrentZoomDelay, iCurrentFireDelay, iDeltaTMR, iTargetNum, iLastTarget;
+			bool bTargetAcquired, bAntiAimTargetAcquired, bLockonTarget, bIsAutoAiming, bIsAutoFiring;
+			int iCurrentAimTime, iCurrentAimDelay, iCurrentZoomDelay, iCurrentFireDelay, iDeltaTMR, iTargetNum, iLastTargetNum, iAntiAimTargetNum;
 			Vector3 vAimPosition, vAimAngles, vAntiAimAngles;
 		} AimState;
 

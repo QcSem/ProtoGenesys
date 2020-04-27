@@ -665,52 +665,32 @@ namespace ProtoGenesys
 
 				case cProfiler::MENU_TAB_PLAYERS:
 				{
-					ImGui::NewLine();
+					ImGui::Columns(3, "PlayerList");
+					ImGui::Separator();
+
+					ImGui::Text("Name"); ImGui::NextColumn();
+					ImGui::Text("IP"); ImGui::NextColumn();
+					ImGui::Text("SteamID"); ImGui::NextColumn();
+
 					for (int i = 0; i < MAX_CLIENTS; i++)
 					{
 						if (CG->Client[i].iInfoValid)
 						{
-							ImGui::PushID(i);
+							ImGui::Separator();
 
-							if (ImGui::RadioButton("", &_targetList.iRiotShieldTarget, i))
-							{
-								bWriteLog = true;
-							} ImGui::PopID(); ImGui::SameLine();
-
-							ImGui::PushID(i + MAX_CLIENTS);
-
-							if (ImGui::Checkbox("", (bool*)&_targetList.vIsTarget[i]))
-							{
-								bWriteLog = true;
-							} ImGui::PopID(); ImGui::SameLine();
-
-							ImGui::PushID(i + MAX_CLIENTS * 2);
-
-							if (ImGui::Button("Add", ImVec2(50.0f, 0.0f)))
-							{
-								std::ofstream file(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::out | std::ios_base::app);
-								file << (std::to_string(CG->Client[i].qwXuid) + " " + CG->Client[i].szName).c_str() << std::endl;
-
-								bWriteLog = true;
-							} ImGui::PopID(); ImGui::SameLine();
-
-							ImGui::PushItemWidth(150.0f);
-							ImGui::InputText(VariadicText("%i: %s", CG->Client[i].iClientNum, CG->Client[i].szName).c_str(),
-								(LPSTR)VariadicText("%u.%u.%u.%u",
-									(BYTE)ServerSession[i].szIP[0],
-									(BYTE)ServerSession[i].szIP[1],
-									(BYTE)ServerSession[i].szIP[2],
-									(BYTE)ServerSession[i].szIP[3]).c_str(),
-								1024, ImGuiInputTextFlags_ReadOnly);
-							ImGui::PopItemWidth();
+							ImGui::Selectable(CG->Client[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns); ImGui::NextColumn();
+							ImGui::Text(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].szIP[0], (BYTE)ServerSession[i].szIP[1], (BYTE)ServerSession[i].szIP[2], (BYTE)ServerSession[i].szIP[3]).c_str()); ImGui::NextColumn();
+							ImGui::Text(std::to_string(CG->Client[i].qwXuid).c_str()); ImGui::NextColumn();
 						}
 
 						else
 						{
-							_targetList.vIsTarget[i] = TRUE;
+							_targetList.bIsPriority[i] = false;
 						}
 					}
-					ImGui::NewLine();
+
+					ImGui::Columns(1);
+					ImGui::Separator();
 				} break;
 
 				case cProfiler::MENU_TAB_CONSOLE:
@@ -806,8 +786,8 @@ namespace ProtoGenesys
 
 			if (!LocalClientIsInGame())
 			{
-				for (auto& IsTarget : _targetList.vIsTarget)
-					IsTarget = TRUE;
+				for (auto& IsPriority : _targetList.bIsPriority)
+					IsPriority = false;
 			}
 		}
 	}

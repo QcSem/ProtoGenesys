@@ -13,7 +13,11 @@ namespace ProtoGenesys
 		sTargetInfo TargetInfo;
 		std::vector<sTargetInfo> vTargetInfo;
 
+		sAntiAimTargetInfo AntiAimTargetInfo;
+		std::vector<sAntiAimTargetInfo> vAntiAimTargetInfo;
+
 		_aimBot.AimState.iTargetNum = -1;
+		_aimBot.AimState.iAntiAimTargetNum = -1;
 
 		static int iCounter = 0;
 		int iBonescanNum = iCounter % MAX_CLIENTS;
@@ -27,6 +31,16 @@ namespace ProtoGenesys
 
 			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
+				if (bIsPriority[i] && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= (float)_profiler.gAimAngle->Current.iValue)
+				{
+					AntiAimTargetInfo.iIndex = i;
+
+					AntiAimTargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
+					AntiAimTargetInfo.flDistance = _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->vOrigin);
+
+					vAntiAimTargetInfo.push_back(AntiAimTargetInfo);
+				}
+
 				Vector3 vMinTemp = { FLT_MAX, FLT_MAX, FLT_MAX }, vMaxTemp = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 				for (auto& Bone : vBones)
@@ -100,12 +114,9 @@ namespace ProtoGenesys
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
-			if (std::find(vIsTarget.begin(), vIsTarget.end(), TRUE) != vIsTarget.end())
-				if (!vIsTarget[i])
-					continue;
-
-			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
+			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= (float)_profiler.gAimAngle->Current.iValue)
 			{
+				TargetInfo.bIsPriority = bIsPriority[i];
 				TargetInfo.iIndex = i;
 
 				TargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
@@ -120,14 +131,49 @@ namespace ProtoGenesys
 			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
 			{
 				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flFOV < b.flFOV; });
-				_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
+
+				auto ItTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
+
+				if (ItTargetInfo != vTargetInfo.end())
+					_aimBot.AimState.iTargetNum = ItTargetInfo->iIndex;
+
+				else
+					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
 
 			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
 			{
 				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDistance < b.flDistance; });
-				_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
+
+				auto ItTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
+
+				if (ItTargetInfo != vTargetInfo.end())
+					_aimBot.AimState.iTargetNum = ItTargetInfo->iIndex;
+
+				else
+					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
+
+			vTargetInfo.clear();
+		}
+
+		if (!vAntiAimTargetInfo.empty())
+		{
+			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			{
+				std::sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flFOV < b.flFOV; });
+
+				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
+			}
+
+			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			{
+				std::sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flDistance < b.flDistance; });
+
+				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
+			}
+
+			vAntiAimTargetInfo.clear();
 		}
 
 		iCounter++;

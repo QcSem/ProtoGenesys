@@ -110,18 +110,6 @@ namespace ProtoGenesys
 		ImGui::Separator();
 		ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetStyle().ItemSpacing.y), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-		if (ImGui::BeginPopupContextWindow())
-		{
-			if (ImGui::Selectable("Clear"))
-			{
-				ClearLog();
-				_mainGui.bWriteLog = true;
-			}
-
-			ImGui::EndPopup();
-			_mainGui.bWriteLog = true;
-		}
-
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
 
 		if (bCopyToClipboard)
@@ -156,33 +144,6 @@ namespace ProtoGenesys
 		ImGui::PopStyleVar();
 		ImGui::EndChild();
 		ImGui::Separator();
-		/*
-		bool bReclaimFocus = false;
-		ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
-		if (ImGui::InputText("", szInput, IM_ARRAYSIZE(szInput), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, &TextEditCallbackStub, (void*)this))
-		{
-			LPSTR szInputEnd = szInput + strlen(szInput);
-
-			while (szInputEnd > szInput && szInputEnd[-1] == ' ')
-			{
-				szInputEnd--;
-			} *szInputEnd = 0;
-
-			if (szInput[0])
-				ExecCommand(szInput);
-
-			ZeroMemory(szInput, sizeof(szInput));
-			bReclaimFocus = true;
-
-			_mainGui.bWriteLog = true;
-		}
-		
-		ImGui::PopItemWidth();
-		ImGui::SetItemDefaultFocus();
-
-		if (bReclaimFocus)
-			ImGui::SetKeyboardFocusHere(-1);
-		*/
 	}
 	/*
 	//=====================================================================================
