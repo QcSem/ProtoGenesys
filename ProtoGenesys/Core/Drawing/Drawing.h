@@ -18,7 +18,7 @@ namespace ProtoGenesys
 			ImVec2 vHitPos2D, vStartPos2D;
 			Vector3 vHitPos3D, vStartPos3D;
 			int iStartTime;
-			ImVec4 cColorTracer, cColorHitPos, cColorShadow;
+			ImVec4 cColorShadow, cColorHitPos, cColorTracer;
 		} sTracer;
 
 		std::vector<sTracer> vTracers;

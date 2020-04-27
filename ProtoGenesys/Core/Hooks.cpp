@@ -346,16 +346,19 @@ namespace ProtoGenesys
 		{
 			if (_profiler.gPlayerBulletTracers->Current.bValue)
 			{
-				if (sourcenum == CG->iClientNum && targetnum < MAX_CLIENTS && bone >= 0)
+				if (sourcenum == CG->iClientNum && 
+					EntityIsTeammate(&CG->Entity[targetnum]) && 
+					(CG->Entity[targetnum].NextEntityState.wEntityType == ET_PLAYER || CG->Entity[targetnum].NextEntityState.wEntityType == ET_ACTOR) 
+					&& bone >= 0)
 				{
 					cDrawing::sTracer Tracer;
 
 					VectorCopy(vMuzzlePos, Tracer.vStartPos3D);
 					VectorCopy(position, Tracer.vHitPos3D);
 
-					Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
-					Tracer.cColorHitPos = _profiler.gColorText->Current.cValue;
 					Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
+					Tracer.cColorHitPos = _profiler.gColorText->Current.cValue;
+					Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
 					Tracer.iStartTime = CG->PlayerState.iServerTime;
 					
 					_drawing.vTracers.push_back(Tracer);
