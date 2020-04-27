@@ -327,6 +327,19 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cHooks::TracerSpawn(int localnum, Vector3 start, Vector3 end, sEntity* entity, int weapon)
+	{
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+		{
+			if (_profiler.gPlayerBulletTracers->Current.bValue)
+			{
+				VectorCopy(start, vMuzzlePos);
+			}
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
 	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone)
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
@@ -337,7 +350,7 @@ namespace ProtoGenesys
 				{
 					cDrawing::sTracer Tracer;
 
-					GetTagPosition(&CG->Entity[sourcenum], RegisterTag("tag_flash"), GetDObj(&CG->Entity[sourcenum]), Tracer.vStartPos3D);
+					VectorCopy(vMuzzlePos, Tracer.vStartPos3D);
 					VectorCopy(position, Tracer.vHitPos3D);
 
 					Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;

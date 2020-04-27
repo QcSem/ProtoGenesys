@@ -32,6 +32,8 @@ namespace ProtoGenesys
 		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwSysValue, dwShader, dwAddress;
 		DWORD_PTR dwSteamUserFunc, dwSteamUserVTable, dwSteamFriendsFunc, dwSteamFriendsVTable;
 
+		Vector3 vMuzzlePos;
+
 		LPTOP_LEVEL_EXCEPTION_FILTER pUnhandledExceptionFilter;
 		LPVOID pVectoredExceptionHandler;
 
@@ -46,6 +48,7 @@ namespace ProtoGenesys
 		void PredictPlayerState();
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
+		void TracerSpawn(int localnum, Vector3 start, Vector3 end, sEntity* entity, int weapon);
 		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
 		void CalcEntityLerpPositions(int localnum, sEntity* entity);
 		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);

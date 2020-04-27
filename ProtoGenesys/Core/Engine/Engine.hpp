@@ -807,6 +807,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
 	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
 	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
+	static DWORD_PTR dwTracerSpawn = bIsSteamVersion ? 0x63D950 : 0x47E800;
 	static DWORD_PTR dwBulletHitEvent = bIsSteamVersion ? 0x57CED0 : 0x5F72B0;
 	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
 	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
