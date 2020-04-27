@@ -69,10 +69,10 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Current.cValue[2]);
 			XML.set("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.RiotShields.Red", gColorAccents->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.RiotShields.Green", gColorAccents->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.RiotShields.Blue", gColorAccents->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.RiotShields.Alpha", gColorAccents->Current.cValue[3]);
+			XML.set("ProtoGenesys.Colors.Accents.Red", gColorAccents->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.Accents.Green", gColorAccents->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.Accents.Blue", gColorAccents->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.Accents.Alpha", gColorAccents->Current.cValue[3]);
 
 			XML.set("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
 			XML.set("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
@@ -169,10 +169,10 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Current.cValue[2]);
 			XML.get_if_present("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.RiotShields.Red", gColorAccents->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShields.Green", gColorAccents->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShields.Blue", gColorAccents->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.RiotShields.Alpha", gColorAccents->Current.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.Accents.Red", gColorAccents->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.Accents.Green", gColorAccents->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.Accents.Blue", gColorAccents->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.Accents.Alpha", gColorAccents->Current.cValue[3]);
 
 			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
