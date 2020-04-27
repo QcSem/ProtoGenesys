@@ -528,13 +528,13 @@ namespace ProtoGenesys
 					case ET_ITEM:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity(_targetList.EntityList[i].szWeapon, _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Item", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_MISSILE:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity(_targetList.EntityList[i].szWeapon, _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Missile", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_TURRET:
@@ -687,11 +687,11 @@ namespace ProtoGenesys
 		{
 			if (Tracer.bW2SSuccess)
 			{
-				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+6.0f, +6.0f), Tracer.vHitPos2D + ImVec2(-6.0f, -6.0f), ImGui::GetColorU32(Tracer.cColorShadow), 3.0f);
-				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+6.0f, -6.0f), Tracer.vHitPos2D + ImVec2(-6.0f, +6.0f), ImGui::GetColorU32(Tracer.cColorShadow), 3.0f);
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+5.0f, +5.0f), Tracer.vHitPos2D + ImVec2(-5.0f, -5.0f), ImGui::GetColorU32(Tracer.cColorShadow), 3.0f);
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+5.0f, -5.0f), Tracer.vHitPos2D + ImVec2(-5.0f, +5.0f), ImGui::GetColorU32(Tracer.cColorShadow), 3.0f);
 
-				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+5.0f, +5.0f), Tracer.vHitPos2D + ImVec2(-5.0f, -5.0f), ImGui::GetColorU32(Tracer.cColorHitPos), 1.0f);
-				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+5.0f, -5.0f), Tracer.vHitPos2D + ImVec2(-5.0f, +5.0f), ImGui::GetColorU32(Tracer.cColorHitPos), 1.0f);
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+4.0f, +4.0f), Tracer.vHitPos2D + ImVec2(-4.0f, -4.0f), ImGui::GetColorU32(Tracer.cColorHitPos), 1.0f);
+				ImGui::GetWindowDrawList()->AddLine(Tracer.vHitPos2D + ImVec2(+4.0f, -4.0f), Tracer.vHitPos2D + ImVec2(-4.0f, +4.0f), ImGui::GetColorU32(Tracer.cColorHitPos), 1.0f);
 
 				ImGui::GetWindowDrawList()->AddLine(Tracer.vStartPos2D, Tracer.vHitPos2D, ImGui::GetColorU32(Tracer.cColorTracer), 1.0f);
 			}

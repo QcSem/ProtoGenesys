@@ -25,7 +25,7 @@ namespace ProtoGenesys
 			if (!IsEntityValid(i))
 				continue;
 
-			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER || CG->Entity[i].NextEntityState.wEntityType == ET_ACTOR)
+			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
 				Vector3 vMinTemp = { FLT_MAX, FLT_MAX, FLT_MAX }, vMaxTemp = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
@@ -75,45 +75,27 @@ namespace ProtoGenesys
 				EntityList[i].cColor = _profiler.gColorAxis->Current.cValue;
 			}
 
-			else if (CG->Entity[i].NextEntityState.wEntityType == ET_ACTOR)
-			{
-				EntityList[i].bW2SSuccess = WorldToScreen(EntityList[i].vBones3D[vBones[BONE_HEAD].first], EntityList[i].vCenter2D);
-
-				if (EntityIsTeammate(&CG->Entity[i]))
-					continue;
-			}
-
 			else
 			{
 				EntityList[i].bW2SSuccess = WorldToScreen(CG->Entity[i].vOrigin, EntityList[i].vCenter2D);
 				continue;
 			}
 
-			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
+			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 			{
-				if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
-				{
-					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
-					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
-				}
-
-				else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
-				{
-					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
-					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
-				}
-
-				else
-				{
-					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-					EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
-					VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
-				}
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
-			else if (CG->Entity[i].NextEntityState.wEntityType == ET_ACTOR)
+			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
 			{
-				EntityList[i].iBoneIndex = vBones[BONE_HEAD].first;
+				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
+			}
+
+			else
+			{
+				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
 				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
@@ -222,53 +204,28 @@ namespace ProtoGenesys
 		std::vector<sDamageInfo> vDamageInfo;
 		std::vector<std::future<bool>> vIsVisible(BONE_MAX);
 
-		if (bIsSteamVersion)
+		if (bonescan)
 		{
-			if (bonescan)
+			for (auto& Bone : vBones)
 			{
-				for (auto& Bone : vBones)
-				{
-					vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage);
-				}
-
-				for (auto& Bone : vBones)
-				{
-					if (vIsVisible[Bone.first].get())
-					{
-						DamageInfo.iBoneIndex = Bone.first;
-						vDamageInfo.push_back(DamageInfo);
-
-						bReturn = true;
-					}
-				}
+				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage);
 			}
 
-			else
+			for (auto& Bone : vBones)
 			{
-				return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], vBones[index].second, autowall, nullptr).get();
+				if (vIsVisible[Bone.first].get())
+				{
+					DamageInfo.iBoneIndex = Bone.first;
+					vDamageInfo.push_back(DamageInfo);
+
+					bReturn = true;
+				}
 			}
 		}
 
 		else
 		{
-			if (bonescan)
-			{
-				for (auto& Bone : vBones)
-				{
-					if (IsVisibleInternal(entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage))
-					{
-						DamageInfo.iBoneIndex = Bone.first;
-						vDamageInfo.push_back(DamageInfo);
-
-						bReturn = true;
-					}
-				}
-			}
-
-			else
-			{
-				return IsVisibleInternal(entity, bones3d[index], vBones[index].second, autowall, NULL);
-			}
+			return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], vBones[index].second, autowall, nullptr).get();
 		}
 
 		if (!vDamageInfo.empty())

@@ -495,6 +495,11 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::NewLine();
 
+					if (DrawOption(_profiler.gThirdPersonAntiAim->szName, _profiler.gThirdPersonAntiAim->szItems[_profiler.gThirdPersonAntiAim->Current.iValue], &_profiler.gThirdPersonAntiAim->Current.iValue, _profiler.gThirdPersonAntiAim->Domain.iMin, _profiler.gThirdPersonAntiAim->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
 					if (DrawOption(_profiler.gOrbitalVsat->szName, _profiler.gOrbitalVsat->szItems[_profiler.gOrbitalVsat->Current.iValue], &_profiler.gOrbitalVsat->Current.iValue, _profiler.gOrbitalVsat->Domain.iMin, _profiler.gOrbitalVsat->Domain.iMax, 1))
 					{
 						bWriteLog = true;
@@ -506,11 +511,6 @@ namespace ProtoGenesys
 					} ImGui::NewLine();
 
 					if (DrawOption(_profiler.gDisableEmp->szName, _profiler.gDisableEmp->szItems[_profiler.gDisableEmp->Current.iValue], &_profiler.gDisableEmp->Current.iValue, _profiler.gDisableEmp->Domain.iMin, _profiler.gDisableEmp->Domain.iMax, 1))
-					{
-						bWriteLog = true;
-					} ImGui::NewLine();
-
-					if (DrawOption(_profiler.gHostAutoWall->szName, _profiler.gHostAutoWall->szItems[_profiler.gHostAutoWall->Current.iValue], &_profiler.gHostAutoWall->Current.iValue, _profiler.gHostAutoWall->Domain.iMin, _profiler.gHostAutoWall->Domain.iMax, 1))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();

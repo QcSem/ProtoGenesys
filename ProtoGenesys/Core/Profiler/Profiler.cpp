@@ -45,6 +45,7 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
 
 			XML.set("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.ThirdPersonAntiAim", gThirdPersonAntiAim->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
@@ -145,6 +146,7 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
 
 			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPersonAntiAim", gThirdPersonAntiAim->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
@@ -228,10 +230,10 @@ namespace ProtoGenesys
 		gPlayerBulletTracers->Current.bValue = gPlayerBulletTracers->Reset.bValue;
 
 		gThirdPerson->Current.bValue = gThirdPerson->Reset.bValue;
+		gThirdPersonAntiAim->Current.bValue = gThirdPersonAntiAim->Reset.bValue;
 		gOrbitalVsat->Current.bValue = gOrbitalVsat->Reset.bValue;
 		gHardcoreHud->Current.bValue = gHardcoreHud->Reset.bValue;
 		gDisableEmp->Current.bValue = gDisableEmp->Reset.bValue;
-		gHostAutoWall->Current.bValue = gHostAutoWall->Reset.bValue;
 		gIdStealer->Current.bValue = gIdStealer->Reset.bValue;
 		gTrickShot->Current.bValue = gTrickShot->Reset.bValue;
 

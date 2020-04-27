@@ -18,7 +18,7 @@ namespace ProtoGenesys
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
 
-		MakeVector((WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles : CG->vWeaponAngles, vAimAngles);
+		MakeVector(CG->vRefDefViewAngles, vAimAngles);
 		MakeVector(vAngles, vAngles);
 
 		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
@@ -193,8 +193,8 @@ namespace ProtoGenesys
 
 		ClampAngles(angles);
 
-		angles[0] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[0] : CG->vWeaponAngles[0];
-		angles[1] -= (WeaponIsVehicle() || IsThirdPerson()) ? CG->vRefDefViewAngles[1] : CG->vWeaponAngles[1];
+		angles[0] -= CG->vRefDefViewAngles[0];
+		angles[1] -= CG->vRefDefViewAngles[1];
 
 		ClampAngles(angles);
 	}
@@ -274,10 +274,9 @@ namespace ProtoGenesys
 	{
 		float flAngle;
 
-		Vector3 vViewOrigin, vDirection, vAngles;
+		Vector3 vDirection, vAngles;
 
-		GetPlayerViewOrigin(vViewOrigin);
-		VectorSubtract(vViewOrigin, world, vDirection);
+		VectorSubtract(CG->RefDef.vViewOrg, world, vDirection);
 
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
@@ -295,14 +294,10 @@ namespace ProtoGenesys
 	*/
 	void cMathematics::WorldToRadar(Vector3 world, ImVec2 radarpos, float scale, float radarsize, float blipsize, ImVec2& screen)
 	{
-		Vector3 vViewOrigin;
-
-		GetPlayerViewOrigin(vViewOrigin);
-
 		float flCosYaw = cosf(DegreesToRadians(CG->vRefDefViewAngles[1])),
 			flSinYaw = sinf(DegreesToRadians(CG->vRefDefViewAngles[1])),
-			flDeltaX = world[0] - vViewOrigin[0],
-			flDeltaY = world[1] - vViewOrigin[1],
+			flDeltaX = world[0] - CG->RefDef.vViewOrg[0],
+			flDeltaY = world[1] - CG->RefDef.vViewOrg[1],
 			flLocationX = (flDeltaY * flCosYaw - flDeltaX * flSinYaw) / scale,
 			flLocationY = (flDeltaX * flCosYaw + flDeltaY * flSinYaw) / scale;
 

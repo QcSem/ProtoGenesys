@@ -10,26 +10,6 @@ namespace ProtoGenesys
 
 	float cAutowall::Autowall(Vector3 start, Vector3 end, short hitloc)
 	{
-		static bool bHostAutoWall = _profiler.gHostAutoWall->Current.bValue;
-
-		if (_profiler.gHostAutoWall->Current.bValue)
-		{
-			((sDvar*)dwPenetrationMultiplier)->Current.flValue = ((sDvar*)dwPenetrationMultiplier)->Domain.flMax;
-			((sDvar*)dwPenetrationMinFxDist)->Current.flValue = ((sDvar*)dwPenetrationMinFxDist)->Domain.flMax;
-			((sDvar*)dwPenetrationCount)->Current.iValue = ((sDvar*)dwPenetrationCount)->Domain.dwMax;
-
-			bHostAutoWall = true;
-		}
-
-		else if (!_profiler.gHostAutoWall->Current.bValue && bHostAutoWall)
-		{
-			((sDvar*)dwPenetrationMultiplier)->Current.flValue = ((sDvar*)dwPenetrationMultiplier)->Reset.flValue;
-			((sDvar*)dwPenetrationMinFxDist)->Current.flValue = ((sDvar*)dwPenetrationMinFxDist)->Reset.flValue;
-			((sDvar*)dwPenetrationCount)->Current.iValue = ((sDvar*)dwPenetrationCount)->Reset.iValue;
-
-			bHostAutoWall = false;
-		}
-
 		int iIndex = CG->iClientNum;
 		sEntity* pCEntity = &CG->Entity[iIndex];
 		int iWeaponID = pCEntity->NextEntityState.iWeaponID;
@@ -62,43 +42,10 @@ namespace ProtoGenesys
 
 		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
-		if (!bEnterHit)
-			return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
-
-		if (iPenetrateType <= 0)
-			return 0.0f;
-
-		if (HitRiotshield(&TR_Enter))
-			return 0.0f;
-
-		if (_profiler.gAntiTeamKill->Current.bValue)
-			if (HitTeammate(&TR_Enter))
-				return 0.0f;
-
-		bool bHasFMJ = HasPerk(6);
-		int iSurfaceCount = 0;
-		float flEnterDepth = 0.0f;
-		float flExitDepth = 0.0f;
-		float flSurfaceDepth = 0.0f;
-
-		Vector3 vHitPos = { 0.0f };
-
-		while (TRUE)
+		if (bEnterHit)
 		{
-			flEnterDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Enter.iSurfaceType);
-
-			if (bHasFMJ)
-				flEnterDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
-
-			if (flEnterDepth <= 0.0)
+			if (iPenetrateType <= 0)
 				return 0.0f;
-
-			VectorCopy(TR_Enter.vHitPos, vHitPos);
-
-			if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
-				return 0.0f;
-
-			bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TR_Enter.iSurfaceType);
 
 			if (HitRiotshield(&TR_Enter))
 				return 0.0f;
@@ -107,102 +54,117 @@ namespace ProtoGenesys
 				if (HitTeammate(&TR_Enter))
 					return 0.0f;
 
-			CopyMemory(&FP_Exit, &FP_Enter, sizeof(sBulletFireParams));
-			VectorScale(FP_Enter.vDir, -1.0f, FP_Exit.vDir);
+			bool bHasFMJ = HasPerk(6);
+			int iSurfaceCount = 0;
+			float flEnterDepth = 0.0f;
+			float flExitDepth = 0.0f;
+			float flSurfaceDepth = 0.0f;
 
-			VectorCopy(FP_Enter.vEnd, FP_Exit.vStart);
-			VectorMA(vHitPos, 0.0099999998f, FP_Exit.vDir, FP_Exit.vEnd);
+			Vector3 vHitPos = { 0.0f };
 
-			CopyMemory(&TR_Exit, &TR_Enter, sizeof(sBulletTraceResults));
-			VectorScale(TR_Exit.Trace.vNormal, -1.0f, TR_Exit.Trace.vNormal);
+			while (TRUE)
+			{
+				flEnterDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Enter.iSurfaceType);
 
-			if (bEnterHit)
-				AdvanceTrace(&FP_Exit, &TR_Exit, 0.0099999998f);
+				if (bHasFMJ)
+					flEnterDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
 
-			bool bExitHit = BulletTrace(&TR_Exit, &FP_Exit, pCEntity, TR_Exit.iSurfaceType);
-			bool bStaticModel = bExitHit && TR_Exit.Trace.bAllSolid || TR_Enter.Trace.bStartSolid && TR_Exit.Trace.bStartSolid;
-
-			if (HitRiotshield(&TR_Exit))
-				return 0.0f;
-
-			if (_profiler.gAntiTeamKill->Current.bValue)
-				if (HitTeammate(&TR_Exit))
+				if (flEnterDepth <= 0.0)
 					return 0.0f;
 
-			if (!bExitHit && !bStaticModel)
-			{
-				if (!bEnterHit)
-					return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
+				VectorCopy(TR_Enter.vHitPos, vHitPos);
 
-				if (!TR_Enter.Trace.bAllSolid)
+				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
+					return 0.0f;
+
+				bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TR_Enter.iSurfaceType);
+
+				if (HitRiotshield(&TR_Enter))
+					return 0.0f;
+
+				if (_profiler.gAntiTeamKill->Current.bValue)
+					if (HitTeammate(&TR_Enter))
+						return 0.0f;
+
+				CopyMemory(&FP_Exit, &FP_Enter, sizeof(sBulletFireParams));
+				VectorScale(FP_Enter.vDir, -1.0f, FP_Exit.vDir);
+
+				VectorCopy(FP_Enter.vEnd, FP_Exit.vStart);
+				VectorMA(vHitPos, 0.0099999998f, FP_Exit.vDir, FP_Exit.vEnd);
+
+				CopyMemory(&TR_Exit, &TR_Enter, sizeof(sBulletTraceResults));
+				VectorScale(TR_Exit.Trace.vNormal, -1.0f, TR_Exit.Trace.vNormal);
+
+				if (bEnterHit)
+					AdvanceTrace(&FP_Exit, &TR_Exit, 0.0099999998f);
+
+				bool bExitHit = BulletTrace(&TR_Exit, &FP_Exit, pCEntity, TR_Exit.iSurfaceType);
+				bool bStaticModel = bExitHit && TR_Exit.Trace.bAllSolid || TR_Enter.Trace.bStartSolid && TR_Exit.Trace.bStartSolid;
+
+				if (HitRiotshield(&TR_Exit))
+					return 0.0f;
+
+				if (_profiler.gAntiTeamKill->Current.bValue)
+					if (HitTeammate(&TR_Exit))
+						return 0.0f;
+
+				if (bExitHit || bStaticModel)
 				{
-					Vector3 vLength;
+					if (bStaticModel)
+						flSurfaceDepth = _mathematics.CalculateDistance(FP_Exit.vEnd, FP_Exit.vStart);
+					else
+						flSurfaceDepth = _mathematics.CalculateDistance(vHitPos, TR_Exit.vHitPos);
 
-					VectorSubtract(vHitPos, TR_Enter.vHitPos, vLength);
+					flSurfaceDepth = max(flSurfaceDepth, 1.0f);
 
-					float flLength = DotProduct(vLength, vLength);
-
-					if (flLength > ((sDvar*)dwPenetrationMinFxDist)->Current.flValue * ((sDvar*)dwPenetrationMinFxDist)->Current.flValue)
+					if (bExitHit)
 					{
-						if (!WeaponDef->iWeaponType)
-						{
+						flExitDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Exit.iSurfaceType);
 
+						if (bHasFMJ)
+							flExitDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
+
+						flEnterDepth = min(flEnterDepth, flExitDepth);
+
+						if (flEnterDepth <= 0.0f)
+							return 0.0f;
+					}
+
+					FP_Enter.flPower -= flSurfaceDepth / flEnterDepth;
+
+					if (FP_Enter.flPower <= 0.0f)
+						return 0.0f;
+
+					if (!bStaticModel && !WeaponDef->iWeaponType)
+					{
+						Vector3 vLength;
+
+						VectorSubtract(TR_Exit.vHitPos, TR_Enter.vHitPos, vLength);
+
+						float flLength = DotProduct(vLength, vLength);
+
+						if (flLength > ((sDvar*)dwPenetrationMinFxDist)->Current.flValue * ((sDvar*)dwPenetrationMinFxDist)->Current.flValue)
+						{
+							if (!bEnterHit)
+								return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 						}
 					}
 				}
 
-				goto next;
-			}
+				else if (!bEnterHit)
+					return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 
-			if (bStaticModel)
-				flSurfaceDepth = _mathematics.CalculateDistance(FP_Exit.vEnd, FP_Exit.vStart);
-			else
-				flSurfaceDepth = _mathematics.CalculateDistance(vHitPos, TR_Exit.vHitPos);
-
-			flSurfaceDepth = max(flSurfaceDepth, 1.0f);
-
-			if (bExitHit)
-			{
-				flExitDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Exit.iSurfaceType);
-
-				if (bHasFMJ)
-					flExitDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
-
-				flEnterDepth = min(flEnterDepth, flExitDepth);
-
-				if (flEnterDepth <= 0.0f)
-					return 0.0f;
-			}
-
-			FP_Enter.flPower -= flSurfaceDepth / flEnterDepth;
-
-			if (FP_Enter.flPower <= 0.0f)
-				return 0.0f;
-
-			if (!bStaticModel && !WeaponDef->iWeaponType)
-			{
-				Vector3 vLength;
-
-				VectorSubtract(TR_Exit.vHitPos, TR_Enter.vHitPos, vLength);
-
-				float flLength = DotProduct(vLength, vLength);
-
-				if (flLength > ((sDvar*)dwPenetrationMinFxDist)->Current.flValue * ((sDvar*)dwPenetrationMinFxDist)->Current.flValue)
+				if (bEnterHit)
 				{
-					if (!bEnterHit)
-						return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
+					if (++iSurfaceCount < ((sDvar*)dwPenetrationCount)->Current.iValue)
+						continue;
 				}
-			}
 
-		next:
-			if (bEnterHit)
-			{
-				if (++iSurfaceCount < ((sDvar*)dwPenetrationCount)->Current.iValue)
-					continue;
+				return 0.0f;
 			}
-
-			return 0.0f;
 		}
+
+		return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 	}
 	/*
 	//=====================================================================================
