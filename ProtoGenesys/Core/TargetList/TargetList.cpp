@@ -31,7 +31,7 @@ namespace ProtoGenesys
 
 			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
-				if (bIsPriority[i] && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= (float)_profiler.gAimAngle->Current.iValue)
+				if (bIsPriority[i] && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
 				{
 					AntiAimTargetInfo.iIndex = i;
 
@@ -114,7 +114,7 @@ namespace ProtoGenesys
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
-			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= (float)_profiler.gAimAngle->Current.iValue)
+			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
 			{
 				TargetInfo.bIsPriority = bIsPriority[i];
 				TargetInfo.iIndex = i;
