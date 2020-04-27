@@ -678,7 +678,11 @@ namespace ProtoGenesys
 						{
 							ImGui::Separator();
 
-							ImGui::Selectable(CG->Client[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns); ImGui::NextColumn();
+							if (ImGui::Selectable(CG->Client[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
+							{
+								bWriteLog = true;
+							} ImGui::NextColumn();
+
 							ImGui::Text(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].szIP[0], (BYTE)ServerSession[i].szIP[1], (BYTE)ServerSession[i].szIP[2], (BYTE)ServerSession[i].szIP[3]).c_str()); ImGui::NextColumn();
 							ImGui::Text(std::to_string(CG->Client[i].qwXuid).c_str()); ImGui::NextColumn();
 						}
@@ -832,9 +836,82 @@ namespace ProtoGenesys
 	*/
 	bool cMainGUI::DrawColorPicker(std::string label, ImVec4& color)
 	{
+		bool bReturn = false;
+
 		ImGui::Text(label.c_str());
-		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - (ImGui::GetStyle().ItemSpacing.x + ImGui::GetStyle().FramePadding.x) - 55.0f - ImGui::GetFrameHeight() / 2.0f);
-		return _drawing.ColorPicker(label, color);
+		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - ImGui::GetFrameHeight() - (ImGui::GetStyle().ItemSpacing.x + ImGui::GetStyle().FramePadding.x) - 110.0f);
+		
+		int iMiscFlags = ImGuiColorEditFlags_AlphaPreview;
+		static bool bSavedPaletteInited = false;
+		static ImVec4 cSavedPalette[40];
+
+		if (!bSavedPaletteInited)
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(cSavedPalette); n++)
+			{
+				ImGui::ColorConvertHSVtoRGB(n / 39.0f, 0.8f, 0.8f, cSavedPalette[n].x, cSavedPalette[n].y, cSavedPalette[n].z);
+				cSavedPalette[n].w = 1.0f;
+			}
+		}
+
+		bSavedPaletteInited = true;
+
+		static ImVec4 cBackupColor;
+
+		if (ImGui::ColorButton(label.c_str(), color, iMiscFlags, ImVec2(ImGui::GetFrameHeight() * 2.0f + 110.0f, ImGui::GetFrameHeight())))
+		{
+			ImGui::OpenPopup(label.c_str());
+			cBackupColor = color;
+
+			bReturn = true;
+		}
+
+		if (ImGui::BeginPopup(label.c_str()))
+		{
+			ImGui::Text(("CUSTOM COLOR PICKER FOR " + acut::ToUpper(label)).c_str());
+			ImGui::Separator();
+			ImGui::ColorPicker4("##picker", (float*)&color, iMiscFlags | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+			ImGui::SameLine();
+			ImGui::BeginGroup();
+			ImGui::Text("Current");
+			ImGui::ColorButton("##current", color, ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf, ImVec2(60, 40));
+			ImGui::Text("Previous");
+
+			if (ImGui::ColorButton("##previous", cBackupColor, ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf, ImVec2(60, 40)))
+				color = cBackupColor;
+
+			ImGui::Separator();
+			ImGui::Text("Palette");
+
+			for (int i = 0; i < IM_ARRAYSIZE(cSavedPalette); i++)
+			{
+				ImGui::PushID(i);
+
+				if ((i % 8) != 0)
+					ImGui::SameLine(0.0f, ImGui::GetStyle().ItemSpacing.y);
+
+				if (ImGui::ColorButton("##palette", cSavedPalette[i], ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20)))
+					color = ImVec4(cSavedPalette[i].x, cSavedPalette[i].y, cSavedPalette[i].z, color.w);
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_3F))
+						memcpy((float*)&cSavedPalette[i], payload->Data, sizeof(float) * 3);
+
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_4F))
+						memcpy((float*)&cSavedPalette[i], payload->Data, sizeof(float) * 4);
+
+					ImGui::EndDragDropTarget();
+				}
+
+				ImGui::PopID();
+			}
+
+			ImGui::EndGroup();
+			ImGui::EndPopup();
+		}
+
+		return bReturn;
 	}
 }
 

@@ -52,7 +52,6 @@ namespace ProtoGenesys
 		void DrawRadar();
 		void DrawCrosshair();
 		void DrawTracers();
-		bool ColorPicker(std::string label, ImVec4& color);
 	} extern _drawing;
 }
 
