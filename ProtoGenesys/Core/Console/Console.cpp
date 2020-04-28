@@ -110,6 +110,18 @@ namespace ProtoGenesys
 		ImGui::Separator();
 		ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetStyle().ItemSpacing.y), false, ImGuiWindowFlags_HorizontalScrollbar);
 
+		if (ImGui::BeginPopupContextWindow())
+		{
+			if (ImGui::Selectable("Clear"))
+			{
+				ClearLog();
+				_mainGui.bWriteLog = true;
+			}
+
+			ImGui::EndPopup();
+			_mainGui.bWriteLog = true;
+		}
+
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
 
 		if (bCopyToClipboard)

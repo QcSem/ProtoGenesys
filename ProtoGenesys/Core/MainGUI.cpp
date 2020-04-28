@@ -669,7 +669,7 @@ namespace ProtoGenesys
 					ImGui::Separator();
 
 					ImGui::Text("Name"); ImGui::NextColumn();
-					ImGui::Text("IP"); ImGui::NextColumn();
+					ImGui::Text("IP Address"); ImGui::NextColumn();
 					ImGui::Text("SteamID"); ImGui::NextColumn();
 
 					for (int i = 0; i < MAX_CLIENTS; i++)
@@ -681,10 +681,59 @@ namespace ProtoGenesys
 							if (ImGui::Selectable(CG->Client[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
 							{
 								bWriteLog = true;
+							}
+							
+							if (ImGui::BeginPopupContextItem(CG->Client[i].szName))
+							{
+								if (ImGui::Selectable("Add To Friend List"))
+								{
+									std::ofstream file(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::out | std::ios_base::app);
+									file << (std::to_string(CG->Client[i].qwXuid) + " " + CG->Client[i].szName).c_str() << std::endl;
+
+									bWriteLog = true;
+								}
+
+								if (ImGui::Selectable("Copy Name"))
+								{
+									ImGui::LogToClipboard();
+									ImGui::LogText(CG->Client[i].szName);
+									ImGui::LogFinish();
+
+									bWriteLog = true;
+								}
+
+								if (ImGui::Selectable("Copy IP Address"))
+								{
+									ImGui::LogToClipboard();
+									ImGui::LogText(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].szIP[0], (BYTE)ServerSession[i].szIP[1], (BYTE)ServerSession[i].szIP[2], (BYTE)ServerSession[i].szIP[3]).c_str());
+									ImGui::LogFinish();
+
+									bWriteLog = true;
+								}
+
+								if (ImGui::Selectable("Copy SteamID"))
+								{
+									ImGui::LogToClipboard();
+									ImGui::LogText(std::to_string(CG->Client[i].qwXuid).c_str());
+									ImGui::LogFinish();
+
+									bWriteLog = true;
+								}
+
+								ImGui::EndPopup();
 							} ImGui::NextColumn();
 
-							ImGui::Text(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].szIP[0], (BYTE)ServerSession[i].szIP[1], (BYTE)ServerSession[i].szIP[2], (BYTE)ServerSession[i].szIP[3]).c_str()); ImGui::NextColumn();
-							ImGui::Text(std::to_string(CG->Client[i].qwXuid).c_str()); ImGui::NextColumn();
+							ImGui::Text(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].szIP[0], (BYTE)ServerSession[i].szIP[1], (BYTE)ServerSession[i].szIP[2], (BYTE)ServerSession[i].szIP[3]).c_str());
+							if (ImGui::OpenPopupOnItemClick(CG->Client[i].szName))
+							{
+								bWriteLog = true;
+							} ImGui::NextColumn();
+
+							ImGui::Text(std::to_string(CG->Client[i].qwXuid).c_str());
+							if (ImGui::OpenPopupOnItemClick(CG->Client[i].szName))
+							{
+								bWriteLog = true;
+							} ImGui::NextColumn();
 						}
 
 						else
