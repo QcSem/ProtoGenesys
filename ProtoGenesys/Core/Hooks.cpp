@@ -346,10 +346,7 @@ namespace ProtoGenesys
 		{
 			if (_profiler.gPlayerBulletTracers->Current.bValue)
 			{
-				if (sourcenum == CG->iClientNum && 
-					!EntityIsTeammate(&CG->Entity[targetnum]) && 
-					(CG->Entity[targetnum].NextEntityState.wEntityType == ET_PLAYER || CG->Entity[targetnum].NextEntityState.wEntityType == ET_ACTOR) 
-					&& bone >= 0)
+				if (sourcenum == CG->iClientNum && !EntityIsTeammate(&CG->Entity[targetnum]) && targetnum < MAX_CLIENTS && bone >= 0)
 				{
 					cDrawing::sTracer Tracer;
 
