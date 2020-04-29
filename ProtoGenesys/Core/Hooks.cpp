@@ -36,7 +36,6 @@ namespace ProtoGenesys
 			if (ExceptionInfo->ContextRecord->Eip == dwSetValueForKey)
 			{
 				std::string szKey(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0x8));
-				std::string szValue(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC));
 
 				if (szKey.find("name") != std::string::npos)
 				{
@@ -56,6 +55,9 @@ namespace ProtoGenesys
 
 				if (szKey.find("xuid") != std::string::npos)
 				{
+					std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
+
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str();
 					PageGuardAddress(dwGetIntPlayerStatInternal);
 				}
 
@@ -66,8 +68,14 @@ namespace ProtoGenesys
 
 				if (szKey.find("steamid") != std::string::npos)
 				{
+					char szSteamID[0x11];
 
+					Int64ToString(strtoll(_profiler.gXuidOverride->Current.szValue, NULL, 0x10), szSteamID);
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = std::string(szSteamID).empty() ? GetXuidstring() : std::string(szSteamID).c_str();
 				}
+
+				std::string szValue(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC));
+				_console.AddLog("> changed: %s to: %s", szKey.c_str(), szValue.c_str());
 			}
 
 			return EXCEPTION_CONTINUE_EXECUTION;
@@ -158,6 +166,7 @@ namespace ProtoGenesys
 				if (ExceptionInfo->ContextRecord->Eip != 0x9B389B && ExceptionInfo->ContextRecord->Eip != 0x9B389C)
 				{
 					Com_Error(ERR_DROP, "STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
+					_console.AddLog("] STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
 
 					return EXCEPTION_CONTINUE_EXECUTION;
 				}
@@ -294,10 +303,14 @@ namespace ProtoGenesys
 			{
 				if (_profiler.gIdStealer->Current.bValue)
 				{
-					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
+					_profiler.gNameOverride->Current.szValue = _strdup(CG->Client[victim].szName);
+					_profiler.gClanOverride->Current.szValue = _strdup(CG->Client[victim].szClan);
+					_profiler.gXuidOverride->Current.szValue = _strdup(VariadicText("%llx", CG->Client[victim].qwXuid).c_str());
+
+					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
 						CG->Client[victim].szName,
 						CG->Client[victim].szClan,
-						_ui64toa(CG->Client[victim].qwXuid, szXuidOverride, 0x10)));
+						CG->Client[victim].qwXuid));
 				}
 
 				if (_profiler.gTrickShot->Current.bValue)
@@ -514,7 +527,7 @@ namespace ProtoGenesys
 
 			if ((iPosition = szLine.find(" ")) != std::string::npos)
 			{
-				vFriends.push_back(make_pair(_atoi64(szLine.substr(0, iPosition).c_str()), szLine.substr(iPosition)));
+				vFriends.push_back(make_pair(strtoll(szLine.substr(0, iPosition).c_str(), NULL, 10), szLine.substr(iPosition)));
 			}
 		}
 	}

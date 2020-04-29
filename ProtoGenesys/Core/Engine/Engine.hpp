@@ -949,6 +949,20 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	inline int GetIntPlayerStatInternal(int pathdepth, LPSTR* statpath, LPSTR buffer)
+	{
+		return VariadicCall<int>(dwGetIntPlayerStatInternal, pathdepth, statpath, buffer);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline int Int64ToString(QWORD int64, LPSTR buffer)
+	{
+		return VariadicCall<int>(dwInt64ToString, int64, buffer);
+	}
+	/*
+	//=====================================================================================
+	*/
 	inline bool LocalClientIsInGame()
 	{
 		return VariadicCall<bool>(dwLocalClientIsInGame, 0);
@@ -1201,9 +1215,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline LPSTR GetWeaponName(int weapon, LPSTR name, int length)
+	inline LPSTR GetWeaponName(int weapon, LPSTR buffer, int length)
 	{
-		return VariadicCall<LPSTR>(dwGetWeaponName, weapon, name, length);
+		return VariadicCall<LPSTR>(dwGetWeaponName, weapon, buffer, length);
 	}
 	/*
 	//=====================================================================================

@@ -23,7 +23,6 @@ namespace ProtoGenesys
 			VEH_INDEX_NODELTA = 33833
 		} eVehIndex;
 
-		char szXuidOverride[0x11];
 		QWORD dwXuidOverride;
 
 		int iFriendCount;

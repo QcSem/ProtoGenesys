@@ -319,7 +319,7 @@ void WINAPI SteamUser(LPWSTR xuid)
 {
 #pragma DLLEXPORT
 
-	_hooks.dwXuidOverride = _wtoi64(xuid);
+	_hooks.dwXuidOverride = wcstoll(xuid, NULL, 10);
 
 	if (!hSteamAPI)
 		return;

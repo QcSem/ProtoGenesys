@@ -138,7 +138,13 @@ namespace ProtoGenesys
 				cTemp = ImColor(1.0f, 0.4f, 0.4f, 1.0f);
 
 			else if (strncmp(szItem, "# ", 2) == 0)
-				cTemp = ImColor(1.0f, 0.50f, 0.3f, 1.0f);
+				cTemp = ImColor(1.0f, 0.5f, 0.3f, 1.0f);
+
+			else if (strncmp(szItem, "] ", 2) == 0)
+				cTemp = ImColor(1.0f, 1.0f, 0.3f, 1.0f);
+
+			else if (strncmp(szItem, "> ", 2) == 0)
+				cTemp = ImColor(0.3f, 0.5f, 1.0f, 1.0f);
 
 			ImGui::PushStyleColor(ImGuiCol_Text, cTemp);
 			ImGui::TextUnformatted(szItem);
@@ -412,7 +418,7 @@ namespace ProtoGenesys
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-						_profiler.gXuidOverride->Current.szValue = Strdup(_ui64toa(_atoi64(szXuidOverride), _hooks.szXuidOverride, 0x10));
+						_profiler.gXuidOverride->Current.szValue = Strdup(VariadicText("%llx", strtoll(szXuidOverride, NULL, 10)).c_str());
 
 						std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
 						std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
