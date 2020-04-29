@@ -2,9 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
-    <ClCompile Include="Core\Hooks.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\MainGUI.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -59,12 +56,15 @@
     <ClCompile Include="ImGui\Addons\TabWindow\imguitabwindow.cpp">
       <Filter>ImGui\Addons\TabWindow</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Hooks.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp">
+      <Filter>Core\FurtiveHook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.hpp" />
-    <ClInclude Include="Core\Hooks.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\MainGUI.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -170,6 +170,12 @@
     <ClInclude Include="Detours\detours.h">
       <Filter>Detours</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Hooks.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\FurtiveHook\FurtiveHook.h">
+      <Filter>Core\FurtiveHook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -237,6 +243,9 @@
     </Filter>
     <Filter Include="Detours">
       <UniqueIdentifier>{d0a7c3b8-58a4-48aa-9ea4-8258e258ff48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\FurtiveHook">
+      <UniqueIdentifier>{611ea579-668a-4727-9ad3-d7ccef837d98}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

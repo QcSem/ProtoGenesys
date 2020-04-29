@@ -13,6 +13,7 @@
 #define DEFAULT_LOG "\\ProtoGenesys.log"
 #define DEFAULT_XML "\\ProtoGenesys.xml"
 #define DEFAULT_TXT "\\ProtoGenesys.txt"
+#define DEFAULT_DMP "\\ProtoGenesys.dmp"
 
 //=====================================================================================
 
@@ -61,7 +62,7 @@ namespace ProtoGenesys
 		bool DrawOption(std::string label, std::string option, Type* value, Type min, Type max, Type step);
 		bool DrawColorPicker(std::string label, ImVec4& color);
 
-		cWin32Thunk<tWindowProcess, cMainGUI> _thunkWindowProcess;
+		Win32Thunk<tWindowProcess, cMainGUI> _thunkWindowProcess;
 	} extern _mainGui;
 }
 

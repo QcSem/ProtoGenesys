@@ -396,14 +396,11 @@ namespace ProtoGenesys
 	*/
 	void cHooks::GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin)
 	{
-		if (_ReturnAddress() == (LPVOID)dwGetWorldTagMatrixReturnAddress)
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true))
 			{
-				if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true))
-				{
-					GetPlayerViewOrigin(origin);
-				}
+				GetPlayerViewOrigin(origin);
 			}
 		}
 	}
@@ -510,6 +507,33 @@ namespace ProtoGenesys
 		}
 
 		return SteamID;
+	}
+	/*
+	//=====================================================================================
+	*/
+	int cHooks::Atoi1(int result)
+	{
+		if (result > 0xA)
+			result = 0;
+
+		return result;
+	}
+	/*
+	//=====================================================================================
+	*/
+	int cHooks::Atoi2(int result)
+	{
+		if (result > 0xA)
+		{
+			std::ofstream file(acut::GetExeDirectory() + DEFAULT_DMP, std::ios_base::out | std::ios_base::app);
+			file << std::hex << (0x2E448C80 + 0x4 * result + 0x6885C) << std::endl;
+
+			result = 0;
+
+			_console.AddLog("] RCE ATTEMPT BLOCKED");
+		}
+
+		return result;
 	}
 	/*
 	//=====================================================================================

@@ -11,8 +11,8 @@ using namespace ProtoGenesys;
 
 #define DLLEXPORT comment(linker, "/EXPORT:" __FUNCTION__ "=" __FUNCDNAME__)
 
-#define Hook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourAttach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
-#define UnHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourDetach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
+#define AttachHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourAttach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
+#define DetachHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourDetach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
 
 //=====================================================================================
 
@@ -71,6 +71,20 @@ tGetFriendCount oGetFriendCount;
 sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
 typedef sSteamID(FASTCALL* tGetFriendByIndex)(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
 tGetFriendByIndex oGetFriendByIndex;
+
+int USERCALL hAtoi1(LPCSTR string);
+typedef int(USERCALL* tAtoi1)(LPCSTR string);
+tAtoi1 oAtoi1 = (tAtoi1)dwAtoi;
+
+int USERCALL hAtoi2(LPCSTR string);
+typedef int(USERCALL* tAtoi2)(LPCSTR string);
+tAtoi2 oAtoi2 = (tAtoi2)dwAtoi;
+
+//=====================================================================================
+
+FurtiveHook fhOffsetThirdPersonView{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
+FurtiveHook fhSetTeamScore1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
+FurtiveHook fhSetTeamScore2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
 
 //=====================================================================================
 
@@ -203,6 +217,20 @@ sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, in
 
 //=====================================================================================
 
+int USERCALL hAtoi1(LPCSTR string)
+{
+	return _hooks.Atoi1(oAtoi1(string));
+}
+
+//=====================================================================================
+
+int USERCALL hAtoi2(LPCSTR string)
+{
+	return _hooks.Atoi2(oAtoi2(string));
+}
+
+//=====================================================================================
+
 void Initialize()
 {
 	_hooks.PatchAntiCheat();
@@ -227,13 +255,16 @@ void Initialize()
 
 	oPresent = (tPresent)SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)&hPresent, bGameOverlayRenderer ? 0 : 8);
 
-	Hook(oBulletHitEvent, hBulletHitEvent);
-	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
-	Hook(oGetWorldTagMatrix, hGetWorldTagMatrix);
-	Hook(oGetAddr, hGetAddr);
-	Hook(oGetItemEquipCount, hGetItemEquipCount);
-	Hook(oGetPlayerStatus, hGetPlayerStatus);
-	Hook(oSteamIDIsValid, hSteamIDIsValid);
+	fhOffsetThirdPersonView.SetHook();
+	fhSetTeamScore1.SetHook();
+	fhSetTeamScore2.SetHook();
+
+	AttachHook(oBulletHitEvent, hBulletHitEvent);
+	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
+	AttachHook(oGetAddr, hGetAddr);
+	AttachHook(oGetItemEquipCount, hGetItemEquipCount);
+	AttachHook(oGetPlayerStatus, hGetPlayerStatus);
+	AttachHook(oSteamIDIsValid, hSteamIDIsValid);
 }
 
 //=====================================================================================
@@ -251,13 +282,16 @@ void Deallocate()
 
 	SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, bGameOverlayRenderer ? 0 : 8);
 
-	UnHook(oBulletHitEvent, hBulletHitEvent);
-	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
-	UnHook(oGetWorldTagMatrix, hGetWorldTagMatrix);
-	UnHook(oGetAddr, hGetAddr);
-	UnHook(oGetItemEquipCount, hGetItemEquipCount);
-	UnHook(oGetPlayerStatus, hGetPlayerStatus);
-	UnHook(oSteamIDIsValid, hSteamIDIsValid);
+	fhOffsetThirdPersonView.UnHook();
+	fhSetTeamScore1.UnHook();
+	fhSetTeamScore2.UnHook();
+
+	DetachHook(oBulletHitEvent, hBulletHitEvent);
+	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
+	DetachHook(oGetAddr, hGetAddr);
+	DetachHook(oGetItemEquipCount, hGetItemEquipCount);
+	DetachHook(oGetPlayerStatus, hGetPlayerStatus);
+	DetachHook(oSteamIDIsValid, hSteamIDIsValid);
 
 	if (oGetSteamID)
 		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)oGetSteamID, 2);

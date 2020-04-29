@@ -64,6 +64,7 @@
     <ClCompile Include="Core\Console\Console.cpp" />
     <ClCompile Include="Core\Drawing\Drawing.cpp" />
     <ClCompile Include="Core\Hooks.cpp" />
+    <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp" />
     <ClCompile Include="Core\MainGUI.cpp" />
     <ClCompile Include="Core\Mathematics\Mathematics.cpp" />
     <ClCompile Include="Core\Profiler\Profiler.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="Core\Engine\Helpers.hpp" />
     <ClInclude Include="Core\Engine\Thunk.hpp" />
     <ClInclude Include="Core\Hooks.h" />
+    <ClInclude Include="Core\FurtiveHook\FurtiveHook.h" />
     <ClInclude Include="Core\MainGUI.h" />
     <ClInclude Include="Core\Mathematics\Mathematics.h" />
     <ClInclude Include="Core\Profiler\Profiler.h" />

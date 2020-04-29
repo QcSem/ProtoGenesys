@@ -29,6 +29,7 @@
 #include "Core/Autowall/Autowall.h"
 #include "Core/Console/Console.h"
 #include "Core/Drawing/Drawing.h"
+#include "Core/FurtiveHook/FurtiveHook.h"
 #include "Core/Mathematics/Mathematics.h"
 #include "Core/Profiler/Profiler.h"
 #include "Core/Removals/Removals.h"
