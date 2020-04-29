@@ -235,9 +235,6 @@
     <Filter Include="ImGui\Fonts">
       <UniqueIdentifier>{f7fbee61-f00c-4a21-bbc9-85ca42013c53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources">
-      <UniqueIdentifier>{728e6df5-b9bd-44ce-bd7a-b96a550914d1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Detours">
       <UniqueIdentifier>{d0a7c3b8-58a4-48aa-9ea4-8258e258ff48}</UniqueIdentifier>
     </Filter>

@@ -219,7 +219,7 @@ namespace ProtoGenesys
 			_drawing.CalculateTracers();
 			_aimBot.SetAimState();
 
-			if (!IsPlayerReloading(&CG->PlayerState) && WeaponAmmoAvailable())
+			if (!IsPlayerReloading() && WeaponAmmoAvailable())
 				_aimBot.StandardAim();
 
 			_removals.RecoilCompensation();
@@ -255,7 +255,7 @@ namespace ProtoGenesys
 			++pOldCmd->iServerTime;
 			--pCurrentCmd->iServerTime;
 
-			if (!IsPlayerReloading(&CG->PlayerState) && WeaponAmmoAvailable())
+			if (!IsPlayerReloading() && WeaponAmmoAvailable())
 			{
 				_aimBot.SilentAim(pOldCmd);
 
@@ -327,19 +327,6 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::TracerSpawn(int localnum, Vector3 start, Vector3 end, sEntity* entity, int weapon)
-	{
-		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
-		{
-			if (_profiler.gPlayerBulletTracers->Current.bValue)
-			{
-				VectorCopy(start, vMuzzlePos);
-			}
-		}
-	}
-	/*
-	//=====================================================================================
-	*/
 	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone)
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
@@ -348,17 +335,28 @@ namespace ProtoGenesys
 			{
 				if (sourcenum == CG->iClientNum && !EntityIsTeammate(&CG->Entity[targetnum]) && targetnum < MAX_CLIENTS && bone >= 0)
 				{
-					cDrawing::sTracer Tracer;
+					int iShots, iIgnoreNum;
+					float flRange, flSpread;
+					Vector3 vTracerStart, vOrigin;
+					sOrientation Orientation;
 
-					VectorCopy(vMuzzlePos, Tracer.vStartPos3D);
-					VectorCopy(position, Tracer.vHitPos3D);
+					sBulletFireParams FireParams;
+					ZeroMemory(&FireParams, sizeof(sBulletFireParams));
 
-					Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
-					Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
-					Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
-					Tracer.iStartTime = CG->PlayerState.iServerTime;
-					
-					_drawing.vTracers.push_back(Tracer);
+					if (PrepFireParams(&CG->Entity[CG->iClientNum], RegisterTag("tag_flash"), CG->Entity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, vTracerStart, &iShots, &flRange, &Orientation, vOrigin, &flSpread, &iIgnoreNum))
+					{
+						cDrawing::sTracer Tracer;
+
+						VectorCopy(vTracerStart, Tracer.vStartPos3D);
+						VectorCopy(position, Tracer.vHitPos3D);
+
+						Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
+						Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
+						Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
+						Tracer.iStartTime = CG->PlayerState.iServerTime;
+
+						_drawing.vTracers.push_back(Tracer);
+					}
 				}
 			}
 		}

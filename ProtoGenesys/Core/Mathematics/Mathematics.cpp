@@ -253,7 +253,7 @@ namespace ProtoGenesys
 
 		Vector3 vLocal, vTransForm;
 
-		VectorSubtract(world, CG->RefDef.vViewOrg, vLocal);
+		VectorSubtract(world, CG->RefDef.vViewOrigin, vLocal);
 
 		vTransForm[0] = DotProduct(vLocal, CG->RefDef.vViewAxis[1]);
 		vTransForm[1] = DotProduct(vLocal, CG->RefDef.vViewAxis[2]);
@@ -276,7 +276,7 @@ namespace ProtoGenesys
 
 		Vector3 vDirection, vAngles;
 
-		VectorSubtract(CG->RefDef.vViewOrg, world, vDirection);
+		VectorSubtract(CG->RefDef.vViewOrigin, world, vDirection);
 
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
@@ -296,8 +296,8 @@ namespace ProtoGenesys
 	{
 		float flCosYaw = cosf(DegreesToRadians(CG->vRefDefViewAngles[1])),
 			flSinYaw = sinf(DegreesToRadians(CG->vRefDefViewAngles[1])),
-			flDeltaX = world[0] - CG->RefDef.vViewOrg[0],
-			flDeltaY = world[1] - CG->RefDef.vViewOrg[1],
+			flDeltaX = world[0] - CG->RefDef.vViewOrigin[0],
+			flDeltaY = world[1] - CG->RefDef.vViewOrigin[1],
 			flLocationX = (flDeltaY * flCosYaw - flDeltaX * flSinYaw) / scale,
 			flLocationY = (flDeltaX * flCosYaw + flDeltaY * flSinYaw) / scale;
 

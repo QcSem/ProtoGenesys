@@ -20,10 +20,6 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval,
 typedef HRESULT(WINAPI* tPresent)(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 tPresent oPresent;
 
-void USERCALL hTracerSpawn(int localnum, Vector3 start, Vector3 end, sEntity* entity, int weapon);
-typedef void(USERCALL* tTracerSpawn)(int localnum, Vector3 start, Vector3 end, sEntity* entity, int weapon);
-tTracerSpawn oTracerSpawn = (tTracerSpawn)dwTracerSpawn;
-
 void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
 typedef void(USERCALL* tBulletHitEvent)(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
 tBulletHitEvent oBulletHitEvent = (tBulletHitEvent)dwBulletHitEvent;
@@ -83,15 +79,6 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* swapchain, _In_ UINT syncinterval, 
 	_mainGui.Present(swapchain, syncinterval, flags);
 
 	return oPresent(swapchain, syncinterval, flags);
-}
-
-//=====================================================================================
-
-void USERCALL hTracerSpawn(int localnum, Vector3 start, Vector3 end, sEntity* entity, int weapon)
-{
-	oTracerSpawn(localnum, start, end, entity, weapon);
-
-	_hooks.TracerSpawn(localnum, start, end, entity, weapon);
 }
 
 //=====================================================================================
@@ -240,7 +227,6 @@ void Initialize()
 
 	oPresent = (tPresent)SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)&hPresent, bGameOverlayRenderer ? 0 : 8);
 
-	Hook(oTracerSpawn, hTracerSpawn);
 	Hook(oBulletHitEvent, hBulletHitEvent);
 	Hook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	Hook(oGetWorldTagMatrix, hGetWorldTagMatrix);
@@ -265,7 +251,6 @@ void Deallocate()
 
 	SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, bGameOverlayRenderer ? 0 : 8);
 
-	UnHook(oTracerSpawn, hTracerSpawn);
 	UnHook(oBulletHitEvent, hBulletHitEvent);
 	UnHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	UnHook(oGetWorldTagMatrix, hGetWorldTagMatrix);

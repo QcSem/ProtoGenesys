@@ -389,7 +389,7 @@ namespace ProtoGenesys
 		float flFovZ;
 		char _0x2C[0x4];
 		float flFov;
-		Vector3 vViewOrg;
+		Vector3 vViewOrigin;
 		char _0x40[0x4];
 		Vector3 vViewAxis[3];
 		char _0x68[0x16D18];
@@ -704,6 +704,14 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
+		Vector3 vOrigin;
+		Vector3 vAxis[3];
+	} sOrientation;
+	/*
+	//=====================================================================================
+	*/
+	typedef struct
+	{
 		union uIP
 		{
 			char szIP[4];
@@ -800,6 +808,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwComError = bIsSteamVersion ? 0x4ECFD0 : 0x58FC30;
 	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
 	static DWORD_PTR dwRegisterShader = bIsSteamVersion ? 0x734000 : 0x734CC0;
+	static DWORD_PTR dwPrepFireParams = bIsSteamVersion ? 0x6EE050 : 0x638120;
 	static DWORD_PTR dwPredictPlayerState = bIsSteamVersion ? 0x5B3C40 : 0x5B4F40;
 	static DWORD_PTR dwSetValueForKey = bIsSteamVersion ? 0x406830 : 0x551B00;
 	static DWORD_PTR dwGetUsername = bIsSteamVersion ? 0x65FDE0 : 0x4B58D0;
@@ -807,7 +816,6 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
 	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
 	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
-	static DWORD_PTR dwTracerSpawn = bIsSteamVersion ? 0x63D950 : 0x47E800;
 	static DWORD_PTR dwBulletHitEvent = bIsSteamVersion ? 0x57CED0 : 0x5F72B0;
 	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
 	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
@@ -909,6 +917,13 @@ namespace ProtoGenesys
 	inline DWORD RegisterShader(std::string name)
 	{
 		return VariadicCall<DWORD>(dwRegisterShader, name.c_str(), 7, 1, -1);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline bool PrepFireParams(sEntity* entity, WORD tag, int weapon, int _event, bool player, sBulletFireParams* fireparams, Vector3 tracerstart, int* shots, float* range, sOrientation* orientation, Vector3 origin, float* spread, int* ignorenum)
+	{
+		return VariadicCall<bool>(dwPrepFireParams, 0, entity, tag, &CG->PlayerState, weapon, _event, player, fireparams, tracerstart, shots, range, orientation, origin, spread, ignorenum);
 	}
 	/*
 	//=====================================================================================
@@ -1207,9 +1222,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline bool IsPlayerReloading(sPlayerState* playerstate)
+	inline bool IsPlayerReloading()
 	{
-		return ((UINT)(playerstate->iWeaponState[0] - 11) < 8 || (UINT)(playerstate->iWeaponState[1] - 11) < 8);
+		return ((UINT)(CG->PlayerState.iWeaponState[0] - 11) < 8 || (UINT)(CG->PlayerState.iWeaponState[1] - 11) < 8);
 	}
 	/*
 	//=====================================================================================
