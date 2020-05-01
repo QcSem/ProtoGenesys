@@ -794,8 +794,6 @@ namespace ProtoGenesys
 	static DWORD_PTR dwNoDeltaDvar = 0x11C3634;
 
 	static DWORD_PTR dwGetWorldTagMatrixCall = bIsSteamVersion ? 0x7D53BA : 0x7D5CAA;
-	static DWORD_PTR dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
-	static DWORD_PTR dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
 	static DWORD_PTR dwPenetrationMinFxDist = bIsSteamVersion ? *(DWORD_PTR*)0x324D65C : *(DWORD_PTR*)0x322C65C;
 	static DWORD_PTR dwPenetrationMultiplier = bIsSteamVersion ? *(DWORD_PTR*)0x325FC04 : *(DWORD_PTR*)0x323EC04;
 	static DWORD_PTR dwPenetrationCount = *(DWORD_PTR*)0x28FB870;
@@ -825,7 +823,6 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetItemEquipCount = bIsSteamVersion ? 0x94A750 : 0x94A8E0;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 	static DWORD_PTR dwSteamIDIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
-	static DWORD_PTR dwAtoi = bIsSteamVersion ? 0xA7300A : 0xA7301A;
 
 	static DWORD_PTR dwCG = *(DWORD_PTR*)0x113F18C;
 	static DWORD_PTR dwClientActive = 0x11C7D74;

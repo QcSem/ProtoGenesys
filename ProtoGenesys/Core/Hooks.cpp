@@ -165,8 +165,8 @@ namespace ProtoGenesys
 
 				if (ExceptionInfo->ContextRecord->Eip != 0x9B389B && ExceptionInfo->ContextRecord->Eip != 0x9B389C)
 				{
-					Com_Error(ERR_DROP, "STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
 					_console.AddLog("] STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
+					Com_Error(ERR_DROP, "STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
 
 					return EXCEPTION_CONTINUE_EXECUTION;
 				}
@@ -507,33 +507,6 @@ namespace ProtoGenesys
 		}
 
 		return SteamID;
-	}
-	/*
-	//=====================================================================================
-	*/
-	int cHooks::Atoi1(int result)
-	{
-		if (result > 0xA)
-			result = 0;
-
-		return result;
-	}
-	/*
-	//=====================================================================================
-	*/
-	int cHooks::Atoi2(int result)
-	{
-		if (result > 0xA)
-		{
-			std::ofstream file(acut::GetExeDirectory() + DEFAULT_DMP, std::ios_base::out | std::ios_base::app);
-			file << std::hex << (0x2E448C80 + 0x4 * result + 0x6885C) << std::endl;
-
-			result = 0;
-
-			_console.AddLog("] RCE ATTEMPT BLOCKED");
-		}
-
-		return result;
 	}
 	/*
 	//=====================================================================================

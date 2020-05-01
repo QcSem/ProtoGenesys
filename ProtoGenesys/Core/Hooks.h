@@ -60,9 +60,6 @@ namespace ProtoGenesys
 		LPCSTR GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid);
 		int GetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags);
 		sSteamID GetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
-		
-		int Atoi1(int result);
-		int Atoi2(int result);
 		void RefreshFriends();
 
 		Win32Thunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;

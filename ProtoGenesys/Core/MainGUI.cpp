@@ -693,6 +693,22 @@ namespace ProtoGenesys
 									bWriteLog = true;
 								}
 
+								if (ImGui::Selectable("Steal ID"))
+								{
+									_profiler.gNameOverride->Current.szValue = _strdup(CG->Client[i].szName);
+									_profiler.gClanOverride->Current.szValue = _strdup(CG->Client[i].szClan);
+									_profiler.gXuidOverride->Current.szValue = _strdup(VariadicText("%llx", CG->Client[i].qwXuid).c_str());
+
+									AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
+										CG->Client[i].szName,
+										CG->Client[i].szClan,
+										CG->Client[i].qwXuid));
+
+									bWriteLog = true;
+								}
+
+								ImGui::Separator();
+
 								if (ImGui::Selectable("Copy Name"))
 								{
 									ImGui::LogToClipboard();
