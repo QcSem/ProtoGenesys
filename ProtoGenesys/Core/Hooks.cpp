@@ -236,6 +236,10 @@ namespace ProtoGenesys
 
 		else
 			_drawing.vTracers.clear();
+
+		for (int i = 0; i < MAX_CLIENTS; i++)
+			if (!CG->Client[i].iInfoValid)
+				_targetList.bIsPriority[i] = false;
 	}
 	/*
 	//=====================================================================================

@@ -682,7 +682,7 @@ namespace ProtoGenesys
 							{
 								bWriteLog = true;
 							}
-							
+
 							if (ImGui::BeginPopupContextItem(ServerSession[i].szName))
 							{
 								if (ImGui::Selectable("Add To Friend List"))
@@ -750,11 +750,6 @@ namespace ProtoGenesys
 							{
 								bWriteLog = true;
 							} ImGui::NextColumn();
-						}
-
-						else
-						{
-							_targetList.bIsPriority[i] = false;
 						}
 					}
 
@@ -851,12 +846,6 @@ namespace ProtoGenesys
 				ImGui::DestroyContext();
 
 				bInitialized = false;
-			}
-
-			if (!LocalClientIsInGame())
-			{
-				for (auto& IsPriority : _targetList.bIsPriority)
-					IsPriority = false;
 			}
 		}
 	}
