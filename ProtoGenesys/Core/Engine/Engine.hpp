@@ -642,10 +642,11 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
+		QWORD qwXuid;
 		char szName[32];
-		char _0x20[0x6E];
+		char _0x28[0x6E];
 		char szIP[4];
-		char _0x92[0xB6];
+		char _0x9A[0xAE];
 	} sServerSession;
 	/*
 	//=====================================================================================
@@ -830,7 +831,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwRecoilAngles = dwCG + 0xFE6438B0;
 	static DWORD_PTR dwWeaponNames = *(DWORD_PTR*)0x10A7E28;
 	static DWORD_PTR dwWindowHandle = 0x2B6ED88;
-	static DWORD_PTR dwServerSession = 0x12A7248;
+	static DWORD_PTR dwServerSession = 0x12A7240;
 	static DWORD_PTR dwServerID = 0x11D0ACC;
 	static DWORD_PTR dwWindow = 0x2956244;
 
@@ -874,6 +875,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetWeaponName = bIsSteamVersion ? 0x458190 : 0x9502B0;
 	static DWORD_PTR dwGetCurrentSession = bIsSteamVersion ? 0x4823F0 : 0x534520;
 	static DWORD_PTR dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
+	static DWORD_PTR dwGetPlayerXuid = bIsSteamVersion ? 0x45C710 : 0x667A00;
 
 	static DWORD_PTR dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
 	static DWORD_PTR dwMouseInput = 0x2B69969;
@@ -1232,6 +1234,13 @@ namespace ProtoGenesys
 	inline sNetAddr* GetPlayerAddr(sNetAddr* netaddr, LPVOID session, int clientnum)
 	{
 		return VariadicCall<sNetAddr*>(dwGetPlayerAddr, netaddr, session, clientnum);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline QWORD GetPlayerXuid(LPVOID session, int clientnum)
+	{
+		return VariadicCall<QWORD>(dwGetPlayerXuid, session, clientnum);
 	}
 	/*
 	//=====================================================================================

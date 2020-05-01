@@ -678,17 +678,17 @@ namespace ProtoGenesys
 						{
 							ImGui::Separator();
 
-							if (ImGui::Selectable(CG->Client[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
+							if (ImGui::Selectable(ServerSession[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
 							{
 								bWriteLog = true;
 							}
 							
-							if (ImGui::BeginPopupContextItem(CG->Client[i].szName))
+							if (ImGui::BeginPopupContextItem(ServerSession[i].szName))
 							{
 								if (ImGui::Selectable("Add To Friend List"))
 								{
 									std::ofstream file(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::out | std::ios_base::app);
-									file << (std::to_string(CG->Client[i].qwXuid) + " " + CG->Client[i].szName).c_str() << std::endl;
+									file << (std::to_string(ServerSession[i].qwXuid) + " " + ServerSession[i].szName).c_str() << std::endl;
 
 									bWriteLog = true;
 								}
@@ -712,7 +712,7 @@ namespace ProtoGenesys
 								if (ImGui::Selectable("Copy Name"))
 								{
 									ImGui::LogToClipboard();
-									ImGui::LogText(CG->Client[i].szName);
+									ImGui::LogText(ServerSession[i].szName);
 									ImGui::LogFinish();
 
 									bWriteLog = true;
@@ -730,7 +730,7 @@ namespace ProtoGenesys
 								if (ImGui::Selectable("Copy SteamID"))
 								{
 									ImGui::LogToClipboard();
-									ImGui::LogText(std::to_string(CG->Client[i].qwXuid).c_str());
+									ImGui::LogText(std::to_string(ServerSession[i].qwXuid).c_str());
 									ImGui::LogFinish();
 
 									bWriteLog = true;
@@ -740,13 +740,13 @@ namespace ProtoGenesys
 							} ImGui::NextColumn();
 
 							ImGui::Text(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].szIP[0], (BYTE)ServerSession[i].szIP[1], (BYTE)ServerSession[i].szIP[2], (BYTE)ServerSession[i].szIP[3]).c_str());
-							if (ImGui::OpenPopupOnItemClick(CG->Client[i].szName))
+							if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
 							{
 								bWriteLog = true;
 							} ImGui::NextColumn();
 
-							ImGui::Text(std::to_string(CG->Client[i].qwXuid).c_str());
-							if (ImGui::OpenPopupOnItemClick(CG->Client[i].szName))
+							ImGui::Text(std::to_string(ServerSession[i].qwXuid).c_str());
+							if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
 							{
 								bWriteLog = true;
 							} ImGui::NextColumn();
