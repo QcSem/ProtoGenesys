@@ -112,7 +112,7 @@ namespace ProtoGenesys
 			AimState.iCurrentAimTime = 0;
 		}
 
-		if (!AimState.bTargetAcquired || _mainGui.GetKeyPress(VK_DELETE, true))
+		if (!AimState.bTargetAcquired || _mainGui.bIsAirStuck)
 			AimState.iCurrentAimDelay = AimState.iCurrentZoomDelay = AimState.iCurrentFireDelay = 0;
 
 		if (AimState.iCurrentAimTime > _profiler.gAutoAimTime->Current.iValue)

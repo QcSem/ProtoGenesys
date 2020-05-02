@@ -248,6 +248,15 @@ namespace ProtoGenesys
 		if (GetKeyPress(VK_END, false))
 			_profiler.DisableAll();
 
+		if (_profiler.gAirStuckToggle->Current.bValue)
+		{
+			if (GetKeyPress(VK_DELETE, false))
+				bIsAirStuck = !bIsAirStuck;
+		}
+
+		else
+			bIsAirStuck = GetKeyPress(VK_DELETE, true);
+
 		*(bool*)dwMouseInput = !bShowWindow;
 
 		if (bInitialized && bShowWindow && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
@@ -516,6 +525,11 @@ namespace ProtoGenesys
 					} ImGui::NewLine();
 
 					if (DrawOption(_profiler.gIdStealer->szName, _profiler.gIdStealer->szItems[_profiler.gIdStealer->Current.iValue], &_profiler.gIdStealer->Current.iValue, _profiler.gIdStealer->Domain.iMin, _profiler.gIdStealer->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
+					if (DrawOption(_profiler.gAirStuckToggle->szName, _profiler.gAirStuckToggle->szItems[_profiler.gAirStuckToggle->Current.iValue], &_profiler.gAirStuckToggle->Current.iValue, _profiler.gAirStuckToggle->Domain.iMin, _profiler.gAirStuckToggle->Domain.iMax, 1))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();

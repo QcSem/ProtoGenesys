@@ -256,7 +256,7 @@ namespace ProtoGenesys
 			sUserCmd* pCurrentCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
 			sUserCmd* pNewCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd + 1);
 
-			if (_mainGui.GetKeyPress(VK_DELETE, true))
+			if (_mainGui.bIsAirStuck)
 				CopyMemory(pCurrentCmd, pOldCmd, sizeof(sUserCmd));
 
 			CopyMemory(pNewCmd, pCurrentCmd, sizeof(sUserCmd));
@@ -385,7 +385,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true))
+			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.bIsAirStuck)
 			{
 				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
@@ -402,7 +402,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.GetKeyPress(VK_DELETE, true))
+			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.bIsAirStuck)
 			{
 				GetPlayerViewOrigin(origin);
 			}

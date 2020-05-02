@@ -29,7 +29,7 @@ namespace ProtoGenesys
 
 		cMainGUI() : _thunkWindowProcess(&cMainGUI::WindowProcess, this) {}
 
-		bool bInitialized, bStyleChanged, bShowWindow, bWriteLog;
+		bool bInitialized, bStyleChanged, bShowWindow, bWriteLog, bIsAirStuck;
 
 		std::string szIniFileName, szLogFileName;
 		ImGuiFs::Dialog SaveDialog, LoadDialog;
