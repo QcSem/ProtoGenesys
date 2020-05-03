@@ -126,13 +126,26 @@ namespace ProtoGenesys
 
 		typedef enum
 		{
-			ANTIAIM_OFF,
-			ANTIAIM_SPINBOT,
-			ANTIAIM_JITTERBOT,
-			ANTIAIM_RANDOMIZED,
-			ANTIAIM_REVERSED,
-			ANTIAIM_MAX
-		} eAntiAim;
+			ANTIAIM_PITCH_OFF,
+			ANTIAIM_PITCH_UP,
+			ANTIAIM_PITCH_DOWN,
+			ANTIAIM_PITCH_JITTER,
+			ANTIAIM_PITCH_RANDOM,
+			ANTIAIM_PITCH_REVERSE,
+			ANTIAIM_PITCH_CUSTOM,
+			ANTIAIM_PITCH_MAX
+		} eAntiAimPitch;
+
+		typedef enum
+		{
+			ANTIAIM_YAW_OFF,
+			ANTIAIM_YAW_SPIN,
+			ANTIAIM_YAW_JITTER,
+			ANTIAIM_YAW_RANDOM,
+			ANTIAIM_YAW_REVERSE,
+			ANTIAIM_YAW_CUSTOM,
+			ANTIAIM_YAW_MAX
+		} eAntiAimYaw;
 
 		typedef enum
 		{
@@ -198,7 +211,8 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gApplyPrediction = std::make_shared<sCvar>("Apply Prediction", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAntiTeamKill = std::make_shared<sCvar>("Anti-Teamkill", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gSilentAim = std::make_shared<sCvar>("Silent-Aim", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gAntiAim = std::make_shared<sCvar>("Anti-Aim", std::vector<std::string>({ "Off", "Spinbot", "Jitterbot", "Randomized", "Reversed" }), ANTIAIM_OFF, ANTIAIM_OFF, ANTIAIM_MAX - 1);
+		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Up", "Down", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
+		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Spin", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
 		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On Timer", "Immediate" }), BONESCAN_OFF, BONESCAN_OFF, BONESCAN_MAX - 1);
 		std::shared_ptr<sCvar> gSortMethod = std::make_shared<sCvar>("Sort Method", std::vector<std::string>({ "Field of View", "Distance" }), SORT_METHOD_FOV, SORT_METHOD_FOV, SORT_METHOD_MAX - 1);
 
@@ -214,6 +228,16 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gPlayerRadar = std::make_shared<sCvar>("Radar", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gPlayerBulletTracers = std::make_shared<sCvar>("Bullet Tracers", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 
+		std::shared_ptr<sCvar> gThirdPerson = std::make_shared<sCvar>("Third Person", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gThirdPersonAntiAim = std::make_shared<sCvar>("Third Person Anti-Aim", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gOrbitalVsat = std::make_shared<sCvar>("Orbital VSAT", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gHardcoreHud = std::make_shared<sCvar>("Hardcore HUD", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gDisableEmp = std::make_shared<sCvar>("Disable EMP", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gIdStealer = std::make_shared<sCvar>("ID Stealer", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gAirStuckToggle = std::make_shared<sCvar>("Airstuck Toggle", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gReloadCancel = std::make_shared<sCvar>("Reload Cancel", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+
 		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HELMET, BONE_HELMET, BONE_MAX - 1);
 		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180, 1, 180);
 		std::shared_ptr<sCvar> gAimPower = std::make_shared<sCvar>("Aimpower", std::vector<std::string>(), 100, 1, 100);
@@ -223,6 +247,8 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gAutoFireDelay = std::make_shared<sCvar>("Autofire Delay", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gRecoilFactor = std::make_shared<sCvar>("Recoil Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gSpreadFactor = std::make_shared<sCvar>("Spread Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
+		std::shared_ptr<sCvar> gAntiAimCustomPitch = std::make_shared<sCvar>("Anti-Aim Custom Pitch", std::vector<std::string>(), 0.0f, -85.0f, 85.0f);
+		std::shared_ptr<sCvar> gAntiAimCustomYaw = std::make_shared<sCvar>("Anti-Aim Custom Yaw", std::vector<std::string>(), 0.0f, 0.0f, 360.0f);
 
 		std::shared_ptr<sCvar> gColorAxis = std::make_shared<sCvar>("Axis", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorAllies = std::make_shared<sCvar>("Allies", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
@@ -230,15 +256,6 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gColorCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(0), ByteToFloat(255), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorText = std::make_shared<sCvar>("Text", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(255), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorShadow = std::make_shared<sCvar>("Shadow", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(0), ByteToFloat(0), ByteToFloat(255)));
-
-		std::shared_ptr<sCvar> gThirdPerson = std::make_shared<sCvar>("Third Person", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gThirdPersonAntiAim = std::make_shared<sCvar>("Third Person Anti-Aim", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gOrbitalVsat = std::make_shared<sCvar>("Orbital VSAT", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gHardcoreHud = std::make_shared<sCvar>("Hardcore HUD", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gDisableEmp = std::make_shared<sCvar>("Disable EMP", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gIdStealer = std::make_shared<sCvar>("ID Stealer", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gAirStuckToggle = std::make_shared<sCvar>("Airstuck Toggle", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 
 		std::shared_ptr<sCvar> gNameOverride = std::make_shared<sCvar>("Name Override", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gClanOverride = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), _strdup(""));

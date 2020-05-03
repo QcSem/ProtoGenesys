@@ -370,7 +370,7 @@ namespace ProtoGenesys
 					bWriteLog = false;
 				}
 
-				ImGui::SetNextWindowSize(ImVec2(589.0f, 624.0f));
+				ImGui::SetNextWindowSize(ImVec2(589.0f, 655.0f));
 				ImGui::Begin("PROTOGENESYS", &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 				ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
 
@@ -379,7 +379,7 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				}
 
-				ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 504.0f), true);
+				ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 535.0f), true);
 
 				switch (_profiler.gMenuTabs->Current.iValue)
 				{
@@ -421,7 +421,12 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::NewLine();
 
-					if (DrawOption(_profiler.gAntiAim->szName, _profiler.gAntiAim->szItems[_profiler.gAntiAim->Current.iValue], &_profiler.gAntiAim->Current.iValue, _profiler.gAntiAim->Domain.iMin, _profiler.gAntiAim->Domain.iMax, 1))
+					if (DrawOption(_profiler.gAntiAimPitch->szName, _profiler.gAntiAimPitch->szItems[_profiler.gAntiAimPitch->Current.iValue], &_profiler.gAntiAimPitch->Current.iValue, _profiler.gAntiAimPitch->Domain.iMin, _profiler.gAntiAimPitch->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
+					if (DrawOption(_profiler.gAntiAimYaw->szName, _profiler.gAntiAimYaw->szItems[_profiler.gAntiAimYaw->Current.iValue], &_profiler.gAntiAimYaw->Current.iValue, _profiler.gAntiAimYaw->Domain.iMin, _profiler.gAntiAimYaw->Domain.iMax, 1))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
@@ -534,6 +539,11 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::NewLine();
 
+					if (DrawOption(_profiler.gReloadCancel->szName, _profiler.gReloadCancel->szItems[_profiler.gReloadCancel->Current.iValue], &_profiler.gReloadCancel->Current.iValue, _profiler.gReloadCancel->Domain.iMin, _profiler.gReloadCancel->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
 					if (DrawOption(_profiler.gTrickShot->szName, _profiler.gTrickShot->szItems[_profiler.gTrickShot->Current.iValue], &_profiler.gTrickShot->Current.iValue, _profiler.gTrickShot->Domain.iMin, _profiler.gTrickShot->Domain.iMax, 1))
 					{
 						bWriteLog = true;
@@ -588,6 +598,16 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::NewLine();
 
+					if (DrawOption(_profiler.gAntiAimCustomPitch->szName, VariadicText("%.0f", _profiler.gAntiAimCustomPitch->Current.flValue), &_profiler.gAntiAimCustomPitch->Current.flValue, _profiler.gAntiAimCustomPitch->Domain.flMin, _profiler.gAntiAimCustomPitch->Domain.flMax, 1.0f))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
+					if (DrawOption(_profiler.gAntiAimCustomYaw->szName, VariadicText("%.0f", _profiler.gAntiAimCustomYaw->Current.flValue), &_profiler.gAntiAimCustomYaw->Current.flValue, _profiler.gAntiAimCustomYaw->Domain.flMin, _profiler.gAntiAimCustomYaw->Domain.flMax, 1.0f))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
 					ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
 					if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 					{
@@ -600,6 +620,8 @@ namespace ProtoGenesys
 						_profiler.gAutoFireDelay->Current.iValue = _profiler.gAutoFireDelay->Reset.iValue;
 						_profiler.gRecoilFactor->Current.flValue = _profiler.gRecoilFactor->Reset.flValue;
 						_profiler.gSpreadFactor->Current.flValue = _profiler.gSpreadFactor->Reset.flValue;
+						_profiler.gAntiAimCustomPitch->Current.flValue = _profiler.gAntiAimCustomPitch->Reset.flValue;
+						_profiler.gAntiAimCustomYaw->Current.flValue = _profiler.gAntiAimCustomYaw->Reset.flValue;
 
 						bWriteLog = true;
 					}

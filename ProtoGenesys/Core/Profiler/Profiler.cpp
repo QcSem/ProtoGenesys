@@ -28,7 +28,8 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.bValue);
 			XML.set("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.bValue);
 			XML.set("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.bValue);
-			XML.set("ProtoGenesys.AimBot.AntiAim", gAntiAim->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
 			XML.set("ProtoGenesys.AimBot.BoneScan", gBoneScan->Current.iValue);
 			XML.set("ProtoGenesys.AimBot.SortMethod", gSortMethod->Current.iValue);
 
@@ -59,6 +60,8 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.Tweaks.AutoFireDelay", gAutoFireDelay->Current.iValue);
 			XML.set("ProtoGenesys.Tweaks.RecoilFactor", gRecoilFactor->Current.flValue);
 			XML.set("ProtoGenesys.Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
+			XML.set("ProtoGenesys.Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
+			XML.set("ProtoGenesys.Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
 
 			XML.set("ProtoGenesys.Colors.Axis.Red", gColorAxis->Current.cValue[0]);
 			XML.set("ProtoGenesys.Colors.Axis.Green", gColorAxis->Current.cValue[1]);
@@ -129,7 +132,8 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.bValue);
 			XML.get_if_present("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.bValue);
 			XML.get_if_present("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AntiAim", gAntiAim->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
 			XML.get_if_present("ProtoGenesys.AimBot.BoneScan", gBoneScan->Current.iValue);
 			XML.get_if_present("ProtoGenesys.AimBot.SortMethod", gSortMethod->Current.iValue);
 
@@ -160,6 +164,8 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.Tweaks.AutoFireDelay", gAutoFireDelay->Current.iValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.RecoilFactor", gRecoilFactor->Current.flValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
+			XML.get_if_present("ProtoGenesys.Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
 
 			XML.get_if_present("ProtoGenesys.Colors.Axis.Red", gColorAxis->Current.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.Axis.Green", gColorAxis->Current.cValue[1]);
@@ -213,7 +219,8 @@ namespace ProtoGenesys
 		gApplyPrediction->Current.bValue = gApplyPrediction->Reset.bValue;
 		gAntiTeamKill->Current.bValue = gAntiTeamKill->Reset.bValue;
 		gSilentAim->Current.bValue = gSilentAim->Reset.bValue;
-		gAntiAim->Current.iValue = gAntiAim->Reset.iValue;
+		gAntiAimPitch->Current.iValue = gAntiAimPitch->Reset.iValue;
+		gAntiAimYaw->Current.iValue = gAntiAimYaw->Reset.iValue;
 		gBoneScan->Current.iValue = gBoneScan->Reset.iValue;
 		gSortMethod->Current.iValue = gSortMethod->Reset.iValue;
 

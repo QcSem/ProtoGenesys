@@ -293,7 +293,8 @@ namespace ProtoGenesys
 			if (WeaponIsVehicle())
 				_aimBot.AutoFire(pUserCmd);
 
-			_antiAim.AntiAim(pUserCmd);
+			_antiAim.AntiAimPitch(pUserCmd);
+			_antiAim.AntiAimYaw(pUserCmd);
 		}
 	}
 	/*
@@ -385,12 +386,15 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.bIsAirStuck)
+			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
 			{
 				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
-					CG->Client[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->PlayerState.vDeltaAngles[0];
-					entity->vViewAngles[1] = _antiAim.vAntiAimAngles[1] + CG->PlayerState.vDeltaAngles[1];
+					if (_profiler.gAntiAimPitch->Current.iValue > cProfiler::ANTIAIM_PITCH_OFF)
+						CG->Client[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->PlayerState.vDeltaAngles[0];
+
+					if (_profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)
+						entity->vViewAngles[1] = _antiAim.vAntiAimAngles[1] + CG->PlayerState.vDeltaAngles[1];
 				}
 			}
 		}
@@ -402,7 +406,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.IsAntiAiming() && !_mainGui.bIsAirStuck)
+			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
 			{
 				GetPlayerViewOrigin(origin);
 			}

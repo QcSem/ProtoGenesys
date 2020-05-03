@@ -14,8 +14,9 @@ namespace ProtoGenesys
 
 		Vector3 vAntiAimAngles;
 
-		void AntiAim(sUserCmd* usercmd);
-		bool IsAntiAiming();
+		void AntiAimPitch(sUserCmd* usercmd);
+		void AntiAimYaw(sUserCmd* usercmd);
+		bool ReadyForAntiAim();
 	} extern _antiAim;
 }
 
