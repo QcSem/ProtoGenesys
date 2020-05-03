@@ -143,6 +143,21 @@ namespace ProtoGenesys
 			_mathematics.CalculateAntiAimAngles(CG->Entity[AimState.iAntiAimTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
 		}
 	}
+	/*
+	//=====================================================================================
+	*/
+	void cAimbot::ReloadCancel()
+	{
+		if (!(CG->PlayerState.iWeaponState[0] == 11 || CG->PlayerState.iWeaponState[1] == 11))
+			return;
+
+		if (!CG->PlayerState.iWeaponDelay)
+		{
+			CycleWeapon(0);
+			Sleep(1);
+			CycleWeapon(0);
+		}
+	}
 }
 
 //=====================================================================================

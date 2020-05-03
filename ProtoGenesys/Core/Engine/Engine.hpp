@@ -336,7 +336,8 @@ namespace ProtoGenesys
 		Vector3 vVelocity;
 		char _0x40[0xC];
 		float flWeaponTime;
-		char _0x50[0x34];
+		int iWeaponDelay;
+		char _0x54[0x30];
 		int iThirdPerson;
 		char _0x88[0x4];
 		int iGravity;
@@ -876,6 +877,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetCurrentSession = bIsSteamVersion ? 0x4823F0 : 0x534520;
 	static DWORD_PTR dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
 	static DWORD_PTR dwGetPlayerXuid = bIsSteamVersion ? 0x45C710 : 0x667A00;
+	static DWORD_PTR dwCycleWeapon = bIsSteamVersion ? 0x69BAE0 : 0x57D850;
 
 	static DWORD_PTR dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
 	static DWORD_PTR dwMouseInput = 0x2B69969;
@@ -1241,6 +1243,13 @@ namespace ProtoGenesys
 	inline QWORD GetPlayerXuid(LPVOID session, int clientnum)
 	{
 		return VariadicCall<QWORD>(dwGetPlayerXuid, session, clientnum);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline void CycleWeapon(int cycle)
+	{
+		return VariadicCall<void>(dwCycleWeapon, 0, cycle);
 	}
 	/*
 	//=====================================================================================
