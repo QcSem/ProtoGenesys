@@ -37,6 +37,4 @@
 #include "Core/Hooks.h"
 #include "Core/MainGUI.h"
 
-#pragma intrinsic(_ReturnAddress)
-
 //=====================================================================================
