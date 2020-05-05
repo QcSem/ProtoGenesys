@@ -727,6 +727,14 @@ namespace ProtoGenesys
 									bWriteLog = true;
 								}
 
+								if (ImGui::Selectable("View Profile"))
+								{
+									PopOverlayForSteamID(ServerSession[i].qwXuid);
+
+									bShowWindow = false;
+									bWriteLog = true;
+								}
+
 								if (ImGui::Selectable("Steal ID"))
 								{
 									_profiler.gNameOverride->Current.szValue = _strdup(CG->Client[i].szName);
@@ -738,14 +746,6 @@ namespace ProtoGenesys
 										CG->Client[i].szClan,
 										CG->Client[i].qwXuid));
 
-									bWriteLog = true;
-								}
-
-								if (ImGui::Selectable("View Profile"))
-								{
-									PopOverlayForSteamID(ServerSession[i].qwXuid);
-
-									bShowWindow = false;
 									bWriteLog = true;
 								}
 
