@@ -819,6 +819,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetUsername = bIsSteamVersion ? 0x65FDE0 : 0x4B58D0;
 	static DWORD_PTR dwGetClantag = bIsSteamVersion ? 0x5ACDA0 : 0x6D2900;
 	static DWORD_PTR dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
+	static DWORD_PTR dwPopOverlayForSteamID = bIsSteamVersion ? 0x589740 : 0x556680;
 	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
 	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
 	static DWORD_PTR dwBulletHitEvent = bIsSteamVersion ? 0x57CED0 : 0x5F72B0;
@@ -955,6 +956,13 @@ namespace ProtoGenesys
 	inline LPSTR GetXuidstring()
 	{
 		return VariadicCall<LPSTR>(dwGetXuidstring, 0);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline void PopOverlayForSteamID(QWORD steamid)
+	{
+		return VariadicCall<void>(dwPopOverlayForSteamID, steamid);
 	}
 	/*
 	//=====================================================================================

@@ -741,6 +741,14 @@ namespace ProtoGenesys
 									bWriteLog = true;
 								}
 
+								if (ImGui::Selectable("View Profile"))
+								{
+									PopOverlayForSteamID(ServerSession[i].qwXuid);
+
+									bShowWindow = false;
+									bWriteLog = true;
+								}
+
 								ImGui::Separator();
 
 								if (ImGui::Selectable("Copy Name"))
