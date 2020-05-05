@@ -39,6 +39,8 @@ namespace ProtoGenesys
 			vCommands.push_back("proto_xuid");
 			vCommands.push_back("proto_ip");
 			vCommands.push_back("proto_killspam");
+			vCommands.push_back("proto_resetstats");
+			vCommands.push_back("proto_disconnect");
 
 			AddLog("Ready.");
 
@@ -95,6 +97,8 @@ namespace ProtoGenesys
 			AddLog("6. proto_xuid <on|off> <xuid>\n\t\tChange your xuid.");
 			AddLog("7. proto_ip <on|off> <ip>\n\t\tChange your ip.");
 			AddLog("8. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
+			AddLog("9. proto_resetstats\n\t\tReset your save data.");
+			AddLog("10. proto_disconnect\n\t\tDisconnect from the current server.");
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -557,6 +561,20 @@ namespace ProtoGenesys
 			{
 				AddLog("[ERROR] Missing argument(s).");
 			}
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, "proto_resetstats"))
+		{
+			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+			Cbuf_AddText("resetStats");
+			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, "proto_disconnect"))
+		{
+			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+			Cbuf_AddText("disconnect");
+			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
 		else
