@@ -48,7 +48,9 @@ namespace ProtoGenesys
 		bool IsEntityValid(int index);
 		bool IsVisibleInternal(sEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage);
 		bool IsVisible(sEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index);
-		void ApplyPrediction(sEntity* entity, Vector3 position);
+		void ApplyPositionPrediction(sEntity* entity);
+		void ApplyAnglePrediction(sEntity* entity);
+		float EvaluateTrajectoryWithInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale);
 	} extern _targetList;
 }
 

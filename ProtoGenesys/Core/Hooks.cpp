@@ -250,8 +250,6 @@ namespace ProtoGenesys
 		{
 			static int iBackupAngles[3];
 
-			ClientActive = *(sClientActive**)dwClientActive;
-
 			sUserCmd* pOldCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd - 1);
 			sUserCmd* pCurrentCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
 			sUserCmd* pNewCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd + 1);
@@ -286,8 +284,6 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			ClientActive = *(sClientActive**)dwClientActive;
-
 			sUserCmd* pUserCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
 
 			if (WeaponIsVehicle())
@@ -396,6 +392,12 @@ namespace ProtoGenesys
 					if (_profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)
 						entity->vViewAngles[1] = _antiAim.vAntiAimAngles[1] + CG->PlayerState.vDeltaAngles[1];
 				}
+			}
+
+			if (_profiler.gApplyPrediction->Current.bValue)
+			{
+				_targetList.ApplyPositionPrediction(entity);
+				_targetList.ApplyAnglePrediction(entity);
 			}
 		}
 	}

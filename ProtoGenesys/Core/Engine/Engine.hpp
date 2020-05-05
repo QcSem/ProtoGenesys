@@ -531,9 +531,9 @@ namespace ProtoGenesys
 		sSnapShot* NewSnapShot;
 		char _0x2C[0x58];
 		int iPing;
-		int iNewTime;
-		int iTime;
-		int iOldTime;
+		int iServerTime;
+		int iPhysicsTime;
+		int iCommandTime;
 		char _0x94[0x24];
 		Vector3 vOrigin;
 		Vector3 vVelocity;
@@ -547,9 +547,12 @@ namespace ProtoGenesys
 		float flZoomProgress;
 		char _0x274[0x54];
 		int iHealth;
-		char _0x2CC[0x47DBC];
+		char _0x2CC[0x47DB8];
+		float flFrameInterpolation;
 		int iFrameTime;
-		char _0x4808C[0x10];
+		int iTime;
+		int iOldTime;
+		char _0x48094[0x8];
 		int iThirdPerson;
 		char _0x480A0[0x8];
 		sPlayerState PlayerState;
@@ -820,6 +823,8 @@ namespace ProtoGenesys
 	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
 	static DWORD_PTR dwBulletHitEvent = bIsSteamVersion ? 0x57CED0 : 0x5F72B0;
 	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
+	static DWORD_PTR dwInterpolateEntityPosition = bIsSteamVersion ? 0x7A0000 : 0x7A0C90;
+	static DWORD_PTR dwInterpolateEntityAngles = bIsSteamVersion ? 0x6B4100 : 0x4B1D40;
 	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
 	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
 	static DWORD_PTR dwGetItemEquipCount = bIsSteamVersion ? 0x94A750 : 0x94A8E0;
@@ -844,6 +849,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwEntityIsTeammate = bIsSteamVersion ? 0x50EC80 : 0x4309A0;
 	static DWORD_PTR dwGetPlayerViewOrigin = bIsSteamVersion ? 0x580890 : 0x640E80;
 	static DWORD_PTR dwEvaluateTrajectory = bIsSteamVersion ? 0x47F7A0 : 0x44CE20;
+	static DWORD_PTR dwAngleNormalize180 = bIsSteamVersion ? 0x4DEF60 : 0x5FFDA0;
 	static DWORD_PTR dwWeaponIsVehicle = bIsSteamVersion ? 0x5B8AD0 : 0x5AE8C0;
 	static DWORD_PTR dwWeaponAmmoAvailable = bIsSteamVersion ? 0x557C40 : 0x6DF580;
 	static DWORD_PTR dwSetZoomState = bIsSteamVersion ? 0x42BD00 : 0x583950;
@@ -893,13 +899,13 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static sCG* CG = (sCG*)dwCG;
-	static sClientActive* ClientActive = *(sClientActive**)dwClientActive;
-	static sWeaponName* WeaponNames = (sWeaponName*)dwWeaponNames;
-	static sViewAngles* ViewAngles = (sViewAngles*)dwViewAngles;
-	static sRecoilAngles* RecoilAngles = (sRecoilAngles*)dwRecoilAngles;
-	static sServerSession* ServerSession = (sServerSession*)dwServerSession;
-	static sWindow* Window = (sWindow*)dwWindow;
+#define CG ((sCG*)dwCG)
+#define ClientActive (*(sClientActive**)dwClientActive)
+#define WeaponNames ((sWeaponName*)dwWeaponNames)
+#define ViewAngles ((sViewAngles*)dwViewAngles)
+#define RecoilAngles ((sRecoilAngles*)dwRecoilAngles)
+#define ServerSession ((sServerSession*)dwServerSession)
+#define Window ((sWindow*)dwWindow)
 	/*
 	//=====================================================================================
 	*/
@@ -1019,6 +1025,13 @@ namespace ProtoGenesys
 	inline void EvaluateTrajectory(sTrajectory* trajectory, int time, Vector3 result)
 	{
 		return VariadicCall<void>(dwEvaluateTrajectory, trajectory, time, result);
+	}
+	/*
+	//=====================================================================================
+	*/
+	inline float AngleNormalize180(float angle)
+	{
+		return VariadicCall<float>(dwAngleNormalize180, angle);
 	}
 	/*
 	//=====================================================================================
@@ -1200,7 +1213,7 @@ namespace ProtoGenesys
 	*/
 	inline int GetLastWeaponForAlt()
 	{
-		return VariadicCall<int>(dwGetLastWeaponForAlt, &CG, &CG->PlayerState, CG->iWeaponSelect);
+		return VariadicCall<int>(dwGetLastWeaponForAlt, CG, &CG->PlayerState, CG->iWeaponSelect);
 	}
 	/*
 	//=====================================================================================

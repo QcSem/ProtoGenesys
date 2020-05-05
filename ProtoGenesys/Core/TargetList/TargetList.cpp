@@ -198,11 +198,7 @@ namespace ProtoGenesys
 	bool cTargetList::IsVisibleInternal(sEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage)
 	{
 		Vector3 vViewOrigin;
-
 		GetPlayerViewOrigin(vViewOrigin);
-
-		if (_profiler.gApplyPrediction->Current.bValue)
-			ApplyPrediction(entity, position);
 
 		if (WeaponIsVehicle())
 		{
@@ -286,26 +282,69 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cTargetList::ApplyPrediction(sEntity* entity, Vector3 position)
+	void cTargetList::ApplyPositionPrediction(sEntity* entity)
 	{
+		float flResult;
+		Vector3 vOldPosition, vNewPosition, vVelocity;
+		
+		flResult = EvaluateTrajectoryWithInterpolation(&entity->CurrentEntityState.PositionTrajectory, CG->OldSnapShot->iServerTime, vOldPosition, CG->flFrameInterpolation);
+		EvaluateTrajectoryWithInterpolation(&entity->NextEntityState.LerpEntityState.PositionTrajectory, CG->NewSnapShot->iServerTime, vNewPosition, flResult);
+
+		VectorSubtract(vNewPosition, vOldPosition, vVelocity);
+		VectorGetSign(vVelocity);
+
+		VectorMA(entity->vOrigin, CG->iFrameTime / 1000.0f, vVelocity, entity->vOrigin);
+		VectorMA(entity->vOrigin, ClientActive->iPing / 1000.0f, vVelocity, entity->vOrigin);
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cTargetList::ApplyAnglePrediction(sEntity* entity)
+	{
+		float flResult;
 		Vector3 vOldPosition, vNewPosition, vVelocity;
 
-		if (entity->CurrentEntityState.PositionTrajectory.iType && entity->CurrentEntityState.PositionTrajectory.iType != 1 && entity->CurrentEntityState.PositionTrajectory.iType != 14 && entity->CurrentEntityState.PositionTrajectory.iType != 10)
-			EvaluateTrajectory(&entity->CurrentEntityState.PositionTrajectory, CG->OldSnapShot->iServerTime, vOldPosition);
-		else
-			VectorCopy(entity->CurrentEntityState.PositionTrajectory.vBase, vOldPosition);
-
-		if (entity->NextEntityState.LerpEntityState.PositionTrajectory.iType && entity->NextEntityState.LerpEntityState.PositionTrajectory.iType != 1 && entity->NextEntityState.LerpEntityState.PositionTrajectory.iType != 14 && entity->NextEntityState.LerpEntityState.PositionTrajectory.iType != 10)
-			EvaluateTrajectory(&entity->NextEntityState.LerpEntityState.PositionTrajectory, CG->NewSnapShot->iServerTime, vNewPosition);
-		else
-			VectorCopy(entity->NextEntityState.LerpEntityState.PositionTrajectory.vBase, vNewPosition);
+		flResult = EvaluateTrajectoryWithInterpolation(&entity->CurrentEntityState.AngleTrajectory, CG->OldSnapShot->iServerTime, vOldPosition, CG->flFrameInterpolation);
+		EvaluateTrajectoryWithInterpolation(&entity->NextEntityState.LerpEntityState.AngleTrajectory, CG->NewSnapShot->iServerTime, vNewPosition, flResult);
 
 		VectorSubtract(vNewPosition, vOldPosition, vVelocity);
 
-		ClientActive = *(sClientActive**)dwClientActive;
+		AngleNormalize180(vVelocity[0]);
+		AngleNormalize180(vVelocity[1]);
+		AngleNormalize180(vVelocity[2]);
 
-		VectorMA(position, CG->iFrameTime / 1000.0f, vVelocity, position);
-		VectorMA(position, ClientActive->iPing / 1000.0f, vVelocity, position);
+		VectorGetSign(vVelocity);
+
+		VectorMA(entity->vViewAngles, CG->iFrameTime / 1000.0f, vVelocity, entity->vViewAngles);
+		VectorMA(entity->vViewAngles, ClientActive->iPing / 1000.0f, vVelocity, entity->vViewAngles);
+	}
+	/*
+	//=====================================================================================
+	*/
+	float cTargetList::EvaluateTrajectoryWithInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale)
+	{
+		float flResult = 0.0f;
+
+		if (trajectory->iType && trajectory->iType != 1 && trajectory->iType != 14 && trajectory->iType != 10)
+		{
+			__asm
+			{
+				fld scale;
+				push result;
+				push time;
+				push trajectory;
+				call[dwEvaluateTrajectory];
+				add esp, 0xC;
+				fstp flResult;
+			}
+		}
+
+		else
+		{
+			VectorCopy(trajectory->vBase, result);
+		}
+
+		return flResult;
 	}
 }
 

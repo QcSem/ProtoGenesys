@@ -224,7 +224,6 @@ namespace ProtoGenesys
 	bool cAutowall::BulletTrace(sBulletTraceResults* traceresults, sBulletFireParams* fireparams, sEntity* attacker, int surfacetype)
 	{
 		bool bResult = false;
-		DWORD_PTR dwAddress = dwBulletTrace;
 		_declspec(align(16)) char szSave[512];
 		_fxsave(szSave);
 		_asm
@@ -235,7 +234,7 @@ namespace ProtoGenesys
 			push fireparams
 			push 0
 			mov  esi, traceresults
-			call dwAddress
+			call dwBulletTrace
 			mov	 bResult, al
 			add  esp, 14h
 		}

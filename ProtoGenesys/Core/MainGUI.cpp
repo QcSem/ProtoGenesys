@@ -333,8 +333,6 @@ namespace ProtoGenesys
 				_drawing.DrawTracers();
 			}
 
-			ClientActive = *(sClientActive**)dwClientActive;
-
 			std::string szWatermark(VariadicText("PROTOGENESYS - COD BO2 by: InUrFace | Frametime: %s, Ping: %s",
 				LocalClientIsInGame() ? VariadicText("%i ms", CG->iFrameTime).c_str() : "N/A",
 				LocalClientIsInGame() ? VariadicText("%i ms", ClientActive->iPing).c_str() : "N/A"));
