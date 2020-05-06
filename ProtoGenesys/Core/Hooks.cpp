@@ -328,10 +328,10 @@ namespace ProtoGenesys
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", ServerSession[victim].szName);
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", 
 						VariadicText("%u.%u.%u.%u", 
-							(BYTE)ServerSession[victim].IP.szIP[0],
-							(BYTE)ServerSession[victim].IP.szIP[1],
-							(BYTE)ServerSession[victim].IP.szIP[2],
-							(BYTE)ServerSession[victim].IP.szIP[3]));
+							(BYTE)(ServerSession[victim].iIPAddress >> 0),
+							(BYTE)(ServerSession[victim].iIPAddress >> 8),
+							(BYTE)(ServerSession[victim].iIPAddress >> 16),
+							(BYTE)(ServerSession[victim].iIPAddress >> 24)));
 
 					AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
 				}

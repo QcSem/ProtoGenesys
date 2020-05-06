@@ -650,13 +650,7 @@ namespace ProtoGenesys
 		QWORD qwXuid;
 		char szName[32];
 		char _0x28[0x6E];
-
-		union uIP
-		{
-			char szIP[4];
-			int iNetAddr;
-		} IP;
-
+		int iIPAddress;
 		char _0x9A[0xAE];
 	} sServerSession;
 	/*
@@ -724,12 +718,7 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
-		union uIP
-		{
-			char szIP[4];
-			int iNetAddr;
-		} IP;
-
+		int iIPAddress;
 		short iPort;
 		char _0x6[0x2];
 		int iType;
