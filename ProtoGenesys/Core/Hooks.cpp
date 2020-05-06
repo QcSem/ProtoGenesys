@@ -39,7 +39,7 @@ namespace ProtoGenesys
 
 				if (szKey.find("name") != std::string::npos)
 				{
-					std::string szNameOverride(_profiler.gNameOverride->Current.szValue);
+					std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
 					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szNameOverride.empty() ? GetUsername() : szNameOverride.c_str();
 					PageGuardAddress(dwGetClantag);
@@ -47,7 +47,7 @@ namespace ProtoGenesys
 
 				if (szKey.find("clanAbbrev") != std::string::npos)
 				{
-					std::string szClanOverride(_profiler.gClanOverride->Current.szValue);
+					std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
 
 					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szClanOverride.empty() ? GetClantag() : szClanOverride.c_str();
 					PageGuardAddress(dwGetXuidstring);
@@ -55,7 +55,7 @@ namespace ProtoGenesys
 
 				if (szKey.find("xuid") != std::string::npos)
 				{
-					std::string szXuidOverride(_profiler.gXuidOverride->Current.szValue);
+					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
 					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str();
 					PageGuardAddress(dwGetIntPlayerStatInternal);
@@ -70,7 +70,7 @@ namespace ProtoGenesys
 				{
 					char szSteamID[0x11];
 
-					Int64ToString(strtoll(_profiler.gXuidOverride->Current.szValue, NULL, 0x10), szSteamID);
+					Int64ToString(strtoll(_profiler.gXuidOverRide->Current.szValue, NULL, 0x10), szSteamID);
 					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = std::string(szSteamID).empty() ? GetXuidstring() : std::string(szSteamID).c_str();
 				}
 
@@ -304,9 +304,9 @@ namespace ProtoGenesys
 			{
 				if (_profiler.gIdStealer->Current.bValue)
 				{
-					_profiler.gNameOverride->Current.szValue = _strdup(CG->Client[victim].szName);
-					_profiler.gClanOverride->Current.szValue = _strdup(CG->Client[victim].szClan);
-					_profiler.gXuidOverride->Current.szValue = _strdup(VariadicText("%llx", CG->Client[victim].qwXuid).c_str());
+					_profiler.gNameOverRide->Current.szValue = _strdup(CG->Client[victim].szName);
+					_profiler.gClanOverRide->Current.szValue = _strdup(CG->Client[victim].szClan);
+					_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->Client[victim].qwXuid).c_str());
 
 					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
 						CG->Client[victim].szName,
@@ -320,7 +320,7 @@ namespace ProtoGenesys
 					_profiler.gTrickShot->Current.bValue = false;
 				}
 
-				std::string szKillspam(_profiler.gKillspam->Current.szValue);
+				std::string szKillspam(_profiler.gKillSpam->Current.szValue);
 
 				if (!szKillspam.empty())
 				{
@@ -328,10 +328,10 @@ namespace ProtoGenesys
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", ServerSession[victim].szName);
 					szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", 
 						VariadicText("%u.%u.%u.%u", 
-							(BYTE)ServerSession[victim].szIP[0], 
-							(BYTE)ServerSession[victim].szIP[1], 
-							(BYTE)ServerSession[victim].szIP[2], 
-							(BYTE)ServerSession[victim].szIP[3]));
+							(BYTE)ServerSession[victim].IP.szIP[0],
+							(BYTE)ServerSession[victim].IP.szIP[1],
+							(BYTE)ServerSession[victim].IP.szIP[2],
+							(BYTE)ServerSession[victim].IP.szIP[3]));
 
 					AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
 				}
@@ -419,7 +419,7 @@ namespace ProtoGenesys
 	*/
 	void cHooks::GetAddr(bool renew)
 	{
-		std::string szIpOverride(_profiler.gIpOverride->Current.szValue);
+		std::string szIpOverride(_profiler.gIpOverRide->Current.szValue);
 
 		if (!szIpOverride.empty())
 		{

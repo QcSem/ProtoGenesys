@@ -248,7 +248,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gRecoilFactor = std::make_shared<sCvar>("Recoil Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gSpreadFactor = std::make_shared<sCvar>("Spread Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gAntiAimCustomPitch = std::make_shared<sCvar>("Anti-Aim Custom Pitch", std::vector<std::string>(), 0.0f, -85.0f, 85.0f);
-		std::shared_ptr<sCvar> gAntiAimCustomYaw = std::make_shared<sCvar>("Anti-Aim Custom Yaw", std::vector<std::string>(), 0.0f, 0.0f, 360.0f);
+		std::shared_ptr<sCvar> gAntiAimCustomYaw = std::make_shared<sCvar>("Anti-Aim Custom Yaw", std::vector<std::string>(), 0.0f, -180.0f, 180.0f);
 
 		std::shared_ptr<sCvar> gColorAxis = std::make_shared<sCvar>("Axis", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorAllies = std::make_shared<sCvar>("Allies", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
@@ -257,11 +257,11 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gColorText = std::make_shared<sCvar>("Text", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(255), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorShadow = std::make_shared<sCvar>("Shadow", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(0), ByteToFloat(0), ByteToFloat(255)));
 
-		std::shared_ptr<sCvar> gNameOverride = std::make_shared<sCvar>("Name Override", std::vector<std::string>(), _strdup(""));
-		std::shared_ptr<sCvar> gClanOverride = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), _strdup(""));
-		std::shared_ptr<sCvar> gXuidOverride = std::make_shared<sCvar>("XUID Override", std::vector<std::string>(), _strdup(""));
-		std::shared_ptr<sCvar> gIpOverride = std::make_shared<sCvar>("IP Override", std::vector<std::string>(), _strdup(""));
-		std::shared_ptr<sCvar> gKillspam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gNameOverRide = std::make_shared<sCvar>("Name Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gClanOverRide = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gXuidOverRide = std::make_shared<sCvar>("XUID Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gIpOverRide = std::make_shared<sCvar>("IP Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gKillSpam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));
 
 		acut::XmlDoc<char> XML;
 

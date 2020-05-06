@@ -50,6 +50,10 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.bValue);
 
 			XML.set("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
 			XML.set("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.iValue);
@@ -154,6 +158,10 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.bValue);
 
 			XML.get_if_present("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.iValue);
@@ -242,13 +250,9 @@ namespace ProtoGenesys
 		gHardcoreHud->Current.bValue = gHardcoreHud->Reset.bValue;
 		gDisableEmp->Current.bValue = gDisableEmp->Reset.bValue;
 		gIdStealer->Current.bValue = gIdStealer->Reset.bValue;
+		gAirStuckToggle->Current.bValue = gAirStuckToggle->Reset.bValue;
+		gReloadCancel->Current.bValue = gReloadCancel->Reset.bValue;
 		gTrickShot->Current.bValue = gTrickShot->Reset.bValue;
-
-		gNameOverride->Current.szValue = _strdup(gNameOverride->Reset.szValue);
-		gClanOverride->Current.szValue = _strdup(gClanOverride->Reset.szValue);
-		gXuidOverride->Current.szValue = _strdup(gXuidOverride->Reset.szValue);
-		gIpOverride->Current.szValue = _strdup(gIpOverride->Reset.szValue);
-		gKillspam->Current.szValue = _strdup(gKillspam->Reset.szValue);
 	}
 }
 

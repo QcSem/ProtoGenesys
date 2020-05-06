@@ -708,91 +708,94 @@ namespace ProtoGenesys
 
 					for (int i = 0; i < MAX_CLIENTS; i++)
 					{
-						if (CG->Client[i].iInfoValid)
-						{
-							ImGui::Separator();
+						if (!CG->Client[i].iInfoValid)
+							continue;
 
-							if (ImGui::Selectable(ServerSession[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
+						if (!ServerSession[i].szName[0] && !ServerSession[i].IP.iNetAddr && !ServerSession[i].qwXuid)
+							continue;
+
+						ImGui::Separator();
+
+						if (ImGui::Selectable(ServerSession[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
+						{
+							bWriteLog = true;
+						}
+
+						if (ImGui::BeginPopupContextItem(ServerSession[i].szName))
+						{
+							if (ImGui::Selectable("Add To Friend List"))
 							{
+								std::ofstream file(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::out | std::ios_base::app);
+								file << (std::to_string(ServerSession[i].qwXuid) + " " + ServerSession[i].szName).c_str() << std::endl;
+
 								bWriteLog = true;
 							}
 
-							if (ImGui::BeginPopupContextItem(ServerSession[i].szName))
+							if (ImGui::Selectable("View Profile"))
 							{
-								if (ImGui::Selectable("Add To Friend List"))
-								{
-									std::ofstream file(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::out | std::ios_base::app);
-									file << (std::to_string(ServerSession[i].qwXuid) + " " + ServerSession[i].szName).c_str() << std::endl;
+								PopOverlayForSteamID(ServerSession[i].qwXuid);
 
-									bWriteLog = true;
-								}
-
-								if (ImGui::Selectable("View Profile"))
-								{
-									PopOverlayForSteamID(ServerSession[i].qwXuid);
-
-									bShowWindow = false;
-									bWriteLog = true;
-								}
-
-								if (ImGui::Selectable("Steal ID"))
-								{
-									_profiler.gNameOverride->Current.szValue = _strdup(CG->Client[i].szName);
-									_profiler.gClanOverride->Current.szValue = _strdup(CG->Client[i].szClan);
-									_profiler.gXuidOverride->Current.szValue = _strdup(VariadicText("%llx", CG->Client[i].qwXuid).c_str());
-
-									AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
-										CG->Client[i].szName,
-										CG->Client[i].szClan,
-										CG->Client[i].qwXuid));
-
-									bWriteLog = true;
-								}
-
-								ImGui::Separator();
-
-								if (ImGui::Selectable("Copy Name"))
-								{
-									ImGui::LogToClipboard();
-									ImGui::LogText(ServerSession[i].szName);
-									ImGui::LogFinish();
-
-									bWriteLog = true;
-								}
-
-								if (ImGui::Selectable("Copy IP Address"))
-								{
-									ImGui::LogToClipboard();
-									ImGui::LogText(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].szIP[0], (BYTE)ServerSession[i].szIP[1], (BYTE)ServerSession[i].szIP[2], (BYTE)ServerSession[i].szIP[3]).c_str());
-									ImGui::LogFinish();
-
-									bWriteLog = true;
-								}
-
-								if (ImGui::Selectable("Copy SteamID"))
-								{
-									ImGui::LogToClipboard();
-									ImGui::LogText(std::to_string(ServerSession[i].qwXuid).c_str());
-									ImGui::LogFinish();
-
-									bWriteLog = true;
-								}
-
-								ImGui::EndPopup();
-							} ImGui::NextColumn();
-
-							ImGui::Text(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].szIP[0], (BYTE)ServerSession[i].szIP[1], (BYTE)ServerSession[i].szIP[2], (BYTE)ServerSession[i].szIP[3]).c_str());
-							if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
-							{
+								bShowWindow = false;
 								bWriteLog = true;
-							} ImGui::NextColumn();
+							}
 
-							ImGui::Text(std::to_string(ServerSession[i].qwXuid).c_str());
-							if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
+							if (ImGui::Selectable("Steal ID"))
 							{
+								_profiler.gNameOverRide->Current.szValue = _strdup(CG->Client[i].szName);
+								_profiler.gClanOverRide->Current.szValue = _strdup(CG->Client[i].szClan);
+								_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->Client[i].qwXuid).c_str());
+
+								AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
+									CG->Client[i].szName,
+									CG->Client[i].szClan,
+									CG->Client[i].qwXuid));
+
 								bWriteLog = true;
-							} ImGui::NextColumn();
-						}
+							}
+
+							ImGui::Separator();
+
+							if (ImGui::Selectable("Copy Name"))
+							{
+								ImGui::LogToClipboard();
+								ImGui::LogText(ServerSession[i].szName);
+								ImGui::LogFinish();
+
+								bWriteLog = true;
+							}
+
+							if (ImGui::Selectable("Copy IP Address"))
+							{
+								ImGui::LogToClipboard();
+								ImGui::LogText(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].IP.szIP[0], (BYTE)ServerSession[i].IP.szIP[1], (BYTE)ServerSession[i].IP.szIP[2], (BYTE)ServerSession[i].IP.szIP[3]).c_str());
+								ImGui::LogFinish();
+
+								bWriteLog = true;
+							}
+
+							if (ImGui::Selectable("Copy SteamID"))
+							{
+								ImGui::LogToClipboard();
+								ImGui::LogText(std::to_string(ServerSession[i].qwXuid).c_str());
+								ImGui::LogFinish();
+
+								bWriteLog = true;
+							}
+
+							ImGui::EndPopup();
+						} ImGui::NextColumn();
+
+						ImGui::Text(VariadicText("%u.%u.%u.%u", (BYTE)ServerSession[i].IP.szIP[0], (BYTE)ServerSession[i].IP.szIP[1], (BYTE)ServerSession[i].IP.szIP[2], (BYTE)ServerSession[i].IP.szIP[3]).c_str());
+						if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
+						{
+							bWriteLog = true;
+						} ImGui::NextColumn();
+
+						ImGui::Text(std::to_string(ServerSession[i].qwXuid).c_str());
+						if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
+						{
+							bWriteLog = true;
+						} ImGui::NextColumn();
 					}
 
 					ImGui::Columns(1);

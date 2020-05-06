@@ -650,7 +650,13 @@ namespace ProtoGenesys
 		QWORD qwXuid;
 		char szName[32];
 		char _0x28[0x6E];
-		char szIP[4];
+
+		union uIP
+		{
+			char szIP[4];
+			int iNetAddr;
+		} IP;
+
 		char _0x9A[0xAE];
 	} sServerSession;
 	/*

@@ -78,7 +78,7 @@ namespace ProtoGenesys
 		{
 			static float flAngle = 0.0f;
 
-			if (flAngle > 360.0f)
+			if (flAngle > 180.0f)
 				flAngle -= 360.0f;
 
 			vAntiAimAngles[1] = flAngle - CG->PlayerState.vDeltaAngles[1];
@@ -108,7 +108,7 @@ namespace ProtoGenesys
 				break;
 
 			case 4:
-				vAntiAimAngles[1] = 270.0f - CG->PlayerState.vDeltaAngles[1];
+				vAntiAimAngles[1] = -90.0f - CG->PlayerState.vDeltaAngles[1];
 				iMode = 1;
 				break;
 			}
@@ -117,7 +117,7 @@ namespace ProtoGenesys
 		else if (_profiler.gAntiAimYaw->Current.iValue == cProfiler::ANTIAIM_YAW_RANDOM)
 		{
 			std::random_device Device;
-			std::uniform_real_distribution<float> RandomYaw(0.0f, 360.0f);
+			std::uniform_real_distribution<float> RandomYaw(-180.0f, 180.0f);
 
 			vAntiAimAngles[1] = RandomYaw(Device) - CG->PlayerState.vDeltaAngles[1];
 		}
