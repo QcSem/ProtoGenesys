@@ -21,7 +21,7 @@ namespace ProtoGenesys
 		MakeVector(CG->vRefDefViewAngles, vAimAngles);
 		MakeVector(vAngles, vAngles);
 
-		float flMag = sqrtf(DotProduct(vAimAngles, vAimAngles)),
+		float flMag = VectorLength(vAimAngles),
 			flDot = DotProduct(vAimAngles, vAngles),
 			flReturn = RadiansToDegrees(acosf(flDot / powf(flMag, 2.0f)));
 
@@ -39,7 +39,7 @@ namespace ProtoGenesys
 
 		VectorSubtract(start, end, vDirection);
 
-		return sqrtf(DotProduct(vDirection, vDirection));
+		return VectorLength(vDirection);
 	}
 	/*
 	//=====================================================================================
@@ -122,7 +122,7 @@ namespace ProtoGenesys
 	*/
 	void cMathematics::VectorNormalize(Vector3 direction)
 	{
-		float flLen = sqrtf(DotProduct(direction, direction));
+		float flLen = VectorLength(direction);
 
 		if (flLen == 0.0f)
 		{

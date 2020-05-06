@@ -8,7 +8,7 @@ namespace ProtoGenesys
 {
 	cAutowall _autoWall;
 
-	float cAutowall::Autowall(Vector3 start, Vector3 end, short hitloc)
+	float cAutowall::Autowall(sEntity* entity, Vector3 start, Vector3 end, short hitloc)
 	{
 		int iIndex = CG->iClientNum;
 		sEntity* pCEntity = &CG->Entity[iIndex];
@@ -38,6 +38,7 @@ namespace ProtoGenesys
 		VectorCopy(end, FP_Enter.vEnd);
 
 		VectorSubtract(end, start, FP_Enter.vDir);
+		float flLength = VectorLength(FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
 		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
@@ -54,15 +55,18 @@ namespace ProtoGenesys
 				if (HitTeammate(&TR_Enter))
 					return 0.0f;
 
+			if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum)
+				return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
+
 			bool bHasFMJ = HasPerk(6);
-			int iSurfaceCount = 0;
 			float flEnterDepth = 0.0f;
 			float flExitDepth = 0.0f;
 			float flSurfaceDepth = 0.0f;
 
 			Vector3 vHitPos = { 0.0f };
+			Vector3 vTemp = { 0.0f };
 
-			while (TRUE)
+			for (int iSurfaceCount = 0; iSurfaceCount < ((sDvar*)dwPenetrationCount)->Current.iValue; ++iSurfaceCount)
 			{
 				flEnterDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Enter.iSurfaceType);
 
@@ -73,6 +77,10 @@ namespace ProtoGenesys
 					return 0.0f;
 
 				VectorCopy(TR_Enter.vHitPos, vHitPos);
+				VectorSubtract(vHitPos, FP_Enter.vStart, vTemp);
+
+				if (VectorLength(vTemp) >= flLength)
+					return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
 					return 0.0f;
@@ -148,20 +156,20 @@ namespace ProtoGenesys
 							if (!bEnterHit)
 								return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 						}
+
+						if (GetTraceHitType(&TR_Exit) == entity->NextEntityState.iEntityNum)
+							return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 					}
 				}
 
 				else if (!bEnterHit)
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 
-				if (bEnterHit)
-				{
-					if (++iSurfaceCount < ((sDvar*)dwPenetrationCount)->Current.iValue)
-						continue;
-				}
-
-				return 0.0f;
+				if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum)
+					return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 			}
+
+			return 0.0f;
 		}
 
 		return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
@@ -169,7 +177,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	float cAutowall::TraceBullet(Vector3 start, Vector3 end, short hitloc, int entitynum)
+	float cAutowall::TraceBullet(sEntity* entity, Vector3 start, Vector3 end, short hitloc)
 	{
 		int iIndex = CG->iClientNum;
 		sEntity* pCEntity = &CG->Entity[iIndex];
@@ -196,7 +204,10 @@ namespace ProtoGenesys
 
 		BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
-		if ((TR_Enter.Trace.wHitID == entitynum || TR_Enter.Trace.flFraction == 1.0f) && !HitRiotshield(&TR_Enter))
+		if (HitRiotshield(&TR_Enter))
+			return 0.0f;
+
+		if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum)
 			return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 
 		return 0.0f;
@@ -204,7 +215,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cAutowall::TraceLine(Vector3 start, Vector3 end, int entitynum)
+	bool cAutowall::TraceLine(sEntity* entity, Vector3 start, Vector3 end)
 	{
 		Vector3 vStart, vEnd;
 
@@ -216,7 +227,7 @@ namespace ProtoGenesys
 
 		LocationalTrace(&Trace, vStart, vEnd, CG->iClientNum, 0x803003);
 
-		return (Trace.wHitID == entitynum || Trace.flFraction == 1.0f);
+		return (Trace.wHitID == entity->NextEntityState.iEntityNum || Trace.flFraction == 1.0f);
 	}
 	/*
 	//=====================================================================================

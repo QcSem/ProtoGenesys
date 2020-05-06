@@ -202,7 +202,7 @@ namespace ProtoGenesys
 
 		if (WeaponIsVehicle())
 		{
-			float flDamage = _autoWall.TraceBullet(vViewOrigin, position, hitloc, entity->NextEntityState.iEntityNum);
+			float flDamage = _autoWall.TraceBullet(entity, vViewOrigin, position, hitloc);
 
 			if (damage)
 				*damage = flDamage;
@@ -213,7 +213,7 @@ namespace ProtoGenesys
 
 		else if (autowall)
 		{
-			float flDamage = _autoWall.Autowall(vViewOrigin, position, hitloc);
+			float flDamage = _autoWall.Autowall(entity, vViewOrigin, position, hitloc);
 
 			if (damage)
 				*damage = flDamage;
@@ -224,7 +224,7 @@ namespace ProtoGenesys
 
 		else
 		{
-			float flDamage = _autoWall.TraceBullet(vViewOrigin, position, hitloc, entity->NextEntityState.iEntityNum);
+			float flDamage = _autoWall.TraceBullet(entity, vViewOrigin, position, hitloc);
 
 			if (damage)
 				*damage = flDamage;

@@ -31,6 +31,7 @@
 #define AngleToShort(a) ((int)((a)*(65536/360.0f))&65535)
 #define ShortToAngle(a) ((float)((a)*(360.0f/65536)))
 #define AngleNormalize(a) (ShortToAngle(AngleToShort((a))))
+#define VectorLength(a) (sqrtf(powf((a)[0],2.0f)+powf((a)[1],2.0f)+powf((a)[2],2.0f)))
 #define DotProduct(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VectorGetSign(a) ((a)[0]=(float)GetSign((a)[0]),(a)[1]=(float)GetSign((a)[1]),(a)[2]=(float)GetSign((a)[2]))
 #define VectorCopy(a,b) ((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2])
