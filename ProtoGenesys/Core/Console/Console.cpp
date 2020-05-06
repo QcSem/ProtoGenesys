@@ -122,6 +122,12 @@ namespace ProtoGenesys
 				_mainGui.bWriteLog = true;
 			}
 
+			if (ImGui::Selectable("Copy"))
+			{
+				bCopyToClipboard = true;
+				_mainGui.bWriteLog = true;
+			}
+
 			ImGui::EndPopup();
 			_mainGui.bWriteLog = true;
 		}

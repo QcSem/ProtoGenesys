@@ -710,8 +710,8 @@ namespace ProtoGenesys
 					{
 						if (!CG->Client[i].iInfoValid)
 							continue;
-
-						if (!ServerSession[i].szName[0] && !ServerSession[i].iIPAddress && !ServerSession[i].qwXuid)
+						
+						if (std::string(ServerSession[i].szName).empty() && !DwordFromBytes(ServerSession[i].iIPAddress) && !ServerSession[i].qwXuid)
 							continue;
 
 						ImGui::Separator();
@@ -767,11 +767,12 @@ namespace ProtoGenesys
 							if (ImGui::Selectable("Copy IP Address"))
 							{
 								ImGui::LogToClipboard();
-								ImGui::LogText(VariadicText("%u.%u.%u.%u", 
-									(BYTE)(ServerSession[i].iIPAddress >> 0), 
-									(BYTE)(ServerSession[i].iIPAddress >> 8), 
-									(BYTE)(ServerSession[i].iIPAddress >> 16), 
-									(BYTE)(ServerSession[i].iIPAddress >> 24)).c_str());
+								ImGui::LogText(VariadicText("%u.%u.%u.%u",
+									(BYTE)ServerSession[i].iIPAddress[0],
+									(BYTE)ServerSession[i].iIPAddress[1],
+									(BYTE)ServerSession[i].iIPAddress[2],
+									(BYTE)ServerSession[i].iIPAddress[3]).c_str());
+
 								ImGui::LogFinish();
 
 								bWriteLog = true;
@@ -790,10 +791,11 @@ namespace ProtoGenesys
 						} ImGui::NextColumn();
 
 						ImGui::Text(VariadicText("%u.%u.%u.%u", 
-							(BYTE)(ServerSession[i].iIPAddress >> 0),
-							(BYTE)(ServerSession[i].iIPAddress >> 8),
-							(BYTE)(ServerSession[i].iIPAddress >> 16),
-							(BYTE)(ServerSession[i].iIPAddress >> 24)).c_str());
+							(BYTE)ServerSession[i].iIPAddress[0],
+							(BYTE)ServerSession[i].iIPAddress[1],
+							(BYTE)ServerSession[i].iIPAddress[2],
+							(BYTE)ServerSession[i].iIPAddress[3]).c_str());
+
 						if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
 						{
 							bWriteLog = true;

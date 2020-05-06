@@ -25,6 +25,7 @@
 #define M_PI_DOUBLE ((float)M_PI*2.0f)
 
 #define ByteToFloat(a) ((float)(a)/255.0f)
+#define DwordFromBytes(a) (((BYTE)(a)[0])|((BYTE)(a)[1]<<8)|((BYTE)(a)[2]<<16)|((BYTE)(a)[3]<<24))
 #define GetSign(a) ((a)?((*(int*)&(a)>>31)|1):0)
 #define DegreesToRadians(a) ((a)*((float)M_PI/180.0f))
 #define RadiansToDegrees(a) ((a)*(180.0f/(float)M_PI))
@@ -650,7 +651,7 @@ namespace ProtoGenesys
 		QWORD qwXuid;
 		char szName[32];
 		char _0x28[0x6E];
-		int iIPAddress;
+		char iIPAddress[4];
 		char _0x9A[0xAE];
 	} sServerSession;
 	/*
@@ -718,7 +719,7 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
-		int iIPAddress;
+		char iIPAddress[4];
 		short iPort;
 		char _0x6[0x2];
 		int iType;
