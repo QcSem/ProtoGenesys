@@ -164,6 +164,22 @@ namespace ProtoGenesys
 	*/
 	typedef enum
 	{
+		WEAPTYPE_BULLET,
+		WEAPTYPE_GRENADE,
+		WEAPTYPE_PROJECTILE,
+		WEAPTYPE_BINOCULARS,
+		WEAPTYPE_GAS,
+		WEAPTYPE_BOMB,
+		WEAPTYPE_MINE,
+		WEAPTYPE_MELEE,
+		WEAPTYPE_RIOTSHIELD,
+		WEAPTYPE_MAX
+	} eWeaponType;
+	/*
+	//=====================================================================================
+	*/
+	typedef enum
+	{
 		TEAM_FREE,
 		TEAM_ALLIES,
 		TEAM_AXIS,
@@ -406,7 +422,7 @@ namespace ProtoGenesys
 	typedef struct
 	{
 		char _0x0[0x1C];
-		int iWeaponType;
+		eWeaponType iWeaponType;
 		char _0x20[0x4];
 		ePenetrateType iPenetrateType;
 		char _0x28[0x609];
@@ -1083,16 +1099,16 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	inline int GetWeaponDamageForRange(int weapon, Vector3 vieworigin, Vector3 hitpos)
+	inline int GetWeaponDamageForRange(int weapon, Vector3 startpos, Vector3 hitpos)
 	{
-		return VariadicCall<int>(dwGetWeaponDamageForRange, weapon, vieworigin, hitpos);
+		return VariadicCall<int>(dwGetWeaponDamageForRange, weapon, startpos, hitpos);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline float GetWeaponHitLocationMultiplier(int partgroup, int weapon)
+	inline float GetWeaponHitLocationMultiplier(int hitloc, int weapon)
 	{
-		return VariadicCall<float>(dwGetWeaponHitLocationMultiplier, partgroup, weapon);
+		return VariadicCall<float>(dwGetWeaponHitLocationMultiplier, hitloc, weapon);
 	}
 	/*
 	//=====================================================================================

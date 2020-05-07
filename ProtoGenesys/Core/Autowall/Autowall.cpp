@@ -10,11 +10,12 @@ namespace ProtoGenesys
 
 	float cAutowall::Autowall(sEntity* entity, Vector3 start, Vector3 end, short hitloc)
 	{
-		int iIndex = CG->iClientNum;
-		sEntity* pCEntity = &CG->Entity[iIndex];
-		int iWeaponID = pCEntity->NextEntityState.iWeaponID;
-		sWeaponDef* WeaponDef = GetWeaponDef(iWeaponID);
-		ePenetrateType iPenetrateType = GetPenetrateType(iWeaponID);
+		int iClientNum = CG->iClientNum;
+		sEntity* pEntity = &CG->Entity[iClientNum];
+		int iWeaponID = pEntity->NextEntityState.iWeaponID;
+		sWeaponDef* pWeaponDef = GetWeaponDef(iWeaponID);
+		ePenetrateType iPenetrateType = pWeaponDef->iPenetrateType;
+		eWeaponType iWeaponType = pWeaponDef->iWeaponType;
 
 		sBulletFireParams FP_Enter;
 		ZeroMemory(&FP_Enter, sizeof(sBulletFireParams));
@@ -29,9 +30,9 @@ namespace ProtoGenesys
 		ZeroMemory(&TR_Exit, sizeof(sBulletTraceResults));
 
 		FP_Enter.iMaxEntNum = 1022;
-		FP_Enter.iEntityNum = iIndex;
+		FP_Enter.iEntityNum = iClientNum;
 		FP_Enter.flPower = 1.0f;
-		FP_Enter.iBulletType = (WeaponDef->bRifleBullet != 0) + 1;
+		FP_Enter.iBulletType = (pWeaponDef->bRifleBullet != 0) + 1;
 
 		VectorCopy(start, FP_Enter.vViewOrigin);
 		VectorCopy(start, FP_Enter.vStart);
@@ -41,11 +42,11 @@ namespace ProtoGenesys
 		float flLength = VectorLength(FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
-		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
+		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pEntity, TRACE_HITTYPE_NONE);
 
 		if (bEnterHit)
 		{
-			if (iPenetrateType <= 0)
+			if (iPenetrateType <= PENETRATE_TYPE_NONE)
 				return 0.0f;
 
 			if (HitRiotshield(&TR_Enter))
@@ -85,7 +86,7 @@ namespace ProtoGenesys
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
 					return 0.0f;
 
-				bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TR_Enter.iSurfaceType);
+				bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pEntity, TR_Enter.iSurfaceType);
 
 				if (HitRiotshield(&TR_Enter))
 					return 0.0f;
@@ -106,7 +107,7 @@ namespace ProtoGenesys
 				if (bEnterHit)
 					AdvanceTrace(&FP_Exit, &TR_Exit, 0.0099999998f);
 
-				bool bExitHit = BulletTrace(&TR_Exit, &FP_Exit, pCEntity, TR_Exit.iSurfaceType);
+				bool bExitHit = BulletTrace(&TR_Exit, &FP_Exit, pEntity, TR_Exit.iSurfaceType);
 				bool bStaticModel = bExitHit && TR_Exit.Trace.bAllSolid || TR_Enter.Trace.bStartSolid && TR_Exit.Trace.bStartSolid;
 
 				if (HitRiotshield(&TR_Exit))
@@ -143,7 +144,7 @@ namespace ProtoGenesys
 					if (FP_Enter.flPower <= 0.0f)
 						return 0.0f;
 
-					if (!bStaticModel && !WeaponDef->iWeaponType)
+					if (!bStaticModel && iWeaponType == WEAPTYPE_BULLET)
 					{
 						Vector3 vLength;
 
@@ -179,10 +180,10 @@ namespace ProtoGenesys
 	*/
 	float cAutowall::TraceBullet(sEntity* entity, Vector3 start, Vector3 end, short hitloc)
 	{
-		int iIndex = CG->iClientNum;
-		sEntity* pCEntity = &CG->Entity[iIndex];
-		int iWeaponID = pCEntity->NextEntityState.iWeaponID;
-		sWeaponDef* WeaponDef = GetWeaponDef(iWeaponID);
+		int iClientNum = CG->iClientNum;
+		sEntity* pEntity = &CG->Entity[iClientNum];
+		int iWeaponID = pEntity->NextEntityState.iWeaponID;
+		sWeaponDef* pWeaponDef = GetWeaponDef(iWeaponID);
 
 		sBulletFireParams FP_Enter;
 		ZeroMemory(&FP_Enter, sizeof(sBulletFireParams));
@@ -191,9 +192,9 @@ namespace ProtoGenesys
 		ZeroMemory(&TR_Enter, sizeof(sBulletTraceResults));
 
 		FP_Enter.iMaxEntNum = 1022;
-		FP_Enter.iEntityNum = iIndex;
+		FP_Enter.iEntityNum = iClientNum;
 		FP_Enter.flPower = 1.0f;
-		FP_Enter.iBulletType = (WeaponDef->bRifleBullet != 0) + 1;
+		FP_Enter.iBulletType = (pWeaponDef->bRifleBullet != 0) + 1;
 
 		VectorCopy(start, FP_Enter.vViewOrigin);
 		VectorCopy(start, FP_Enter.vStart);
@@ -202,7 +203,7 @@ namespace ProtoGenesys
 		VectorSubtract(end, start, FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
-		BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
+		BulletTrace(&TR_Enter, &FP_Enter, pEntity, TRACE_HITTYPE_NONE);
 
 		if (HitRiotshield(&TR_Enter))
 			return 0.0f;
@@ -258,14 +259,14 @@ namespace ProtoGenesys
 	float cAutowall::GetRemainingDamage(sBulletFireParams* fireparams, sBulletTraceResults* traceresults, short partgroup, int weapon)
 	{
 		float flDamage = 0.0f;
-		Vector3 vHitPos, vOrigin;
+		Vector3 vHitPos, vStart;
 
 		if (fireparams->flPower > 0.0f)
 		{
 			VectorCopy(traceresults->vHitPos, vHitPos);
-			VectorCopy(fireparams->vViewOrigin, vOrigin);
+			VectorCopy(fireparams->vStart, vStart);
 
-			flDamage = (float)GetWeaponDamageForRange(weapon, vOrigin, vHitPos) * fireparams->flPower;
+			flDamage = (float)GetWeaponDamageForRange(weapon, vStart, vHitPos) * fireparams->flPower;
 			flDamage = GetWeaponHitLocationMultiplier(partgroup, weapon) * flDamage;
 
 			if (flDamage <= 0.0f)
