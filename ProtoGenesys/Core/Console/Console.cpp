@@ -144,16 +144,16 @@ namespace ProtoGenesys
 			LPCSTR szItem = vItems[i];
 			ImVec4 cTemp = cDefaultText;
 
-			if (strstr(szItem, "[ERROR]"))
+			if (strncmp(szItem, PREFIX_ERROR, strlen(PREFIX_ERROR)) == 0)
 				cTemp = ImColor(1.0f, 0.4f, 0.4f, 1.0f);
 
-			else if (strncmp(szItem, "# ", 2) == 0)
+			else if (strncmp(szItem, PREFIX_COMMAND, strlen(PREFIX_COMMAND)) == 0)
 				cTemp = ImColor(1.0f, 0.5f, 0.3f, 1.0f);
 
-			else if (strncmp(szItem, "] ", 2) == 0)
+			else if (strncmp(szItem, PREFIX_WARNING, strlen(PREFIX_WARNING)) == 0)
 				cTemp = ImColor(1.0f, 1.0f, 0.3f, 1.0f);
 
-			else if (strncmp(szItem, "> ", 2) == 0)
+			else if (strncmp(szItem, PREFIX_LOG, strlen(PREFIX_LOG)) == 0)
 				cTemp = ImColor(0.3f, 0.5f, 1.0f, 1.0f);
 
 			ImGui::PushStyleColor(ImGuiCol_Text, cTemp);

@@ -62,7 +62,7 @@ namespace ProtoGenesys
 		bool DrawOption(std::string label, std::string option, Type* value, Type min, Type max, Type step);
 		bool DrawColorPicker(std::string label, ImVec4& color);
 
-		Win32Thunk<tWindowProcess, cMainGUI> _thunkWindowProcess;
+		StdThunk<tWindowProcess, cMainGUI> _thunkWindowProcess;
 	} extern _mainGui;
 }
 

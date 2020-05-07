@@ -62,7 +62,7 @@ namespace ProtoGenesys
 		sSteamID GetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
 		void RefreshFriends();
 
-		Win32Thunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;
+		StdThunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;
 	} extern _hooks;
 }
 

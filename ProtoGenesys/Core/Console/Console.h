@@ -6,12 +6,20 @@
 
 //=====================================================================================
 
+#define PREFIX_ERROR "[ERROR] "
+#define PREFIX_COMMAND "# "
+#define PREFIX_WARNING "] "
+#define PREFIX_LOG "> "
+
+//=====================================================================================
+
 namespace ProtoGenesys
 {
 	class cConsole
 	{
 	public:
 
+		cConsole() : _thunkTextCallback(&cConsole::TextEditCallbackStub, this) {}
 		~cConsole();
 
 		typedef struct
@@ -63,8 +71,10 @@ namespace ProtoGenesys
 
 		void SplitCommandLine(LPCSTR in, sCmdLine* out);
 		void ExecCommand(LPCSTR command);
-		static int TextEditCallbackStub(ImGuiTextEditCallbackData* data);
+		int TextEditCallbackStub(ImGuiTextEditCallbackData* data);
 		int TextEditCallback(ImGuiTextEditCallbackData* data);
+
+		Thunk<ImGuiInputTextCallback, cConsole> _thunkTextCallback;
 	} extern _console;
 }
 

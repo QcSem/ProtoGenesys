@@ -274,9 +274,10 @@ namespace ProtoGenesys
 	{
 		float flAngle;
 
-		Vector3 vDirection, vAngles;
+		Vector3 vViewOrigin, vDirection, vAngles;
 
-		VectorSubtract(CG->RefDef.vViewOrigin, world, vDirection);
+		GetPlayerViewOrigin(vViewOrigin);
+		VectorSubtract(vViewOrigin, world, vDirection);
 
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAngles);
@@ -294,10 +295,14 @@ namespace ProtoGenesys
 	*/
 	void cMathematics::WorldToRadar(Vector3 world, ImVec2 radarpos, float scale, float radarsize, float blipsize, ImVec2& screen)
 	{
+		Vector3 vViewOrigin;
+
+		GetPlayerViewOrigin(vViewOrigin);
+
 		float flCosYaw = cosf(DegreesToRadians(CG->vRefDefViewAngles[1])),
 			flSinYaw = sinf(DegreesToRadians(CG->vRefDefViewAngles[1])),
-			flDeltaX = world[0] - CG->RefDef.vViewOrigin[0],
-			flDeltaY = world[1] - CG->RefDef.vViewOrigin[1],
+			flDeltaX = world[0] - vViewOrigin[0],
+			flDeltaY = world[1] - vViewOrigin[1],
 			flLocationX = (flDeltaY * flCosYaw - flDeltaX * flSinYaw) / scale,
 			flLocationY = (flDeltaX * flCosYaw + flDeltaY * flSinYaw) / scale;
 

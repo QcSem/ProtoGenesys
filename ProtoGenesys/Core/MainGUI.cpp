@@ -853,7 +853,7 @@ namespace ProtoGenesys
 
 				bool bReclaimFocus = false;
 				ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
-				if (ImGui::InputText("", _console.szInput, IM_ARRAYSIZE(_console.szInput), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, &cConsole::TextEditCallbackStub, &_console))
+				if (ImGui::InputText("", _console.szInput, IM_ARRAYSIZE(_console.szInput), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, _console._thunkTextCallback.GetThunk(), &_console))
 				{
 					LPSTR szInputEnd = _console.szInput + strlen(_console.szInput);
 
