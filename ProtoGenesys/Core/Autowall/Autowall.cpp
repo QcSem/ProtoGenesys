@@ -59,6 +59,7 @@ namespace ProtoGenesys
 				return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 
 			bool bHasFMJ = HasPerk(6);
+			int iSurfaceCount = 0;
 			float flEnterDepth = 0.0f;
 			float flExitDepth = 0.0f;
 			float flSurfaceDepth = 0.0f;
@@ -66,7 +67,7 @@ namespace ProtoGenesys
 			Vector3 vHitPos = { 0.0f };
 			Vector3 vTemp = { 0.0f };
 
-			for (int iSurfaceCount = 0; iSurfaceCount < ((sDvar*)dwPenetrationCount)->Current.iValue; ++iSurfaceCount)
+			while (TRUE)
 			{
 				flEnterDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Enter.iSurfaceType);
 
@@ -167,9 +168,15 @@ namespace ProtoGenesys
 
 				if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum)
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
-			}
 
-			return 0.0f;
+				if (bEnterHit)
+				{
+					if (++iSurfaceCount < ((sDvar*)dwPenetrationCount)->Current.iValue)
+						continue;
+				}
+
+				return 0.0f;
+			}
 		}
 
 		return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
