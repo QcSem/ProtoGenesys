@@ -31,7 +31,8 @@
 #define RadiansToDegrees(a) ((a)*(180.0f/(float)M_PI))
 #define AngleToShort(a) ((int)((a)*(65536/360.0f))&65535)
 #define ShortToAngle(a) ((float)((a)*(360.0f/65536)))
-#define AngleNormalize(a) (ShortToAngle(AngleToShort((a))))
+#define AngleNormalize360(a) (ShortToAngle(AngleToShort((a))))
+#define AngleNormalize180(a) (((a)/360.0f-floorf((a)/360.0f+0.5f))*360.0f)
 #define DotProduct(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VectorGetSign(a) ((a)[0]=(float)GetSign((a)[0]),(a)[1]=(float)GetSign((a)[1]),(a)[2]=(float)GetSign((a)[2]))
 #define VectorCopy(a,b) ((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2])
@@ -863,7 +864,6 @@ namespace ProtoGenesys
 	static DWORD_PTR dwEntityIsTeammate = bIsSteamVersion ? 0x50EC80 : 0x4309A0;
 	static DWORD_PTR dwGetPlayerViewOrigin = bIsSteamVersion ? 0x580890 : 0x640E80;
 	static DWORD_PTR dwEvaluateTrajectory = bIsSteamVersion ? 0x47F7A0 : 0x44CE20;
-	static DWORD_PTR dwAngleNormalize180 = bIsSteamVersion ? 0x4DEF60 : 0x5FFDA0;
 	static DWORD_PTR dwWeaponIsVehicle = bIsSteamVersion ? 0x5B8AD0 : 0x5AE8C0;
 	static DWORD_PTR dwWeaponAmmoAvailable = bIsSteamVersion ? 0x557C40 : 0x6DF580;
 	static DWORD_PTR dwSetZoomState = bIsSteamVersion ? 0x42BD00 : 0x583950;
@@ -924,385 +924,378 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	template <typename... Parameters>
-	inline void Com_Error(eErrorParam code, LPCSTR format, Parameters... params)
+	static void Com_Error(eErrorParam code, LPCSTR format, Parameters... params)
 	{
 		return VariadicCall<void>(dwComError, code, format, params...);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline DWORD Sys_GetValue(int value)
+	static DWORD Sys_GetValue(int value)
 	{
 		return VariadicCall<DWORD>(dwSysGetValue, value);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline DWORD RegisterShader(std::string name)
+	static DWORD RegisterShader(std::string name)
 	{
 		return VariadicCall<DWORD>(dwRegisterShader, name.c_str(), 7, 1, -1);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool PrepFireParams(sEntity* entity, WORD tag, int weapon, int _event, bool player, sBulletFireParams* fireparams, Vector3 tracerstart, int* shots, float* range, sOrientation* orientation, Vector3 origin, float* spread, int* ignorenum)
+	static bool PrepFireParams(sEntity* entity, WORD tag, int weapon, int _event, bool player, sBulletFireParams* fireparams, Vector3 tracerstart, int* shots, float* range, sOrientation* orientation, Vector3 origin, float* spread, int* ignorenum)
 	{
 		return VariadicCall<bool>(dwPrepFireParams, 0, entity, tag, &CG->PlayerState, weapon, _event, player, fireparams, tracerstart, shots, range, orientation, origin, spread, ignorenum);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPSTR GetUsername()
+	static LPSTR GetUsername()
 	{
 		return VariadicCall<LPSTR>(dwGetUsername, 0);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPSTR GetClantag()
+	static LPSTR GetClantag()
 	{
 		return VariadicCall<LPSTR>(dwGetClantag, 0);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPSTR GetXuidstring()
+	static LPSTR GetXuidstring()
 	{
 		return VariadicCall<LPSTR>(dwGetXuidstring, 0);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void PopOverlayForSteamID(QWORD steamid)
+	static void PopOverlayForSteamID(QWORD steamid)
 	{
 		return VariadicCall<void>(dwPopOverlayForSteamID, steamid);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int GetIntPlayerStatInternal(int pathdepth, LPSTR* statpath, LPSTR buffer)
+	static int GetIntPlayerStatInternal(int pathdepth, LPSTR* statpath, LPSTR buffer)
 	{
 		return VariadicCall<int>(dwGetIntPlayerStatInternal, pathdepth, statpath, buffer);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int Int64ToString(QWORD int64, LPSTR buffer)
+	static int Int64ToString(QWORD int64, LPSTR buffer)
 	{
 		return VariadicCall<int>(dwInt64ToString, int64, buffer);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool LocalClientIsInGame()
+	static bool LocalClientIsInGame()
 	{
 		return VariadicCall<bool>(dwLocalClientIsInGame, 0);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPVOID GetDObj(sEntity* entity)
+	static LPVOID GetDObj(sEntity* entity)
 	{
 		return VariadicCall<LPVOID>(dwGetDObj, entity->NextEntityState.iEntityNum, entity->wUsedForPlayerMesh);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline WORD RegisterTag(std::string name)
+	static WORD RegisterTag(std::string name)
 	{
 		return VariadicCall<WORD>(dwRegisterTag, name.c_str());
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPVOID GetTagPosition(sEntity* entity, WORD tag, LPVOID dobj, Vector3 position)
+	static LPVOID GetTagPosition(sEntity* entity, WORD tag, LPVOID dobj, Vector3 position)
 	{
 		return VariadicCall<LPVOID>(dwGetTagPosition, entity, dobj, tag, position);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool WorldToScreen(Vector3 world, Vector2 screen)
+	static bool WorldToScreen(Vector3 world, Vector2 screen)
 	{
 		return VariadicCall<bool>(dwWorldToScreen, 0, world, screen);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool EntityIsTeammate(sEntity* entity)
+	static bool EntityIsTeammate(sEntity* entity)
 	{
 		return VariadicCall<bool>(dwEntityIsTeammate, 0, entity);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void GetPlayerViewOrigin(Vector3 position)
+	static void GetPlayerViewOrigin(Vector3 position)
 	{
 		return VariadicCall<void>(dwGetPlayerViewOrigin, 0, &CG->PlayerState, position);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void EvaluateTrajectory(sTrajectory* trajectory, int time, Vector3 result)
+	static void EvaluateTrajectory(sTrajectory* trajectory, int time, Vector3 result)
 	{
 		return VariadicCall<void>(dwEvaluateTrajectory, trajectory, time, result);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline float AngleNormalize180(float angle)
-	{
-		return VariadicCall<float>(dwAngleNormalize180, angle);
-	}
-	/*
-	//=====================================================================================
-	*/
-	inline bool WeaponIsVehicle()
+	static bool WeaponIsVehicle()
 	{
 		return VariadicCall<bool>(dwWeaponIsVehicle, &CG->PlayerState);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int WeaponAmmoAvailable()
+	static int WeaponAmmoAvailable()
 	{
 		return VariadicCall<int>(dwWeaponAmmoAvailable, &CG->PlayerState);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int SetZoomState(bool enable)
+	static int SetZoomState(bool enable)
 	{
 		return VariadicCall<int>(dwSetZoomState, 0, enable);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool WeaponIsAkimbo()
+	static bool WeaponIsAkimbo()
 	{
 		return VariadicCall<bool>(dwWeaponIsAkimbo, CG->iWeaponID);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline sWeaponDef* GetWeaponDef(int weapon)
+	static sWeaponDef* GetWeaponDef(int weapon)
 	{
 		return VariadicCall<sWeaponDef*>(dwGetWeaponDef, weapon);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline ePenetrateType GetPenetrateType(int weapon)
+	static ePenetrateType GetPenetrateType(int weapon)
 	{
 		return VariadicCall<ePenetrateType>(dwGetPenetrateType, weapon);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int GetWeaponDamageForRange(int weapon, Vector3 startpos, Vector3 hitpos)
+	static int GetWeaponDamageForRange(int weapon, Vector3 startpos, Vector3 hitpos)
 	{
 		return VariadicCall<int>(dwGetWeaponDamageForRange, weapon, startpos, hitpos);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline float GetWeaponHitLocationMultiplier(int hitloc, int weapon)
+	static float GetWeaponHitLocationMultiplier(int hitloc, int weapon)
 	{
 		return VariadicCall<float>(dwGetWeaponHitLocationMultiplier, hitloc, weapon);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline WORD GetTraceHitType(sBulletTraceResults* traceresults)
+	static WORD GetTraceHitType(sBulletTraceResults* traceresults)
 	{
 		return VariadicCall<WORD>(dwGetTraceHitType, traceresults);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool EntityIsDeployedRiotshield(sEntity* entity)
+	static bool EntityIsDeployedRiotshield(sEntity* entity)
 	{
 		return VariadicCall<bool>(dwEntityIsDeployedRiotshield, entity);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool HasPerk(int perk)
+	static bool HasPerk(int perk)
 	{
 		return VariadicCall<bool>(dwHasPerk, 0, CG->iClientNum, perk);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline float GetSurfacePenetrationDepth(ePenetrateType penetration, int surface)
+	static float GetSurfacePenetrationDepth(ePenetrateType penetration, int surface)
 	{
 		return VariadicCall<float>(dwGetSurfacePenetrationDepth, penetration, surface);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool AdvanceTrace(sBulletFireParams* fireparams, sBulletTraceResults* traceresults, float distance)
+	static bool AdvanceTrace(sBulletFireParams* fireparams, sBulletTraceResults* traceresults, float distance)
 	{
 		return VariadicCall<bool>(dwAdvanceTrace, fireparams, traceresults, distance);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int LocationalTrace(sTrace* trace, Vector3 from, Vector3 to, int skip, int mask)
+	static int LocationalTrace(sTrace* trace, Vector3 from, Vector3 to, int skip, int mask)
 	{
 		return VariadicCall<int>(dwLocationalTrace, trace, from, to, skip, mask, 0, 0);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void AddReliableCommand(std::string command)
+	static void AddReliableCommand(std::string command)
 	{
 		return VariadicCall<void>(dwAddReliableCommand, 0, command.c_str());
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void Cbuf_AddText(std::string command)
+	static void Cbuf_AddText(std::string command)
 	{
 		return VariadicCall<void>(dwCbufAddText, 0, command.c_str());
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void GetSpreadForWeapon(int weapon, float* minimum, float* maximum)
+	static void GetSpreadForWeapon(int weapon, float* minimum, float* maximum)
 	{
 		return VariadicCall<void>(dwGetSpreadForWeapon, &CG->PlayerState, weapon, minimum, maximum);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void HashSeed(int* servertime)
+	static void HashSeed(int* servertime)
 	{
 		return VariadicCall<void>(dwHashSeed, servertime);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline float RandomFloat(int* seed)
+	static float RandomFloat(int* seed)
 	{
 		return VariadicCall<float>(dwRandomFloat, seed);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void SeedRandom(int* seed)
+	static void SeedRandom(int* seed)
 	{
 		return VariadicCall<void>(dwSeedRandom, seed);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void SetFovSensitivityScale(float scale)
+	static void SetFovSensitivityScale(float scale)
 	{
 		return VariadicCall<void>(dwSetFovSensitivityScale, 0, scale);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int GetViewmodelWeaponIndex()
+	static int GetViewmodelWeaponIndex()
 	{
 		return VariadicCall<int>(dwGetViewmodelWeaponIndex, &CG->PlayerState);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool WeaponHasPerk(int weapon, int perk)
+	static bool WeaponHasPerk(int weapon, int perk)
 	{
 		return VariadicCall<bool>(dwWeaponHasPerk, weapon, perk);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int UsingSniperScope()
+	static int UsingSniperScope()
 	{
 		return VariadicCall<int>(dwUsingSniperScope, &CG->PlayerState);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void SetUserCmdAimValues(Vector3 angles)
+	static void SetUserCmdAimValues(Vector3 angles)
 	{
 		return VariadicCall<void>(dwSetUserCmdAimValues, 0, angles);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline int GetLastWeaponForAlt()
+	static int GetLastWeaponForAlt()
 	{
 		return VariadicCall<int>(dwGetLastWeaponForAlt, CG, &CG->PlayerState, CG->iWeaponSelect);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void SetUserCmdWeapons(int weapon)
+	static void SetUserCmdWeapons(int weapon)
 	{
 		return VariadicCall<void>(dwSetUserCmdWeapons, 0, CG->iWeaponSelect, CG->iEquippedOffhand, weapon);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void SetExtraButtons()
+	static void SetExtraButtons()
 	{
 		return VariadicCall<void>(dwSetExtraButtons, 0, &CG->iExtraButtonBits);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPSTR GetWeaponName(int weapon, LPSTR buffer, int length)
+	static LPSTR GetWeaponName(int weapon, LPSTR buffer, int length)
 	{
 		return VariadicCall<LPSTR>(dwGetWeaponName, weapon, buffer, length);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline LPVOID GetCurrentSession()
+	static LPVOID GetCurrentSession()
 	{
 		return VariadicCall<LPVOID>(dwGetCurrentSession);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline sNetAddr* GetPlayerAddr(sNetAddr* netaddr, LPVOID session, int clientnum)
+	static sNetAddr* GetPlayerAddr(sNetAddr* netaddr, LPVOID session, int clientnum)
 	{
 		return VariadicCall<sNetAddr*>(dwGetPlayerAddr, netaddr, session, clientnum);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline QWORD GetPlayerXuid(LPVOID session, int clientnum)
+	static QWORD GetPlayerXuid(LPVOID session, int clientnum)
 	{
 		return VariadicCall<QWORD>(dwGetPlayerXuid, session, clientnum);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline void CycleWeapon(int cycle)
+	static void CycleWeapon(int cycle)
 	{
 		return VariadicCall<void>(dwCycleWeapon, 0, cycle);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool IsPlayerReloading()
+	static bool IsPlayerReloading()
 	{
 		return ((UINT)(CG->PlayerState.iWeaponState[0] - 11) < 8 || (UINT)(CG->PlayerState.iWeaponState[1] - 11) < 8);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool EntityHasRiotShield(sEntity* entity)
+	static bool EntityHasRiotShield(sEntity* entity)
 	{
 		return ((BYTE)entity->NextEntityState.iWeaponID == ID_ASSAULTSHIELD || (BYTE)entity->NextEntityState.LerpEntityState.iWeaponID2 == ID_ASSAULTSHIELD);
 	}
 	/*
 	//=====================================================================================
 	*/
-	inline bool IsThirdPerson()
+	static bool IsThirdPerson()
 	{
 		return (CG->iThirdPerson || CG->PlayerState.iThirdPerson);
 	}

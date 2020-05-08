@@ -59,7 +59,6 @@ namespace ProtoGenesys
 			if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum)
 				return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 
-			bool bHasFMJ = HasPerk(6);
 			float flEnterDepth = 0.0f;
 			float flExitDepth = 0.0f;
 			float flSurfaceDepth = 0.0f;
@@ -71,7 +70,7 @@ namespace ProtoGenesys
 			{
 				flEnterDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Enter.iSurfaceType);
 
-				if (bHasFMJ)
+				if (HasPerk(6))
 					flEnterDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
 
 				if (flEnterDepth <= 0.0)
@@ -130,7 +129,7 @@ namespace ProtoGenesys
 					{
 						flExitDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Exit.iSurfaceType);
 
-						if (bHasFMJ)
+						if (HasPerk(6))
 							flExitDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
 
 						flEnterDepth = min(flEnterDepth, flExitDepth);
@@ -208,7 +207,7 @@ namespace ProtoGenesys
 		if (HitRiotshield(&TR_Enter))
 			return 0.0f;
 
-		if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum)
+		if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum || TR_Enter.Trace.flFraction == 1.0f)
 			return GetRemainingDamage(&FP_Enter, &TR_Enter, hitloc, iWeaponID);
 
 		return 0.0f;
@@ -236,19 +235,19 @@ namespace ProtoGenesys
 	bool cAutowall::BulletTrace(sBulletTraceResults* traceresults, sBulletFireParams* fireparams, sEntity* attacker, int surfacetype)
 	{
 		bool bResult = false;
-		_declspec(align(16)) char szSave[512];
+		__declspec(align(16)) char szSave[512];
 		_fxsave(szSave);
-		_asm
+		__asm
 		{
 			push 0
 			push surfacetype
 			push attacker
 			push fireparams
 			push 0
-			mov  esi, traceresults
+			mov esi, traceresults
 			call dwBulletTrace
-			mov	 bResult, al
-			add  esp, 14h
+			mov bResult, al
+			add esp, 14h
 		}
 		_fxrstor(szSave);
 		return bResult;

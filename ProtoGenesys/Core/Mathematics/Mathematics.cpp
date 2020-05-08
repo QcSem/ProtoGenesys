@@ -335,4 +335,32 @@ namespace ProtoGenesys
 		out[1] = center[1] + flAngleCos * flDifferenceX + flAngleSin * flDifferenceY;
 		out[2] = point[2];
 	}
+	/*
+	//=====================================================================================
+	*/
+	float cMathematics::EntityInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale)
+	{
+		float flResult = 0.0f;
+
+		if (trajectory->iType && trajectory->iType != 1 && trajectory->iType != 14 && trajectory->iType != 10)
+		{
+			__asm
+			{
+				fld scale;
+				push result;
+				push time;
+				push trajectory;
+				call dwEvaluateTrajectory;
+				add esp, 0xC;
+				fstp flResult;
+			}
+		}
+
+		else
+		{
+			VectorCopy(trajectory->vBase, result);
+		}
+
+		return flResult;
+	}
 }

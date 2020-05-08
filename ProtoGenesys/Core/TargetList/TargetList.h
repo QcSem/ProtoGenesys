@@ -50,7 +50,6 @@ namespace ProtoGenesys
 		bool IsVisible(sEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index);
 		void ApplyPositionPrediction(sEntity* entity);
 		void ApplyAnglePrediction(sEntity* entity);
-		float EvaluateTrajectoryWithInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale);
 	} extern _targetList;
 }
 

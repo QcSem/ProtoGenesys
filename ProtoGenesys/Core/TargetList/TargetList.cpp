@@ -285,16 +285,19 @@ namespace ProtoGenesys
 	void cTargetList::ApplyPositionPrediction(sEntity* entity)
 	{
 		float flResult;
-		Vector3 vOldPosition, vNewPosition, vVelocity;
+		Vector3 vOldPosition, vNewPosition, vDeltaPosition;
 		
-		flResult = EvaluateTrajectoryWithInterpolation(&entity->CurrentEntityState.PositionTrajectory, CG->OldSnapShot->iServerTime, vOldPosition, CG->flFrameInterpolation);
-		EvaluateTrajectoryWithInterpolation(&entity->NextEntityState.LerpEntityState.PositionTrajectory, CG->NewSnapShot->iServerTime, vNewPosition, flResult);
+		flResult = _mathematics.EntityInterpolation(&entity->CurrentEntityState.PositionTrajectory, CG->OldSnapShot->iServerTime, vOldPosition, CG->flFrameInterpolation);
+		_mathematics.EntityInterpolation(&entity->NextEntityState.LerpEntityState.PositionTrajectory, CG->NewSnapShot->iServerTime, vNewPosition, flResult);
 
-		VectorSubtract(vNewPosition, vOldPosition, vVelocity);
-		VectorGetSign(vVelocity);
+		vDeltaPosition[0] = vNewPosition[0] - vOldPosition[0];
+		vDeltaPosition[1] = vNewPosition[1] - vOldPosition[1];
+		vDeltaPosition[2] = vNewPosition[2] - vOldPosition[2];
 
-		VectorMA(entity->vOrigin, CG->iFrameTime / 1000.0f, vVelocity, entity->vOrigin);
-		VectorMA(entity->vOrigin, ClientActive->iPing / 1000.0f, vVelocity, entity->vOrigin);
+		VectorGetSign(vDeltaPosition);
+
+		VectorMA(entity->vOrigin, CG->iFrameTime / 1000.0f, vDeltaPosition, entity->vOrigin);
+		VectorMA(entity->vOrigin, ClientActive->iPing / 1000.0f, vDeltaPosition, entity->vOrigin);
 	}
 	/*
 	//=====================================================================================
@@ -302,49 +305,19 @@ namespace ProtoGenesys
 	void cTargetList::ApplyAnglePrediction(sEntity* entity)
 	{
 		float flResult;
-		Vector3 vOldPosition, vNewPosition, vVelocity;
+		Vector3 vOldAngles, vNewAngles, vDeltaAngles;
 
-		flResult = EvaluateTrajectoryWithInterpolation(&entity->CurrentEntityState.AngleTrajectory, CG->OldSnapShot->iServerTime, vOldPosition, CG->flFrameInterpolation);
-		EvaluateTrajectoryWithInterpolation(&entity->NextEntityState.LerpEntityState.AngleTrajectory, CG->NewSnapShot->iServerTime, vNewPosition, flResult);
+		flResult = _mathematics.EntityInterpolation(&entity->CurrentEntityState.AngleTrajectory, CG->OldSnapShot->iServerTime, vOldAngles, CG->flFrameInterpolation);
+		_mathematics.EntityInterpolation(&entity->NextEntityState.LerpEntityState.AngleTrajectory, CG->NewSnapShot->iServerTime, vNewAngles, flResult);
 
-		VectorSubtract(vNewPosition, vOldPosition, vVelocity);
+		vDeltaAngles[0] = AngleNormalize180(vNewAngles[0] - vOldAngles[0]);
+		vDeltaAngles[1] = AngleNormalize180(vNewAngles[1] - vOldAngles[1]);
+		vDeltaAngles[2] = AngleNormalize180(vNewAngles[2] - vOldAngles[2]);
 
-		AngleNormalize180(vVelocity[0]);
-		AngleNormalize180(vVelocity[1]);
-		AngleNormalize180(vVelocity[2]);
+		VectorGetSign(vDeltaAngles);
 
-		VectorGetSign(vVelocity);
-
-		VectorMA(entity->vViewAngles, CG->iFrameTime / 1000.0f, vVelocity, entity->vViewAngles);
-		VectorMA(entity->vViewAngles, ClientActive->iPing / 1000.0f, vVelocity, entity->vViewAngles);
-	}
-	/*
-	//=====================================================================================
-	*/
-	float cTargetList::EvaluateTrajectoryWithInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale)
-	{
-		float flResult = 0.0f;
-
-		if (trajectory->iType && trajectory->iType != 1 && trajectory->iType != 14 && trajectory->iType != 10)
-		{
-			__asm
-			{
-				fld scale;
-				push result;
-				push time;
-				push trajectory;
-				call[dwEvaluateTrajectory];
-				add esp, 0xC;
-				fstp flResult;
-			}
-		}
-
-		else
-		{
-			VectorCopy(trajectory->vBase, result);
-		}
-
-		return flResult;
+		VectorMA(entity->vViewAngles, CG->iFrameTime / 1000.0f, vDeltaAngles, entity->vViewAngles);
+		VectorMA(entity->vViewAngles, ClientActive->iPing / 1000.0f, vDeltaAngles, entity->vViewAngles);
 	}
 }
 

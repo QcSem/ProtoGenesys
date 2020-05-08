@@ -1,4 +1,8 @@
+//=====================================================================================
+
 #include "../../StdAfx.hpp"
+
+//=====================================================================================
 
 FurtiveHook::~FurtiveHook()
 {
@@ -10,10 +14,13 @@ FurtiveHook::~FurtiveHook()
 		}
 		catch (...)
 		{
-			// ...
+
 		}
 	}
 }
+
+//=====================================================================================
+
 void FurtiveHook::SetHook()
 {
 	DWORD old_protection{ 0 };
@@ -41,6 +48,8 @@ void FurtiveHook::SetHook()
 	VirtualProtect(address.void_ptr, 5 + nops, DWORD(old_protection), &old_protection);
 }
 
+//=====================================================================================
+
 void FurtiveHook::UnHook()
 {
 	DWORD old_protection{ 0 };
@@ -57,10 +66,14 @@ void FurtiveHook::UnHook()
 	VirtualProtect(address.void_ptr, 5 + nops, DWORD(old_protection), &old_protection);
 }
 
+//=====================================================================================
+
 bool FurtiveHook::IsHooked() const
 {
 	return hooked;
 }
+
+//=====================================================================================
 
 FurtiveHook::FurtiveHook(x86Instruction instruction, void* address, void* target_function, unsigned int nops, bool unhook_in_dtor) :
 	instruction{ instruction },
@@ -73,6 +86,7 @@ FurtiveHook::FurtiveHook(x86Instruction instruction, void* address, void* target
 
 }
 
+//=====================================================================================
 
 HotPatch::HotPatch(void* function, void* new_function, bool unpatch_in_dtor) :
 	function{ function },
@@ -82,6 +96,8 @@ HotPatch::HotPatch(void* function, void* new_function, bool unpatch_in_dtor) :
 {
 
 }
+
+//=====================================================================================
 
 HotPatch::~HotPatch()
 {
@@ -93,10 +109,12 @@ HotPatch::~HotPatch()
 		}
 		catch (...)
 		{
-			// ...
+
 		}
 	}
 }
+
+//=====================================================================================
 
 void* HotPatch::Patch()
 {
@@ -120,6 +138,8 @@ void* HotPatch::Patch()
 	return original_function;
 }
 
+//=====================================================================================
+
 void HotPatch::UnPatch()
 {
 	DWORD protection{ 0 };
@@ -135,7 +155,11 @@ void HotPatch::UnPatch()
 	VirtualProtect(hotpatch, 7, protection, &protection);
 }
 
+//=====================================================================================
+
 bool HotPatch::IsPatched() const
 {
 	return patched;
 }
+
+//=====================================================================================

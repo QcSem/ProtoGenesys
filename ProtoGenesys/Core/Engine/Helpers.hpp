@@ -7,7 +7,7 @@
 namespace ProtoGenesys
 {
 	template<typename Return, typename... Parameters>
-	inline Return VariadicCall(DWORD_PTR address, Parameters... params)
+	static Return VariadicCall(DWORD_PTR address, Parameters... params)
 	{
 		typedef Return(*tFunction)(Parameters...);
 		tFunction Function = (tFunction)address;
@@ -17,7 +17,7 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	template<typename... Parameters>
-	inline std::string VariadicText(LPCSTR format, Parameters... params)
+	static std::string VariadicText(LPCSTR format, Parameters... params)
 	{
 		char szBuffer[4096] = { NULL };
 		sprintf_s(szBuffer, format, params...);
@@ -27,7 +27,7 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	template<typename Type>
-	inline void WriteMemoryProtected(LPVOID address, Type value)
+	static void WriteMemoryProtected(LPVOID address, Type value)
 	{
 		DWORD dwProtection = PAGE_EXECUTE_READWRITE;
 
