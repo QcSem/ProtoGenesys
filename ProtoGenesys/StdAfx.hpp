@@ -33,6 +33,7 @@
 #include "Core/Mathematics/Mathematics.h"
 #include "Core/Profiler/Profiler.h"
 #include "Core/Removals/Removals.h"
+#include "Core/Stats/Stats.h"
 #include "Core/TargetList/TargetList.h"
 #include "Core/Hooks.h"
 #include "Core/MainGUI.h"

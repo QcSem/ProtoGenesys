@@ -62,6 +62,9 @@
     <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp">
       <Filter>Core\FurtiveHook</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Stats\Stats.cpp">
+      <Filter>Core\Stats</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.hpp" />
@@ -176,6 +179,9 @@
     <ClInclude Include="Core\FurtiveHook\FurtiveHook.h">
       <Filter>Core\FurtiveHook</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Stats\Stats.h">
+      <Filter>Core\Stats</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -246,6 +252,9 @@
     </Filter>
     <Filter Include="Core\FurtiveHook">
       <UniqueIdentifier>{611ea579-668a-4727-9ad3-d7ccef837d98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Stats">
+      <UniqueIdentifier>{e070b263-6b7b-474e-9105-53bed263333f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

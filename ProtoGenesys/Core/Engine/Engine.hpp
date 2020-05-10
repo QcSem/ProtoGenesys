@@ -898,6 +898,16 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
 	static DWORD_PTR dwGetPlayerXuid = bIsSteamVersion ? 0x45C710 : 0x667A00;
 	static DWORD_PTR dwCycleWeapon = bIsSteamVersion ? 0x69BAE0 : 0x57D850;
+	static DWORD_PTR dwFindHash = bIsSteamVersion ? 0xA5E1C0 : 0xA5E1D0;
+	static DWORD_PTR dwHashMemory = bIsSteamVersion ? 0xA61B00 : 0xA61B10;
+	static DWORD_PTR dwRegisterPrng = bIsSteamVersion ? 0xA61F10 : 0xA61F20;
+	static DWORD_PTR dwFindPrng = bIsSteamVersion ? 0xA61EA0 : 0xA61EB0;
+	static DWORD_PTR dwSignHash = bIsSteamVersion ? 0xA61C00 : 0xA61C10;
+
+	static DWORD_PTR dwTigerHash = bIsSteamVersion ? 0xC81AF8 : 0xC273A4;
+	static DWORD_PTR dwPrng = bIsSteamVersion ? 0xCC8030 : 0xCC8090;
+	static DWORD_PTR dwSprng = bIsSteamVersion ? 0xC52214 : 0xBD590C;
+	static DWORD_PTR dwKey = bIsSteamVersion ? 0x301EB88 : 0x2FFDB88;
 
 	static DWORD_PTR dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
 	static DWORD_PTR dwMouseInput = 0x2B69969;
@@ -1277,6 +1287,41 @@ namespace ProtoGenesys
 	static void CycleWeapon(int cycle)
 	{
 		return VariadicCall<void>(dwCycleWeapon, 0, cycle);
+	}
+	/*
+	//=====================================================================================
+	*/
+	static int FindHash(std::string name)
+	{
+		return VariadicCall<int>(dwFindHash, name.c_str());
+	}
+	/*
+	//=====================================================================================
+	*/
+	static int HashMemory(int hash, LPCSTR in, int inlen, LPSTR out, int* outlen)
+	{
+		return VariadicCall<int>(dwHashMemory, hash, in, inlen, out, outlen);
+	}
+	/*
+	//=====================================================================================
+	*/
+	static int RegisterPrng(LPVOID prng)
+	{
+		return VariadicCall<int>(dwRegisterPrng, prng);
+	}
+	/*
+	//=====================================================================================
+	*/
+	static int FindPrng(std::string name)
+	{
+		return VariadicCall<int>(dwFindPrng, name.c_str());
+	}
+	/*
+	//=====================================================================================
+	*/
+	static int SignHash(LPCSTR in, int inlen, LPSTR out, int* outlen, LPVOID prng, int wprng, LPVOID key)
+	{
+		return VariadicCall<int>(dwSignHash, in, inlen, out, outlen, prng, wprng, key);
 	}
 	/*
 	//=====================================================================================
