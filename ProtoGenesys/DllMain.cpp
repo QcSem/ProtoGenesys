@@ -347,34 +347,17 @@ void WINAPI SteamUser(LPWSTR xuid)
 
 //=====================================================================================
 
-DWORD WINAPI InfiniteThread(LPVOID param)
-{
-	UNREFERENCED_PARAMETER(param);
-
-	while (TRUE)
-	{
-		_aimBot.ReloadCancel();
-	}
-
-	return NULL;
-}
-
-//=====================================================================================
-
 BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID lpvReserved)
 {
-	static HANDLE hThread;
 	DisableThreadLibraryCalls(hinstDLL);
 
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		hThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)InfiniteThread, NULL, NULL, NULL);
 		Initialize();
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:
-		TerminateThread(hThread, EXIT_SUCCESS);
 		Deallocate();
 		return TRUE;
 

@@ -148,16 +148,21 @@ namespace ProtoGenesys
 	*/
 	void cAimbot::ReloadCancel()
 	{
-		if (_profiler.gReloadCancel->Current.bValue)
+		while (TRUE)
 		{
-			if (!IsPlayerReloading())
-				return;
-
-			if (!CG->PlayerState.iWeaponDelay)
+			if (_profiler.gReloadCancel->Current.bValue)
 			{
-				CycleWeapon(0);
-				Sleep(1);
-				CycleWeapon(0);
+				bool bReloading = (CG->iWeaponState[0] == 11 || CG->iWeaponState[1] == 11);
+
+				if (!bReloading)
+					continue;
+
+				if (!CG->iWeaponDelay)
+				{
+					CycleWeapon(0);
+					Sleep(1);
+					CycleWeapon(0);
+				}
 			}
 		}
 	}

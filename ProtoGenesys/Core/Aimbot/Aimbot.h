@@ -12,6 +12,8 @@ namespace ProtoGenesys
 	{
 	public:
 
+		cAimbot() : _threadReloadCancel(&cAimbot::ReloadCancel, this) {}
+
 		struct sAimState
 		{
 			bool bTargetAcquired, bAntiAimTargetAcquired, bLockonTarget, bIsAutoAiming, bIsAutoFiring;
@@ -24,6 +26,8 @@ namespace ProtoGenesys
 		void AutoFire(sUserCmd* usercmd);
 		void SetAimState();
 		void ReloadCancel();
+
+		std::thread _threadReloadCancel;
 	} extern _aimBot;
 }
 
