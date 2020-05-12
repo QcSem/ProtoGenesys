@@ -807,8 +807,8 @@ namespace ProtoGenesys
 	static MODULEINFO hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
 	static HMODULE hSteamAPI = GetModuleHandle("steam_api.dll");
 
-	static bool bGameOverlayRenderer = (hGameOverlayRenderer.lpBaseOfDll && hGameOverlayRenderer.SizeOfImage);
 	static bool bIsSteamVersion = hT6mp.SizeOfImage == 0x400D000;
+	static bool bGameOverlayRenderer = (bIsSteamVersion && hGameOverlayRenderer.lpBaseOfDll && hGameOverlayRenderer.SizeOfImage);
 
 	static DWORD_PTR dwConnectPathsDvar = 0x2366AA4;
 	static DWORD_PTR dwMouseAccelerationDvar = 0x11C7834;
