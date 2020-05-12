@@ -226,7 +226,7 @@ void Initialize()
 	_hooks.dwNoDelta = *(DWORD_PTR*)dwNoDeltaDvar;
 	*(DWORD_PTR*)dwNoDeltaDvar = cHooks::VEH_INDEX_NODELTA;
 
-	oPresent = (tPresent)SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)&hPresent, bGameOverlayRenderer ? 0 : 8);
+	oPresent = (tPresent)SwapVMT((bIsSteamVersion && bGameOverlayRenderer) ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)&hPresent, (bIsSteamVersion && bGameOverlayRenderer) ? 0 : 8);
 
 	AttachHook(oBulletHitEvent, hBulletHitEvent);
 	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
@@ -251,7 +251,7 @@ void Deallocate()
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 	SetUnhandledExceptionFilter(_hooks.pUnhandledExceptionFilter);
 
-	SwapVMT(bGameOverlayRenderer ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, bGameOverlayRenderer ? 0 : 8);
+	SwapVMT((bIsSteamVersion && bGameOverlayRenderer) ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, (bIsSteamVersion && bGameOverlayRenderer) ? 0 : 8);
 
 	DetachHook(oBulletHitEvent, hBulletHitEvent);
 	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
