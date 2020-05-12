@@ -50,7 +50,7 @@ namespace ProtoGenesys
 		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
 		void GetAddr(bool renew);
 		
-		int GetItemEquipCount(LPVOID root, int _class);
+		int GameTypeSettings(int settings);
 		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 		bool SteamIDIsValid(DWORD** _this);
 

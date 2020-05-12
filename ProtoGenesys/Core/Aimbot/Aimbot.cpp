@@ -148,7 +148,7 @@ namespace ProtoGenesys
 	*/
 	void cAimbot::ReloadCancel()
 	{
-		while (TRUE)
+		while (true)
 		{
 			if (_profiler.gReloadCancel->Current.bValue)
 			{

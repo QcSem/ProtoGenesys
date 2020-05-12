@@ -12,7 +12,9 @@ namespace ProtoGenesys
 	{
 	public:
 
-		void MaxPrestige();
+		void SetRankXP(int value);
+		void SetPLevel(int value);
+		void HashAndSignStats();
 		void UnlockAll();
 	} extern _stats;
 }

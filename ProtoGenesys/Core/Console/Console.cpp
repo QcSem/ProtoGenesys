@@ -39,9 +39,11 @@ namespace ProtoGenesys
 			vCommands.push_back("proto_xuid");
 			vCommands.push_back("proto_ip");
 			vCommands.push_back("proto_killspam");
-			vCommands.push_back("proto_resetstats");
-			vCommands.push_back("proto_maxprestige");
+			vCommands.push_back("proto_experience");
+			vCommands.push_back("proto_prestige");
 			vCommands.push_back("proto_unlockall");
+			vCommands.push_back("proto_signstats");
+			vCommands.push_back("proto_resetstats");
 			vCommands.push_back("proto_disconnect");
 
 			AddLog("Ready.");
@@ -99,10 +101,12 @@ namespace ProtoGenesys
 			AddLog("6. proto_xuid <on|off> <xuid>\n\t\tChange your xuid.");
 			AddLog("7. proto_ip <on|off> <ip>\n\t\tChange your ip.");
 			AddLog("8. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
-			AddLog("9. proto_resetstats\n\t\tReset your save data.");
-			AddLog("10. proto_maxprestige\n\t\tSet your experience/prestige to max.");
+			AddLog("9. proto_experience <max|experience>\n\t\tSet your experience.");
+			AddLog("10. proto_prestige <max|prestige>\n\t\tSet your prestige.");
 			AddLog("11. proto_unlockall\n\t\tUnlock everything in the game.");
-			AddLog("12. proto_disconnect\n\t\tDisconnect from the current server.");
+			AddLog("12. proto_signstats\n\t\tCalculate hash and sign your stats.");
+			AddLog("13. proto_resetstats\n\t\tReset your save data.");
+			AddLog("14. proto_disconnect\n\t\tDisconnect from the current server.");
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -573,24 +577,84 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_resetstats"))
+		else if (!Stricmp(CmdLine.szCmdName, "proto_experience"))
 		{
-			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-			Cbuf_AddText("resetStats");
-			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+			if (CmdLine.iArgNum > 0)
+			{
+				if (!Stricmp(CmdLine.szCmdArgs[0], "max"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_stats.SetRankXP(1249100);
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else if (strtol(CmdLine.szCmdArgs[0], NULL, 10) >= 0 && strtol(CmdLine.szCmdArgs[0], NULL, 10) <= 1249100)
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_stats.SetRankXP(strtol(CmdLine.szCmdArgs[0], NULL, 10));
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else
+				{
+					AddLog("[ERROR] Invalid argument(s).");
+				}
+			}
+
+			else
+			{
+				AddLog("[ERROR] Missing argument(s).");
+			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_maxprestige"))
+		else if (!Stricmp(CmdLine.szCmdName, "proto_prestige"))
 		{
-			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-			_stats.MaxPrestige();
-			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+			if (CmdLine.iArgNum > 0)
+			{
+				if (!Stricmp(CmdLine.szCmdArgs[0], "max"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_stats.SetPLevel(15);
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else if (strtol(CmdLine.szCmdArgs[0], NULL, 10) >= 0 && strtol(CmdLine.szCmdArgs[0], NULL, 10) <= 15)
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_stats.SetPLevel(strtol(CmdLine.szCmdArgs[0], NULL, 10));
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else
+				{
+					AddLog("[ERROR] Invalid argument(s).");
+				}
+			}
+
+			else
+			{
+				AddLog("[ERROR] Missing argument(s).");
+			}
 		}
 
 		else if (!Stricmp(CmdLine.szCmdName, "proto_unlockall"))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			_stats.UnlockAll();
+			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, "proto_signstats"))
+		{
+			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+			_stats.HashAndSignStats();
+			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, "proto_resetstats"))
+		{
+			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+			Cbuf_AddText("resetStats");
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 

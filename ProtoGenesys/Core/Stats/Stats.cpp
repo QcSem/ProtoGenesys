@@ -8,10 +8,26 @@ namespace ProtoGenesys
 {
 	cStats _stats;
 
-	void cStats::MaxPrestige()
+	void cStats::SetRankXP(int value)
 	{
-		int iRankXP = *(DWORD*)0x2FB176C = 0x130F4C;
-		int iPLevel = *(DWORD*)0x2FB1754 = 0xF;
+		*(DWORD*)dwRankXP = value;
+		HashAndSignStats();
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cStats::SetPLevel(int value)
+	{
+		*(DWORD*)dwPLevel = value;
+		HashAndSignStats();
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cStats::HashAndSignStats()
+	{
+		int iRankXP = *(DWORD*)dwRankXP;
+		int iPLevel = *(DWORD*)dwPLevel;
 		QWORD qwXuid = strtoll(GetXuidstring(), NULL, 0x10);
 		char szHash[8];
 		*(QWORD*)szHash = iRankXP ^ iPLevel ^ qwXuid;

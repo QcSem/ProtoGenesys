@@ -36,9 +36,9 @@ LPVOID USERCALL hGetAddr(bool renew);
 typedef LPVOID(USERCALL* tGetAddr)(bool renew);
 tGetAddr oGetAddr = (tGetAddr)dwGetAddr;
 
-int USERCALL hGetItemEquipCount(LPVOID root, int _class);
-typedef int(USERCALL* tGetItemEquipCount)(LPVOID root, int _class);
-tGetItemEquipCount oGetItemEquipCount = (tGetItemEquipCount)dwGetItemEquipCount;
+int USERCALL hGameTypeSettings(int setting);
+typedef int(USERCALL* tGameTypeSettings)(int setting);
+tGameTypeSettings oGameTypeSettings = (tGameTypeSettings)dwGameTypeSettings;
 
 int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
 typedef int(USERCALL* tGetPlayerStatus)(int localnum, DWORD xuid1, DWORD xuid2);
@@ -74,7 +74,8 @@ tGetFriendByIndex oGetFriendByIndex;
 
 //=====================================================================================
 
-FurtiveHook fhOffsetThirdPersonView{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
+FurtiveHook fhGetWorldTagMatrixCall{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
+FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSettingsCall, &hGameTypeSettings };
 
 //=====================================================================================
 
@@ -125,19 +126,15 @@ LPVOID USERCALL hGetAddr(bool renew)
 
 //=====================================================================================
 
-int USERCALL hGetItemEquipCount(LPVOID root, int _class)
+int USERCALL hGameTypeSettings(int setting)
 {
-	oGetItemEquipCount(root, _class);
-
-	return _hooks.GetItemEquipCount(root, _class);
+	return _hooks.GameTypeSettings(setting);
 }
 
 //=====================================================================================
 
 int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
 {
-	oGetPlayerStatus(localnum, xuid1, xuid2);
-
 	return _hooks.GetPlayerStatus(localnum, xuid1, xuid2);
 }
 
@@ -234,11 +231,11 @@ void Initialize()
 	AttachHook(oBulletHitEvent, hBulletHitEvent);
 	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	AttachHook(oGetAddr, hGetAddr);
-	AttachHook(oGetItemEquipCount, hGetItemEquipCount);
 	AttachHook(oGetPlayerStatus, hGetPlayerStatus);
 	AttachHook(oSteamIDIsValid, hSteamIDIsValid);
 
-	fhOffsetThirdPersonView.SetHook();
+	fhGetWorldTagMatrixCall.SetHook();
+	fhGameTypeSettingsCall.SetHook();
 }
 
 //=====================================================================================
@@ -259,11 +256,11 @@ void Deallocate()
 	DetachHook(oBulletHitEvent, hBulletHitEvent);
 	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	DetachHook(oGetAddr, hGetAddr);
-	DetachHook(oGetItemEquipCount, hGetItemEquipCount);
 	DetachHook(oGetPlayerStatus, hGetPlayerStatus);
 	DetachHook(oSteamIDIsValid, hSteamIDIsValid);
 
-	fhOffsetThirdPersonView.UnHook();
+	fhGetWorldTagMatrixCall.UnHook();
+	fhGameTypeSettingsCall.UnHook();
 
 	if (oGetSteamID)
 		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)oGetSteamID, 2);

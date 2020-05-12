@@ -228,7 +228,7 @@ namespace ProtoGenesys
 			_drawing.CalculateTracers();
 			_aimBot.SetAimState();
 
-			if (!IsPlayerReloading() && WeaponAmmoAvailable())
+			if (WeaponIsVehicle() || (!IsPlayerReloading() && WeaponAmmoAvailable()))
 				_aimBot.StandardAim();
 
 			_removals.RecoilCompensation();
@@ -266,12 +266,10 @@ namespace ProtoGenesys
 			++pOldCmd->iServerTime;
 			--pCurrentCmd->iServerTime;
 
-			if (!IsPlayerReloading() && WeaponAmmoAvailable())
+			if (!WeaponIsVehicle() && !IsPlayerReloading() && WeaponAmmoAvailable())
 			{
 				_aimBot.SilentAim(pOldCmd);
-
-				if (!WeaponIsVehicle())
-					_aimBot.AutoFire(pCurrentCmd);
+				_aimBot.AutoFire(pCurrentCmd);
 			}
 
 			_removals.SpreadCompensation(pOldCmd, pCurrentCmd->iServerTime);
@@ -425,18 +423,18 @@ namespace ProtoGenesys
 			std::vector<std::string> vIpOverride = acut::SplitStringWithDelimiter(szIpOverride, ".");
 			PBYTE pIP = (PBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
 
-			pIP[0] = (BYTE)atoi(vIpOverride[0].c_str());
-			pIP[1] = (BYTE)atoi(vIpOverride[1].c_str());
-			pIP[2] = (BYTE)atoi(vIpOverride[2].c_str());
-			pIP[3] = (BYTE)atoi(vIpOverride[3].c_str());
+			pIP[0] = (BYTE)strtol(vIpOverride[0].c_str(), NULL, 10);
+			pIP[1] = (BYTE)strtol(vIpOverride[1].c_str(), NULL, 10);
+			pIP[2] = (BYTE)strtol(vIpOverride[2].c_str(), NULL, 10);
+			pIP[3] = (BYTE)strtol(vIpOverride[3].c_str(), NULL, 10);
 		}
 	}
 	/*
 	//=====================================================================================
 	*/
-	int cHooks::GetItemEquipCount(LPVOID root, int _class)
+	int cHooks::GameTypeSettings(int settings)
 	{
-		return -1;
+		return 20;
 	}
 	/*
 	//=====================================================================================
