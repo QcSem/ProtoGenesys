@@ -708,6 +708,12 @@ namespace ProtoGenesys
 
 					for (int i = 0; i < MAX_CLIENTS; i++)
 					{
+						if (!CG->Client[i].iInfoValid)
+							continue;
+
+						if (std::string(ServerSession[i].szName).empty() && !DwordFromBytes(ServerSession[i].iIPAddress) && !ServerSession[i].qwXuid)
+							continue;
+
 						ImGui::Separator();
 
 						if (ImGui::Selectable(ServerSession[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))

@@ -246,28 +246,53 @@ namespace ProtoGenesys
 		std::vector<sDamageInfo> vDamageInfo;
 		std::vector<std::future<bool>> vIsVisible(BONE_MAX);
 
-		if (bonescan)
+		if (bIsSteamVersion)
 		{
-			for (auto& Bone : vBones)
+			if (bonescan)
 			{
-				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage);
+				for (auto& Bone : vBones)
+				{
+					vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage);
+				}
+
+				for (auto& Bone : vBones)
+				{
+					if (vIsVisible[Bone.first].get())
+					{
+						DamageInfo.iBoneIndex = Bone.first;
+						vDamageInfo.push_back(DamageInfo);
+
+						bReturn = true;
+					}
+				}
 			}
 
-			for (auto& Bone : vBones)
+			else
 			{
-				if (vIsVisible[Bone.first].get())
-				{
-					DamageInfo.iBoneIndex = Bone.first;
-					vDamageInfo.push_back(DamageInfo);
-
-					bReturn = true;
-				}
+				return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], vBones[index].second, autowall, nullptr).get();
 			}
 		}
 
 		else
 		{
-			return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], vBones[index].second, autowall, nullptr).get();
+			if (bonescan)
+			{
+				for (auto& Bone : vBones)
+				{
+					if (IsVisibleInternal(entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage))
+					{
+						DamageInfo.iBoneIndex = Bone.first;
+						vDamageInfo.push_back(DamageInfo);
+
+						bReturn = true;
+					}
+				}
+			}
+
+			else
+			{
+				return IsVisibleInternal(entity, bones3d[index], vBones[index].second, autowall, NULL);
+			}
 		}
 
 		if (!vDamageInfo.empty())

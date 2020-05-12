@@ -914,8 +914,11 @@ namespace ProtoGenesys
 	static DWORD_PTR dwSprng = bIsSteamVersion ? 0xC52214 : 0xBD590C;
 	static DWORD_PTR dwKey = bIsSteamVersion ? 0x301EB88 : 0x2FFDB88;
 
-	static DWORD_PTR dwRankXP = 0x2FB176C;
-	static DWORD_PTR dwPLevel = 0x2FB1754;
+	static DWORD_PTR dwRankXP = bIsSteamVersion ? 0x2FB176C : 0x2F9076C;
+	static DWORD_PTR dwPLevel = bIsSteamVersion ? 0x2FB1754 : 0x2F90754;
+
+	static DWORD_PTR dwStatsBase = bIsSteamVersion ? 0x2F00000 : 0x2EDF000;
+	static DWORD_PTR dwMemoryBase = bIsSteamVersion ? 0x24A0000 : 0x247F000;
 
 	static DWORD_PTR dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
 	static DWORD_PTR dwMouseInput = 0x2B69969;
