@@ -708,12 +708,6 @@ namespace ProtoGenesys
 
 					for (int i = 0; i < MAX_CLIENTS; i++)
 					{
-						if (!CG->Client[i].iInfoValid)
-							continue;
-						
-						if (std::string(ServerSession[i].szName).empty() && !DwordFromBytes(ServerSession[i].iIPAddress) && !ServerSession[i].qwXuid)
-							continue;
-
 						ImGui::Separator();
 
 						if (ImGui::Selectable(ServerSession[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
@@ -721,7 +715,7 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::BeginPopupContextItem(ServerSession[i].szName))
+						if (ImGui::BeginPopupContextItem(std::to_string(i).c_str()))
 						{
 							if (ImGui::Selectable("Add To Friend List"))
 							{
@@ -796,13 +790,13 @@ namespace ProtoGenesys
 							(BYTE)ServerSession[i].iIPAddress[2],
 							(BYTE)ServerSession[i].iIPAddress[3]).c_str());
 
-						if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
+						if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
 						{
 							bWriteLog = true;
 						} ImGui::NextColumn();
 
 						ImGui::Text(std::to_string(ServerSession[i].qwXuid).c_str());
-						if (ImGui::OpenPopupOnItemClick(ServerSession[i].szName))
+						if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
 						{
 							bWriteLog = true;
 						} ImGui::NextColumn();
