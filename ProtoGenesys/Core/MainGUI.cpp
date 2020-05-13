@@ -502,6 +502,11 @@ namespace ProtoGenesys
 				case cProfiler::MENU_TAB_MISCELLANEOUS:
 				{
 					ImGui::NewLine();
+					if (DrawOption(_profiler.gNoFlinch->szName, _profiler.gNoFlinch->szItems[_profiler.gNoFlinch->Current.iValue], &_profiler.gNoFlinch->Current.iValue, _profiler.gNoFlinch->Domain.iMin, _profiler.gNoFlinch->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
 					if (DrawOption(_profiler.gThirdPerson->szName, _profiler.gThirdPerson->szItems[_profiler.gThirdPerson->Current.iValue], &_profiler.gThirdPerson->Current.iValue, _profiler.gThirdPerson->Domain.iMin, _profiler.gThirdPerson->Domain.iMax, 1))
 					{
 						bWriteLog = true;

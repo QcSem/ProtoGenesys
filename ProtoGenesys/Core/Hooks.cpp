@@ -375,6 +375,18 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cHooks::TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate)
+	{
+		if (_profiler.gNoFlinch->Current.bValue)
+		{
+			playerstate->iDamageYaw = 0xFF;
+			playerstate->iDamagePitch = 0xFF;
+			playerstate->iDamageCount = 0x0;
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
 	void cHooks::CalcEntityLerpPositions(int localnum, sEntity* entity)
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)

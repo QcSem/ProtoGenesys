@@ -45,6 +45,7 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
 			XML.set("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
 
+			XML.set("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.ThirdPersonAntiAim", gThirdPersonAntiAim->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
@@ -153,6 +154,7 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
 			XML.get_if_present("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
 
+			XML.get_if_present("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPersonAntiAim", gThirdPersonAntiAim->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
@@ -244,6 +246,7 @@ namespace ProtoGenesys
 		gPlayerRadar->Current.bValue = gPlayerRadar->Reset.bValue;
 		gPlayerBulletTracers->Current.bValue = gPlayerBulletTracers->Reset.bValue;
 
+		gNoFlinch->Current.bValue = gNoFlinch->Reset.bValue;
 		gThirdPerson->Current.bValue = gThirdPerson->Reset.bValue;
 		gThirdPersonAntiAim->Current.bValue = gThirdPersonAntiAim->Reset.bValue;
 		gOrbitalVsat->Current.bValue = gOrbitalVsat->Reset.bValue;

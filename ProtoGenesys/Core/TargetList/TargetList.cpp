@@ -26,7 +26,7 @@ namespace ProtoGenesys
 		{
 			EntityList[i].bIsValid = false;
 
-			if (!IsEntityValid(i))
+			if (!EntityIsValid(&CG->Entity[i]))
 				continue;
 
 			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
@@ -177,20 +177,6 @@ namespace ProtoGenesys
 		}
 
 		iCounter++;
-	}
-	/*
-	//=====================================================================================
-	*/
-	bool cTargetList::IsLocalPlayerValid()
-	{
-		return ((CG->Entity[CG->iClientNum].iAlive & 2) && !(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
-	}
-	/*
-	//=====================================================================================
-	*/
-	bool cTargetList::IsEntityValid(int index)
-	{
-		return ((index != CG->iClientNum) && (CG->Entity[index].iAlive & 2) && !(CG->Entity[index].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
 	}
 	/*
 	//=====================================================================================

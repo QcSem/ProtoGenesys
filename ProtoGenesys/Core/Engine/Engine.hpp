@@ -374,7 +374,11 @@ namespace ProtoGenesys
 		Vector3 vViewAngles;
 		int iPlayerHeight;
 		Vector3 vPlayerHeight;
-		char _0x214[0x2C];
+		char _0x214[0x18];
+		int iDamageYaw;
+		int iDamagePitch;
+		int iDamageCount;
+		char _0x238[0x8];
 		int iHealth;
 		char _0x244[0x4];
 		int iMaxHealth;
@@ -457,11 +461,13 @@ namespace ProtoGenesys
 		char _0x64[0x14];
 		QWORD qwXuid;
 		char szClan[8];
-		char _0x88[0xC];
+		char _0x88[0x7];
+		bool bDead;
+		char _0x90[0x4];
 		int iScore;
-		char _0x98[0x48];
-		char szModel[64];
-		char _0x120[0x3A4];
+		char _0x98[0x58];
+		char szPlayerModel[32];
+		char _0x110[0x3B4];
 		Vector3 vViewAngles;
 		char _0x4D0[0xF4];
 		int iWeaponID;
@@ -816,6 +822,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwMaxClientsDvar = 0x25E456C;
 	static DWORD_PTR dwNoDeltaDvar = 0x11C3634;
 
+	static DWORD_PTR dwTransitionPlayerStateCall = bIsSteamVersion ? 0x55CF28 : 0x51DAE8;
 	static DWORD_PTR dwGetWorldTagMatrixCall = bIsSteamVersion ? 0x7D53BA : 0x7D5CAA;
 	static DWORD_PTR dwGameTypeSettingsCall = bIsSteamVersion ? 0x97CBC2 : 0x97CC42;
 	static DWORD_PTR dwPenetrationMinFxDist = bIsSteamVersion ? *(DWORD_PTR*)0x324D65C : *(DWORD_PTR*)0x322C65C;
@@ -845,9 +852,10 @@ namespace ProtoGenesys
 	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
 	static DWORD_PTR dwInterpolateEntityPosition = bIsSteamVersion ? 0x7A0000 : 0x7A0C90;
 	static DWORD_PTR dwInterpolateEntityAngles = bIsSteamVersion ? 0x6B4100 : 0x4B1D40;
+	static DWORD_PTR dwTransitionPlayerState = bIsSteamVersion ? 0x666DD0 : 0x6AB990;
 	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
-	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
 	static DWORD_PTR dwGameTypeSettings = bIsSteamVersion ? 0x6C43C0 : 0x4F5F70;
+	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 	static DWORD_PTR dwSteamIDIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
 
@@ -1333,6 +1341,27 @@ namespace ProtoGenesys
 	static int SignHash(LPCSTR in, int inlen, LPSTR out, int* outlen, LPVOID prng, int wprng, LPVOID key)
 	{
 		return VariadicCall<int>(dwSignHash, in, inlen, out, outlen, prng, wprng, key);
+	}
+	/*
+	//=====================================================================================
+	*/
+	static bool LocalPlayerIsValid()
+	{
+		return ((CG->Entity[CG->iClientNum].iAlive & 2) && !(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
+	}
+	/*
+	//=====================================================================================
+	*/
+	static bool EntityIsValid(sEntity* entity)
+	{
+		return ((entity != &CG->Entity[CG->iClientNum]) && (entity->iAlive & 2) && !(entity->NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
+	}
+	/*
+	//=====================================================================================
+	*/
+	static bool ClientIsAlive(sClientInfo* client)
+	{
+		return (!client->bDead && strcmp(client->szPlayerModel, ""));
 	}
 	/*
 	//=====================================================================================

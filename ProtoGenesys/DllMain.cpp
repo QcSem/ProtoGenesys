@@ -24,6 +24,10 @@ void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int we
 typedef void(USERCALL* tBulletHitEvent)(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
 tBulletHitEvent oBulletHitEvent = (tBulletHitEvent)dwBulletHitEvent;
 
+void USERCALL hTransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
+typedef void(USERCALL* tTransitionPlayerState)(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
+tTransitionPlayerState oTransitionPlayerState = (tTransitionPlayerState)dwTransitionPlayerState;
+
 void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
 typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
@@ -74,6 +78,7 @@ tGetFriendByIndex oGetFriendByIndex;
 
 //=====================================================================================
 
+FurtiveHook fhTransitionPlayerStateCall{ x86Instruction::CALL, (LPVOID)dwTransitionPlayerStateCall, &hTransitionPlayerState };
 FurtiveHook fhGetWorldTagMatrixCall{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
 FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSettingsCall, &hGameTypeSettings };
 
@@ -93,6 +98,15 @@ void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int we
 	oBulletHitEvent(localnum, sourcenum, targetnum, weapon, start, position, normal, alphanormal, surface, _event, param, contents, bone);
 
 	_hooks.BulletHitEvent(localnum, sourcenum, targetnum, weapon, start, position, normal, alphanormal, surface, _event, param, contents, bone);
+}
+
+//=====================================================================================
+
+void USERCALL hTransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate)
+{
+	_hooks.TransitionPlayerState(localnum, playerstate, transplayerstate);
+
+	oTransitionPlayerState(localnum, playerstate, transplayerstate);
 }
 
 //=====================================================================================
@@ -234,6 +248,7 @@ void Initialize()
 	AttachHook(oGetPlayerStatus, hGetPlayerStatus);
 	AttachHook(oSteamIDIsValid, hSteamIDIsValid);
 
+	fhTransitionPlayerStateCall.SetHook();
 	fhGetWorldTagMatrixCall.SetHook();
 	fhGameTypeSettingsCall.SetHook();
 }
@@ -259,6 +274,7 @@ void Deallocate()
 	DetachHook(oGetPlayerStatus, hGetPlayerStatus);
 	DetachHook(oSteamIDIsValid, hSteamIDIsValid);
 
+	fhTransitionPlayerStateCall.UnHook();
 	fhGetWorldTagMatrixCall.UnHook();
 	fhGameTypeSettingsCall.UnHook();
 

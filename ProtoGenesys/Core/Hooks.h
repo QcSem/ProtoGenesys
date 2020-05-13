@@ -46,6 +46,7 @@ namespace ProtoGenesys
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
 		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
+		void TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
 		void CalcEntityLerpPositions(int localnum, sEntity* entity);
 		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
 		void GetAddr(bool renew);
