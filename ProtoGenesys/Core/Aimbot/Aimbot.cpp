@@ -84,7 +84,7 @@ namespace ProtoGenesys
 	{
 		AimState.bTargetAcquired = (AimState.iTargetNum > -1);
 		AimState.bAntiAimTargetAcquired = (AimState.iAntiAimTargetNum > -1);
-		AimState.bLockonTarget = (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM));
+		AimState.bLockonTarget = (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->CEntity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM));
 		AimState.bIsAutoAiming = (AimState.bTargetAcquired && AimState.bLockonTarget);
 		AimState.bIsAutoFiring = (_profiler.gAutoFire->Current.bValue && AimState.bIsAutoAiming);
 
@@ -135,12 +135,12 @@ namespace ProtoGenesys
 			VectorCopy(_targetList.EntityList[AimState.iTargetNum].vHitLocation, AimState.vAimPosition);
 
 			_mathematics.CalculateAimAngles(AimState.vAimPosition, vViewOrigin, AimState.vAimAngles);
-			_mathematics.CalculateAntiAimAngles(CG->Entity[AimState.iTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
+			_mathematics.CalculateAntiAimAngles(CG->CEntity[AimState.iTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
 		}
 
 		if (AimState.bAntiAimTargetAcquired)
 		{
-			_mathematics.CalculateAntiAimAngles(CG->Entity[AimState.iAntiAimTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
+			_mathematics.CalculateAntiAimAngles(CG->CEntity[AimState.iAntiAimTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
 		}
 	}
 	/*

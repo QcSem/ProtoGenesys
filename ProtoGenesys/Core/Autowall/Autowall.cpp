@@ -8,11 +8,11 @@ namespace ProtoGenesys
 {
 	cAutowall _autoWall;
 
-	float cAutowall::Autowall(sEntity* entity, Vector3 start, Vector3 end, short hitloc)
+	float cAutowall::Autowall(sCEntity* entity, Vector3 start, Vector3 end, short hitloc)
 	{
 		int iClientNum = CG->iClientNum;
-		sEntity* pEntity = &CG->Entity[iClientNum];
-		int iWeaponID = pEntity->NextEntityState.iWeaponID;
+		sCEntity* pCEntity = &CG->CEntity[iClientNum];
+		int iWeaponID = pCEntity->NextEntityState.iWeaponID;
 		sWeaponDef* pWeaponDef = GetWeaponDef(iWeaponID);
 		ePenetrateType iPenetrateType = pWeaponDef->iPenetrateType;
 		eWeaponType iWeaponType = pWeaponDef->iWeaponType;
@@ -42,7 +42,7 @@ namespace ProtoGenesys
 		float flLength = VectorLength(FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
-		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pEntity, TRACE_HITTYPE_NONE);
+		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
 		if (bEnterHit)
 		{
@@ -85,7 +85,7 @@ namespace ProtoGenesys
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
 					return 0.0f;
 
-				bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pEntity, TR_Enter.iSurfaceType);
+				bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TR_Enter.iSurfaceType);
 
 				if (HitRiotshield(&TR_Enter))
 					return 0.0f;
@@ -106,7 +106,7 @@ namespace ProtoGenesys
 				if (bEnterHit)
 					AdvanceTrace(&FP_Exit, &TR_Exit, 0.0099999998f);
 
-				bool bExitHit = BulletTrace(&TR_Exit, &FP_Exit, pEntity, TR_Exit.iSurfaceType);
+				bool bExitHit = BulletTrace(&TR_Exit, &FP_Exit, pCEntity, TR_Exit.iSurfaceType);
 				bool bStaticModel = bExitHit && TR_Exit.Trace.bAllSolid || TR_Enter.Trace.bStartSolid && TR_Exit.Trace.bStartSolid;
 
 				if (HitRiotshield(&TR_Exit))
@@ -177,11 +177,11 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	float cAutowall::TraceBullet(sEntity* entity, Vector3 start, Vector3 end, short hitloc)
+	float cAutowall::TraceBullet(sCEntity* entity, Vector3 start, Vector3 end, short hitloc)
 	{
 		int iClientNum = CG->iClientNum;
-		sEntity* pEntity = &CG->Entity[iClientNum];
-		int iWeaponID = pEntity->NextEntityState.iWeaponID;
+		sCEntity* pCEntity = &CG->CEntity[iClientNum];
+		int iWeaponID = pCEntity->NextEntityState.iWeaponID;
 		sWeaponDef* pWeaponDef = GetWeaponDef(iWeaponID);
 
 		sBulletFireParams FP_Enter;
@@ -202,7 +202,7 @@ namespace ProtoGenesys
 		VectorSubtract(end, start, FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
-		BulletTrace(&TR_Enter, &FP_Enter, pEntity, TRACE_HITTYPE_NONE);
+		BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
 		if (HitRiotshield(&TR_Enter))
 			return 0.0f;
@@ -215,7 +215,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cAutowall::TraceLine(sEntity* entity, Vector3 start, Vector3 end)
+	bool cAutowall::TraceLine(sCEntity* entity, Vector3 start, Vector3 end)
 	{
 		Vector3 vStart, vEnd;
 
@@ -232,7 +232,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cAutowall::BulletTrace(sBulletTraceResults* traceresults, sBulletFireParams* fireparams, sEntity* attacker, int surfacetype)
+	bool cAutowall::BulletTrace(sBulletTraceResults* traceresults, sBulletFireParams* fireparams, sCEntity* attacker, int surfacetype)
 	{
 		bool bResult = false;
 		__declspec(align(16)) char szSave[512];
@@ -289,7 +289,7 @@ namespace ProtoGenesys
 
 		if (wHitID != 1022)
 		{
-			if (EntityIsDeployedRiotshield(&CG->Entity[wHitID]))
+			if (EntityIsDeployedRiotshield(&CG->CEntity[wHitID]))
 			{
 				return true;
 			}
@@ -306,7 +306,7 @@ namespace ProtoGenesys
 
 		if (wHitID < MAX_CLIENTS)
 		{
-			if (EntityIsTeammate(&CG->Entity[wHitID]))
+			if (EntityIsTeammate(&CG->CEntity[wHitID]))
 			{
 				return true;
 			}

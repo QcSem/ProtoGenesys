@@ -26,17 +26,17 @@ namespace ProtoGenesys
 		{
 			EntityList[i].bIsValid = false;
 
-			if (!EntityIsValid(&CG->Entity[i]))
+			if (!EntityIsValid(&CG->CEntity[i]))
 				continue;
 
-			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
+			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
 				if (bIsPriority[i] && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
 				{
 					AntiAimTargetInfo.iIndex = i;
 
 					AntiAimTargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-					AntiAimTargetInfo.flDistance = _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->vOrigin);
+					AntiAimTargetInfo.flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
 
 					vAntiAimTargetInfo.push_back(AntiAimTargetInfo);
 				}
@@ -45,7 +45,7 @@ namespace ProtoGenesys
 
 				for (auto& Bone : vBones)
 				{
-					GetTagPosition(&CG->Entity[i], RegisterTag(szBones[Bone.first].second), GetDObj(&CG->Entity[i]), EntityList[i].vBones3D[Bone.first]);
+					GetTagPosition(&CG->CEntity[i], RegisterTag(szBones[Bone.first].second), GetDObj(&CG->CEntity[i]), EntityList[i].vBones3D[Bone.first]);
 
 					for (int j = 0; j < 3; j++)
 					{
@@ -60,27 +60,27 @@ namespace ProtoGenesys
 				VectorAverage(vMinTemp, vMaxTemp, EntityList[i].vCenter3D);
 			}
 
-			if (WeaponNames[(BYTE)CG->Entity[i].NextEntityState.iWeaponID].szDisplayName)
-				EntityList[i].szWeapon = WeaponNames[(BYTE)CG->Entity[i].NextEntityState.iWeaponID].szDisplayName;
+			if (WeaponNames[(BYTE)CG->CEntity[i].NextEntityState.iWeaponID].szDisplayName)
+				EntityList[i].szWeapon = WeaponNames[(BYTE)CG->CEntity[i].NextEntityState.iWeaponID].szDisplayName;
 
 			EntityList[i].bIsValid = true;
 
-			if (CG->Entity[i].NextEntityState.wEntityType == ET_PLAYER)
+			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
 				Vector3 vViewOrigin;
-				VectorCopy(CG->Entity[i].vOrigin, vViewOrigin);
+				VectorCopy(CG->CEntity[i].vOrigin, vViewOrigin);
 				vViewOrigin[2] += M_METERS;
 
 				EntityList[i].bW2SSuccess = _drawing.Calculate2D(EntityList[i].vBones3D, EntityList[i].vBones2D, EntityList[i].vPosition, EntityList[i].vDimentions) &&
-					_drawing.Calculate3D(&CG->Entity[i], EntityList[i].vCenter3D, EntityList[i].vCorners3D, EntityList[i].vCorners2D) &&
+					_drawing.Calculate3D(&CG->CEntity[i], EntityList[i].vCenter3D, EntityList[i].vCorners3D, EntityList[i].vCorners2D) &&
 					WorldToScreen(EntityList[i].vCenter3D, EntityList[i].vCenter2D) &&
-					WorldToScreen(CG->Entity[i].vOrigin, EntityList[i].vLower) &&
+					WorldToScreen(CG->CEntity[i].vOrigin, EntityList[i].vLower) &&
 					WorldToScreen(vViewOrigin, EntityList[i].vUpper);
 
-				_mathematics.WorldToCompass(CG->Entity[i].vOrigin, _drawing.Compass.vCompassPosition, _drawing.Compass.flCompassSize, _drawing.Compass.vArrowPosition[i]);
-				_mathematics.WorldToRadar(CG->Entity[i].vOrigin, _drawing.Radar.vRadarPosition, _drawing.Radar.flScale, _drawing.Radar.flRadarSize, _drawing.Radar.flBlipSize, _drawing.Radar.vBlipPosition[i]);
+				_mathematics.WorldToCompass(CG->CEntity[i].vOrigin, _drawing.Compass.vCompassPosition, _drawing.Compass.flCompassSize, _drawing.Compass.vArrowPosition[i]);
+				_mathematics.WorldToRadar(CG->CEntity[i].vOrigin, _drawing.Radar.vRadarPosition, _drawing.Radar.flScale, _drawing.Radar.flRadarSize, _drawing.Radar.flBlipSize, _drawing.Radar.vBlipPosition[i]);
 
-				if (EntityIsTeammate(&CG->Entity[i]))
+				if (EntityIsTeammate(&CG->CEntity[i]))
 				{
 					EntityList[i].cColor = _profiler.gColorAllies->Current.cValue;
 					continue;
@@ -91,26 +91,26 @@ namespace ProtoGenesys
 
 			else
 			{
-				EntityList[i].bW2SSuccess = WorldToScreen(CG->Entity[i].vOrigin, EntityList[i].vCenter2D);
+				EntityList[i].bW2SSuccess = WorldToScreen(CG->CEntity[i].vOrigin, EntityList[i].vCenter2D);
 				continue;
 			}
 
 			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 			{
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
 			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
 			{
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
 			else
 			{
 				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-				EntityList[i].bIsVisible = IsVisible(&CG->Entity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
 				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
 
@@ -120,7 +120,7 @@ namespace ProtoGenesys
 				TargetInfo.iIndex = i;
 
 				TargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-				TargetInfo.flDistance = _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->vOrigin);
+				TargetInfo.flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
 
 				vTargetInfo.push_back(TargetInfo);
 			}
@@ -181,7 +181,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisibleInternal(sEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage)
+	bool cTargetList::IsVisibleInternal(sCEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage)
 	{
 		Vector3 vViewOrigin;
 		GetPlayerViewOrigin(vViewOrigin);
@@ -224,7 +224,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisible(sEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index)
+	bool cTargetList::IsVisible(sCEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index)
 	{
 		bool bReturn = false;
 
@@ -289,46 +289,6 @@ namespace ProtoGenesys
 		}
 
 		return bReturn;
-	}
-	/*
-	//=====================================================================================
-	*/
-	void cTargetList::ApplyPositionPrediction(sEntity* entity)
-	{
-		float flResult;
-		Vector3 vOldPosition, vNewPosition, vDeltaPosition;
-		
-		flResult = _mathematics.EntityInterpolation(&entity->CurrentEntityState.PositionTrajectory, CG->OldSnapShot->iServerTime, vOldPosition, CG->flFrameInterpolation);
-		_mathematics.EntityInterpolation(&entity->NextEntityState.LerpEntityState.PositionTrajectory, CG->NewSnapShot->iServerTime, vNewPosition, flResult);
-
-		vDeltaPosition[0] = vNewPosition[0] - vOldPosition[0];
-		vDeltaPosition[1] = vNewPosition[1] - vOldPosition[1];
-		vDeltaPosition[2] = vNewPosition[2] - vOldPosition[2];
-
-		VectorGetSign(vDeltaPosition);
-
-		VectorMA(entity->vOrigin, CG->iFrameTime / 1000.0f, vDeltaPosition, entity->vOrigin);
-		VectorMA(entity->vOrigin, ClientActive->iPing / 1000.0f, vDeltaPosition, entity->vOrigin);
-	}
-	/*
-	//=====================================================================================
-	*/
-	void cTargetList::ApplyAnglePrediction(sEntity* entity)
-	{
-		float flResult;
-		Vector3 vOldAngles, vNewAngles, vDeltaAngles;
-
-		flResult = _mathematics.EntityInterpolation(&entity->CurrentEntityState.AngleTrajectory, CG->OldSnapShot->iServerTime, vOldAngles, CG->flFrameInterpolation);
-		_mathematics.EntityInterpolation(&entity->NextEntityState.LerpEntityState.AngleTrajectory, CG->NewSnapShot->iServerTime, vNewAngles, flResult);
-
-		vDeltaAngles[0] = AngleNormalize180(vNewAngles[0] - vOldAngles[0]);
-		vDeltaAngles[1] = AngleNormalize180(vNewAngles[1] - vOldAngles[1]);
-		vDeltaAngles[2] = AngleNormalize180(vNewAngles[2] - vOldAngles[2]);
-
-		VectorGetSign(vDeltaAngles);
-
-		VectorMA(entity->vViewAngles, CG->iFrameTime / 1000.0f, vDeltaAngles, entity->vViewAngles);
-		VectorMA(entity->vViewAngles, ClientActive->iPing / 1000.0f, vDeltaAngles, entity->vViewAngles);
 	}
 }
 

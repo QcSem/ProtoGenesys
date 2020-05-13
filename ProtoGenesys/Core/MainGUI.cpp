@@ -32,8 +32,51 @@ namespace ProtoGenesys
 		_profiler.gMenuFont->Current.iValue = GetPrivateProfileInt("MenuStyle", "FONT", cProfiler::MENU_FONT_LIGHT, (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
 
 		RefreshInterface(_profiler.gMenuColor->Current.iValue, _profiler.gMenuCursor->Current.iValue, _profiler.gMenuFont->Current.iValue);
+		LoadBackgroundImage();
 
 		bInitialized = true;
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cMainGUI::LoadBackgroundImage()
+	{
+		HRESULT hResult = S_OK;
+
+		HRSRC hResource;
+		HGLOBAL hGlobal;
+		LPVOID pResourceData;
+		DWORD dwResourceSize;
+
+		if (SUCCEEDED(hResult))
+		{
+			hResource = FindResource(hInstDll, MAKEINTRESOURCE(IDB_BACKGROUND), "PNG");
+			hResult = (hResource ? S_OK : E_FAIL);
+		}
+
+		if (SUCCEEDED(hResult))
+		{
+			hGlobal = LoadResource(hInstDll, hResource);
+			hResult = (hGlobal ? S_OK : E_FAIL);
+		}
+
+		if (SUCCEEDED(hResult))
+		{
+			pResourceData = LockResource(hGlobal);
+			hResult = (pResourceData ? S_OK : E_FAIL);
+		}
+
+		if (SUCCEEDED(hResult))
+		{
+			dwResourceSize = SizeofResource(hInstDll, hResource);
+			hResult = (dwResourceSize ? S_OK : E_FAIL);
+		}
+
+		if (SUCCEEDED(hResult))
+		{
+			CreateWICTextureFromMemory(pDevice, pDeviceContext, (uint8_t*)pResourceData, (size_t)dwResourceSize, &pD3D11Resource, &pD3D11ShaderResourceView);
+			hResult = (pD3D11Resource && pD3D11ShaderResourceView ? S_OK : E_FAIL);
+		}
 	}
 	/*
 	//=====================================================================================
@@ -371,6 +414,8 @@ namespace ProtoGenesys
 				ImGui::SetNextWindowSize(ImVec2(589.0f, 655.0f));
 				ImGui::Begin("PROTOGENESYS", &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 				ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
+
+				ImGui::GetWindowDrawList()->AddImage(pD3D11ShaderResourceView, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
 
 				if (ImGui::TabLabels(_profiler.gMenuTabs->Domain.iMax, acut::StringVectorToCharPointerArray(_profiler.gMenuTabs->szItems), _profiler.gMenuTabs->Current.iValue, NULL, false, NULL, NULL, false, false, NULL, NULL, &ImVec2(81.0f, 25.0f)))
 				{
@@ -713,7 +758,7 @@ namespace ProtoGenesys
 
 					for (int i = 0; i < MAX_CLIENTS; i++)
 					{
-						if (!CG->Client[i].iInfoValid)
+						if (!CG->ClientInfo[i].iInfoValid)
 							continue;
 
 						if (std::string(ServerSession[i].szName).empty() && !DwordFromBytes(ServerSession[i].iIPAddress) && !ServerSession[i].qwXuid)
@@ -746,14 +791,14 @@ namespace ProtoGenesys
 
 							if (ImGui::Selectable("Steal ID"))
 							{
-								_profiler.gNameOverRide->Current.szValue = _strdup(CG->Client[i].szName);
-								_profiler.gClanOverRide->Current.szValue = _strdup(CG->Client[i].szClan);
-								_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->Client[i].qwXuid).c_str());
+								_profiler.gNameOverRide->Current.szValue = _strdup(CG->ClientInfo[i].szName);
+								_profiler.gClanOverRide->Current.szValue = _strdup(CG->ClientInfo[i].szClan);
+								_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->ClientInfo[i].qwXuid).c_str());
 
 								AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
-									CG->Client[i].szName,
-									CG->Client[i].szClan,
-									CG->Client[i].qwXuid));
+									CG->ClientInfo[i].szName,
+									CG->ClientInfo[i].szClan,
+									CG->ClientInfo[i].qwXuid));
 
 								bWriteLog = true;
 							}
@@ -873,7 +918,7 @@ namespace ProtoGenesys
 					ZeroMemory(_console.szInput, sizeof(_console.szInput));
 					bReclaimFocus = true;
 
-					_mainGui.bWriteLog = true;
+					bWriteLog = true;
 
 					_profiler.gMenuTabs->Current.iValue = cProfiler::MENU_TAB_CONSOLE;
 				}

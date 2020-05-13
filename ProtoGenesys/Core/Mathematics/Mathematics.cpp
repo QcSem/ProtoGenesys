@@ -338,6 +338,46 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cMathematics::ApplyPositionPrediction(sCEntity* entity)
+	{
+		float flResult;
+		Vector3 vOldPosition, vNewPosition, vDeltaPosition;
+
+		flResult = EntityInterpolation(&entity->CurrentEntityState.PositionTrajectory, CG->OldSnapShot->iServerTime, vOldPosition, CG->flFrameInterpolation);
+		EntityInterpolation(&entity->NextEntityState.LerpEntityState.PositionTrajectory, CG->NewSnapShot->iServerTime, vNewPosition, flResult);
+
+		vDeltaPosition[0] = vNewPosition[0] - vOldPosition[0];
+		vDeltaPosition[1] = vNewPosition[1] - vOldPosition[1];
+		vDeltaPosition[2] = vNewPosition[2] - vOldPosition[2];
+
+		VectorGetSign(vDeltaPosition);
+
+		VectorMA(entity->vOrigin, CG->iFrameTime / 1000.0f, vDeltaPosition, entity->vOrigin);
+		VectorMA(entity->vOrigin, ClientActive->iPing / 1000.0f, vDeltaPosition, entity->vOrigin);
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cMathematics::ApplyAnglePrediction(sCEntity* entity)
+	{
+		float flResult;
+		Vector3 vOldAngles, vNewAngles, vDeltaAngles;
+
+		flResult = EntityInterpolation(&entity->CurrentEntityState.AngleTrajectory, CG->OldSnapShot->iServerTime, vOldAngles, CG->flFrameInterpolation);
+		EntityInterpolation(&entity->NextEntityState.LerpEntityState.AngleTrajectory, CG->NewSnapShot->iServerTime, vNewAngles, flResult);
+
+		vDeltaAngles[0] = AngleNormalize180(vNewAngles[0] - vOldAngles[0]);
+		vDeltaAngles[1] = AngleNormalize180(vNewAngles[1] - vOldAngles[1]);
+		vDeltaAngles[2] = AngleNormalize180(vNewAngles[2] - vOldAngles[2]);
+
+		VectorGetSign(vDeltaAngles);
+
+		VectorMA(entity->vViewAngles, CG->iFrameTime / 1000.0f, vDeltaAngles, entity->vViewAngles);
+		VectorMA(entity->vViewAngles, ClientActive->iPing / 1000.0f, vDeltaAngles, entity->vViewAngles);
+	}
+	/*
+	//=====================================================================================
+	*/
 	float cMathematics::EntityInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale)
 	{
 		float flResult = 0.0f;
@@ -364,3 +404,5 @@ namespace ProtoGenesys
 		return flResult;
 	}
 }
+
+//=====================================================================================

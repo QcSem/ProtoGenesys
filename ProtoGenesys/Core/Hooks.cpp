@@ -238,7 +238,7 @@ namespace ProtoGenesys
 			_drawing.vTracers.clear();
 
 		for (int i = 0; i < MAX_CLIENTS; i++)
-			if (!CG->Client[i].iInfoValid)
+			if (!CG->ClientInfo[i].iInfoValid)
 				_targetList.bIsPriority[i] = false;
 	}
 	/*
@@ -302,14 +302,14 @@ namespace ProtoGenesys
 			{
 				if (_profiler.gIdStealer->Current.bValue)
 				{
-					_profiler.gNameOverRide->Current.szValue = _strdup(CG->Client[victim].szName);
-					_profiler.gClanOverRide->Current.szValue = _strdup(CG->Client[victim].szClan);
-					_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->Client[victim].qwXuid).c_str());
+					_profiler.gNameOverRide->Current.szValue = _strdup(CG->ClientInfo[victim].szName);
+					_profiler.gClanOverRide->Current.szValue = _strdup(CG->ClientInfo[victim].szClan);
+					_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->ClientInfo[victim].qwXuid).c_str());
 
 					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
-						CG->Client[victim].szName,
-						CG->Client[victim].szClan,
-						CG->Client[victim].qwXuid));
+						CG->ClientInfo[victim].szName,
+						CG->ClientInfo[victim].szClan,
+						CG->ClientInfo[victim].qwXuid));
 				}
 
 				if (_profiler.gTrickShot->Current.bValue)
@@ -344,7 +344,7 @@ namespace ProtoGenesys
 		{
 			if (_profiler.gPlayerBulletTracers->Current.bValue)
 			{
-				if (sourcenum == CG->iClientNum && !EntityIsTeammate(&CG->Entity[targetnum]) && targetnum < MAX_CLIENTS && bone >= 0)
+				if (sourcenum == CG->iClientNum && !EntityIsTeammate(&CG->CEntity[targetnum]) && targetnum < MAX_CLIENTS && bone >= 0)
 				{
 					int iShots, iIgnoreNum;
 					float flRange, flSpread;
@@ -354,7 +354,7 @@ namespace ProtoGenesys
 					sBulletFireParams FireParams;
 					ZeroMemory(&FireParams, sizeof(sBulletFireParams));
 
-					if (PrepFireParams(&CG->Entity[CG->iClientNum], RegisterTag("tag_flash"), CG->Entity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, vTracerStart, &iShots, &flRange, &Orientation, vOrigin, &flSpread, &iIgnoreNum))
+					if (PrepFireParams(&CG->CEntity[CG->iClientNum], RegisterTag("tag_flash"), CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, vTracerStart, &iShots, &flRange, &Orientation, vOrigin, &flSpread, &iIgnoreNum))
 					{
 						cDrawing::sTracer Tracer;
 
@@ -387,7 +387,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::CalcEntityLerpPositions(int localnum, sEntity* entity)
+	void cHooks::CalcEntityLerpPositions(int localnum, sCEntity* entity)
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
@@ -396,7 +396,7 @@ namespace ProtoGenesys
 				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
 					if (_profiler.gAntiAimPitch->Current.iValue > cProfiler::ANTIAIM_PITCH_OFF)
-						CG->Client[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->PlayerState.vDeltaAngles[0];
+						CG->ClientInfo[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->PlayerState.vDeltaAngles[0];
 
 					if (_profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)
 						entity->vViewAngles[1] = _antiAim.vAntiAimAngles[1] + CG->PlayerState.vDeltaAngles[1];
@@ -405,8 +405,8 @@ namespace ProtoGenesys
 
 			if (_profiler.gApplyPrediction->Current.bValue)
 			{
-				_targetList.ApplyPositionPrediction(entity);
-				_targetList.ApplyAnglePrediction(entity);
+				_mathematics.ApplyPositionPrediction(entity);
+				_mathematics.ApplyAnglePrediction(entity);
 			}
 		}
 	}

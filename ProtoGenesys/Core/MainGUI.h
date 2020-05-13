@@ -43,15 +43,20 @@ namespace ProtoGenesys
 		} VirtualKeys[MAX_VIRTUALKEYS];
 
 		HWND hWindow;
+		HINSTANCE hInstDll;
 		ID3D11Device* pDevice;
 		ID3D11DeviceContext* pDeviceContext;
 
 		void InitInterface();
+		void LoadBackgroundImage();
 		void SetMenuColor(int index);
 		void SetMenuCursor(int index);
 		void SetMenuFont(int index);
 		void RefreshInterface(int color, int cursor, int font);
 		bool GetKeyPress(int vkey, bool immediate);
+
+		ID3D11Resource* pD3D11Resource;
+		ID3D11ShaderResourceView* pD3D11ShaderResourceView;
 
 		void WINAPI Present(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 		LRESULT WindowProcess(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);

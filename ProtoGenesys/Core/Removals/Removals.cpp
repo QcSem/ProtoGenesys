@@ -28,8 +28,8 @@ namespace ProtoGenesys
 			flSpreadX, flSpreadY, flSpread,
 			flRandom1, flRandom2;
 
-		sWeaponDef* WeaponDef = GetWeaponDef(CG->Entity[CG->iClientNum].NextEntityState.iWeaponID);
-		GetSpreadForWeapon(CG->Entity[CG->iClientNum].NextEntityState.iWeaponID, &flMinSpread, &flMaxSpread);
+		sWeaponDef* WeaponDef = GetWeaponDef(CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID);
+		GetSpreadForWeapon(CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID, &flMinSpread, &flMaxSpread);
 
 		if (CG->PlayerState.flZoomProgress == 1.0f)
 			flSpread = ((flMaxSpread - WeaponDef->flADSSpread) * flSpreadMultiplier) + WeaponDef->flADSSpread;

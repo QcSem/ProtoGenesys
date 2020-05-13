@@ -534,7 +534,7 @@ namespace ProtoGenesys
 		char _0x2D4[0xA4];
 		int iAlive;
 		char _0x37C[0x4];
-	} sEntity;
+	} sCEntity;
 	/*
 	//=====================================================================================
 	*/
@@ -606,7 +606,7 @@ namespace ProtoGenesys
 		char _0x697E8[0xB4];
 		float flShockSensitivity;
 		char _0x698A0[0x1C0];
-		sClientInfo Client[MAX_CLIENTS];
+		sClientInfo ClientInfo[MAX_CLIENTS];
 		char _0x72AF0[0xE04C];
 		int iExtraButtonBits[2];
 		char _0x80B44[0x8];
@@ -616,7 +616,7 @@ namespace ProtoGenesys
 		char _0x80B60[0x6BD0];
 		char szGameType[4];
 		char _0x87734[0x1D90C];
-		sEntity Entity[MAX_ENTITIES];
+		sCEntity CEntity[MAX_ENTITIES];
 	} sCG;
 	/*
 	//=====================================================================================
@@ -974,7 +974,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static bool PrepFireParams(sEntity* entity, WORD tag, int weapon, int _event, bool player, sBulletFireParams* fireparams, Vector3 tracerstart, int* shots, float* range, sOrientation* orientation, Vector3 origin, float* spread, int* ignorenum)
+	static bool PrepFireParams(sCEntity* entity, WORD tag, int weapon, int _event, bool player, sBulletFireParams* fireparams, Vector3 tracerstart, int* shots, float* range, sOrientation* orientation, Vector3 origin, float* spread, int* ignorenum)
 	{
 		return VariadicCall<bool>(dwPrepFireParams, 0, entity, tag, &CG->PlayerState, weapon, _event, player, fireparams, tracerstart, shots, range, orientation, origin, spread, ignorenum);
 	}
@@ -1030,7 +1030,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static LPVOID GetDObj(sEntity* entity)
+	static LPVOID GetDObj(sCEntity* entity)
 	{
 		return VariadicCall<LPVOID>(dwGetDObj, entity->NextEntityState.iEntityNum, entity->wUsedForPlayerMesh);
 	}
@@ -1044,7 +1044,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static LPVOID GetTagPosition(sEntity* entity, WORD tag, LPVOID dobj, Vector3 position)
+	static LPVOID GetTagPosition(sCEntity* entity, WORD tag, LPVOID dobj, Vector3 position)
 	{
 		return VariadicCall<LPVOID>(dwGetTagPosition, entity, dobj, tag, position);
 	}
@@ -1058,7 +1058,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static bool EntityIsTeammate(sEntity* entity)
+	static bool EntityIsTeammate(sCEntity* entity)
 	{
 		return VariadicCall<bool>(dwEntityIsTeammate, 0, entity);
 	}
@@ -1142,7 +1142,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static bool EntityIsDeployedRiotshield(sEntity* entity)
+	static bool EntityIsDeployedRiotshield(sCEntity* entity)
 	{
 		return VariadicCall<bool>(dwEntityIsDeployedRiotshield, entity);
 	}
@@ -1347,14 +1347,14 @@ namespace ProtoGenesys
 	*/
 	static bool LocalPlayerIsValid()
 	{
-		return ((CG->Entity[CG->iClientNum].iAlive & 2) && !(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
+		return ((CG->CEntity[CG->iClientNum].iAlive & 2) && !(CG->CEntity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
 	}
 	/*
 	//=====================================================================================
 	*/
-	static bool EntityIsValid(sEntity* entity)
+	static bool EntityIsValid(sCEntity* entity)
 	{
-		return ((entity != &CG->Entity[CG->iClientNum]) && (entity->iAlive & 2) && !(entity->NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
+		return ((entity != &CG->CEntity[CG->iClientNum]) && (entity->iAlive & 2) && !(entity->NextEntityState.LerpEntityState.eFlags1 & EF1_DEAD));
 	}
 	/*
 	//=====================================================================================
@@ -1373,7 +1373,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static bool EntityHasRiotShield(sEntity* entity)
+	static bool EntityHasRiotShield(sCEntity* entity)
 	{
 		return ((BYTE)entity->NextEntityState.iWeaponID == ID_ASSAULTSHIELD || (BYTE)entity->NextEntityState.LerpEntityState.iWeaponID2 == ID_ASSAULTSHIELD);
 	}

@@ -286,7 +286,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cDrawing::DrawClient(sEntity* entity, ImVec2 bones2d[BONE_MAX], ImVec2 corners2d[8], ImVec2 center, float scale, float distance, std::string name, ImVec4 color)
+	void cDrawing::DrawClient(sCEntity* entity, ImVec2 bones2d[BONE_MAX], ImVec2 corners2d[8], ImVec2 center, float scale, float distance, std::string name, ImVec4 color)
 	{
 		float flWidth, flHeight, flPadding = 3.0f;
 
@@ -413,7 +413,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cDrawing::Calculate3D(sEntity* entity, Vector3 center, Vector3 corners3d[8], ImVec2 corners2d[8])
+	bool cDrawing::Calculate3D(sCEntity* entity, Vector3 center, Vector3 corners3d[8], ImVec2 corners2d[8])
 	{
 		Vector3 vMinimum, vMaximum;
 
@@ -512,59 +512,59 @@ namespace ProtoGenesys
 	{
 		for (int i = 0; i < MAX_ENTITIES; i++)
 		{
-			if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->Entity[i])) ||
-				(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->Entity[i])) ||
+			if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->CEntity[i])) ||
+				(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->CEntity[i])) ||
 				_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
 			{
 				if (_targetList.EntityList[i].bW2SSuccess && _targetList.EntityList[i].bIsValid)
 				{
-					switch (CG->Entity[i].NextEntityState.wEntityType)
+					switch (CG->CEntity[i].NextEntityState.wEntityType)
 					{
 					case ET_PLAYER:
 					{
-						DrawClient(&CG->Entity[i], _targetList.EntityList[i].vBones2D, _targetList.EntityList[i].vCorners2D, _targetList.EntityList[i].vCenter2D, _targetList.EntityList[i].vLower.y - _targetList.EntityList[i].vUpper.y, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->vOrigin), CG->Client[i].szName, _targetList.EntityList[i].cColor);
+						DrawClient(&CG->CEntity[i], _targetList.EntityList[i].vBones2D, _targetList.EntityList[i].vCorners2D, _targetList.EntityList[i].vCenter2D, _targetList.EntityList[i].vLower.y - _targetList.EntityList[i].vUpper.y, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin), CG->ClientInfo[i].szName, _targetList.EntityList[i].cColor);
 					} break;
 
 					case ET_ITEM:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity("Item", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Item", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_MISSILE:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity("Missile", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Missile", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_TURRET:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity("Turret", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Turret", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_HELICOPTER:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity("Helicopter", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Helicopter", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_PLANE:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity("Plane", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Plane", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_VEHICLE:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity("Vehicle", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Vehicle", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_ACTOR:
 					{
 						if (_profiler.gPlayerEntities->Current.bValue)
-							DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->Entity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 					}
 				}
@@ -587,11 +587,11 @@ namespace ProtoGenesys
 			{
 				if (_targetList.EntityList[i].bIsValid)
 				{
-					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->Entity[i])) ||
-						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->Entity[i])) ||
+					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->CEntity[i])) ||
+						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->CEntity[i])) ||
 						_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
-						float flAngle = (((CG->vRefDefViewAngles[1] - CG->Entity[i].vViewAngles[1]) + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
+						float flAngle = (((CG->vRefDefViewAngles[1] - CG->CEntity[i].vViewAngles[1]) + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
 
 						ImVec2 vBaseX = ImVec2(Compass.flArrowSize / -2.0f, 0.0f);
 						ImVec2 vBaseY = ImVec2(Compass.flArrowSize / 2.0f, Compass.flArrowSize / 2.0f * -0.75f);
@@ -601,7 +601,7 @@ namespace ProtoGenesys
 						ImVec2 vFinalY = Compass.vArrowPosition[i] + ImRotate(vBaseY, ImCos(flAngle), ImSin(flAngle));
 						ImVec2 vFinalZ = Compass.vArrowPosition[i] + ImRotate(vBaseZ, ImCos(flAngle), ImSin(flAngle));
 
-						bool bHasRiotShield = EntityHasRiotShield(&CG->Entity[i]);
+						bool bHasRiotShield = EntityHasRiotShield(&CG->CEntity[i]);
 
 						ImGui::GetWindowDrawList()->AddTriangleFilled(vFinalX, vFinalY, vFinalZ,
 							ImGui::GetColorU32(_targetList.EntityList[i].cColor * ImVec4(1.0f, 1.0f, 1.0f, 0.25f)));
@@ -643,11 +643,11 @@ namespace ProtoGenesys
 			{
 				if (_targetList.EntityList[i].bIsValid)
 				{
-					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->Entity[i])) ||
-						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->Entity[i])) ||
+					if ((_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_AXIS && !EntityIsTeammate(&CG->CEntity[i])) ||
+						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->CEntity[i])) ||
 						_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
-						bool bHasRiotShield = EntityHasRiotShield(&CG->Entity[i]);
+						bool bHasRiotShield = EntityHasRiotShield(&CG->CEntity[i]);
 
 						ImGui::GetWindowDrawList()->AddCircleFilled(Radar.vBlipPosition[i], Radar.flBlipSize / 2.0f,
 							ImGui::GetColorU32(_targetList.EntityList[i].cColor * ImVec4(1.0f, 1.0f, 1.0f, 0.25f)));
@@ -668,7 +668,7 @@ namespace ProtoGenesys
 	{
 		if (_profiler.gPlayerCrossHair->Current.bValue)
 		{
-			if (!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM))
+			if (!(CG->CEntity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM))
 			{
 				ImGui::GetWindowDrawList()->AddLine(ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 12.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - 4.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImGui::GetColorU32(_profiler.gColorCrossHair->Current.cValue));
 				ImGui::GetWindowDrawList()->AddLine(ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f + 3.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f + 11.0f, ImGui::GetIO().DisplaySize.y / 2.0f - 1.0f), ImGui::GetColorU32(_profiler.gColorCrossHair->Current.cValue));

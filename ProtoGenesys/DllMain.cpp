@@ -28,8 +28,8 @@ void USERCALL hTransitionPlayerState(int localnum, sPlayerState* playerstate, LP
 typedef void(USERCALL* tTransitionPlayerState)(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
 tTransitionPlayerState oTransitionPlayerState = (tTransitionPlayerState)dwTransitionPlayerState;
 
-void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity);
-typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sEntity* entity);
+void USERCALL hCalcEntityLerpPositions(int localnum, sCEntity* entity);
+typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sCEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
 
 int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
@@ -111,7 +111,7 @@ void USERCALL hTransitionPlayerState(int localnum, sPlayerState* playerstate, LP
 
 //=====================================================================================
 
-void USERCALL hCalcEntityLerpPositions(int localnum, sEntity* entity)
+void USERCALL hCalcEntityLerpPositions(int localnum, sCEntity* entity)
 {
 	oCalcEntityLerpPositions(localnum, entity);
 
@@ -218,8 +218,9 @@ sSteamID FASTCALL hGetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, in
 
 //=====================================================================================
 
-void Initialize()
+void Initialize(HINSTANCE hinstDLL)
 {
+	_mainGui.hInstDll = hinstDLL;
 	_hooks.PatchAntiCheat();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
@@ -367,7 +368,7 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Initialize();
+		Initialize(hinstDLL);
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:

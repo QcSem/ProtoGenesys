@@ -150,9 +150,9 @@ namespace ProtoGenesys
 	*/
 	bool cAntiAim::ReadyForAntiAim()
 	{
-		return (GetWeaponDef(CG->Entity[CG->iClientNum].NextEntityState.iWeaponID) && !WeaponIsVehicle() &&
-			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_PRONE) &&
-			!(CG->Entity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags2 & EF2_MANTLE));
+		return (GetWeaponDef(CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID) && !WeaponIsVehicle() &&
+			!(CG->CEntity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_PRONE) &&
+			!(CG->CEntity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags2 & EF2_MANTLE));
 	}
 }
 

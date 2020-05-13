@@ -65,6 +65,9 @@
     <ClCompile Include="Core\Stats\Stats.cpp">
       <Filter>Core\Stats</Filter>
     </ClCompile>
+    <ClCompile Include="ImGui\Addons\WICTextureLoader.cpp">
+      <Filter>ImGui\Addons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.hpp" />
@@ -182,6 +185,15 @@
     <ClInclude Include="Core\Stats\Stats.h">
       <Filter>Core\Stats</Filter>
     </ClInclude>
+    <ClInclude Include="Resources\Resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Addons\WICTextureLoader.h">
+      <Filter>ImGui\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_memory_editor.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -256,6 +268,9 @@
     <Filter Include="Core\Stats">
       <UniqueIdentifier>{e070b263-6b7b-474e-9105-53bed263333f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{1b17ff49-8fe0-4a54-88c5-d03e990f78c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Detours\detours.pdb">
@@ -266,5 +281,15 @@
     <Library Include="Detours\detours.lib">
       <Filter>Detours</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Resource.png">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\Resource.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

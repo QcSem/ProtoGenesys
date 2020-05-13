@@ -27,6 +27,8 @@ namespace ProtoGenesys
 		void WorldToCompass(Vector3 world, ImVec2 compasspos, float compasssize, ImVec2& screen);
 		void WorldToRadar(Vector3 world, ImVec2 radarpos, float scale, float radarsize, float blipsize, ImVec2& screen);
 		void RotatePoint(Vector3 point, Vector3 center, float yaw, Vector3 out);
+		void ApplyPositionPrediction(sCEntity* entity);
+		void ApplyAnglePrediction(sCEntity* entity);
 		float EntityInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale);
 	} extern _mathematics;
 }
