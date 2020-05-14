@@ -235,7 +235,10 @@ namespace ProtoGenesys
 		}
 
 		else
+		{
 			_drawing.vTracers.clear();
+			_profiler.gAirStuckToggle->Current.bValue = false;
+		}
 
 		for (int i = 0; i < MAX_CLIENTS; i++)
 			if (!CG->ClientInfo[i].iInfoValid)
@@ -332,6 +335,11 @@ namespace ProtoGenesys
 
 					AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
 				}
+			}
+
+			else if (victim == CG->iClientNum)
+			{
+				_profiler.gAirStuckToggle->Current.bValue = false;
 			}
 		}
 	}

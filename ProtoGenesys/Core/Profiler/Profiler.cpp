@@ -45,7 +45,6 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
 			XML.set("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
 
-			XML.set("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.ThirdPersonAntiAim", gThirdPersonAntiAim->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
@@ -54,6 +53,8 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.bValue);
 			XML.set("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.bValue);
 
 			XML.set("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
@@ -68,15 +69,25 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
 			XML.set("ProtoGenesys.Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
 
-			XML.set("ProtoGenesys.Colors.Axis.Red", gColorAxis->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Axis.Green", gColorAxis->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Axis.Blue", gColorAxis->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Axis.Alpha", gColorAxis->Current.cValue[3]);
+			XML.set("ProtoGenesys.Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.AxisVisible.Blue", gColorAxisVisible->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.AxisVisible.Alpha", gColorAxisVisible->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.Allies.Red", gColorAllies->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Allies.Green", gColorAllies->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Current.cValue[3]);
+			XML.set("ProtoGenesys.Colors.AxisInvisible.Red", gColorAxisInvisible->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.AxisInvisible.Green", gColorAxisInvisible->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.AxisInvisible.Blue", gColorAxisInvisible->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.AxisInvisible.Alpha", gColorAxisInvisible->Current.cValue[3]);
+
+			XML.set("ProtoGenesys.Colors.AlliesVisible.Red", gColorAlliesVisible->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.AlliesVisible.Green", gColorAlliesVisible->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.AlliesVisible.Blue", gColorAlliesVisible->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.AlliesVisible.Alpha", gColorAlliesVisible->Current.cValue[3]);
+
+			XML.set("ProtoGenesys.Colors.AlliesInvisible.Red", gColorAlliesInvisible->Current.cValue[0]);
+			XML.set("ProtoGenesys.Colors.AlliesInvisible.Green", gColorAlliesInvisible->Current.cValue[1]);
+			XML.set("ProtoGenesys.Colors.AlliesInvisible.Blue", gColorAlliesInvisible->Current.cValue[2]);
+			XML.set("ProtoGenesys.Colors.AlliesInvisible.Alpha", gColorAlliesInvisible->Current.cValue[3]);
 
 			XML.set("ProtoGenesys.Colors.Accents.Red", gColorAccents->Current.cValue[0]);
 			XML.set("ProtoGenesys.Colors.Accents.Green", gColorAccents->Current.cValue[1]);
@@ -154,7 +165,6 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
 			XML.get_if_present("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
 
-			XML.get_if_present("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPersonAntiAim", gThirdPersonAntiAim->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
@@ -163,6 +173,8 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.bValue);
 			XML.get_if_present("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.bValue);
 
 			XML.get_if_present("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
@@ -177,15 +189,25 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
 
-			XML.get_if_present("ProtoGenesys.Colors.Axis.Red", gColorAxis->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Axis.Green", gColorAxis->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Axis.Blue", gColorAxis->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Axis.Alpha", gColorAxis->Current.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.AxisVisible.Blue", gColorAxisVisible->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.AxisVisible.Alpha", gColorAxisVisible->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.Allies.Red", gColorAllies->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Allies.Green", gColorAllies->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Allies.Blue", gColorAllies->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Allies.Alpha", gColorAllies->Current.cValue[3]);
+			XML.get_if_present("ProtoGenesys.Colors.AxisInvisible.Red", gColorAxisInvisible->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.AxisInvisible.Green", gColorAxisInvisible->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.AxisInvisible.Blue", gColorAxisInvisible->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.AxisInvisible.Alpha", gColorAxisInvisible->Current.cValue[3]);
+
+			XML.get_if_present("ProtoGenesys.Colors.AlliesVisible.Red", gColorAlliesVisible->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.AlliesVisible.Green", gColorAlliesVisible->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.AlliesVisible.Blue", gColorAlliesVisible->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.AlliesVisible.Alpha", gColorAlliesVisible->Current.cValue[3]);
+
+			XML.get_if_present("ProtoGenesys.Colors.AlliesInvisible.Red", gColorAlliesInvisible->Current.cValue[0]);
+			XML.get_if_present("ProtoGenesys.Colors.AlliesInvisible.Green", gColorAlliesInvisible->Current.cValue[1]);
+			XML.get_if_present("ProtoGenesys.Colors.AlliesInvisible.Blue", gColorAlliesInvisible->Current.cValue[2]);
+			XML.get_if_present("ProtoGenesys.Colors.AlliesInvisible.Alpha", gColorAlliesInvisible->Current.cValue[3]);
 
 			XML.get_if_present("ProtoGenesys.Colors.Accents.Red", gColorAccents->Current.cValue[0]);
 			XML.get_if_present("ProtoGenesys.Colors.Accents.Green", gColorAccents->Current.cValue[1]);
@@ -246,7 +268,6 @@ namespace ProtoGenesys
 		gPlayerRadar->Current.bValue = gPlayerRadar->Reset.bValue;
 		gPlayerBulletTracers->Current.bValue = gPlayerBulletTracers->Reset.bValue;
 
-		gNoFlinch->Current.bValue = gNoFlinch->Reset.bValue;
 		gThirdPerson->Current.bValue = gThirdPerson->Reset.bValue;
 		gThirdPersonAntiAim->Current.bValue = gThirdPersonAntiAim->Reset.bValue;
 		gOrbitalVsat->Current.bValue = gOrbitalVsat->Reset.bValue;
@@ -255,6 +276,8 @@ namespace ProtoGenesys
 		gIdStealer->Current.bValue = gIdStealer->Reset.bValue;
 		gAirStuckToggle->Current.bValue = gAirStuckToggle->Reset.bValue;
 		gReloadCancel->Current.bValue = gReloadCancel->Reset.bValue;
+		gNoFlinch->Current.bValue = gNoFlinch->Reset.bValue;
+		gBoneScanPriorities->Current.bValue = gBoneScanPriorities->Reset.bValue;
 		gTrickShot->Current.bValue = gTrickShot->Reset.bValue;
 	}
 }

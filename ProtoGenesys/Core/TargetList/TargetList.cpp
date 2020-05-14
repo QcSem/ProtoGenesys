@@ -82,11 +82,11 @@ namespace ProtoGenesys
 
 				if (EntityIsTeammate(&CG->CEntity[i]))
 				{
-					EntityList[i].cColor = _profiler.gColorAllies->Current.cValue;
+					EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first) ? _profiler.gColorAlliesVisible->Current.cValue : _profiler.gColorAlliesInvisible->Current.cValue;
 					continue;
 				}
 
-				EntityList[i].cColor = _profiler.gColorAxis->Current.cValue;
+				EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first) ? _profiler.gColorAxisVisible->Current.cValue : _profiler.gColorAxisInvisible->Current.cValue;
 			}
 
 			else
@@ -97,22 +97,39 @@ namespace ProtoGenesys
 
 			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 			{
-				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
-				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
+				if (_profiler.gBoneScanPriorities->Current.bValue && !bIsPriority[i])
+				{
+					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				}
+
+				else
+				{
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				}
 			}
 
 			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
 			{
-				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
-				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
+				if (_profiler.gBoneScanPriorities->Current.bValue && !bIsPriority[i])
+				{
+					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				}
+
+				else
+				{
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
+				}
 			}
 
 			else
 			{
 				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
 				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.bValue, EntityList[i].iBoneIndex);
-				VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 			}
+
+			VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
 
 			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
 			{

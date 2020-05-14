@@ -547,11 +547,6 @@ namespace ProtoGenesys
 				case cProfiler::MENU_TAB_MISCELLANEOUS:
 				{
 					ImGui::NewLine();
-					if (DrawOption(_profiler.gNoFlinch->szName, _profiler.gNoFlinch->szItems[_profiler.gNoFlinch->Current.iValue], &_profiler.gNoFlinch->Current.iValue, _profiler.gNoFlinch->Domain.iMin, _profiler.gNoFlinch->Domain.iMax, 1))
-					{
-						bWriteLog = true;
-					} ImGui::NewLine();
-
 					if (DrawOption(_profiler.gThirdPerson->szName, _profiler.gThirdPerson->szItems[_profiler.gThirdPerson->Current.iValue], &_profiler.gThirdPerson->Current.iValue, _profiler.gThirdPerson->Domain.iMin, _profiler.gThirdPerson->Domain.iMax, 1))
 					{
 						bWriteLog = true;
@@ -588,6 +583,16 @@ namespace ProtoGenesys
 					} ImGui::NewLine();
 
 					if (DrawOption(_profiler.gReloadCancel->szName, _profiler.gReloadCancel->szItems[_profiler.gReloadCancel->Current.iValue], &_profiler.gReloadCancel->Current.iValue, _profiler.gReloadCancel->Domain.iMin, _profiler.gReloadCancel->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
+					if (DrawOption(_profiler.gNoFlinch->szName, _profiler.gNoFlinch->szItems[_profiler.gNoFlinch->Current.iValue], &_profiler.gNoFlinch->Current.iValue, _profiler.gNoFlinch->Domain.iMin, _profiler.gNoFlinch->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
+					if (DrawOption(_profiler.gBoneScanPriorities->szName, _profiler.gBoneScanPriorities->szItems[_profiler.gBoneScanPriorities->Current.iValue], &_profiler.gBoneScanPriorities->Current.iValue, _profiler.gBoneScanPriorities->Domain.iMin, _profiler.gBoneScanPriorities->Domain.iMax, 1))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
@@ -678,13 +683,22 @@ namespace ProtoGenesys
 				case cProfiler::MENU_TAB_STYLES:
 				{
 					ImGui::NewLine();
-
-					if (DrawColorPicker(_profiler.gColorAxis->szName, _profiler.gColorAxis->Current.cValue))
+					if (DrawColorPicker(_profiler.gColorAxisVisible->szName, _profiler.gColorAxisVisible->Current.cValue))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
 
-					if (DrawColorPicker(_profiler.gColorAllies->szName, _profiler.gColorAllies->Current.cValue))
+					if (DrawColorPicker(_profiler.gColorAxisInvisible->szName, _profiler.gColorAxisInvisible->Current.cValue))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
+					if (DrawColorPicker(_profiler.gColorAlliesVisible->szName, _profiler.gColorAlliesVisible->Current.cValue))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
+					if (DrawColorPicker(_profiler.gColorAlliesInvisible->szName, _profiler.gColorAlliesInvisible->Current.cValue))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
@@ -736,8 +750,10 @@ namespace ProtoGenesys
 					ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
 					if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 					{
-						_profiler.gColorAxis->Current.cValue = _profiler.gColorAxis->Reset.cValue;
-						_profiler.gColorAllies->Current.cValue = _profiler.gColorAllies->Reset.cValue;
+						_profiler.gColorAxisVisible->Current.cValue = _profiler.gColorAxisVisible->Reset.cValue;
+						_profiler.gColorAxisInvisible->Current.cValue = _profiler.gColorAxisInvisible->Reset.cValue;
+						_profiler.gColorAlliesVisible->Current.cValue = _profiler.gColorAlliesVisible->Reset.cValue;
+						_profiler.gColorAlliesInvisible->Current.cValue = _profiler.gColorAlliesInvisible->Reset.cValue;
 						_profiler.gColorAccents->Current.cValue = _profiler.gColorAccents->Reset.cValue;
 						_profiler.gColorCrossHair->Current.cValue = _profiler.gColorCrossHair->Reset.cValue;
 						_profiler.gColorText->Current.cValue = _profiler.gColorText->Reset.cValue;
