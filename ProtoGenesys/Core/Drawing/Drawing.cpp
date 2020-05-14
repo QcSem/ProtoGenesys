@@ -158,14 +158,14 @@ namespace ProtoGenesys
 				color);
 
 			DrawLine(bones2d[vBones[BONE_NECK].first],
+				bones2d[vBones[BONE_SPINE_4].first],
+				color);
+
+			DrawLine(bones2d[vBones[BONE_SPINE_4].first],
 				bones2d[vBones[BONE_UPPER_SPINE].first],
 				color);
 
 			DrawLine(bones2d[vBones[BONE_UPPER_SPINE].first],
-				bones2d[vBones[BONE_MIDDLE_SPINE].first],
-				color);
-
-			DrawLine(bones2d[vBones[BONE_MIDDLE_SPINE].first],
 				bones2d[vBones[BONE_LOWER_SPINE].first],
 				color);
 
@@ -200,12 +200,12 @@ namespace ProtoGenesys
 				bones2d[vBones[BONE_NECK].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_UPPER_SPINE].first],
-				bones2d[vBones[BONE_UPPER_SPINE].first] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_SPINE_4].first],
+				bones2d[vBones[BONE_SPINE_4].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
-			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_MIDDLE_SPINE].first],
-				bones2d[vBones[BONE_MIDDLE_SPINE].first] + ImVec2(1.0f, 1.0f),
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_UPPER_SPINE].first],
+				bones2d[vBones[BONE_UPPER_SPINE].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
 
 			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LOWER_SPINE].first],

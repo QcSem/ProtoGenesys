@@ -45,7 +45,7 @@ namespace ProtoGenesys
 
 				for (auto& Bone : vBones)
 				{
-					GetTagPosition(&CG->CEntity[i], RegisterTag(szBones[Bone.first].second), GetDObj(&CG->CEntity[i]), EntityList[i].vBones3D[Bone.first]);
+					GetTagPosition(&CG->CEntity[i], RegisterTag(vBones[Bone.first].second.second), GetDObj(&CG->CEntity[i]), EntityList[i].vBones3D[Bone.first]);
 
 					for (int j = 0; j < 3; j++)
 					{
@@ -198,14 +198,14 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisibleInternal(sCEntity* entity, Vector3 position, short hitloc, bool autowall, float* damage)
+	bool cTargetList::IsVisibleInternal(sCEntity* entity, Vector3 position, bool autowall, float* damage)
 	{
 		Vector3 vViewOrigin;
 		GetPlayerViewOrigin(vViewOrigin);
 
 		if (WeaponIsVehicle())
 		{
-			float flDamage = _autoWall.TraceBullet(entity, vViewOrigin, position, hitloc);
+			float flDamage = _autoWall.TraceBullet(entity, vViewOrigin, position);
 
 			if (damage)
 				*damage = flDamage;
@@ -216,7 +216,7 @@ namespace ProtoGenesys
 
 		else if (autowall)
 		{
-			float flDamage = _autoWall.Autowall(entity, vViewOrigin, position, hitloc);
+			float flDamage = _autoWall.Autowall(entity, vViewOrigin, position);
 
 			if (damage)
 				*damage = flDamage;
@@ -227,7 +227,7 @@ namespace ProtoGenesys
 
 		else
 		{
-			float flDamage = _autoWall.TraceBullet(entity, vViewOrigin, position, hitloc);
+			float flDamage = _autoWall.TraceBullet(entity, vViewOrigin, position);
 
 			if (damage)
 				*damage = flDamage;
@@ -255,7 +255,7 @@ namespace ProtoGenesys
 			{
 				for (auto& Bone : vBones)
 				{
-					vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage);
+					vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage);
 				}
 
 				for (auto& Bone : vBones)
@@ -272,7 +272,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], vBones[index].second, autowall, nullptr).get();
+				return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], autowall, nullptr).get();
 			}
 		}
 
@@ -282,7 +282,7 @@ namespace ProtoGenesys
 			{
 				for (auto& Bone : vBones)
 				{
-					if (IsVisibleInternal(entity, bones3d[Bone.first], Bone.second, autowall, &DamageInfo.flDamage))
+					if (IsVisibleInternal(entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage))
 					{
 						DamageInfo.iBoneIndex = Bone.first;
 						vDamageInfo.push_back(DamageInfo);
@@ -294,7 +294,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				return IsVisibleInternal(entity, bones3d[index], vBones[index].second, autowall, NULL);
+				return IsVisibleInternal(entity, bones3d[index], autowall, NULL);
 			}
 		}
 

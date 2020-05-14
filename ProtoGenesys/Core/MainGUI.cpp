@@ -606,7 +606,7 @@ namespace ProtoGenesys
 				case cProfiler::MENU_TAB_TWEAKS:
 				{
 					ImGui::NewLine();
-					if (DrawOption(_profiler.gAimBone->szName, szBones[_profiler.gAimBone->Current.iValue].first, &_profiler.gAimBone->Current.iValue, _profiler.gAimBone->Domain.iMin, _profiler.gAimBone->Domain.iMax, 1))
+					if (DrawOption(_profiler.gAimBone->szName, vBones[_profiler.gAimBone->Current.iValue].second.first, &_profiler.gAimBone->Current.iValue, _profiler.gAimBone->Domain.iMin, _profiler.gAimBone->Domain.iMax, 1))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
