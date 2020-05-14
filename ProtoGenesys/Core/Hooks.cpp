@@ -237,7 +237,7 @@ namespace ProtoGenesys
 		else
 		{
 			_drawing.vTracers.clear();
-			_profiler.gAirStuckToggle->Current.bValue = false;
+			_mainGui.bIsAirStuck = false;
 		}
 
 		for (int i = 0; i < MAX_CLIENTS; i++)
@@ -339,7 +339,7 @@ namespace ProtoGenesys
 
 			else if (victim == CG->iClientNum)
 			{
-				_profiler.gAirStuckToggle->Current.bValue = false;
+				_mainGui.bIsAirStuck = false;
 			}
 		}
 	}
