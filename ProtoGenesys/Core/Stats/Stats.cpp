@@ -10585,6 +10585,17 @@ namespace ProtoGenesys
 		*(DWORD*)(dwStatsBase + 0xBC908) = 0xFFFFFFFF;
 		*(DWORD*)(dwStatsBase + 0xBC90C) = 0xFFFFFFFF;
 		*(DWORD*)(dwStatsBase + 0xBC910) = 0xFFFFFFFF;
+
+		for (int i = 0; i < 10; i++)
+		{
+			Cbuf_AddText(VariadicText("setStatFromLocString CacLoadouts customClassName %i Genesys.cc\n", i));
+			Cbuf_AddText(VariadicText("setStatFromLocString customMatchCacLoadouts customClassName %i Genesys.cc\n", i));
+			Cbuf_AddText(VariadicText("setStatFromLocString leagueCacLoadouts customClassName %i Genesys.cc\n", i));
+			Cbuf_AddText(VariadicText("setprofilelocclass %i Genesys.cc\n", i));
+		}
+
+		Cbuf_AddText("uploadStats\n");
+		Cbuf_AddText("updategamerprofile\n");
 	}
 }
 
