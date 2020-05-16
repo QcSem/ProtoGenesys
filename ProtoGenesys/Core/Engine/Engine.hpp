@@ -237,33 +237,64 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	static std::vector<std::pair<std::string, std::string>> szBones =
+	{
+		std::make_pair("Helmet", "j_helmet"),
+		std::make_pair("Head", "j_head"),
+		std::make_pair("Neck", "j_neck"),
+		std::make_pair("Spine 4", "j_spine4"),
+		std::make_pair("Upper Spine", "j_spineupper"),
+		std::make_pair("Lower Spine", "j_spinelower"),
+		std::make_pair("Main Root", "j_mainroot"),
+		std::make_pair("Left Clavicle", "j_clavicle_le"),
+		std::make_pair("Right Clavicle", "j_clavicle_ri"),
+		std::make_pair("Left Shoulder", "j_shoulder_le"),
+		std::make_pair("Right Shoulder", "j_shoulder_ri"),
+		std::make_pair("Left Hip", "j_hip_le"),
+		std::make_pair("Right Hip", "j_hip_ri"),
+		std::make_pair("Left Elbow", "j_elbow_le"),
+		std::make_pair("Right Elbow", "j_elbow_ri"),
+		std::make_pair("Left Knee", "j_knee_le"),
+		std::make_pair("Right Knee", "j_knee_ri"),
+		std::make_pair("Left Wrist Twist", "j_wristtwist_le"),
+		std::make_pair("Right Wrist Twist", "j_wristtwist_ri"),
+		std::make_pair("Left Ankle", "j_ankle_le"),
+		std::make_pair("Right Ankle", "j_ankle_ri"),
+		std::make_pair("Left Wrist", "j_wrist_le"),
+		std::make_pair("Right Wrist", "j_wrist_ri"),
+		std::make_pair("Left Ball", "j_ball_le"),
+		std::make_pair("Right Ball", "j_ball_ri")
+	};
+	/*
+	//=====================================================================================
+	*/
 	static std::vector<std::pair<eBone, std::pair<std::string, std::string>>> vBones =
 	{
-		std::make_pair(BONE_HELMET, std::make_pair("Helmet", "j_helmet")),
-		std::make_pair(BONE_HEAD, std::make_pair("Head", "j_head")),
-		std::make_pair(BONE_NECK, std::make_pair("Neck", "j_neck")),
-		std::make_pair(BONE_SPINE_4, std::make_pair("Spine 4", "j_spine4")),
-		std::make_pair(BONE_UPPER_SPINE, std::make_pair("Upper Spine", "j_spineupper")),
-		std::make_pair(BONE_LOWER_SPINE, std::make_pair("Lower Spine", "j_spinelower")),
-		std::make_pair(BONE_MAIN_ROOT, std::make_pair("Main Root", "j_mainroot")),
-		std::make_pair(BONE_LEFT_CLAVICLE, std::make_pair("Left Clavicle", "j_clavicle_le")),
-		std::make_pair(BONE_RIGHT_CLAVICLE, std::make_pair("Right Clavicle", "j_clavicle_ri")),
-		std::make_pair(BONE_LEFT_SHOULDER, std::make_pair("Left Shoulder", "j_shoulder_le")),
-		std::make_pair(BONE_RIGHT_SHOULDER, std::make_pair("Right Shoulder", "j_shoulder_ri")),
-		std::make_pair(BONE_LEFT_HIP, std::make_pair("Left Hip", "j_hip_le")),
-		std::make_pair(BONE_RIGHT_HIP, std::make_pair("Right Hip", "j_hip_ri")),
-		std::make_pair(BONE_LEFT_ELBOW, std::make_pair("Left Elbow", "j_elbow_le")),
-		std::make_pair(BONE_RIGHT_ELBOW, std::make_pair("Right Elbow", "j_elbow_ri")),
-		std::make_pair(BONE_LEFT_KNEE, std::make_pair("Left Knee", "j_knee_le")),
-		std::make_pair(BONE_RIGHT_KNEE, std::make_pair("Right Knee", "j_knee_ri")),
-		std::make_pair(BONE_LEFT_WRIST_TWIST, std::make_pair("Left Wrist Twist", "j_wristtwist_le")),
-		std::make_pair(BONE_RIGHT_WRIST_TWIST, std::make_pair("Right Wrist Twist", "j_wristtwist_ri")),
-		std::make_pair(BONE_LEFT_ANKLE, std::make_pair("Left Ankle", "j_ankle_le")),
-		std::make_pair(BONE_RIGHT_ANKLE, std::make_pair("Right Ankle", "j_ankle_ri")),
-		std::make_pair(BONE_LEFT_WRIST, std::make_pair("Left Wrist", "j_wrist_le")),
-		std::make_pair(BONE_RIGHT_WRIST, std::make_pair("Right Wrist", "j_wrist_ri")),
-		std::make_pair(BONE_LEFT_BALL, std::make_pair("Left Ball", "j_ball_le")),
-		std::make_pair(BONE_RIGHT_BALL, std::make_pair("Right Ball", "j_ball_ri"))
+		std::make_pair(BONE_HELMET, szBones[BONE_HELMET]),
+		std::make_pair(BONE_HEAD, szBones[BONE_HEAD]),
+		std::make_pair(BONE_NECK, szBones[BONE_NECK]),
+		std::make_pair(BONE_SPINE_4, szBones[BONE_SPINE_4]),
+		std::make_pair(BONE_UPPER_SPINE, szBones[BONE_UPPER_SPINE]),
+		std::make_pair(BONE_LOWER_SPINE, szBones[BONE_LOWER_SPINE]),
+		std::make_pair(BONE_MAIN_ROOT, szBones[BONE_MAIN_ROOT]),
+		std::make_pair(BONE_LEFT_CLAVICLE, szBones[BONE_LEFT_CLAVICLE]),
+		std::make_pair(BONE_RIGHT_CLAVICLE, szBones[BONE_RIGHT_CLAVICLE]),
+		std::make_pair(BONE_LEFT_SHOULDER, szBones[BONE_LEFT_SHOULDER]),
+		std::make_pair(BONE_RIGHT_SHOULDER, szBones[BONE_RIGHT_SHOULDER]),
+		std::make_pair(BONE_LEFT_HIP, szBones[BONE_LEFT_HIP]),
+		std::make_pair(BONE_RIGHT_HIP, szBones[BONE_RIGHT_HIP]),
+		std::make_pair(BONE_LEFT_ELBOW, szBones[BONE_LEFT_ELBOW]),
+		std::make_pair(BONE_RIGHT_ELBOW, szBones[BONE_RIGHT_ELBOW]),
+		std::make_pair(BONE_LEFT_KNEE, szBones[BONE_LEFT_KNEE]),
+		std::make_pair(BONE_RIGHT_KNEE, szBones[BONE_RIGHT_KNEE]),
+		std::make_pair(BONE_LEFT_WRIST_TWIST, szBones[BONE_LEFT_WRIST_TWIST]),
+		std::make_pair(BONE_RIGHT_WRIST_TWIST, szBones[BONE_RIGHT_WRIST_TWIST]),
+		std::make_pair(BONE_LEFT_ANKLE, szBones[BONE_LEFT_ANKLE]),
+		std::make_pair(BONE_RIGHT_ANKLE, szBones[BONE_RIGHT_ANKLE]),
+		std::make_pair(BONE_LEFT_WRIST, szBones[BONE_LEFT_WRIST]),
+		std::make_pair(BONE_RIGHT_WRIST, szBones[BONE_RIGHT_WRIST]),
+		std::make_pair(BONE_LEFT_BALL, szBones[BONE_LEFT_BALL]),
+		std::make_pair(BONE_RIGHT_BALL, szBones[BONE_RIGHT_BALL])
 	};
 	/*
 	//=====================================================================================
