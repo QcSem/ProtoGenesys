@@ -288,7 +288,10 @@ namespace ProtoGenesys
 			sUserCmd* pUserCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
 
 			if (WeaponIsVehicle())
+			{
+				_aimBot.SilentAim(pUserCmd);
 				_aimBot.AutoFire(pUserCmd);
+			}
 
 			_antiAim.AntiAimPitch(pUserCmd);
 			_antiAim.AntiAimYaw(pUserCmd);
