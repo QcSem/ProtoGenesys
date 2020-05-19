@@ -352,7 +352,7 @@ namespace ProtoGenesys
 		else if (_profiler.gPlayerSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_CROSSHAIR)
 			DrawLine(ImVec2(center.x, center.y), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f), color);
 
-		if (_profiler.gPlayerInfo->Current.bValue)
+		if (_profiler.gPlayerInfo->Current.iValue)
 		{
 			std::string szText(acut::StripColorCodes(VariadicText("[%im] %s", (int)(distance / M_METERS), name.c_str())));
 			ImVec2 vStringSize = ImGui::GetIO().FontDefault->CalcTextSizeA(ImGui::GetIO().FontDefault->FontSize, FLT_MAX, 0.0f, szText.c_str());
@@ -360,7 +360,7 @@ namespace ProtoGenesys
 			DrawString(szText, ImVec2(center.x - vStringSize.x / 2.0f, center.y - flHeight / 2.0f - flPadding - vStringSize.y), false, _profiler.gColorText->Current.cValue);
 		}
 
-		if (_profiler.gPlayerWeapons->Current.bValue)
+		if (_profiler.gPlayerWeapons->Current.iValue)
 		{
 			std::string szText(acut::StripColorCodes(_targetList.EntityList[entity->NextEntityState.iEntityNum].szWeapon));
 			ImVec2 vStringSize = ImGui::GetIO().FontDefault->CalcTextSizeA(ImGui::GetIO().FontDefault->FontSize, FLT_MAX, 0.0f, szText.c_str());
@@ -487,7 +487,7 @@ namespace ProtoGenesys
 	{
 		for (auto Tracer = vTracers.begin(); Tracer != vTracers.end();)
 		{
-			int iDeltaTime = CG->PlayerState.iServerTime - Tracer->iStartTime;
+			int iDeltaTime = clock() - Tracer->iStartTime;
 
 			if (Tracer->bW2SSuccess = WorldToScreen(Tracer->vHitPos3D, Tracer->vHitPos2D))
 			{
@@ -527,43 +527,43 @@ namespace ProtoGenesys
 
 					case ET_ITEM:
 					{
-						if (_profiler.gPlayerEntities->Current.bValue)
+						if (_profiler.gPlayerEntities->Current.iValue)
 							DrawEntity("Item", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_MISSILE:
 					{
-						if (_profiler.gPlayerEntities->Current.bValue)
+						if (_profiler.gPlayerEntities->Current.iValue)
 							DrawEntity("Missile", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_TURRET:
 					{
-						if (_profiler.gPlayerEntities->Current.bValue)
+						if (_profiler.gPlayerEntities->Current.iValue)
 							DrawEntity("Turret", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_HELICOPTER:
 					{
-						if (_profiler.gPlayerEntities->Current.bValue)
+						if (_profiler.gPlayerEntities->Current.iValue)
 							DrawEntity("Helicopter", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_PLANE:
 					{
-						if (_profiler.gPlayerEntities->Current.bValue)
+						if (_profiler.gPlayerEntities->Current.iValue)
 							DrawEntity("Plane", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_VEHICLE:
 					{
-						if (_profiler.gPlayerEntities->Current.bValue)
+						if (_profiler.gPlayerEntities->Current.iValue)
 							DrawEntity("Vehicle", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_ACTOR:
 					{
-						if (_profiler.gPlayerEntities->Current.bValue)
+						if (_profiler.gPlayerEntities->Current.iValue)
 							DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 					}
@@ -576,7 +576,7 @@ namespace ProtoGenesys
 	*/
 	void cDrawing::DrawCompass()
 	{
-		if (_profiler.gPlayerCompass->Current.bValue)
+		if (_profiler.gPlayerCompass->Current.iValue)
 		{
 			Compass.flArrowSize = ImGui::GetIO().DisplaySize.y / 40.0f;
 			Compass.flCompassSize = ImGui::GetIO().DisplaySize.y / 1.5f;
@@ -619,10 +619,10 @@ namespace ProtoGenesys
 	*/
 	void cDrawing::DrawRadar()
 	{
-		if (_profiler.gPlayerRadar->Current.bValue)
+		if (_profiler.gPlayerRadar->Current.iValue)
 		{
 			ImGui::SetNextWindowSize(ImVec2(Radar.flRadarSize, Radar.flRadarSize + ImGui::GetFrameHeight()));
-			ImGui::Begin("RADAR", &_profiler.gPlayerRadar->Current.bValue, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
+			ImGui::Begin("RADAR", (bool*)&_profiler.gPlayerRadar->Current.iValue, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 			ImGui::GetWindowDrawList()->PushClipRectFullScreen();
 
 			Radar.vRadarPosition = ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2.0f,
@@ -666,7 +666,7 @@ namespace ProtoGenesys
 	*/
 	void cDrawing::DrawCrosshair()
 	{
-		if (_profiler.gPlayerCrossHair->Current.bValue)
+		if (_profiler.gPlayerCrossHair->Current.iValue)
 		{
 			if (!(CG->CEntity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM))
 			{

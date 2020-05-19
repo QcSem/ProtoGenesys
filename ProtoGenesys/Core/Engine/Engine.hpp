@@ -863,6 +863,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwServerSession = 0x12A7240;
 	static DWORD_PTR dwServerID = 0x11D0ACC;
 	static DWORD_PTR dwWindow = 0x2956244;
+	static DWORD_PTR dwConnectionState = 0x11C7848;
 
 	static DWORD_PTR dwLocalClientIsInGame = bIsSteamVersion ? 0x5922F0 : 0x402F80;
 	static DWORD_PTR dwGetDObj = bIsSteamVersion ? 0x5D2590 : 0x4DA190;

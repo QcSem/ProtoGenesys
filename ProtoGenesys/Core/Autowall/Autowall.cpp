@@ -52,7 +52,7 @@ namespace ProtoGenesys
 			if (HitRiotshield(&TR_Enter))
 				return 0.0f;
 
-			if (_profiler.gAntiTeamKill->Current.bValue)
+			if (_profiler.gAntiTeamKill->Current.iValue)
 				if (HitTeammate(&TR_Enter))
 					return 0.0f;
 
@@ -90,7 +90,7 @@ namespace ProtoGenesys
 				if (HitRiotshield(&TR_Enter))
 					return 0.0f;
 
-				if (_profiler.gAntiTeamKill->Current.bValue)
+				if (_profiler.gAntiTeamKill->Current.iValue)
 					if (HitTeammate(&TR_Enter))
 						return 0.0f;
 
@@ -112,7 +112,7 @@ namespace ProtoGenesys
 				if (HitRiotshield(&TR_Exit))
 					return 0.0f;
 
-				if (_profiler.gAntiTeamKill->Current.bValue)
+				if (_profiler.gAntiTeamKill->Current.iValue)
 					if (HitTeammate(&TR_Exit))
 						return 0.0f;
 

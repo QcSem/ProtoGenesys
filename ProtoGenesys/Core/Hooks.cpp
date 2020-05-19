@@ -12,13 +12,13 @@ namespace ProtoGenesys
 	{
 		*(DWORD_PTR*)dwTacSSHandle = 0x1;
 
-		CG->iThirdPerson = _profiler.gThirdPerson->Current.bValue;
-		CG->PlayerState.iSatalliteTypeEnabled = _profiler.gOrbitalVsat->Current.bValue;
+		CG->iThirdPerson = _profiler.gThirdPerson->Current.iValue;
+		CG->PlayerState.iSatalliteTypeEnabled = _profiler.gOrbitalVsat->Current.iValue;
 
-		if (_profiler.gHardcoreHud->Current.bValue && CG->iMatchUIVisibilityFlags & 0x200)
+		if (_profiler.gHardcoreHud->Current.iValue && CG->iMatchUIVisibilityFlags & 0x200)
 			CG->iMatchUIVisibilityFlags &= ~0x200;
 
-		if (_profiler.gDisableEmp->Current.bValue && CG->PlayerState.iOtherFlags & 0x40)
+		if (_profiler.gDisableEmp->Current.iValue && CG->PlayerState.iOtherFlags & 0x40)
 			CG->PlayerState.iOtherFlags &= ~0x40;
 
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_GUARD_PAGE)
@@ -306,7 +306,7 @@ namespace ProtoGenesys
 		{
 			if (attacker == CG->iClientNum && attacker != victim)
 			{
-				if (_profiler.gIdStealer->Current.bValue)
+				if (_profiler.gIdStealer->Current.iValue)
 				{
 					_profiler.gNameOverRide->Current.szValue = _strdup(CG->ClientInfo[victim].szName);
 					_profiler.gClanOverRide->Current.szValue = _strdup(CG->ClientInfo[victim].szClan);
@@ -318,10 +318,10 @@ namespace ProtoGenesys
 						CG->ClientInfo[victim].qwXuid));
 				}
 
-				if (_profiler.gTrickShot->Current.bValue)
+				if (_profiler.gTrickShot->Current.iValue)
 				{
 					AddReliableCommand(VariadicText("mr %d -1 endround", *(DWORD_PTR*)dwServerID));
-					_profiler.gTrickShot->Current.bValue = false;
+					_profiler.gTrickShot->Current.iValue = false;
 				}
 
 				std::string szKillspam(_profiler.gKillSpam->Current.szValue);
@@ -353,7 +353,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gPlayerBulletTracers->Current.bValue)
+			if (_profiler.gPlayerBulletTracers->Current.iValue)
 			{
 				if (sourcenum == CG->iClientNum && !EntityIsTeammate(&CG->CEntity[targetnum]) && targetnum < MAX_CLIENTS && bone >= 0)
 				{
@@ -375,7 +375,7 @@ namespace ProtoGenesys
 						Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
 						Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
 						Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
-						Tracer.iStartTime = CG->PlayerState.iServerTime;
+						Tracer.iStartTime = clock();
 
 						_drawing.vTracers.push_back(Tracer);
 					}
@@ -388,7 +388,7 @@ namespace ProtoGenesys
 	*/
 	void cHooks::TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate)
 	{
-		if (_profiler.gNoFlinch->Current.bValue)
+		if (_profiler.gNoFlinch->Current.iValue)
 		{
 			playerstate->iDamageYaw = 0xFF;
 			playerstate->iDamagePitch = 0xFF;
@@ -402,7 +402,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
+			if (_profiler.gThirdPerson->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
 			{
 				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
@@ -414,7 +414,7 @@ namespace ProtoGenesys
 				}
 			}
 
-			if (_profiler.gApplyPrediction->Current.bValue)
+			if (_profiler.gApplyPrediction->Current.iValue)
 			{
 				_mathematics.ApplyPositionPrediction(entity);
 				_mathematics.ApplyAnglePrediction(entity);
@@ -428,7 +428,7 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (_profiler.gThirdPersonAntiAim->Current.bValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
+			if (_profiler.gThirdPerson->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
 			{
 				GetPlayerViewOrigin(origin);
 			}
@@ -485,29 +485,18 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cHooks::GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo)
+	LPCSTR cHooks::GetPersonaName(LPCSTR name)
 	{
-		friendgameinfo->GameID.iGameID = 202990;
-		return true;
-	}
-	/*
-	//=====================================================================================
-	*/
-	ePersonaState cHooks::GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid)
-	{
-		return PERSONA_STATE_ONLINE;
-	}
-	/*
-	//=====================================================================================
-	*/
-	LPCSTR cHooks::GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid)
-	{
-		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamid](std::pair<QWORD, std::string>& _friend) { return steamid.SteamID.iAll64Bits == _friend.first; });
+		std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
-		if (Friend != vFriends.end())
-			return Friend->second.c_str();
+		if (_profiler.gNamePrestigeSpam->Current.iValue)
+			return _strdup(Randomize(name).c_str());
 
-		return NULL;
+		else if (szNameOverride.empty())
+			return _strdup(GetUsername());
+
+		else
+			return _strdup(szNameOverride.c_str());
 	}
 	/*
 	//=====================================================================================
@@ -537,6 +526,137 @@ namespace ProtoGenesys
 		}
 
 		return SteamID;
+	}
+	/*
+	//=====================================================================================
+	*/
+	ePersonaState cHooks::GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid)
+	{
+		return PERSONA_STATE_ONLINE;
+	}
+	/*
+	//=====================================================================================
+	*/
+	LPCSTR cHooks::GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid)
+	{
+		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamid](std::pair<QWORD, std::string>& _friend) { return steamid.SteamID.iAll64Bits == _friend.first; });
+
+		if (Friend != vFriends.end())
+			return Friend->second.c_str();
+
+		return NULL;
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cHooks::GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo)
+	{
+		friendgameinfo->GameID.iGameID = 202990;
+		return true;
+	}
+	/*
+	//=====================================================================================
+	*/
+	std::string cHooks::Randomize(std::string name)
+	{
+		static std::string szNameOverride(name);
+
+		if (!*(int*)dwConnectionState)
+		{
+			static int iMode = 1;
+			static int iTimer = 0;
+
+			if (clock() - iTimer > 500)
+			{
+				switch (iMode)
+				{
+				case 0:
+					szNameOverride = "8========mD~   ";
+					_stats.SetPLevel(iMode);
+					iMode = 1;
+					break;
+				case 1:
+					szNameOverride = "8=======m=D ~  ";
+					_stats.SetPLevel(iMode);
+					iMode = 2;
+					break;
+				case 2:
+					szNameOverride = "8======m==D  ~ ";
+					_stats.SetPLevel(iMode);
+					iMode = 3;
+					break;
+				case 3:
+					szNameOverride = "8=====m===D   ~";
+					_stats.SetPLevel(iMode);
+					iMode = 4;
+					break;
+				case 4:
+					szNameOverride = "8====m====D~   ";
+					_stats.SetPLevel(iMode);
+					iMode = 5;
+					break;
+				case 5:
+					szNameOverride = "8===m=====D ~  ";
+					_stats.SetPLevel(iMode);
+					iMode = 6;
+					break;
+				case 6:
+					szNameOverride = "8==m======D  ~ ";
+					_stats.SetPLevel(iMode);
+					iMode = 7;
+					break;
+				case 7:
+					szNameOverride = "8=m=======D   ~";
+					_stats.SetPLevel(iMode);
+					iMode = 8;
+					break;
+				case 8:
+					szNameOverride = "8m========D~   ";
+					_stats.SetPLevel(iMode);
+					iMode = 9;
+					break;
+				case 9:
+					szNameOverride = "8=m=======D ~  ";
+					_stats.SetPLevel(iMode);
+					iMode = 10;
+					break;
+				case 10:
+					szNameOverride = "8==m======D  ~ ";
+					_stats.SetPLevel(iMode);
+					iMode = 11;
+					break;
+				case 11:
+					szNameOverride = "8===m=====D   ~";
+					_stats.SetPLevel(iMode);
+					iMode = 12;
+					break;
+				case 12:
+					szNameOverride = "8====m====D~   ";
+					_stats.SetPLevel(iMode);
+					iMode = 13;
+					break;
+				case 13:
+					szNameOverride = "8=====m===D ~  ";
+					_stats.SetPLevel(iMode);
+					iMode = 14;
+					break;
+				case 14:
+					szNameOverride = "8======m==D  ~ ";
+					_stats.SetPLevel(iMode);
+					iMode = 15;
+					break;
+				case 15:
+					szNameOverride = "8=======m=D   ~";
+					_stats.SetPLevel(iMode);
+					iMode = 0;
+					break;
+				}
+
+				iTimer = clock();
+			}
+		}
+
+		return szNameOverride;
 	}
 	/*
 	//=====================================================================================

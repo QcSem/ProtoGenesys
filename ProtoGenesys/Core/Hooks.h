@@ -56,11 +56,13 @@ namespace ProtoGenesys
 		bool SteamIDIsValid(DWORD** _this);
 
 		sSteamID GetSteamID(sSteamID steamid);
-		bool GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
-		ePersonaState GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid);
-		LPCSTR GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid);
+		LPCSTR GetPersonaName(LPCSTR name);
 		int GetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags);
 		sSteamID GetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
+		ePersonaState GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid);
+		LPCSTR GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid);
+		bool GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
+		std::string Randomize(std::string name);
 		void RefreshFriends();
 
 		StdThunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;

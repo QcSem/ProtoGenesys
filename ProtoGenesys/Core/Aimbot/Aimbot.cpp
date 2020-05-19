@@ -10,7 +10,7 @@ namespace ProtoGenesys
 
 	void cAimbot::StandardAim()
 	{
-		if (!_profiler.gSilentAim->Current.bValue && AimState.bTargetAcquired)
+		if (!_profiler.gSilentAim->Current.iValue && AimState.bTargetAcquired)
 		{
 			AimState.vAimAngles[0] *= _profiler.gAimPower->Current.iValue / 100.0f;
 			AimState.vAimAngles[1] *= _profiler.gAimPower->Current.iValue / 100.0f;
@@ -31,7 +31,7 @@ namespace ProtoGenesys
 			}
 
 			if (AimState.iCurrentZoomDelay == _profiler.gAutoZoomDelay->Current.iValue)
-				if (_profiler.gAutoZoom->Current.bValue && _profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO)
+				if (_profiler.gAutoZoom->Current.iValue && _profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO)
 					SetZoomState(true);
 		}
 	}
@@ -40,7 +40,7 @@ namespace ProtoGenesys
 	*/
 	void cAimbot::SilentAim(sUserCmd* usercmd)
 	{
-		if (_profiler.gSilentAim->Current.bValue && AimState.bTargetAcquired)
+		if (_profiler.gSilentAim->Current.iValue && AimState.bTargetAcquired)
 		{
 			if (AimState.bLockonTarget)
 			{
@@ -53,7 +53,7 @@ namespace ProtoGenesys
 			}
 
 			if (AimState.iCurrentZoomDelay == _profiler.gAutoZoomDelay->Current.iValue)
-				if (_profiler.gAutoZoom->Current.bValue && _profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO)
+				if (_profiler.gAutoZoom->Current.iValue && _profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO)
 					SetZoomState(true);
 		}
 	}
@@ -62,7 +62,7 @@ namespace ProtoGenesys
 	*/
 	void cAimbot::AutoFire(sUserCmd* usercmd)
 	{
-		if (_profiler.gAutoFire->Current.bValue && AimState.bTargetAcquired)
+		if (_profiler.gAutoFire->Current.iValue && AimState.bTargetAcquired)
 		{
 			if (AimState.iCurrentFireDelay == _profiler.gAutoFireDelay->Current.iValue)
 			{
@@ -86,7 +86,7 @@ namespace ProtoGenesys
 		AimState.bAntiAimTargetAcquired = (AimState.iAntiAimTargetNum > -1);
 		AimState.bLockonTarget = (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_AUTO || (_profiler.gAimBotMode->Current.iValue == cProfiler::AIMBOT_MODE_MANUAL && CG->CEntity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM));
 		AimState.bIsAutoAiming = (AimState.bTargetAcquired && AimState.bLockonTarget);
-		AimState.bIsAutoFiring = (_profiler.gAutoFire->Current.bValue && AimState.bIsAutoAiming);
+		AimState.bIsAutoFiring = (_profiler.gAutoFire->Current.iValue && AimState.bIsAutoAiming);
 
 		if (AimState.bLockonTarget)
 		{
@@ -150,7 +150,7 @@ namespace ProtoGenesys
 	{
 		while (true)
 		{
-			if (_profiler.gReloadCancel->Current.bValue)
+			if (_profiler.gReloadCancel->Current.iValue)
 			{
 				bool bReloading = (CG->iWeaponState[0] == 11 || CG->iWeaponState[1] == 11);
 

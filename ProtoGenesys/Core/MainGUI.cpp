@@ -291,7 +291,7 @@ namespace ProtoGenesys
 		if (GetKeyPress(VK_END, false))
 			_profiler.DisableAll();
 
-		if (_profiler.gAirStuckToggle->Current.bValue)
+		if (_profiler.gAirStuckToggle->Current.iValue)
 		{
 			if (GetKeyPress(VK_DELETE, false))
 				bIsAirStuck = !bIsAirStuck;
@@ -483,6 +483,24 @@ namespace ProtoGenesys
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
+
+					ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
+					if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
+					{
+						_profiler.gAimBotMode->Current.iValue = _profiler.gAimBotMode->Reset.iValue;
+						_profiler.gAutoZoom->Current.iValue = _profiler.gAutoZoom->Reset.iValue;
+						_profiler.gAutoFire->Current.iValue = _profiler.gAutoFire->Reset.iValue;
+						_profiler.gAutoWall->Current.iValue = _profiler.gAutoWall->Reset.iValue;
+						_profiler.gApplyPrediction->Current.iValue = _profiler.gApplyPrediction->Reset.iValue;
+						_profiler.gAntiTeamKill->Current.iValue = _profiler.gAntiTeamKill->Reset.iValue;
+						_profiler.gSilentAim->Current.iValue = _profiler.gSilentAim->Reset.iValue;
+						_profiler.gAntiAimPitch->Current.iValue = _profiler.gAntiAimPitch->Reset.iValue;
+						_profiler.gAntiAimYaw->Current.iValue = _profiler.gAntiAimYaw->Reset.iValue;
+						_profiler.gBoneScan->Current.iValue = _profiler.gBoneScan->Reset.iValue;
+						_profiler.gSortMethod->Current.iValue = _profiler.gSortMethod->Reset.iValue;
+
+						bWriteLog = true;
+					}
 				} break;
 
 				case cProfiler::MENU_TAB_WALLHACK:
@@ -542,17 +560,30 @@ namespace ProtoGenesys
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
+
+					ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
+					if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
+					{
+						_profiler.gWallHackMode->Current.iValue = _profiler.gWallHackMode->Reset.iValue;
+						_profiler.gPlayerBoxes->Current.iValue = _profiler.gPlayerBoxes->Reset.iValue;
+						_profiler.gPlayerBones->Current.iValue = _profiler.gPlayerBones->Reset.iValue;
+						_profiler.gPlayerSnapLines->Current.iValue = _profiler.gPlayerSnapLines->Reset.iValue;
+						_profiler.gPlayerInfo->Current.iValue = _profiler.gPlayerInfo->Reset.iValue;
+						_profiler.gPlayerWeapons->Current.iValue = _profiler.gPlayerWeapons->Reset.iValue;
+						_profiler.gPlayerEntities->Current.iValue = _profiler.gPlayerEntities->Reset.iValue;
+						_profiler.gPlayerCrossHair->Current.iValue = _profiler.gPlayerCrossHair->Reset.iValue;
+						_profiler.gPlayerCompass->Current.iValue = _profiler.gPlayerCompass->Reset.iValue;
+						_profiler.gPlayerRadar->Current.iValue = _profiler.gPlayerRadar->Reset.iValue;
+						_profiler.gPlayerBulletTracers->Current.iValue = _profiler.gPlayerBulletTracers->Reset.iValue;
+
+						bWriteLog = true;
+					}
 				} break;
 
 				case cProfiler::MENU_TAB_MISCELLANEOUS:
 				{
 					ImGui::NewLine();
 					if (DrawOption(_profiler.gThirdPerson->szName, _profiler.gThirdPerson->szItems[_profiler.gThirdPerson->Current.iValue], &_profiler.gThirdPerson->Current.iValue, _profiler.gThirdPerson->Domain.iMin, _profiler.gThirdPerson->Domain.iMax, 1))
-					{
-						bWriteLog = true;
-					} ImGui::NewLine();
-
-					if (DrawOption(_profiler.gThirdPersonAntiAim->szName, _profiler.gThirdPersonAntiAim->szItems[_profiler.gThirdPersonAntiAim->Current.iValue], &_profiler.gThirdPersonAntiAim->Current.iValue, _profiler.gThirdPersonAntiAim->Domain.iMin, _profiler.gThirdPersonAntiAim->Domain.iMax, 1))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
@@ -597,10 +628,33 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::NewLine();
 
+					if (DrawOption(_profiler.gNamePrestigeSpam->szName, _profiler.gNamePrestigeSpam->szItems[_profiler.gNamePrestigeSpam->Current.iValue], &_profiler.gNamePrestigeSpam->Current.iValue, _profiler.gNamePrestigeSpam->Domain.iMin, _profiler.gNamePrestigeSpam->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
 					if (DrawOption(_profiler.gTrickShot->szName, _profiler.gTrickShot->szItems[_profiler.gTrickShot->Current.iValue], &_profiler.gTrickShot->Current.iValue, _profiler.gTrickShot->Domain.iMin, _profiler.gTrickShot->Domain.iMax, 1))
 					{
 						bWriteLog = true;
 					} ImGui::NewLine();
+
+					ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
+					if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
+					{
+						_profiler.gThirdPerson->Current.iValue = _profiler.gThirdPerson->Reset.iValue;
+						_profiler.gOrbitalVsat->Current.iValue = _profiler.gOrbitalVsat->Reset.iValue;
+						_profiler.gHardcoreHud->Current.iValue = _profiler.gHardcoreHud->Reset.iValue;
+						_profiler.gDisableEmp->Current.iValue = _profiler.gDisableEmp->Reset.iValue;
+						_profiler.gIdStealer->Current.iValue = _profiler.gIdStealer->Reset.iValue;
+						_profiler.gAirStuckToggle->Current.iValue = _profiler.gAirStuckToggle->Reset.iValue;
+						_profiler.gReloadCancel->Current.iValue = _profiler.gReloadCancel->Reset.iValue;
+						_profiler.gNoFlinch->Current.iValue = _profiler.gNoFlinch->Reset.iValue;
+						_profiler.gBoneScanPriorities->Current.iValue = _profiler.gBoneScanPriorities->Reset.iValue;
+						_profiler.gNamePrestigeSpam->Current.iValue = _profiler.gNamePrestigeSpam->Reset.iValue;
+						_profiler.gTrickShot->Current.iValue = _profiler.gTrickShot->Reset.iValue;
+
+						bWriteLog = true;
+					}
 				} break;
 
 				case cProfiler::MENU_TAB_TWEAKS:

@@ -22,12 +22,12 @@ namespace ProtoGenesys
 				szFilePath = acut::AnsiToWstring(path, CP_ACP);
 
 			XML.set("ProtoGenesys.AimBot.Mode", gAimBotMode->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Current.bValue);
-			XML.set("ProtoGenesys.AimBot.AutoFire", gAutoFire->Current.bValue);
-			XML.set("ProtoGenesys.AimBot.AutoWall", gAutoWall->Current.bValue);
-			XML.set("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.bValue);
-			XML.set("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.bValue);
-			XML.set("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.bValue);
+			XML.set("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.AutoFire", gAutoFire->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.AutoWall", gAutoWall->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.iValue);
+			XML.set("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.iValue);
 			XML.set("ProtoGenesys.AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
 			XML.set("ProtoGenesys.AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
 			XML.set("ProtoGenesys.AimBot.BoneScan", gBoneScan->Current.iValue);
@@ -37,25 +37,25 @@ namespace ProtoGenesys
 			XML.set("ProtoGenesys.WallHack.Boxes", gPlayerBoxes->Current.iValue);
 			XML.set("ProtoGenesys.WallHack.Bones", gPlayerBones->Current.iValue);
 			XML.set("ProtoGenesys.WallHack.SnapLines", gPlayerSnapLines->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.Info", gPlayerInfo->Current.bValue);
-			XML.set("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Current.bValue);
-			XML.set("ProtoGenesys.WallHack.Entities", gPlayerEntities->Current.bValue);
-			XML.set("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.bValue);
-			XML.set("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.bValue);
-			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
-			XML.set("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
+			XML.set("ProtoGenesys.WallHack.Info", gPlayerInfo->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.Entities", gPlayerEntities->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.iValue);
+			XML.set("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.iValue);
 
-			XML.set("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.ThirdPersonAntiAim", gThirdPersonAntiAim->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.bValue);
-			XML.set("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.bValue);
+			XML.set("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.NamePrestigeSpam", gNamePrestigeSpam->Current.iValue);
+			XML.set("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.iValue);
 
 			XML.set("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
 			XML.set("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.iValue);
@@ -114,9 +114,9 @@ namespace ProtoGenesys
 			return true;
 		}
 
-		catch (const std::runtime_error & e)
+		catch (const std::runtime_error & error)
 		{
-			MessageBox(_mainGui.hWindow, e.what(), "Error", MB_OK | MB_ICONERROR);
+			MessageBox(_mainGui.hWindow, error.what(), "Error", MB_OK | MB_ICONERROR);
 
 			return false;
 		}
@@ -142,12 +142,12 @@ namespace ProtoGenesys
 			XML.read_from_file(szFilePath);
 
 			XML.get_if_present("ProtoGenesys.AimBot.Mode", gAimBotMode->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Current.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoFire", gAutoFire->Current.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoWall", gAutoWall->Current.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.bValue);
-			XML.get_if_present("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.bValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AutoFire", gAutoFire->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AutoWall", gAutoWall->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.iValue);
+			XML.get_if_present("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.iValue);
 			XML.get_if_present("ProtoGenesys.AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
 			XML.get_if_present("ProtoGenesys.AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
 			XML.get_if_present("ProtoGenesys.AimBot.BoneScan", gBoneScan->Current.iValue);
@@ -157,25 +157,25 @@ namespace ProtoGenesys
 			XML.get_if_present("ProtoGenesys.WallHack.Boxes", gPlayerBoxes->Current.iValue);
 			XML.get_if_present("ProtoGenesys.WallHack.Bones", gPlayerBones->Current.iValue);
 			XML.get_if_present("ProtoGenesys.WallHack.SnapLines", gPlayerSnapLines->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Info", gPlayerInfo->Current.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Current.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Entities", gPlayerEntities->Current.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.bValue);
-			XML.get_if_present("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.bValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Info", gPlayerInfo->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Entities", gPlayerEntities->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.iValue);
+			XML.get_if_present("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.iValue);
 
-			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPersonAntiAim", gThirdPersonAntiAim->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.bValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.bValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.NamePrestigeSpam", gNamePrestigeSpam->Current.iValue);
+			XML.get_if_present("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.iValue);
 
 			XML.get_if_present("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
 			XML.get_if_present("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.iValue);
@@ -232,9 +232,9 @@ namespace ProtoGenesys
 			return true;
 		}
 
-		catch (const std::runtime_error & e)
+		catch (const std::runtime_error & error)
 		{
-			MessageBox(_mainGui.hWindow, e.what(), "Error", MB_OK | MB_ICONERROR);
+			MessageBox(_mainGui.hWindow, error.what(), "Error", MB_OK | MB_ICONERROR);
 
 			return false;
 		}
@@ -244,41 +244,41 @@ namespace ProtoGenesys
 	*/
 	void cProfiler::DisableAll()
 	{
-		gAimBotMode->Current.iValue = gAimBotMode->Reset.iValue;
-		gAutoZoom->Current.bValue = gAutoZoom->Reset.bValue;
-		gAutoFire->Current.bValue = gAutoFire->Reset.bValue;
-		gAutoWall->Current.bValue = gAutoWall->Reset.bValue;
-		gApplyPrediction->Current.bValue = gApplyPrediction->Reset.bValue;
-		gAntiTeamKill->Current.bValue = gAntiTeamKill->Reset.bValue;
-		gSilentAim->Current.bValue = gSilentAim->Reset.bValue;
-		gAntiAimPitch->Current.iValue = gAntiAimPitch->Reset.iValue;
-		gAntiAimYaw->Current.iValue = gAntiAimYaw->Reset.iValue;
-		gBoneScan->Current.iValue = gBoneScan->Reset.iValue;
-		gSortMethod->Current.iValue = gSortMethod->Reset.iValue;
+		gAimBotMode->Current.iValue = AIMBOT_MODE_OFF;
+		gAutoZoom->Current.iValue = FALSE;
+		gAutoFire->Current.iValue = FALSE;
+		gAutoWall->Current.iValue = FALSE;
+		gApplyPrediction->Current.iValue = FALSE;
+		gAntiTeamKill->Current.iValue = FALSE;
+		gSilentAim->Current.iValue = FALSE;
+		gAntiAimPitch->Current.iValue = ANTIAIM_PITCH_OFF;
+		gAntiAimYaw->Current.iValue = ANTIAIM_YAW_OFF;
+		gBoneScan->Current.iValue = BONESCAN_OFF;
+		gSortMethod->Current.iValue = SORT_METHOD_FOV;
 
-		gWallHackMode->Current.iValue = gWallHackMode->Reset.iValue;
-		gPlayerBoxes->Current.iValue = gPlayerBoxes->Reset.iValue;
-		gPlayerBones->Current.iValue = gPlayerBones->Reset.iValue;
-		gPlayerSnapLines->Current.iValue = gPlayerSnapLines->Reset.iValue;
-		gPlayerInfo->Current.bValue = gPlayerInfo->Reset.bValue;
-		gPlayerWeapons->Current.bValue = gPlayerWeapons->Reset.bValue;
-		gPlayerEntities->Current.bValue = gPlayerEntities->Reset.bValue;
-		gPlayerCrossHair->Current.bValue = gPlayerCrossHair->Reset.bValue;
-		gPlayerCompass->Current.bValue = gPlayerCompass->Reset.bValue;
-		gPlayerRadar->Current.bValue = gPlayerRadar->Reset.bValue;
-		gPlayerBulletTracers->Current.bValue = gPlayerBulletTracers->Reset.bValue;
+		gWallHackMode->Current.iValue = WALLHACK_MODE_AXIS;
+		gPlayerBoxes->Current.iValue = PLAYER_BOXES_OFF;
+		gPlayerBones->Current.iValue = PLAYER_BONES_OFF;
+		gPlayerSnapLines->Current.iValue = PLAYER_SNAPLINES_OFF;
+		gPlayerInfo->Current.iValue = FALSE;
+		gPlayerWeapons->Current.iValue = FALSE;
+		gPlayerEntities->Current.iValue = FALSE;
+		gPlayerCrossHair->Current.iValue = FALSE;
+		gPlayerCompass->Current.iValue = FALSE;
+		gPlayerRadar->Current.iValue = FALSE;
+		gPlayerBulletTracers->Current.iValue = FALSE;
 
-		gThirdPerson->Current.bValue = gThirdPerson->Reset.bValue;
-		gThirdPersonAntiAim->Current.bValue = gThirdPersonAntiAim->Reset.bValue;
-		gOrbitalVsat->Current.bValue = gOrbitalVsat->Reset.bValue;
-		gHardcoreHud->Current.bValue = gHardcoreHud->Reset.bValue;
-		gDisableEmp->Current.bValue = gDisableEmp->Reset.bValue;
-		gIdStealer->Current.bValue = gIdStealer->Reset.bValue;
-		gAirStuckToggle->Current.bValue = gAirStuckToggle->Reset.bValue;
-		gReloadCancel->Current.bValue = gReloadCancel->Reset.bValue;
-		gNoFlinch->Current.bValue = gNoFlinch->Reset.bValue;
-		gBoneScanPriorities->Current.bValue = gBoneScanPriorities->Reset.bValue;
-		gTrickShot->Current.bValue = gTrickShot->Reset.bValue;
+		gThirdPerson->Current.iValue = FALSE;
+		gOrbitalVsat->Current.iValue = FALSE;
+		gHardcoreHud->Current.iValue = FALSE;
+		gDisableEmp->Current.iValue = FALSE;
+		gIdStealer->Current.iValue = FALSE;
+		gAirStuckToggle->Current.iValue = FALSE;
+		gReloadCancel->Current.iValue = FALSE;
+		gNoFlinch->Current.iValue = FALSE;
+		gBoneScanPriorities->Current.iValue = FALSE;
+		gNamePrestigeSpam->Current.iValue = FALSE;
+		gTrickShot->Current.iValue = FALSE;
 	}
 }
 
