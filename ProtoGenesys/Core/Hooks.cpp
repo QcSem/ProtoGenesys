@@ -41,7 +41,7 @@ namespace ProtoGenesys
 				{
 					std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szNameOverride.empty() ? GetUsername() : szNameOverride.c_str();
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szNameOverride.empty() ? GetUsername() : _strdup(szNameOverride.c_str());
 					PageGuardAddress(dwGetClantag);
 				}
 
@@ -49,7 +49,7 @@ namespace ProtoGenesys
 				{
 					std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
 
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szClanOverride.empty() ? GetClantag() : szClanOverride.c_str();
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szClanOverride.empty() ? GetClantag() : _strdup(szClanOverride.c_str());
 					PageGuardAddress(dwGetXuidstring);
 				}
 
@@ -57,7 +57,7 @@ namespace ProtoGenesys
 				{
 					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str();
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szXuidOverride.empty() ? GetXuidstring() : _strdup(szXuidOverride.c_str());
 					PageGuardAddress(dwGetIntPlayerStatInternal);
 				}
 
@@ -68,10 +68,10 @@ namespace ProtoGenesys
 
 				if (szKey.find("steamid") != std::string::npos)
 				{
-					char szSteamID[0x11];
+					char szSteamID[0x11] = { NULL };
 
 					Int64ToString(strtoll(_profiler.gXuidOverRide->Current.szValue, NULL, 0x10), szSteamID);
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = std::string(szSteamID).empty() ? GetXuidstring() : std::string(szSteamID).c_str();
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = std::string(szSteamID).empty() ? GetXuidstring() : _strdup(std::string(szSteamID).c_str());
 				}
 
 				std::string szValue(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC));
@@ -478,7 +478,7 @@ namespace ProtoGenesys
 	*/
 	sSteamID cHooks::GetSteamID(sSteamID steamid)
 	{
-		*(QWORD*)steamid.SteamID.iAll64Bits = dwXuidOverride;
+		*(QWORD*)steamid.SteamID.iAll64Bits = qwXuidOverride;
 
 		return steamid;
 	}

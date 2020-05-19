@@ -354,7 +354,8 @@ void WINAPI SteamUser(LPWSTR xuid)
 {
 #pragma DLLEXPORT
 
-	_hooks.dwXuidOverride = wcstoll(xuid, NULL, 10);
+	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
+	_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", _hooks.qwXuidOverride).c_str());
 
 	if (!hSteamAPI)
 		return;

@@ -11,6 +11,7 @@
     <ProjectGuid>{E5A11CB4-0B66-4451-AC85-F8CCC80A8745}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ProtoGenesys</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -41,10 +42,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;PROTOGENESYS_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;IMGUI_DEFINE_MATH_OPERATORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

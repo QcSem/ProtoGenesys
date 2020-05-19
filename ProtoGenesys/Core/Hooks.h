@@ -23,7 +23,7 @@ namespace ProtoGenesys
 			VEH_INDEX_NODELTA = 33833
 		} eVehIndex;
 
-		QWORD dwXuidOverride;
+		QWORD qwXuidOverride;
 
 		int iFriendCount;
 		std::vector<std::pair<QWORD, std::string>> vFriends;
