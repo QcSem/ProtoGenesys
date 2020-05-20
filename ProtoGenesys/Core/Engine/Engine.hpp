@@ -8,6 +8,9 @@
 
 //=====================================================================================
 
+#define PROGRAM_NAME "ProtoGenesys"
+#define PROGRAM_CMD_PREFIX "proto"
+
 #define MAX_CLIENTS 18
 #define MAX_ENTITIES 1024
 #define EF1_CROUCH 0x4
@@ -853,6 +856,8 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 	static DWORD_PTR dwSteamIDIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
+	static DWORD_PTR dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
+	static DWORD_PTR dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
 
 	static DWORD_PTR dwCG = *(DWORD_PTR*)0x113F18C;
 	static DWORD_PTR dwClientActive = 0x11C7D74;

@@ -69,13 +69,14 @@ namespace ProtoGenesys
 				if (szKey.find("steamid") != std::string::npos)
 				{
 					char szSteamID[0x11] = { NULL };
+					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
-					Int64ToString(strtoll(_profiler.gXuidOverRide->Current.szValue, NULL, 0x10), szSteamID);
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = std::string(szSteamID).empty() ? GetXuidstring() : _strdup(std::string(szSteamID).c_str());
+					Int64ToString(strtoll(szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str(), NULL, 0x10), szSteamID);
+					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = std::string(szSteamID).c_str();
 				}
 
 				std::string szValue(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC));
-				_console.AddLog("> changed: %s to: %s", szKey.c_str(), szValue.c_str());
+				_console.AddLog("%s changed: %s to: %s", PREFIX_LOG, szKey.c_str(), szValue.c_str());
 			}
 
 			return EXCEPTION_CONTINUE_EXECUTION;
@@ -165,7 +166,7 @@ namespace ProtoGenesys
 
 				if (ExceptionInfo->ContextRecord->Eip != 0x9B389B && ExceptionInfo->ContextRecord->Eip != 0x9B389C)
 				{
-					_console.AddLog("] STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
+					_console.AddLog("%s STATUS_ACCESS_VIOLATION @ 0x%X", PREFIX_WARNING, ExceptionInfo->ExceptionRecord->ExceptionAddress);
 					Com_Error(ERR_DROP, "STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
 
 					return EXCEPTION_CONTINUE_EXECUTION;
@@ -557,6 +558,40 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	int cHooks::Atoi1(int result)
+	{
+		if (result > 0xFA)
+		{
+			std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_DMP, " ", ""), std::ios_base::out | std::ios_base::app);
+			file << std::hex << result << std::endl;
+
+			result = 0;
+
+			_console.AddLog("%s RCE_ATTEMPT_BLOCKED @ 0x%X", PREFIX_WARNING, result);
+		}
+
+		return result;
+	}
+	/*
+	//=====================================================================================
+	*/
+	int cHooks::Atoi2(int result)
+	{
+		if (result > 0xA)
+		{
+			std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_DMP, " ", ""), std::ios_base::out | std::ios_base::app);
+			file << std::hex << (0x2E448C80 + 0x4 * result + 0x6885C) << std::endl;
+
+			result = 0;
+
+			_console.AddLog("%s RCE_ATTEMPT_BLOCKED @ 0x%X", PREFIX_WARNING, (0x2E448C80 + 0x4 * result + 0x6885C));
+		}
+
+		return result;
+	}
+	/*
+	//=====================================================================================
+	*/
 	std::string cHooks::Randomize(std::string name)
 	{
 		static std::string szNameOverride(name);
@@ -665,7 +700,7 @@ namespace ProtoGenesys
 	{
 		vFriends.clear();
 
-		std::ifstream File(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::in);
+		std::ifstream File(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::in);
 		std::string szLine;
 
 		while (std::getline(File, szLine))

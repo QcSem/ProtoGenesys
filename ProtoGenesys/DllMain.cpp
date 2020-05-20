@@ -80,11 +80,17 @@ bool FASTCALL hGetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriend
 typedef bool(FASTCALL* tGetFriendGamePlayed)(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
 tGetFriendGamePlayed oGetFriendGamePlayed;
 
+int USERCALL hAtoi1(LPCSTR string);
+int USERCALL hAtoi2(LPCSTR string);
+
 //=====================================================================================
 
 FurtiveHook fhTransitionPlayerStateCall{ x86Instruction::CALL, (LPVOID)dwTransitionPlayerStateCall, &hTransitionPlayerState };
 FurtiveHook fhGetWorldTagMatrixCall{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
 FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSettingsCall, &hGameTypeSettings };
+
+FurtiveHook fhAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
+FurtiveHook fhAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
 
 //=====================================================================================
 
@@ -229,9 +235,22 @@ bool FASTCALL hGetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriend
 
 //=====================================================================================
 
-void Initialize(HINSTANCE hinstDLL)
+int USERCALL hAtoi1(LPCSTR string)
 {
-	_mainGui.hInstDll = hinstDLL;
+	return _hooks.Atoi1(atoi(string));
+}
+
+//=====================================================================================
+
+int USERCALL hAtoi2(LPCSTR string)
+{
+	return _hooks.Atoi2(atoi(string));
+}
+
+//=====================================================================================
+
+void Initialize()
+{
 	_hooks.PatchAntiCheat();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
@@ -263,6 +282,9 @@ void Initialize(HINSTANCE hinstDLL)
 	fhTransitionPlayerStateCall.SetHook();
 	fhGetWorldTagMatrixCall.SetHook();
 	fhGameTypeSettingsCall.SetHook();
+
+	fhAtoiCall1.SetHook();
+	fhAtoiCall2.SetHook();
 }
 
 //=====================================================================================
@@ -289,6 +311,9 @@ void Deallocate()
 	fhTransitionPlayerStateCall.UnHook();
 	fhGetWorldTagMatrixCall.UnHook();
 	fhGameTypeSettingsCall.UnHook();
+
+	fhAtoiCall1.UnHook();
+	fhAtoiCall2.UnHook();
 
 	if (oGetSteamID)
 		SwapVMT(_hooks.dwSteamUserVTable, (DWORD_PTR)oGetSteamID, 2);
@@ -383,7 +408,7 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Initialize(hinstDLL);
+		Initialize();
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:

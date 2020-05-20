@@ -62,6 +62,10 @@ namespace ProtoGenesys
 		ePersonaState GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid);
 		LPCSTR GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid);
 		bool GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
+
+		int Atoi1(int result);
+		int Atoi2(int result);
+
 		std::string Randomize(std::string name);
 		void RefreshFriends();
 

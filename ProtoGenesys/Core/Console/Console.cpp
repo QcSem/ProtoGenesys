@@ -28,23 +28,23 @@ namespace ProtoGenesys
 			ZeroMemory(szInput, sizeof(szInput));
 			iHistoryPos = -1;
 
-			vCommands.push_back("clear");
-			vCommands.push_back("history");
-			vCommands.push_back("quit");
-			vCommands.push_back("proto_crashclient");
-			vCommands.push_back("proto_crashserver");
-			vCommands.push_back("proto_endround");
-			vCommands.push_back("proto_name");
-			vCommands.push_back("proto_clan");
-			vCommands.push_back("proto_xuid");
-			vCommands.push_back("proto_ip");
-			vCommands.push_back("proto_killspam");
-			vCommands.push_back("proto_experience");
-			vCommands.push_back("proto_prestige");
-			vCommands.push_back("proto_unlockall");
-			vCommands.push_back("proto_signstats");
-			vCommands.push_back("proto_resetstats");
-			vCommands.push_back("proto_disconnect");
+			vCommands.push_back(Strdup(VariadicText("%s_clear", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_history", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_quit", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_crashclient", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_crashserver", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_endround", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_name", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_clan", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_xuid", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_ip", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_killspam", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_experience", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_prestige", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_unlockall", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_uploadstats", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_resetstats", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX).c_str()));
 
 			AddLog("Ready.");
 
@@ -67,7 +67,7 @@ namespace ProtoGenesys
 	*/
 	void cConsole::AddLog(LPCSTR format, ...) IM_FMTARGS(2)
 	{
-		char szBuffer[1024];
+		char szBuffer[1024] = { NULL };
 		va_list Args;
 		va_start(Args, format);
 		vsnprintf(szBuffer, IM_ARRAYSIZE(szBuffer), format, Args);
@@ -87,26 +87,26 @@ namespace ProtoGenesys
 			_mainGui.bWriteLog = false;
 		}
 
-		ImGui::TextWrapped("\t\t\tProtoGenesys");
+		ImGui::TextWrapped("\t\t\t%s", PROGRAM_NAME);
 		ImGui::Spacing();
 		ImGui::TextWrapped("Press Help for details, press Tab to use text completion.");
 
 		if (ImGui::Button("Help", ImVec2(50, 0)))
 		{
-			AddLog("1. proto_crashclient\n\t\tCrash clients in the lobby.");
-			AddLog("2. proto_crashserver\n\t\tCrash the current server.");
-			AddLog("3. proto_endround\n\t\tEnd the current round.");
-			AddLog("4. proto_name <on|off> <name>\n\t\tChange your name.");
-			AddLog("5. proto_clan <on|off> <clan>\n\t\tChange your clan.");
-			AddLog("6. proto_xuid <on|off> <xuid>\n\t\tChange your xuid.");
-			AddLog("7. proto_ip <on|off> <ip>\n\t\tChange your ip.");
-			AddLog("8. proto_killspam <on|off> <message>\n\t\tSet killspam message.");
-			AddLog("9. proto_experience <max|experience>\n\t\tSet your experience.");
-			AddLog("10. proto_prestige <max|prestige>\n\t\tSet your prestige.");
-			AddLog("11. proto_unlockall\n\t\tUnlock everything in the game.");
-			AddLog("12. proto_signstats\n\t\tCalculate hash and sign your stats.");
-			AddLog("13. proto_resetstats\n\t\tReset your save data.");
-			AddLog("14. proto_disconnect\n\t\tDisconnect from the current server.");
+			AddLog("1. %s_crashclient\n\t\tCrash clients in the lobby.", PROGRAM_CMD_PREFIX);
+			AddLog("2. %s_crashserver\n\t\tCrash the current server.", PROGRAM_CMD_PREFIX);
+			AddLog("3. %s_endround\n\t\tEnd the current round.", PROGRAM_CMD_PREFIX);
+			AddLog("4. %s_name <on|off> <name>\n\t\tChange your name.", PROGRAM_CMD_PREFIX);
+			AddLog("5. %s_clan <on|off> <clan>\n\t\tChange your clan.", PROGRAM_CMD_PREFIX);
+			AddLog("6. %s_xuid <on|off> <xuid>\n\t\tChange your xuid.", PROGRAM_CMD_PREFIX);
+			AddLog("7. %s_ip <on|off> <ip>\n\t\tChange your ip.", PROGRAM_CMD_PREFIX);
+			AddLog("8. %s_killspam <on|off> <message>\n\t\tSet killspam message.", PROGRAM_CMD_PREFIX);
+			AddLog("9. %s_experience <max|experience>\n\t\tSet your experience.", PROGRAM_CMD_PREFIX);
+			AddLog("10. %s_prestige <max|prestige>\n\t\tSet your prestige.", PROGRAM_CMD_PREFIX);
+			AddLog("11. %s_unlockall\n\t\tUnlock everything in the game.", PROGRAM_CMD_PREFIX);
+			AddLog("12. %s_uploadstats\n\t\tCalculate hash for and sign your stats.", PROGRAM_CMD_PREFIX);
+			AddLog("13. %s_resetstats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
+			AddLog("14. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -216,7 +216,7 @@ namespace ProtoGenesys
 	*/
 	void cConsole::ExecCommand(LPCSTR command)
 	{
-		AddLog("# %s\n", command);
+		AddLog("%s %s\n", PREFIX_COMMAND, command);
 
 		sCmdLine CmdLine;
 		SplitCommandLine(command, &CmdLine);
@@ -235,12 +235,12 @@ namespace ProtoGenesys
 
 		vHistory.push_back(Strdup(command));
 
-		if (!Stricmp(CmdLine.szCmdName, "clear"))
+		if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_clear", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			ClearLog();
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "history"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_history", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			int iFirst = vHistory.Size - 10;
 
@@ -248,12 +248,12 @@ namespace ProtoGenesys
 				AddLog("%3d: %s\n", i, vHistory[i]);
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "quit"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_quit", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			exit(EXIT_SUCCESS);
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_crashclient"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashclient", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
@@ -271,21 +271,21 @@ namespace ProtoGenesys
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_crashserver"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashserver", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			AddReliableCommand(VariadicText("sl %i %i", 1337, *(DWORD_PTR*)dwServerID));
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_endround"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_endround", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			AddReliableCommand(VariadicText("mr %d -1 endround", *(DWORD_PTR*)dwServerID));
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_name"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_name", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -318,7 +318,7 @@ namespace ProtoGenesys
 
 					else
 					{
-						AddLog("[ERROR] Null argument(s).");
+						AddLog("%s Null argument(s).", PREFIX_ERROR);
 					}
 				}
 
@@ -342,17 +342,17 @@ namespace ProtoGenesys
 
 				else
 				{
-					AddLog("[ERROR] Invalid argument(s).");
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
 				}
 			}
 
 			else
 			{
-				AddLog("[ERROR] Missing argument(s).");
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_clan"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_clan", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -385,7 +385,7 @@ namespace ProtoGenesys
 
 					else
 					{
-						AddLog("[ERROR] Null argument(s).");
+						AddLog("%s Null argument(s).", PREFIX_ERROR);
 					}
 				}
 
@@ -409,17 +409,17 @@ namespace ProtoGenesys
 
 				else
 				{
-					AddLog("[ERROR] Invalid argument(s).");
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
 				}
 			}
 
 			else
 			{
-				AddLog("[ERROR] Missing argument(s).");
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_xuid"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_xuid", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -452,7 +452,7 @@ namespace ProtoGenesys
 
 					else
 					{
-						AddLog("[ERROR] Null argument(s).");
+						AddLog("%s Null argument(s).", PREFIX_ERROR);
 					}
 				}
 
@@ -476,17 +476,17 @@ namespace ProtoGenesys
 
 				else
 				{
-					AddLog("[ERROR] Invalid argument(s).");
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
 				}
 			}
 
 			else
 			{
-				AddLog("[ERROR] Missing argument(s).");
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_ip"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_ip", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -503,13 +503,13 @@ namespace ProtoGenesys
 
 						else
 						{
-							AddLog("[ERROR] Invalid argument(s).");
+							AddLog("%s Invalid argument(s).", PREFIX_ERROR);
 						}
 					}
 
 					else
 					{
-						AddLog("[ERROR] Null argument(s).");
+						AddLog("%s Null argument(s).", PREFIX_ERROR);
 					}
 				}
 
@@ -522,17 +522,17 @@ namespace ProtoGenesys
 
 				else
 				{
-					AddLog("[ERROR] Invalid argument(s).");
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
 				}
 			}
 
 			else
 			{
-				AddLog("[ERROR] Missing argument(s).");
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_killspam"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_killspam", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -554,7 +554,7 @@ namespace ProtoGenesys
 
 					else
 					{
-						AddLog("[ERROR] Null argument(s).");
+						AddLog("%s Null argument(s).", PREFIX_ERROR);
 					}
 				}
 
@@ -567,17 +567,17 @@ namespace ProtoGenesys
 
 				else
 				{
-					AddLog("[ERROR] Invalid argument(s).");
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
 				}
 			}
 
 			else
 			{
-				AddLog("[ERROR] Missing argument(s).");
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_experience"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_experience", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -597,17 +597,17 @@ namespace ProtoGenesys
 
 				else
 				{
-					AddLog("[ERROR] Invalid argument(s).");
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
 				}
 			}
 
 			else
 			{
-				AddLog("[ERROR] Missing argument(s).");
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_prestige"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_prestige", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -627,38 +627,38 @@ namespace ProtoGenesys
 
 				else
 				{
-					AddLog("[ERROR] Invalid argument(s).");
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
 				}
 			}
 
 			else
 			{
-				AddLog("[ERROR] Missing argument(s).");
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_unlockall"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_unlockall", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			_stats.UnlockAll();
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_signstats"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_uploadstats", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			_stats.HashAndSignStats();
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_resetstats"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_resetstats", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			Cbuf_AddText("resetStats");
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, "proto_disconnect"))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			Cbuf_AddText("disconnect");

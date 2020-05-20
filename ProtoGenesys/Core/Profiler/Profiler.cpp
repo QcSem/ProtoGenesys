@@ -16,98 +16,98 @@ namespace ProtoGenesys
 			std::wstring szFilePath;
 
 			if (path.empty())
-				szFilePath = acut::AnsiToWstring(acut::GetExeDirectory() + DEFAULT_XML, CP_ACP);
+				szFilePath = acut::AnsiToWstring(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_XML, " ", ""), CP_ACP);
 
 			else
 				szFilePath = acut::AnsiToWstring(path, CP_ACP);
 
-			XML.set("ProtoGenesys.AimBot.Mode", gAimBotMode->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.AutoFire", gAutoFire->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.AutoWall", gAutoWall->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.BoneScan", gBoneScan->Current.iValue);
-			XML.set("ProtoGenesys.AimBot.SortMethod", gSortMethod->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.Mode", gAimBotMode->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AutoZoom", gAutoZoom->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AutoFire", gAutoFire->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AutoWall", gAutoWall->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.ApplyPrediction", gApplyPrediction->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiTeamKill", gAntiTeamKill->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SilentAim", gSilentAim->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.BoneScan", gBoneScan->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SortMethod", gSortMethod->Current.iValue);
 
-			XML.set("ProtoGenesys.WallHack.Mode", gWallHackMode->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.Boxes", gPlayerBoxes->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.Bones", gPlayerBones->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.SnapLines", gPlayerSnapLines->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.Info", gPlayerInfo->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.Entities", gPlayerEntities->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.iValue);
-			XML.set("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Mode", gWallHackMode->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Boxes", gPlayerBoxes->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Bones", gPlayerBones->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.SnapLines", gPlayerSnapLines->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Info", gPlayerInfo->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Weapons", gPlayerWeapons->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Entities", gPlayerEntities->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.CrossHair", gPlayerCrossHair->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Compass", gPlayerCompass->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Radar", gPlayerRadar->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.BulletTracers", gPlayerBulletTracers->Current.iValue);
 
-			XML.set("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.NamePrestigeSpam", gNamePrestigeSpam->Current.iValue);
-			XML.set("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.HardcoreHud", gHardcoreHud->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.DisableEmp", gDisableEmp->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.IdStealer", gIdStealer->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NamePrestigeSpam", gNamePrestigeSpam->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.TrickShot", gTrickShot->Current.iValue);
 
-			XML.set("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
-			XML.set("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.iValue);
-			XML.set("ProtoGenesys.Tweaks.AimPower", gAimPower->Current.iValue);
-			XML.set("ProtoGenesys.Tweaks.AutoAimTime", gAutoAimTime->Current.iValue);
-			XML.set("ProtoGenesys.Tweaks.AutoAimDelay", gAutoAimDelay->Current.iValue);
-			XML.set("ProtoGenesys.Tweaks.AutoZoomDelay", gAutoZoomDelay->Current.iValue);
-			XML.set("ProtoGenesys.Tweaks.AutoFireDelay", gAutoFireDelay->Current.iValue);
-			XML.set("ProtoGenesys.Tweaks.RecoilFactor", gRecoilFactor->Current.flValue);
-			XML.set("ProtoGenesys.Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
-			XML.set("ProtoGenesys.Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
-			XML.set("ProtoGenesys.Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimBone", gAimBone->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimAngle", gAimAngle->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimPower", gAimPower->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AutoAimTime", gAutoAimTime->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AutoAimDelay", gAutoAimDelay->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AutoZoomDelay", gAutoZoomDelay->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AutoFireDelay", gAutoFireDelay->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.RecoilFactor", gRecoilFactor->Current.flValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
 
-			XML.set("ProtoGenesys.Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.AxisVisible.Blue", gColorAxisVisible->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.AxisVisible.Alpha", gColorAxisVisible->Current.cValue[3]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue[0]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue[1]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Blue", gColorAxisVisible->Current.cValue[2]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Alpha", gColorAxisVisible->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.AxisInvisible.Red", gColorAxisInvisible->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.AxisInvisible.Green", gColorAxisInvisible->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.AxisInvisible.Blue", gColorAxisInvisible->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.AxisInvisible.Alpha", gColorAxisInvisible->Current.cValue[3]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisInvisible.Red", gColorAxisInvisible->Current.cValue[0]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisInvisible.Green", gColorAxisInvisible->Current.cValue[1]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisInvisible.Blue", gColorAxisInvisible->Current.cValue[2]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisInvisible.Alpha", gColorAxisInvisible->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.AlliesVisible.Red", gColorAlliesVisible->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.AlliesVisible.Green", gColorAlliesVisible->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.AlliesVisible.Blue", gColorAlliesVisible->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.AlliesVisible.Alpha", gColorAlliesVisible->Current.cValue[3]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesVisible.Red", gColorAlliesVisible->Current.cValue[0]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesVisible.Green", gColorAlliesVisible->Current.cValue[1]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesVisible.Blue", gColorAlliesVisible->Current.cValue[2]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesVisible.Alpha", gColorAlliesVisible->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.AlliesInvisible.Red", gColorAlliesInvisible->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.AlliesInvisible.Green", gColorAlliesInvisible->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.AlliesInvisible.Blue", gColorAlliesInvisible->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.AlliesInvisible.Alpha", gColorAlliesInvisible->Current.cValue[3]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesInvisible.Red", gColorAlliesInvisible->Current.cValue[0]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesInvisible.Green", gColorAlliesInvisible->Current.cValue[1]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesInvisible.Blue", gColorAlliesInvisible->Current.cValue[2]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesInvisible.Alpha", gColorAlliesInvisible->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.Accents.Red", gColorAccents->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Accents.Green", gColorAccents->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Accents.Blue", gColorAccents->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Accents.Alpha", gColorAccents->Current.cValue[3]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Accents.Red", gColorAccents->Current.cValue[0]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Accents.Green", gColorAccents->Current.cValue[1]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Accents.Blue", gColorAccents->Current.cValue[2]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Accents.Alpha", gColorAccents->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.CrossHair.Blue", gColorCrossHair->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.CrossHair.Alpha", gColorCrossHair->Current.cValue[3]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.CrossHair.Blue", gColorCrossHair->Current.cValue[2]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.CrossHair.Alpha", gColorCrossHair->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.Text.Red", gColorText->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Text.Green", gColorText->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Text.Blue", gColorText->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Text.Alpha", gColorText->Current.cValue[3]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Text.Red", gColorText->Current.cValue[0]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Text.Green", gColorText->Current.cValue[1]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Text.Blue", gColorText->Current.cValue[2]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Text.Alpha", gColorText->Current.cValue[3]);
 
-			XML.set("ProtoGenesys.Colors.Shadow.Red", gColorShadow->Current.cValue[0]);
-			XML.set("ProtoGenesys.Colors.Shadow.Green", gColorShadow->Current.cValue[1]);
-			XML.set("ProtoGenesys.Colors.Shadow.Blue", gColorShadow->Current.cValue[2]);
-			XML.set("ProtoGenesys.Colors.Shadow.Alpha", gColorShadow->Current.cValue[3]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Red", gColorShadow->Current.cValue[0]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Green", gColorShadow->Current.cValue[1]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Blue", gColorShadow->Current.cValue[2]);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Alpha", gColorShadow->Current.cValue[3]);
 
 			XML.write_document(szFilePath);
 
@@ -131,7 +131,7 @@ namespace ProtoGenesys
 			std::wstring szFilePath;
 
 			if (path.empty())
-				szFilePath = acut::AnsiToWstring(acut::GetExeDirectory() + DEFAULT_XML, CP_ACP);
+				szFilePath = acut::AnsiToWstring(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_XML, " ", ""), CP_ACP);
 
 			else
 				szFilePath = acut::AnsiToWstring(path, CP_ACP);
@@ -141,93 +141,93 @@ namespace ProtoGenesys
 
 			XML.read_from_file(szFilePath);
 
-			XML.get_if_present("ProtoGenesys.AimBot.Mode", gAimBotMode->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoZoom", gAutoZoom->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoFire", gAutoFire->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AutoWall", gAutoWall->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.ApplyPrediction", gApplyPrediction->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AntiTeamKill", gAntiTeamKill->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.SilentAim", gSilentAim->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.BoneScan", gBoneScan->Current.iValue);
-			XML.get_if_present("ProtoGenesys.AimBot.SortMethod", gSortMethod->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.Mode", gAimBotMode->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AutoZoom", gAutoZoom->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AutoFire", gAutoFire->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AutoWall", gAutoWall->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.ApplyPrediction", gApplyPrediction->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiTeamKill", gAntiTeamKill->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SilentAim", gSilentAim->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.BoneScan", gBoneScan->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SortMethod", gSortMethod->Current.iValue);
 
-			XML.get_if_present("ProtoGenesys.WallHack.Mode", gWallHackMode->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Boxes", gPlayerBoxes->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Bones", gPlayerBones->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.SnapLines", gPlayerSnapLines->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Info", gPlayerInfo->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Weapons", gPlayerWeapons->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Entities", gPlayerEntities->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.CrossHair", gPlayerCrossHair->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Compass", gPlayerCompass->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.Radar", gPlayerRadar->Current.iValue);
-			XML.get_if_present("ProtoGenesys.WallHack.BulletTracers", gPlayerBulletTracers->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Mode", gWallHackMode->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Boxes", gPlayerBoxes->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Bones", gPlayerBones->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.SnapLines", gPlayerSnapLines->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Info", gPlayerInfo->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Weapons", gPlayerWeapons->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Entities", gPlayerEntities->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.CrossHair", gPlayerCrossHair->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Compass", gPlayerCompass->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Radar", gPlayerRadar->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.BulletTracers", gPlayerBulletTracers->Current.iValue);
 
-			XML.get_if_present("ProtoGenesys.Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.HardcoreHud", gHardcoreHud->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.DisableEmp", gDisableEmp->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.IdStealer", gIdStealer->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.NamePrestigeSpam", gNamePrestigeSpam->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Miscellaneous.TrickShot", gTrickShot->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.HardcoreHud", gHardcoreHud->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.DisableEmp", gDisableEmp->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.IdStealer", gIdStealer->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NamePrestigeSpam", gNamePrestigeSpam->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.TrickShot", gTrickShot->Current.iValue);
 
-			XML.get_if_present("ProtoGenesys.Tweaks.AimBone", gAimBone->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AimAngle", gAimAngle->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AimPower", gAimPower->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AutoAimTime", gAutoAimTime->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AutoAimDelay", gAutoAimDelay->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AutoZoomDelay", gAutoZoomDelay->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AutoFireDelay", gAutoFireDelay->Current.iValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.RecoilFactor", gRecoilFactor->Current.flValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
-			XML.get_if_present("ProtoGenesys.Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimBone", gAimBone->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimAngle", gAimAngle->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimPower", gAimPower->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AutoAimTime", gAutoAimTime->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AutoAimDelay", gAutoAimDelay->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AutoZoomDelay", gAutoZoomDelay->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AutoFireDelay", gAutoFireDelay->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.RecoilFactor", gRecoilFactor->Current.flValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
 
-			XML.get_if_present("ProtoGenesys.Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.AxisVisible.Blue", gColorAxisVisible->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.AxisVisible.Alpha", gColorAxisVisible->Current.cValue[3]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue[0]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue[1]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Blue", gColorAxisVisible->Current.cValue[2]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Alpha", gColorAxisVisible->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.AxisInvisible.Red", gColorAxisInvisible->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.AxisInvisible.Green", gColorAxisInvisible->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.AxisInvisible.Blue", gColorAxisInvisible->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.AxisInvisible.Alpha", gColorAxisInvisible->Current.cValue[3]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisInvisible.Red", gColorAxisInvisible->Current.cValue[0]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisInvisible.Green", gColorAxisInvisible->Current.cValue[1]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisInvisible.Blue", gColorAxisInvisible->Current.cValue[2]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisInvisible.Alpha", gColorAxisInvisible->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.AlliesVisible.Red", gColorAlliesVisible->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.AlliesVisible.Green", gColorAlliesVisible->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.AlliesVisible.Blue", gColorAlliesVisible->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.AlliesVisible.Alpha", gColorAlliesVisible->Current.cValue[3]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesVisible.Red", gColorAlliesVisible->Current.cValue[0]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesVisible.Green", gColorAlliesVisible->Current.cValue[1]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesVisible.Blue", gColorAlliesVisible->Current.cValue[2]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesVisible.Alpha", gColorAlliesVisible->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.AlliesInvisible.Red", gColorAlliesInvisible->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.AlliesInvisible.Green", gColorAlliesInvisible->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.AlliesInvisible.Blue", gColorAlliesInvisible->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.AlliesInvisible.Alpha", gColorAlliesInvisible->Current.cValue[3]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesInvisible.Red", gColorAlliesInvisible->Current.cValue[0]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesInvisible.Green", gColorAlliesInvisible->Current.cValue[1]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesInvisible.Blue", gColorAlliesInvisible->Current.cValue[2]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AlliesInvisible.Alpha", gColorAlliesInvisible->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.Accents.Red", gColorAccents->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Accents.Green", gColorAccents->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Accents.Blue", gColorAccents->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Accents.Alpha", gColorAccents->Current.cValue[3]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Accents.Red", gColorAccents->Current.cValue[0]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Accents.Green", gColorAccents->Current.cValue[1]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Accents.Blue", gColorAccents->Current.cValue[2]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Accents.Alpha", gColorAccents->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Blue", gColorCrossHair->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.CrossHair.Alpha", gColorCrossHair->Current.cValue[3]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.CrossHair.Red", gColorCrossHair->Current.cValue[0]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.CrossHair.Green", gColorCrossHair->Current.cValue[1]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.CrossHair.Blue", gColorCrossHair->Current.cValue[2]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.CrossHair.Alpha", gColorCrossHair->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.Text.Red", gColorText->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Text.Green", gColorText->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Text.Blue", gColorText->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Text.Alpha", gColorText->Current.cValue[3]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Text.Red", gColorText->Current.cValue[0]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Text.Green", gColorText->Current.cValue[1]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Text.Blue", gColorText->Current.cValue[2]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Text.Alpha", gColorText->Current.cValue[3]);
 
-			XML.get_if_present("ProtoGenesys.Colors.Shadow.Red", gColorShadow->Current.cValue[0]);
-			XML.get_if_present("ProtoGenesys.Colors.Shadow.Green", gColorShadow->Current.cValue[1]);
-			XML.get_if_present("ProtoGenesys.Colors.Shadow.Blue", gColorShadow->Current.cValue[2]);
-			XML.get_if_present("ProtoGenesys.Colors.Shadow.Alpha", gColorShadow->Current.cValue[3]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Red", gColorShadow->Current.cValue[0]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Green", gColorShadow->Current.cValue[1]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Blue", gColorShadow->Current.cValue[2]);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Alpha", gColorShadow->Current.cValue[3]);
 
 			return true;
 		}

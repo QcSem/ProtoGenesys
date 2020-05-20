@@ -6,10 +6,10 @@
 
 //=====================================================================================
 
-#define PREFIX_ERROR "[ERROR] "
-#define PREFIX_COMMAND "# "
-#define PREFIX_WARNING "] "
-#define PREFIX_LOG "> "
+#define PREFIX_ERROR "[ERROR]"
+#define PREFIX_COMMAND "#"
+#define PREFIX_WARNING "]"
+#define PREFIX_LOG ">"
 
 //=====================================================================================
 

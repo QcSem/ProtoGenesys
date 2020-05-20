@@ -14,19 +14,14 @@
 #include <d3d11.h>
 #include <detours.h>
 
-#include "Resources/Resource.h"
-
 #include "ImGui/Addons/FileSystem/imguifilesystem.h"
 #include "ImGui/Addons/TabWindow/imguitabwindow.h"
-#include "ImGui/Addons/WICTextureLoader.h"
 #include "ImGui/DX11/imgui_impl_dx11.h"
-#include "ImGui/Fonts/Eurostile_Bold.hpp"
+#include "ImGui/Fonts/Bank_Gothic_Pro_Light.hpp"
 #include "ImGui/Fonts/Eurostile_Extended.hpp"
-#include "ImGui/Fonts/Eurostile_Regular.hpp"
 #include "ImGui/Win32/imgui_impl_win32.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
-#include "ImGui/imgui_memory_editor.h"
 
 #include "Core/Aimbot/Aimbot.h"
 #include "Core/AntiAim/AntiAim.h"

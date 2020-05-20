@@ -21,205 +21,17 @@ namespace ProtoGenesys
 		ImGui_ImplWin32_Init(hWindow);
 		ImGui_ImplDX11_Init(pDevice, pDeviceContext);
 
-		szIniFileName = acut::GetExeDirectory() + DEFAULT_INI;
-		szLogFileName = acut::GetExeDirectory() + DEFAULT_LOG;
+		szIniFileName = acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_INI, " ", "");
+		szLogFileName = acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_LOG, " ", "");
 
 		ImGui::GetIO().IniFilename = szIniFileName.c_str();
 		ImGui::GetIO().LogFilename = szLogFileName.c_str();
 
-		_profiler.gMenuColor->Current.iValue = GetPrivateProfileInt("MenuStyle", "COLOR", cProfiler::MENU_COLOR_NEUTRAL, (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
-		_profiler.gMenuCursor->Current.iValue = GetPrivateProfileInt("MenuStyle", "CURSOR", cProfiler::MENU_CURSOR_BLACK, (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
-		_profiler.gMenuFont->Current.iValue = GetPrivateProfileInt("MenuStyle", "FONT", cProfiler::MENU_FONT_LIGHT, (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
-
-		RefreshInterface(_profiler.gMenuColor->Current.iValue, _profiler.gMenuCursor->Current.iValue, _profiler.gMenuFont->Current.iValue);
-		LoadBackgroundImage();
+		ImGui::GetIO().FontDefault = ImGui::GetIO().Fonts->AddFontDefault();
+		Bank_Gothic_Pro_Light = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(bank_gothic_pro_light_otf_compressed_data_base85, flBank_Gothic_Pro_Light = 14.0f);
+		Eurostile_Extended = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(eurostile_extended_compressed_data_base85, flEurostile_Extended = Window->iHeight / 60.0f);
 
 		bInitialized = true;
-	}
-	/*
-	//=====================================================================================
-	*/
-	void cMainGUI::LoadBackgroundImage()
-	{
-		HRESULT hResult = S_OK;
-
-		HRSRC hResource;
-		HGLOBAL hGlobal;
-		LPVOID pResourceData;
-		DWORD dwResourceSize;
-
-		if (SUCCEEDED(hResult))
-		{
-			hResource = FindResource(hInstDll, MAKEINTRESOURCE(IDB_BACKGROUND), "PNG");
-			hResult = (hResource ? S_OK : E_FAIL);
-		}
-
-		if (SUCCEEDED(hResult))
-		{
-			hGlobal = LoadResource(hInstDll, hResource);
-			hResult = (hGlobal ? S_OK : E_FAIL);
-		}
-
-		if (SUCCEEDED(hResult))
-		{
-			pResourceData = LockResource(hGlobal);
-			hResult = (pResourceData ? S_OK : E_FAIL);
-		}
-
-		if (SUCCEEDED(hResult))
-		{
-			dwResourceSize = SizeofResource(hInstDll, hResource);
-			hResult = (dwResourceSize ? S_OK : E_FAIL);
-		}
-
-		if (SUCCEEDED(hResult))
-		{
-			CreateWICTextureFromMemory(pDevice, pDeviceContext, (uint8_t*)pResourceData, (size_t)dwResourceSize, &pD3D11Resource, &pD3D11ShaderResourceView);
-			hResult = (pD3D11Resource && pD3D11ShaderResourceView ? S_OK : E_FAIL);
-		}
-	}
-	/*
-	//=====================================================================================
-	*/
-	void cMainGUI::SetMenuColor(int index)
-	{
-		switch (index)
-		{
-		case cProfiler::MENU_COLOR_NEUTRAL:
-			ImGui::StyleColorsNeutral();
-			break;
-
-		case cProfiler::MENU_COLOR_NEUTRAL_NEON:
-			ImGui::StyleColorsNeutralNeon();
-			break;
-
-		case cProfiler::MENU_COLOR_RED:
-			ImGui::StyleColorsRed();
-			break;
-
-		case cProfiler::MENU_COLOR_RED_NEON:
-			ImGui::StyleColorsRedNeon();
-			break;
-
-		case cProfiler::MENU_COLOR_ORANGE:
-			ImGui::StyleColorsOrange();
-			break;
-
-		case cProfiler::MENU_COLOR_ORANGE_NEON:
-			ImGui::StyleColorsOrangeNeon();
-			break;
-
-		case cProfiler::MENU_COLOR_YELLOW:
-			ImGui::StyleColorsYellow();
-			break;
-
-		case cProfiler::MENU_COLOR_YELLOW_NEON:
-			ImGui::StyleColorsYellowNeon();
-			break;
-
-		case cProfiler::MENU_COLOR_GREEN:
-			ImGui::StyleColorsGreen();
-			break;
-
-		case cProfiler::MENU_COLOR_GREEN_NEON:
-			ImGui::StyleColorsGreenNeon();
-			break;
-
-		case cProfiler::MENU_COLOR_BLUE:
-			ImGui::StyleColorsBlue();
-			break;
-
-		case cProfiler::MENU_COLOR_BLUE_NEON:
-			ImGui::StyleColorsBlueNeon();
-			break;
-
-		case cProfiler::MENU_COLOR_PURPLE:
-			ImGui::StyleColorsPurple();
-			break;
-
-		case cProfiler::MENU_COLOR_PURPLE_NEON:
-			ImGui::StyleColorsPurpleNeon();
-			break;
-
-		case cProfiler::MENU_COLOR_RAINBOW:
-			ImGui::StyleColorsRed();
-			break;
-
-		case cProfiler::MENU_COLOR_RAINBOW_NEON:
-			ImGui::StyleColorsRedNeon();
-			break;
-
-		default:
-			ImGui::StyleColorsNeutral();
-			break;
-		}
-	}
-	/*
-	//=====================================================================================
-	*/
-	void cMainGUI::SetMenuCursor(int index)
-	{
-		switch (index)
-		{
-		case cProfiler::MENU_CURSOR_BLACK:
-			ImGui::StyleCursorsBlack();
-			break;
-
-		case cProfiler::MENU_CURSOR_WHITE:
-			ImGui::StyleCursorsWhite();
-			break;
-
-		default:
-			ImGui::StyleCursorsBlack();
-			break;
-		}
-	}
-	/*
-	//=====================================================================================
-	*/
-	void cMainGUI::SetMenuFont(int index)
-	{
-		switch (index)
-		{
-		case cProfiler::MENU_FONT_LIGHT:
-			ImGui::GetIO().FontDefault = ImGui::GetIO().Fonts->Fonts[cProfiler::MENU_FONT_LIGHT];
-			break;
-
-		case cProfiler::MENU_FONT_MEDIUM:
-			ImGui::GetIO().FontDefault = ImGui::GetIO().Fonts->Fonts[cProfiler::MENU_FONT_MEDIUM];
-			break;
-
-		case cProfiler::MENU_FONT_BOLD:
-			ImGui::GetIO().FontDefault = ImGui::GetIO().Fonts->Fonts[cProfiler::MENU_FONT_BOLD];
-			break;
-
-		default:
-			ImGui::GetIO().FontDefault = ImGui::GetIO().Fonts->Fonts[cProfiler::MENU_FONT_LIGHT];
-			break;
-		}
-	}
-	/*
-	//=====================================================================================
-	*/
-	void cMainGUI::RefreshInterface(int color, int cursor, int font)
-	{
-		SetMenuColor(color);
-
-		ImGui::GetIO().Fonts->Clear();
-
-		SetMenuCursor(cursor);
-
-		ImGui::GetIO().Fonts->AddFontLight();
-		ImGui::GetIO().Fonts->AddFontMedium();
-		ImGui::GetIO().Fonts->AddFontBold();
-
-		Eurostile_Bold = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(eurostile_bold_compressed_data_base85, flEurostile_Bold = Window->iHeight / 80.0f);
-		Eurostile_Extended = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(eurostile_extended_compressed_data_base85, flEurostile_Extended = Window->iHeight / 60.0f);
-		Eurostile_Regular = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(eurostile_regular_compressed_data_base85, flEurostile_Regular = Window->iHeight / 80.0f);
-
-		ImGui_ImplDX11_CreateDeviceObjects();
-
-		SetMenuFont(font);
 	}
 	/*
 	//=====================================================================================
@@ -321,35 +133,6 @@ namespace ProtoGenesys
 
 		else
 		{
-			if (_profiler.gMenuColor->Current.iValue == cProfiler::MENU_COLOR_RAINBOW || _profiler.gMenuColor->Current.iValue == cProfiler::MENU_COLOR_RAINBOW_NEON)
-			{
-				static float flHue = 0.0f;
-
-				if (flHue > 255.0f)
-					flHue = 0.0f;
-
-				for (int i = 0; i < ImGuiCol_COUNT; i++)
-				{
-					Vector3 vHSV;
-
-					ImGui::ColorConvertRGBtoHSV(ImGui::GetStyle().Colors[i].x, ImGui::GetStyle().Colors[i].y, ImGui::GetStyle().Colors[i].z, vHSV[0], vHSV[1], vHSV[2]);
-					ImGui::ColorConvertHSVtoRGB(ByteToFloat(flHue), vHSV[1], vHSV[2], ImGui::GetStyle().Colors[i].x, ImGui::GetStyle().Colors[i].y, ImGui::GetStyle().Colors[i].z);
-				}
-
-				for (int i = 0; i < ImGui::TabLabelStyle::Col_TabLabel_Count; i++)
-				{
-					Vector3 vHSV;
-					ImVec4 vColor = ImGui::ColorConvertU32ToFloat4(ImGui::TabLabelStyle::Get().colors[i]);
-
-					ImGui::ColorConvertRGBtoHSV(vColor.x, vColor.y, vColor.z, vHSV[0], vHSV[1], vHSV[2]);
-					ImGui::ColorConvertHSVtoRGB(ByteToFloat(flHue), vHSV[1], vHSV[2], vColor.x, vColor.y, vColor.z);
-
-					ImGui::TabLabelStyle::Get().colors[i] = ImGui::ColorConvertFloat4ToU32(vColor);
-				}
-
-				flHue += (60.0f / ImGui::GetIO().Framerate);
-			}
-
 			ImGui::GetIO().MouseDrawCursor = bShowWindow;
 
 			ImGui_ImplWin32_NewFrame();
@@ -376,7 +159,7 @@ namespace ProtoGenesys
 				_drawing.DrawTracers();
 			}
 
-			std::string szWatermark(VariadicText("PROTOGENESYS - COD BO2 by: InUrFace | Frametime: %s, Ping: %s",
+			std::string szWatermark(VariadicText("%s - COD BO2 by: InUrFace | Frametime: %s, Ping: %s", acut::ToUpper(PROGRAM_NAME).c_str(),
 				LocalClientIsInGame() ? VariadicText("%i ms", CG->iFrameTime).c_str() : "N/A",
 				LocalClientIsInGame() ? VariadicText("%i ms", ClientActive->iPing).c_str() : "N/A"));
 
@@ -411,17 +194,15 @@ namespace ProtoGenesys
 					bWriteLog = false;
 				}
 
-				ImGui::SetNextWindowSize(ImVec2(589.0f, 655.0f));
-				ImGui::Begin("PROTOGENESYS", &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
+				ImGui::SetNextWindowSize(ImVec2(589.0f, 647.0f));
+				ImGui::Begin(acut::ToUpper(PROGRAM_NAME).c_str(), &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 				ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
-
-				ImGui::GetWindowDrawList()->AddImage(pD3D11ShaderResourceView, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
 
 				if (ImGui::TabLabels(_profiler.gMenuTabs->Domain.iMax, acut::StringVectorToCharPointerArray(_profiler.gMenuTabs->szItems), _profiler.gMenuTabs->Current.iValue, NULL, false, NULL, NULL, false, false, NULL, NULL, &ImVec2(81.0f, 25.0f)))
 				{
 					bWriteLog = true;
 				}
-
+				
 				ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 535.0f), true);
 
 				switch (_profiler.gMenuTabs->Current.iValue)
@@ -777,30 +558,6 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::NewLine();
 
-					if (DrawOption(_profiler.gMenuColor->szName, _profiler.gMenuColor->szItems[_profiler.gMenuColor->Current.iValue], &_profiler.gMenuColor->Current.iValue, _profiler.gMenuColor->Domain.iMin, _profiler.gMenuColor->Domain.iMax, 1))
-					{
-						WritePrivateProfileString("MenuStyle", "COLOR", std::to_string(_profiler.gMenuColor->Current.iValue).c_str(), (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
-
-						bStyleChanged = true;
-						bWriteLog = true;
-					} ImGui::NewLine();
-
-					if (DrawOption(_profiler.gMenuCursor->szName, _profiler.gMenuCursor->szItems[_profiler.gMenuCursor->Current.iValue], &_profiler.gMenuCursor->Current.iValue, _profiler.gMenuCursor->Domain.iMin, _profiler.gMenuCursor->Domain.iMax, 1))
-					{
-						WritePrivateProfileString("MenuStyle", "CURSOR", std::to_string(_profiler.gMenuCursor->Current.iValue).c_str(), (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
-
-						bStyleChanged = true;
-						bWriteLog = true;
-					} ImGui::NewLine();
-
-					if (DrawOption(_profiler.gMenuFont->szName, _profiler.gMenuFont->szItems[_profiler.gMenuFont->Current.iValue], &_profiler.gMenuFont->Current.iValue, _profiler.gMenuFont->Domain.iMin, _profiler.gMenuFont->Domain.iMax, 1))
-					{
-						WritePrivateProfileString("MenuStyle", "FONT", std::to_string(_profiler.gMenuFont->Current.iValue).c_str(), (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
-
-						bStyleChanged = true;
-						bWriteLog = true;
-					} ImGui::NewLine();
-
 					ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
 					if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 					{
@@ -845,7 +602,7 @@ namespace ProtoGenesys
 						{
 							if (ImGui::Selectable("Add To Friend List"))
 							{
-								std::ofstream file(acut::GetExeDirectory() + DEFAULT_TXT, std::ios_base::out | std::ios_base::app);
+								std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::out | std::ios_base::app);
 								file << (std::to_string(ServerSession[i].qwXuid) + " " + ServerSession[i].szName).c_str() << std::endl;
 
 								bWriteLog = true;
@@ -940,7 +697,7 @@ namespace ProtoGenesys
 				}
 
 				ImGui::EndChild();
-
+				
 				if (ImGui::Button("Set as Default", ImVec2(189.0f, 30.0f)))
 				{
 					_profiler.SaveProfile("");
@@ -970,7 +727,7 @@ namespace ProtoGenesys
 				{
 					_profiler.LoadProfile(szLoadPath);
 				}
-
+				
 				bool bReclaimFocus = false;
 				ImGui::PushItemWidth(ImGui::GetWindowContentRegionWidth());
 				if (ImGui::InputText("", _console.szInput, IM_ARRAYSIZE(_console.szInput), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, _console._thunkTextCallback.GetThunk(), &_console))
@@ -1005,12 +762,6 @@ namespace ProtoGenesys
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-			if (bStyleChanged)
-			{
-				RefreshInterface(_profiler.gMenuColor->Current.iValue, _profiler.gMenuCursor->Current.iValue, _profiler.gMenuFont->Current.iValue);
-				bStyleChanged = false;
-			}
-
 			if (hWindow != *(HWND*)dwWindowHandle)
 			{
 				pDevice->Release();
@@ -1031,11 +782,13 @@ namespace ProtoGenesys
 	bool cMainGUI::DrawOption(std::string label, std::string option, Type* value, Type min, Type max, Type step)
 	{
 		bool bReturn = false;
-
+		float flWidth = 110.0f, flSpacing = ImGui::GetWindowContentRegionWidth() - (ImGui::GetStyle().ItemSpacing.x + ImGui::GetStyle().FramePadding.x);
+		ImVec2 vOptionSize = ImGui::GetIO().FontDefault->CalcTextSizeA(ImGui::GetIO().FontDefault->FontSize, FLT_MAX, 0.0f, option.c_str());
+		
 		ImGui::Text(label.c_str());
-		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - ImGui::GetFrameHeight() - (ImGui::GetStyle().ItemSpacing.x + ImGui::GetStyle().FramePadding.x) - 110.0f);
+		ImGui::SameLine(flSpacing - flWidth - ImGui::GetFrameHeight());
 
-		if (ImGui::ArrowButtonEx(VariadicText("%s_left", label.c_str()).c_str(), ImGuiDir_Left, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
+		if (ImGui::ArrowButtonEx(_strdup(VariadicText("%s_left", label.c_str()).c_str()), ImGuiDir_Left, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
 		{
 			*value -= step;
 
@@ -1043,12 +796,12 @@ namespace ProtoGenesys
 				*value = min;
 
 			bReturn = true;
-		} ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - (ImGui::GetStyle().ItemSpacing.x + ImGui::GetStyle().FramePadding.x) - 55.0f - ImGui::GetIO().FontDefault->CalcTextSizeA(ImGui::GetIO().FontDefault->FontSize, FLT_MAX, 0.0f, option.c_str()).x / 2.0f);
+		} ImGui::SameLine(flSpacing - flWidth / 2.0f - vOptionSize.x / 2.0f);
 
 		ImGui::Text(option.c_str());
-		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - (ImGui::GetStyle().ItemSpacing.x + ImGui::GetStyle().FramePadding.x));
+		ImGui::SameLine(flSpacing);
 
-		if (ImGui::ArrowButtonEx(VariadicText("%s_right", label.c_str()).c_str(), ImGuiDir_Right, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
+		if (ImGui::ArrowButtonEx(_strdup(VariadicText("%s_right", label.c_str()).c_str()), ImGuiDir_Right, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
 		{
 			*value += step;
 

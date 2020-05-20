@@ -8,12 +8,12 @@
 
 #define MAX_VIRTUALKEYS 0x100
 
-#define DEFAULT_CFG "\\ProtoGenesys.cfg"
-#define DEFAULT_INI "\\ProtoGenesys.ini"
-#define DEFAULT_LOG "\\ProtoGenesys.log"
-#define DEFAULT_XML "\\ProtoGenesys.xml"
-#define DEFAULT_TXT "\\ProtoGenesys.txt"
-#define DEFAULT_DMP "\\ProtoGenesys.dmp"
+#define DEFAULT_CFG "\\" PROGRAM_NAME ".cfg"
+#define DEFAULT_DMP "\\" PROGRAM_NAME ".dmp"
+#define DEFAULT_INI "\\" PROGRAM_NAME ".ini"
+#define DEFAULT_LOG "\\" PROGRAM_NAME ".log"
+#define DEFAULT_TXT "\\" PROGRAM_NAME ".txt"
+#define DEFAULT_XML "\\" PROGRAM_NAME ".xml"
 
 //=====================================================================================
 
@@ -29,13 +29,13 @@ namespace ProtoGenesys
 
 		cMainGUI() : _thunkWindowProcess(&cMainGUI::WindowProcess, this) {}
 
-		bool bInitialized, bStyleChanged, bShowWindow, bWriteLog, bIsAirStuck;
+		bool bInitialized, bShowWindow, bWriteLog, bIsAirStuck;
 
 		std::string szIniFileName, szLogFileName;
 		ImGuiFs::Dialog SaveDialog, LoadDialog;
 
-		ImFont* Eurostile_Bold, * Eurostile_Extended, * Eurostile_Regular;
-		float flEurostile_Bold, flEurostile_Extended, flEurostile_Regular;
+		ImFont* Bank_Gothic_Pro_Light, * Eurostile_Extended;
+		float flBank_Gothic_Pro_Light, flEurostile_Extended;
 
 		struct sVirtualKeys
 		{
@@ -43,20 +43,11 @@ namespace ProtoGenesys
 		} VirtualKeys[MAX_VIRTUALKEYS];
 
 		HWND hWindow;
-		HINSTANCE hInstDll;
 		ID3D11Device* pDevice;
 		ID3D11DeviceContext* pDeviceContext;
 
 		void InitInterface();
-		void LoadBackgroundImage();
-		void SetMenuColor(int index);
-		void SetMenuCursor(int index);
-		void SetMenuFont(int index);
-		void RefreshInterface(int color, int cursor, int font);
 		bool GetKeyPress(int vkey, bool immediate);
-
-		ID3D11Resource* pD3D11Resource;
-		ID3D11ShaderResourceView* pD3D11ShaderResourceView;
 
 		void WINAPI Present(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 		LRESULT WindowProcess(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
