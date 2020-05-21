@@ -182,7 +182,6 @@ void ImGui::StyleTabLabels(ImVec4* colors)
     TabLabelStyle& style = TabLabelStyle::Get();
 
     style.rounding = 0.0f;
-    style.borderWidth = 1.0f;
     style.fillColorGradientDeltaIn0_05 = 0.0f;
 
     style.colors[TabLabelStyle::Col_TabLabel]                   = ColorConvertFloat4ToU32(colors[ImGuiCol_Header]);

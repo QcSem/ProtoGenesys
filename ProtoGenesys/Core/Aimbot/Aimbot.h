@@ -12,7 +12,13 @@ namespace ProtoGenesys
 	{
 	public:
 
-		cAimbot() : _threadReloadCancel(&cAimbot::ReloadCancel, this) {}
+		typedef enum
+		{
+			RELOAD_DEFAULT,
+			RELOAD,
+			RELOADING,
+			RELOADED
+		} eReloadState;
 
 		struct sAimState
 		{
@@ -21,13 +27,17 @@ namespace ProtoGenesys
 			Vector3 vAimPosition, vAimAngles, vAntiAimAngles;
 		} AimState;
 
+		struct sReloadState
+		{
+			eReloadState iReloadState = RELOAD_DEFAULT;
+			int iAmmo, iIncrement;
+		} ReloadState;
+
 		void StandardAim();
 		void SilentAim(sUserCmd* usercmd);
 		void AutoFire(sUserCmd* usercmd);
 		void SetAimState();
-		void ReloadCancel();
-
-		std::thread _threadReloadCancel;
+		void SetReloadState();
 	} extern _aimBot;
 }
 

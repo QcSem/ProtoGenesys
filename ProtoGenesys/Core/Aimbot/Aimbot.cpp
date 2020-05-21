@@ -146,23 +146,45 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cAimbot::ReloadCancel()
+	void cAimbot::SetReloadState()
 	{
-		while (true)
+		static int iTime = clock();
+
+		if (_profiler.gReloadCancel->Current.iValue)
 		{
-			if (_profiler.gReloadCancel->Current.iValue)
+			switch (ReloadState.iReloadState)
 			{
-				bool bReloading = (CG->iWeaponState[0] == 11 || CG->iWeaponState[1] == 11);
+			case RELOAD_DEFAULT:
+				if (CG->PlayerState.iWeaponState[0] == 11 || CG->PlayerState.iWeaponState[1] == 11)
+					ReloadState.iReloadState = RELOAD;
 
-				if (!bReloading)
-					continue;
+				break;
 
-				if (!CG->iWeaponDelay)
+			case RELOAD:
+				ReloadState.iAmmo = WeaponAmmoAvailable();
+				ReloadState.iReloadState = RELOADING;
+
+				break;
+
+			case RELOADING:
+				if (WeaponAmmoAvailable() > ReloadState.iAmmo)
+					ReloadState.iReloadState = RELOADED;
+
+				break;
+
+			case RELOADED:
+				if (clock() - iTime > 35)
 				{
 					CycleWeapon(0);
-					Sleep(1);
-					CycleWeapon(0);
+					ReloadState.iIncrement++;
+
+					iTime = clock();
 				}
+
+				if (!(ReloadState.iIncrement % 2))
+					ReloadState.iReloadState = RELOAD_DEFAULT;
+
+				break;
 			}
 		}
 	}

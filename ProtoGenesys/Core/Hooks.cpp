@@ -228,6 +228,7 @@ namespace ProtoGenesys
 			_targetList.GetInformation();
 			_drawing.CalculateTracers();
 			_aimBot.SetAimState();
+			_aimBot.SetReloadState();
 
 			if (WeaponIsVehicle() || (!IsPlayerReloading() && WeaponAmmoAvailable()))
 				_aimBot.StandardAim();
@@ -599,7 +600,7 @@ namespace ProtoGenesys
 		if (!*(int*)dwConnectionState)
 		{
 			static int iMode = 1;
-			static int iTimer = 0;
+			static int iTimer = clock();
 
 			if (clock() - iTimer > 500)
 			{
