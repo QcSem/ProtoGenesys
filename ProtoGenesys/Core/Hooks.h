@@ -29,7 +29,10 @@ namespace ProtoGenesys
 		std::vector<std::pair<QWORD, std::string>> vFriends;
 
 		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwSysValue, dwShader, dwAddress;
-		DWORD_PTR dwSteamUserFunc, dwSteamUserVTable, dwSteamFriendsFunc, dwSteamFriendsVTable;
+		DWORD_PTR dwSteamUser, dwSteamFriends;
+
+		ISteamUser* _steamUser;
+		ISteamFriends* _steamFriends;
 
 		LPTOP_LEVEL_EXCEPTION_FILTER pUnhandledExceptionFilter;
 		LPVOID pVectoredExceptionHandler;
@@ -45,7 +48,7 @@ namespace ProtoGenesys
 		void PredictPlayerState();
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
-		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
+		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int eventnum, int eventparm, int contents, char bone);
 		void TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
 		void CalcEntityLerpPositions(int localnum, sCEntity* entity);
 		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
@@ -53,15 +56,15 @@ namespace ProtoGenesys
 		
 		int GameTypeSettings(int settings);
 		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
-		bool SteamIDIsValid(DWORD** _this);
+		bool SteamIDIsValid(CSteamID* steamid);
 
-		sSteamID GetSteamID(sSteamID steamid);
+		CSteamID* GetSteamID(CSteamID* steamid);
 		LPCSTR GetPersonaName(LPCSTR name);
-		int GetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags);
-		sSteamID GetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags);
-		ePersonaState GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid);
-		LPCSTR GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid);
-		bool GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo);
+		int GetFriendCount(LPVOID ecx, LPVOID edx, EFriendFlags friendflags);
+		void GetFriendByIndex(LPVOID ecx, LPVOID edx, CSteamID* steamid, int index, EFriendFlags friendflags);
+		EPersonaState GetFriendPersonaState(LPVOID ecx, LPVOID edx, CSteamID steamid);
+		LPCSTR GetFriendPersonaName(LPVOID ecx, LPVOID edx, CSteamID steamid);
+		bool GetFriendGamePlayed(CSteamID steamid, int unk1, int unk2, FriendGameInfo_t* friendgameinfo);
 
 		int Atoi1(int result);
 		int Atoi2(int result);

@@ -1,6 +1,7 @@
 //=====================================================================================
 
 #pragma once
+#pragma comment(lib, "steam_api.lib")
 
 #include <Windows.h>
 #include <intrin.h>
@@ -13,6 +14,9 @@
 
 #include <d3d11.h>
 #include <detours.h>
+#include <steam_api_common.h>
+#include <isteamfriends.h>
+#include <isteamuser.h>
 
 #include "ImGui/Addons/FileSystem/imguifilesystem.h"
 #include "ImGui/Addons/TabWindow/imguitabwindow.h"

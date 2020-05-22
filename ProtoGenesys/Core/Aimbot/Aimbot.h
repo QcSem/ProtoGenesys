@@ -38,6 +38,7 @@ namespace ProtoGenesys
 		void AutoFire(sUserCmd* usercmd);
 		void SetAimState();
 		void SetReloadState();
+
 	} extern _aimBot;
 }
 

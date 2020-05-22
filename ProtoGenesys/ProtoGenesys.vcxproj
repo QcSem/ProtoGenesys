@@ -32,8 +32,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)Detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)Detours\Include;$(ProjectDir)SteamSDK\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Detours\Lib\x86;$(ProjectDir)SteamSDK\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -103,7 +103,6 @@
     <ClInclude Include="Core\Removals\Removals.h" />
     <ClInclude Include="Core\Stats\Stats.h" />
     <ClInclude Include="Core\TargetList\TargetList.h" />
-    <ClInclude Include="Detours\detours.h" />
     <ClInclude Include="ImGui\Addons\dirent_portable.h" />
     <ClInclude Include="ImGui\Addons\FileSystem\imguifilesystem.h" />
     <ClInclude Include="ImGui\Addons\TabWindow\imguitabwindow.h" />
@@ -118,12 +117,6 @@
     <ClInclude Include="ImGui\STB\imstb_truetype.h" />
     <ClInclude Include="ImGui\Win32\imgui_impl_win32.h" />
     <ClInclude Include="StdAfx.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="Detours\detours.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Detours\detours.pdb" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

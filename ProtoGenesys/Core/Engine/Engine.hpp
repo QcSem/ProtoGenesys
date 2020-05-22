@@ -195,51 +195,6 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	typedef enum
-	{
-		FRIEND_FLAG_NONE = 0x0,
-		FRIEND_FLAG_BLOCKED = 1 << 0,
-		FRIEND_FLAG_FRIENDSHIPREQUESTED = 1 << 1,
-		FRIEND_FLAG_IMMEDIATE = 1 << 2,
-		FRIEND_FLAG_CLANMEMBER = 1 << 3,
-		FRIEND_FLAG_ONGAMESERVER = 1 << 4,
-		FRIEND_FLAG_REQUESTINGFRIENDSHIP = 1 << 7,
-		FRIEND_FLAG_REQUESTINGINFO = 1 << 8,
-		FRIEND_FLAG_IGNORED = 1 << 9,
-		FRIEND_FLAG_IGNOREDFRIEND = 1 << 10,
-		FRIEND_FLAG_CHATMEMBER = 1 << 12,
-		FRIEND_FLAG_All = 0xFFFF
-	} eFriendFlags;
-	/*
-	//=====================================================================================
-	*/
-	typedef enum
-	{
-		UNIVERSE_INVALID,
-		UNIVERSE_PUBLIC,
-		UNIVERSE_BETA,
-		UNIVERSE_INTERNAL,
-		UNIVERSE_DEV,
-		UNIVERSE_MAX
-	} eUniverse;
-	/*
-	//=====================================================================================
-	*/
-	typedef enum
-	{
-		PERSONA_STATE_OFFLINE,
-		PERSONA_STATE_ONLINE,
-		PERSONA_STATE_BUSY,
-		PERSONA_STATE_AWAY,
-		PERSONA_STATE_SNOOZE,
-		PERSONA_STATE_LOOKINGTOTRADE,
-		PERSONA_STATE_LOOKINGTOPLAY,
-		PERSONA_STATE_INVISIBLE,
-		PERSONA_STATE_MAX
-	} ePersonaState;
-	/*
-	//=====================================================================================
-	*/
 	static std::vector<std::pair<std::string, std::string>> szBones =
 	{
 		std::make_pair("Helmet", "j_helmet"),
@@ -754,59 +709,6 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
-	{
-		DWORD iAppID : 24;
-		DWORD iType : 8;
-		DWORD iModID : 32;
-	} sGameID;
-	/*
-	//=====================================================================================
-	*/
-	typedef union
-	{
-		QWORD iGameID;
-		sGameID GameID;
-	} uGameID;
-	/*
-	//=====================================================================================
-	*/
-	typedef struct
-	{
-		DWORD iAccountID : 32;
-		DWORD iAccountInstance : 20;
-		DWORD iAccountType : 4;
-		eUniverse iUniverse : 8;
-	} sSteamIDComponent;
-	/*
-	//=====================================================================================
-	*/
-	typedef union
-	{
-		sSteamIDComponent SteamIDComponent;
-		QWORD iAll64Bits;
-	} uSteamID;
-	/*
-	//=====================================================================================
-	*/
-	typedef struct
-	{
-		uSteamID SteamID;
-	} sSteamID;
-	/*
-	//=====================================================================================
-	*/
-	typedef struct
-	{
-		uGameID GameID;
-		DWORD iGameIP;
-		WORD iGamePort;
-		WORD iQueryPort;
-		sSteamID SteamID;
-	} sFriendGameInfo;
-	/*
-	//=====================================================================================
-	*/
 	static MODULEINFO hT6mp = GetModuleInfo(NULL);
 	static MODULEINFO hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
 	static HMODULE hSteamAPI = GetModuleHandle("steam_api.dll");
@@ -975,9 +877,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static bool PrepFireParams(sCEntity* entity, WORD tag, int weapon, int _event, bool player, sBulletFireParams* fireparams, Vector3 tracerstart, int* shots, float* range, sOrientation* orientation, Vector3 origin, float* spread, int* ignorenum)
+	static bool PrepFireParams(sCEntity* entity, WORD tag, int weapon, int eventnum, bool player, sBulletFireParams* fireparams, Vector3 tracerstart, int* shots, float* range, sOrientation* orientation, Vector3 origin, float* spread, int* ignorenum)
 	{
-		return VariadicCall<bool>(dwPrepFireParams, 0, entity, tag, &CG->PlayerState, weapon, _event, player, fireparams, tracerstart, shots, range, orientation, origin, spread, ignorenum);
+		return VariadicCall<bool>(dwPrepFireParams, 0, entity, tag, &CG->PlayerState, weapon, eventnum, player, fireparams, tracerstart, shots, range, orientation, origin, spread, ignorenum);
 	}
 	/*
 	//=====================================================================================

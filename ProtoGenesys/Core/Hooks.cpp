@@ -351,7 +351,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone)
+	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int eventnum, int eventparm, int contents, char bone)
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
@@ -471,16 +471,16 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cHooks::SteamIDIsValid(DWORD** _this)
+	bool cHooks::SteamIDIsValid(CSteamID* steamid)
 	{
 		return true;
 	}
 	/*
 	//=====================================================================================
 	*/
-	sSteamID cHooks::GetSteamID(sSteamID steamid)
+	CSteamID* cHooks::GetSteamID(CSteamID* steamid)
 	{
-		*(QWORD*)steamid.SteamID.iAll64Bits = qwXuidOverride;
+		steamid->SetFromUint64(qwXuidOverride);
 
 		return steamid;
 	}
@@ -503,11 +503,11 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	int cHooks::GetFriendCount(DWORD** _this, void* edx, eFriendFlags friendflags)
+	int cHooks::GetFriendCount(LPVOID ecx, LPVOID edx, EFriendFlags friendflags)
 	{
 		int iFriendCount = 0;
 
-		if (friendflags & FRIEND_FLAG_IMMEDIATE)
+		if (friendflags & k_EFriendFlagImmediate)
 			iFriendCount = vFriends.size();
 
 		return iFriendCount;
@@ -515,33 +515,28 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	sSteamID cHooks::GetFriendByIndex(DWORD** _this, void* edx, QWORD* steamid, int _friend, eFriendFlags friendflags)
+	void cHooks::GetFriendByIndex(LPVOID ecx, LPVOID edx, CSteamID* steamid, int index, EFriendFlags friendflags)
 	{
-		sSteamID SteamID;
-		QWORD qwSpoofID = 0;
+		auto SteamID = k_steamIDNil;
 
-		if (friendflags & FRIEND_FLAG_IMMEDIATE)
-		{
-			qwSpoofID = vFriends[_friend - iFriendCount].first;
-			*steamid = qwSpoofID;
-			SteamID.SteamID.iAll64Bits = *steamid;
-		}
+		if (friendflags & k_EFriendFlagImmediate)
+			SteamID.SetFromUint64(vFriends[index - iFriendCount].first);
 
-		return SteamID;
+		steamid->SetFromUint64(SteamID.ConvertToUint64());
 	}
 	/*
 	//=====================================================================================
 	*/
-	ePersonaState cHooks::GetFriendPersonaState(DWORD** _this, void* edx, sSteamID steamid)
+	EPersonaState cHooks::GetFriendPersonaState(LPVOID ecx, LPVOID edx, CSteamID steamid)
 	{
-		return PERSONA_STATE_ONLINE;
+		return k_EPersonaStateOnline;
 	}
 	/*
 	//=====================================================================================
 	*/
-	LPCSTR cHooks::GetFriendPersonaName(DWORD** _this, void* edx, sSteamID steamid)
+	LPCSTR cHooks::GetFriendPersonaName(LPVOID ecx, LPVOID edx, CSteamID steamid)
 	{
-		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamid](std::pair<QWORD, std::string>& _friend) { return steamid.SteamID.iAll64Bits == _friend.first; });
+		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamid](std::pair<QWORD, std::string>& _friend) { return steamid.ConvertToUint64() == _friend.first; });
 
 		if (Friend != vFriends.end())
 			return Friend->second.c_str();
@@ -551,9 +546,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cHooks::GetFriendGamePlayed(sSteamID steamid, int unk1, int unk2, sFriendGameInfo* friendgameinfo)
+	bool cHooks::GetFriendGamePlayed(CSteamID steamid, int unk1, int unk2, FriendGameInfo_t* friendgameinfo)
 	{
-		friendgameinfo->GameID.iGameID = 202990;
+		friendgameinfo->m_gameID.Set(202990);
 		return true;
 	}
 	/*
