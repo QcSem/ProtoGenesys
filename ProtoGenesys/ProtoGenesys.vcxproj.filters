@@ -65,6 +65,9 @@
     <ClCompile Include="Core\Stats\Stats.cpp">
       <Filter>Core\Stats</Filter>
     </ClCompile>
+    <ClCompile Include="ImGui\Addons\WICTextureLoader.cpp">
+      <Filter>ImGui\Addons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.hpp" />
@@ -173,7 +176,19 @@
     <ClInclude Include="Core\Stats\Stats.h">
       <Filter>Core\Stats</Filter>
     </ClInclude>
-    <ClInclude Include="ImGui\Fonts\Bank_Gothic_Pro_Light.hpp">
+    <ClInclude Include="ImGui\imgui_memory_editor.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Addons\WICTextureLoader.h">
+      <Filter>ImGui\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Fonts\Eurostile_Bold.hpp">
+      <Filter>ImGui\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Fonts\Eurostile_Regular.hpp">
       <Filter>ImGui\Fonts</Filter>
     </ClInclude>
   </ItemGroup>
@@ -247,5 +262,18 @@
     <Filter Include="Core\Stats">
       <UniqueIdentifier>{e070b263-6b7b-474e-9105-53bed263333f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{90e954a8-d7ba-4568-99b8-2259c14872c7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Resource.png">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\Resource.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

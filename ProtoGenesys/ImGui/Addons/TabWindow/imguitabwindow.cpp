@@ -228,10 +228,9 @@ void ImDrawListAddRectWithVerticalGradient(ImDrawList *dl, const ImVec2 &a, cons
     if (rounding==0.f || rounding_corners==0) {
         dl->AddRectFilledMultiColor(a,b,fillColorTop,fillColorTop,fillColorBottom,fillColorBottom); // Huge speedup!
         if ((strokeColor& IM_COL32_A_MASK)!= 0 && strokeThickness>0.f) {
-            dl->AddRect(a, b, strokeColor, rounding, rounding_corners, strokeThickness);
-            //dl->PathRect(a, b, rounding, rounding_corners);
-            //dl->AddPolyline(dl->_Path.Data, dl->_Path.Size, strokeColor, true, strokeThickness);
-            //dl->PathClear();
+            dl->PathRect(a, b, rounding, rounding_corners);
+            dl->AddPolyline(dl->_Path.Data, dl->_Path.Size, strokeColor, true, strokeThickness);
+            dl->PathClear();
         }
     }
     else    {
@@ -364,10 +363,9 @@ void ImDrawListAddRectWithHorizontalGradient(ImDrawList *dl, const ImVec2 &a, co
     if (rounding==0.f || rounding_corners==0) {
         dl->AddRectFilledMultiColor(a,b,fillColorLeft,fillColoRight,fillColoRight,fillColorLeft); // Huge speedup!
         if ((strokeColor& IM_COL32_A_MASK)!= 0 && strokeThickness>0.f) {
-            dl->AddRect(a, b, strokeColor, rounding, rounding_corners, strokeThickness);
-            //dl->PathRect(a, b, rounding, rounding_corners);
-            //dl->AddPolyline(dl->_Path.Data, dl->_Path.Size, strokeColor, true, strokeThickness);
-            //dl->PathClear();
+            dl->PathRect(a, b, rounding, rounding_corners);
+            dl->AddPolyline(dl->_Path.Data, dl->_Path.Size, strokeColor, true, strokeThickness);
+            dl->PathClear();
         }
     }
     else    {

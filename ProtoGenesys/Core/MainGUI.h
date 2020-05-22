@@ -29,13 +29,13 @@ namespace ProtoGenesys
 
 		cMainGUI() : _thunkWindowProcess(&cMainGUI::WindowProcess, this) {}
 
-		bool bInitialized, bShowWindow, bWriteLog, bIsAirStuck;
+		bool bInitialized, bStyleChanged, bShowWindow, bWriteLog, bIsAirStuck;
 
 		std::string szIniFileName, szLogFileName;
 		ImGuiFs::Dialog SaveDialog, LoadDialog;
 
-		ImFont* Bank_Gothic_Pro_Light, * Eurostile_Extended;
-		float flBank_Gothic_Pro_Light, flEurostile_Extended;
+		ImFont* Eurostile_Bold, * Eurostile_Extended, * Eurostile_Regular;
+		float flEurostile_Bold, flEurostile_Extended, flEurostile_Regular;
 
 		struct sVirtualKeys
 		{
@@ -43,10 +43,19 @@ namespace ProtoGenesys
 		} VirtualKeys[MAX_VIRTUALKEYS];
 
 		HWND hWindow;
+		HINSTANCE hInstDll;
 		ID3D11Device* pDevice;
 		ID3D11DeviceContext* pDeviceContext;
 
+		ID3D11Resource* pD3D11Resource;
+		ID3D11ShaderResourceView* pD3D11ShaderResourceView;
+
 		void InitInterface();
+		void LoadBackgroundImage();
+		void SetMenuColor(int index);
+		void SetMenuCursor(int index);
+		void SetMenuFont(int index);
+		void RefreshInterface(int color, int cursor, int font);
 		bool GetKeyPress(int vkey, bool immediate);
 
 		void WINAPI Present(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
