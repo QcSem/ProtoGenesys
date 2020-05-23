@@ -599,87 +599,61 @@ namespace ProtoGenesys
 
 			if (clock() - iTimer > 500)
 			{
+				std::random_device Device;
+				std::uniform_int_distribution<int> RandomPrestige(0, 15), RandomColor(0, 9);
+
+				_stats.SetPLevel(RandomPrestige(Device));
+				Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName ^%i", RandomColor(Device)));
+
 				switch (iMode)
 				{
-				case 0:
-					szNameOverride = "8========mD~   ";
-					_stats.SetPLevel(iMode);
-					iMode = 1;
-					break;
 				case 1:
-					szNameOverride = "8=======m=D ~  ";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8======mD~~~   ";
 					iMode = 2;
 					break;
 				case 2:
-					szNameOverride = "8======m==D  ~ ";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8=====m=D ~~~  ";
 					iMode = 3;
 					break;
 				case 3:
-					szNameOverride = "8=====m===D   ~";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8====m==D  ~~~ ";
 					iMode = 4;
 					break;
 				case 4:
-					szNameOverride = "8====m====D~   ";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8===m===D   ~~~";
 					iMode = 5;
 					break;
 				case 5:
-					szNameOverride = "8===m=====D ~  ";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8==m====D~   ~~";
 					iMode = 6;
 					break;
 				case 6:
-					szNameOverride = "8==m======D  ~ ";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8=m=====D~~   ~";
 					iMode = 7;
 					break;
 				case 7:
-					szNameOverride = "8=m=======D   ~";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8m======D~~~   ";
 					iMode = 8;
 					break;
 				case 8:
-					szNameOverride = "8m========D~   ";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8=m=====D ~~~  ";
 					iMode = 9;
 					break;
 				case 9:
-					szNameOverride = "8=m=======D ~  ";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8==m====D  ~~~ ";
 					iMode = 10;
 					break;
 				case 10:
-					szNameOverride = "8==m======D  ~ ";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8===m===D   ~~~";
 					iMode = 11;
 					break;
 				case 11:
-					szNameOverride = "8===m=====D   ~";
-					_stats.SetPLevel(iMode);
+					szNameOverride = "8====m==D~   ~~";
 					iMode = 12;
 					break;
 				case 12:
-					szNameOverride = "8====m====D~   ";
-					_stats.SetPLevel(iMode);
-					iMode = 13;
-					break;
-				case 13:
-					szNameOverride = "8=====m===D ~  ";
-					_stats.SetPLevel(iMode);
-					iMode = 14;
-					break;
-				case 14:
-					szNameOverride = "8======m==D  ~ ";
-					_stats.SetPLevel(iMode);
-					iMode = 15;
-					break;
-				case 15:
-					szNameOverride = "8=======m=D   ~";
-					_stats.SetPLevel(iMode);
-					iMode = 0;
+					szNameOverride = "8=====m=D~~   ~";
+					iMode = 1;
 					break;
 				}
 

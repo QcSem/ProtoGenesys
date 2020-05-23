@@ -115,7 +115,7 @@ namespace acut
 		static constexpr char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZbcdefghijklmnopqrstuvwxyz1234567890";
 		
 		static std::random_device rd;
-		static std::uniform_int_distribution<> dist(0, _countof(alphabet) - 1), dist_len(5, 15);
+		static std::uniform_int_distribution<int> dist(0, _countof(alphabet) - 1), dist_len(5, 15);
 		
 		std::string result;
 
