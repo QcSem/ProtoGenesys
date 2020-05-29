@@ -260,7 +260,7 @@ namespace ProtoGenesys
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
 			std::random_device rd;
-			std::uniform_int_distribution<> dist(0x48, 0x49);
+			std::uniform_int_distribution<int> dist(0x48, 0x49);
 
 			std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 			std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
@@ -276,7 +276,7 @@ namespace ProtoGenesys
 		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashserver", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-			AddReliableCommand(VariadicText("sl %i %i", 1337, *(DWORD_PTR*)dwServerID));
+			AddReliableCommand(VariadicText("SL %i %i", 1337, *(DWORD_PTR*)dwServerID));
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 

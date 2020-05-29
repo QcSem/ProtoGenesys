@@ -72,7 +72,7 @@
 		operator float*() { return &x; }
 
 #define IM_VEC3_CLASS_EXTRA                                                 \
-        ImVec3(const ImVec3& f) { x = f.x; y = f.y; z = f.z; }     \
+        ImVec3(const ImVec3& f) { x = f.x; y = f.y; z = f.z; }              \
         operator ImVec3() const { return ImVec3(x,y,z); }					\
 		operator const float*() const { return &x; }						\
 		operator float*() { return &x; }
