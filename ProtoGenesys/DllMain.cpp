@@ -27,8 +27,8 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval,
 typedef HRESULT(WINAPI* tPresent)(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 tPresent oPresent;
 
-void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
-typedef void(USERCALL* tBulletHitEvent)(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone);
+void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int _event, int param, int contents, char bone);
+typedef void(USERCALL* tBulletHitEvent)(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int _event, int param, int contents, char bone);
 tBulletHitEvent oBulletHitEvent = (tBulletHitEvent)dwBulletHitEvent;
 
 void USERCALL hTransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
@@ -39,8 +39,8 @@ void USERCALL hCalcEntityLerpPositions(int localnum, sCEntity* entity);
 typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sCEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
 
-int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
-typedef int(USERCALL* tGetWorldTagMatrix)(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
+int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin);
+typedef int(USERCALL* tGetWorldTagMatrix)(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin);
 tGetWorldTagMatrix oGetWorldTagMatrix = (tGetWorldTagMatrix)dwGetWorldTagMatrix;
 
 LPVOID USERCALL hGetAddr(bool renew);
@@ -51,8 +51,8 @@ int USERCALL hGameTypeSettings(int setting);
 typedef int(USERCALL* tGameTypeSettings)(int setting);
 tGameTypeSettings oGameTypeSettings = (tGameTypeSettings)dwGameTypeSettings;
 
-int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
-typedef int(USERCALL* tGetPlayerStatus)(int localnum, DWORD xuid1, DWORD xuid2);
+int USERCALL hGetPlayerStatus(int localnum, QWORD xuid);
+typedef int(USERCALL* tGetPlayerStatus)(int localnum, QWORD xuid);
 tGetPlayerStatus oGetPlayerStatus = (tGetPlayerStatus)dwGetPlayerStatus;
 
 bool FASTCALL hSteamIDIsValid(CSteamID* steamid);
@@ -64,7 +64,7 @@ typedef LPCSTR(FASTCALL* tGetPersonaName)(LPVOID ecx, LPVOID edx);
 tGetPersonaName oGetPersonaName;
 
 CSteamID* FASTCALL hGetSteamID(LPVOID ecx, LPVOID edx, int unk);
-typedef CSteamID*(FASTCALL* tGetSteamID)(LPVOID ecx, LPVOID edx, int unk);
+typedef CSteamID* (FASTCALL* tGetSteamID)(LPVOID ecx, LPVOID edx, int unk);
 tGetSteamID oGetSteamID;
 
 int FASTCALL hGetFriendCount(LPVOID ecx, LPVOID edx, EFriendFlags friendflags);
@@ -110,7 +110,7 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* swapchain, _In_ UINT syncinterval, 
 
 //=====================================================================================
 
-void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int _event, int param, int contents, char bone)
+void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int _event, int param, int contents, char bone)
 {
 	oBulletHitEvent(localnum, sourcenum, targetnum, weapon, start, position, normal, alphanormal, surface, _event, param, contents, bone);
 
@@ -137,7 +137,7 @@ void USERCALL hCalcEntityLerpPositions(int localnum, sCEntity* entity)
 
 //=====================================================================================
 
-int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin)
+int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin)
 {
 	int iReturn = oGetWorldTagMatrix(pose, dobj, tag, matrix, origin);
 
@@ -164,9 +164,9 @@ int USERCALL hGameTypeSettings(int setting)
 
 //=====================================================================================
 
-int USERCALL hGetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
+int USERCALL hGetPlayerStatus(int localnum, QWORD xuid)
 {
-	return _hooks.GetPlayerStatus(localnum, xuid1, xuid2);
+	return _hooks.GetPlayerStatus(localnum, xuid);
 }
 
 //=====================================================================================
@@ -252,9 +252,8 @@ int USERCALL hAtoi2(LPCSTR string)
 
 //=====================================================================================
 
-void Initialize(HINSTANCE hinstDLL)
+void Initialize()
 {
-	_mainGui.hInstDll = hinstDLL;
 	_hooks.PatchAntiCheat();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
@@ -412,7 +411,7 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Initialize(hinstDLL);
+		Initialize();
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:

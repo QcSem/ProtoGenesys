@@ -12,7 +12,8 @@ namespace ProtoGenesys
 	{
 		*(DWORD_PTR*)dwTacSSHandle = 0x1;
 
-		CG->iThirdPerson = _profiler.gThirdPerson->Current.iValue;
+		SetThirdPerson();
+
 		CG->PlayerState.iSatalliteTypeEnabled = _profiler.gOrbitalVsat->Current.iValue;
 
 		if (_profiler.gHardcoreHud->Current.iValue && CG->iMatchUIVisibilityFlags & 0x200)
@@ -351,7 +352,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int eventnum, int eventparm, int contents, char bone)
+	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int eventnum, int eventparm, int contents, char bone)
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
@@ -361,13 +362,13 @@ namespace ProtoGenesys
 				{
 					int iShots, iIgnoreNum;
 					float flRange, flSpread;
-					Vector3 vTracerStart, vOrigin;
+					ImVec3 vTracerStart, vOrigin;
 					sOrientation Orientation;
 
 					sBulletFireParams FireParams;
 					ZeroMemory(&FireParams, sizeof(sBulletFireParams));
 
-					if (PrepFireParams(&CG->CEntity[CG->iClientNum], RegisterTag("tag_flash"), CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, vTracerStart, &iShots, &flRange, &Orientation, vOrigin, &flSpread, &iIgnoreNum))
+					if (PrepFireParams(&CG->CEntity[CG->iClientNum], RegisterTag("tag_flash"), CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, &vTracerStart, &iShots, &flRange, &Orientation, &vOrigin, &flSpread, &iIgnoreNum))
 					{
 						cDrawing::sTracer Tracer;
 
@@ -377,7 +378,7 @@ namespace ProtoGenesys
 						Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
 						Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
 						Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
-						Tracer.iStartTime = clock();
+						Tracer.iStartTime = Sys_Milliseconds();
 
 						_drawing.vTracers.push_back(Tracer);
 					}
@@ -426,7 +427,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin)
+	void cHooks::GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin)
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
@@ -464,7 +465,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	int cHooks::GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2)
+	int cHooks::GetPlayerStatus(int localnum, QWORD xuid)
 	{
 		return 1;
 	}
@@ -595,9 +596,9 @@ namespace ProtoGenesys
 		if (!*(int*)dwConnectionState)
 		{
 			static int iMode = 1;
-			static int iTimer = clock();
+			static int iTimer = Sys_Milliseconds();
 
-			if (clock() - iTimer > 500)
+			if (Sys_Milliseconds() - iTimer > 500)
 			{
 				std::random_device Device;
 				std::uniform_int_distribution<int> RandomPrestige(0, 15), RandomColor(0, 9);
@@ -657,7 +658,7 @@ namespace ProtoGenesys
 					break;
 				}
 
-				iTimer = clock();
+				iTimer = Sys_Milliseconds();
 			}
 		}
 
@@ -682,6 +683,15 @@ namespace ProtoGenesys
 				vFriends.push_back(make_pair(strtoll(szLine.substr(0, iPosition).c_str(), NULL, 10), szLine.substr(iPosition)));
 			}
 		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cHooks::SetThirdPerson()
+	{
+		std::string szDvarName = IsThirdPerson() ? "cg_fov_default_thirdperson" : "cg_fov";
+		FindVar(szDvarName)->Current.flValue = _profiler.gFieldOfView->Current.flValue;
+		CG->iThirdPerson = _profiler.gThirdPerson->Current.iValue;
 	}
 }
 

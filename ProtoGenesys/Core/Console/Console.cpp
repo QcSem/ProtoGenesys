@@ -44,6 +44,7 @@ namespace ProtoGenesys
 			vCommands.push_back(Strdup(VariadicText("%s_unlockall", PROGRAM_CMD_PREFIX).c_str()));
 			vCommands.push_back(Strdup(VariadicText("%s_uploadstats", PROGRAM_CMD_PREFIX).c_str()));
 			vCommands.push_back(Strdup(VariadicText("%s_resetstats", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_connect", PROGRAM_CMD_PREFIX).c_str()));
 			vCommands.push_back(Strdup(VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX).c_str()));
 
 			AddLog("Ready.");
@@ -106,7 +107,8 @@ namespace ProtoGenesys
 			AddLog("11. %s_unlockall\n\t\tUnlock everything in the game.", PROGRAM_CMD_PREFIX);
 			AddLog("12. %s_uploadstats\n\t\tCalculate hash for and sign your stats.", PROGRAM_CMD_PREFIX);
 			AddLog("13. %s_resetstats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
-			AddLog("14. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
+			AddLog("14. %s_connect <xuid>\n\t\tConnect to a specific player.", PROGRAM_CMD_PREFIX);
+			AddLog("15. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -656,6 +658,21 @@ namespace ProtoGenesys
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			Cbuf_AddText("resetStats");
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_connect", PROGRAM_CMD_PREFIX).c_str()))
+		{
+			if (CmdLine.iArgNum > 0)
+			{
+				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+				JoinSessionFromXuid(strtoll(CmdLine.szCmdArgs[0], NULL, 10));
+				AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+			}
+
+			else
+			{
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
+			}
 		}
 
 		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX).c_str()))

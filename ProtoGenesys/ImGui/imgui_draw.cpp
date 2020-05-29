@@ -1,4 +1,4 @@
-// dear imgui, v1.71 WIP
+// dear imgui, v1.76
 // (drawing and font code)
 
 /*
@@ -16,9 +16,9 @@ Index of this file:
 // [SECTION] ImFontAtlas glyph ranges helpers
 // [SECTION] ImFontGlyphRangesBuilder
 // [SECTION] ImFont
-// [SECTION] Internal Render Helpers
+// [SECTION] ImGui Internal Render Helpers
 // [SECTION] Decompression code
-// [SECTION] Default font data (GroupType - Bank Gothic Pro Light.otf, GroupType - Bank Gothic Pro Medium.otf, GroupType - Bank Gothic Pro Bold.otf)
+// [SECTION] Default font data (ProggyClean.ttf)
 
 */
 
@@ -27,6 +27,8 @@ Index of this file:
 #endif
 
 #include "imgui.h"
+#ifndef IMGUI_DISABLE
+
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
@@ -72,13 +74,12 @@ Index of this file:
 #pragma clang diagnostic ignored "-Wdouble-promotion"       // warning: implicit conversion from 'float' to 'double' when passing argument to function  // using printf() is a misery with this as C++ va_arg ellipsis changes float to double.
 #endif
 #elif defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wpragmas"                  // warning: unknown option after '#pragma GCC diagnostic' kind
 #pragma GCC diagnostic ignored "-Wunused-function"          // warning: 'xxxx' defined but not used
 #pragma GCC diagnostic ignored "-Wdouble-promotion"         // warning: implicit conversion from 'float' to 'double' when passing argument to function
 #pragma GCC diagnostic ignored "-Wconversion"               // warning: conversion to 'xxxx' from 'xxxx' may alter its value
 #pragma GCC diagnostic ignored "-Wstack-protector"          // warning: stack protector not protecting local variables: variable length buffer
-#if __GNUC__ >= 8
-#pragma GCC diagnostic ignored "-Wclass-memaccess"          // warning: 'memset/memcpy' clearing/writing an object of type 'xxxx' with no trivial copy-assignment; use assignment or value-initialization instead
-#endif
+#pragma GCC diagnostic ignored "-Wclass-memaccess"          // [__GNUC__ >= 8] warning: 'memset/memcpy' clearing/writing an object of type 'xxxx' with no trivial copy-assignment; use assignment or value-initialization instead
 #endif
 
 //-------------------------------------------------------------------------
@@ -119,7 +120,7 @@ namespace IMGUI_STB_NAMESPACE
 #ifndef STB_RECT_PACK_IMPLEMENTATION                        // in case the user already have an implementation in the _same_ compilation unit (e.g. unity builds)
 #ifndef IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
 #define STBRP_STATIC
-#define STBRP_ASSERT(x)     IM_ASSERT(x)
+#define STBRP_ASSERT(x)     do { IM_ASSERT(x); } while (0)
 #define STBRP_SORT          ImQsort
 #define STB_RECT_PACK_IMPLEMENTATION
 #endif
@@ -134,7 +135,7 @@ namespace IMGUI_STB_NAMESPACE
 #ifndef IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 #define STBTT_malloc(x,u)   ((void)(u), IM_ALLOC(x))
 #define STBTT_free(x,u)     ((void)(u), IM_FREE(x))
-#define STBTT_assert(x)     IM_ASSERT(x)
+#define STBTT_assert(x)     do { IM_ASSERT(x); } while(0)
 #define STBTT_fmod(x,y)     ImFmod(x,y)
 #define STBTT_sqrt(x)       ImSqrt(x)
 #define STBTT_pow(x,y)      ImPow(x,y)
@@ -178,833 +179,250 @@ using namespace IMGUI_STB_NAMESPACE;
 
 void ImGui::StyleTabLabels(ImVec4* colors)
 {
-	TabLabelStyle& style = TabLabelStyle::Get();
+    TabLabelStyle& style = TabLabelStyle::Get();
 
-	style.rounding = 0.0f;
-	style.fillColorGradientDeltaIn0_05 = 0.5f;
+    style.rounding = 0.0f;
+    style.fillColorGradientDeltaIn0_05 = 0.0f;
 
-    style.colors[TabLabelStyle::Col_TabLabel] = ColorConvertFloat4ToU32(colors[ImGuiCol_Header]);
-    style.colors[TabLabelStyle::Col_TabLabelHovered] = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderHovered]);
-    style.colors[TabLabelStyle::Col_TabLabelActive] = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderActive]);
-    style.colors[TabLabelStyle::Col_TabLabelBorder] = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
-    style.colors[TabLabelStyle::Col_TabLabelText] = ColorConvertFloat4ToU32(ImVec4(0.00f, 0.00f, 0.00f, 1.00f));
-    style.colors[TabLabelStyle::Col_TabLabelSelected] = ColorConvertFloat4ToU32(colors[ImGuiCol_Button]);
-    style.colors[TabLabelStyle::Col_TabLabelSelectedHovered] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonHovered]);
-    style.colors[TabLabelStyle::Col_TabLabelSelectedActive] = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonActive]);
-    style.colors[TabLabelStyle::Col_TabLabelSelectedBorder] = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
-    style.colors[TabLabelStyle::Col_TabLabelSelectedText] = ColorConvertFloat4ToU32(ImVec4(1.00f, 1.00f, 1.00f, 1.00f));
+    style.colors[TabLabelStyle::Col_TabLabel]                   = ColorConvertFloat4ToU32(colors[ImGuiCol_Header]);
+    style.colors[TabLabelStyle::Col_TabLabelHovered]            = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderHovered]);
+    style.colors[TabLabelStyle::Col_TabLabelActive]             = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderActive]);
+    style.colors[TabLabelStyle::Col_TabLabelBorder]             = ColorConvertFloat4ToU32(colors[ImGuiCol_Header]);
+    style.colors[TabLabelStyle::Col_TabLabelText]               = ColorConvertFloat4ToU32(ImVec4(0.00f, 0.00f, 0.00f, 1.00f));
+    style.colors[TabLabelStyle::Col_TabLabelSelected]           = ColorConvertFloat4ToU32(colors[ImGuiCol_Button]);
+    style.colors[TabLabelStyle::Col_TabLabelSelectedHovered]    = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonHovered]);
+    style.colors[TabLabelStyle::Col_TabLabelSelectedActive]     = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonActive]);
+    style.colors[TabLabelStyle::Col_TabLabelSelectedBorder]     = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
+    style.colors[TabLabelStyle::Col_TabLabelSelectedText]       = ColorConvertFloat4ToU32(ImVec4(1.00f, 1.00f, 1.00f, 1.00f));
 }
 
-void ImGui::StyleColorsNeutral(ImGuiStyle* dst)
+void ImGui::StyleColorsFurtive(ImGuiStyle* dst)
 {
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
+    ImGuiStyle* style = dst ? dst : &ImGui::GetStyle();
+    ImVec4* colors = style->Colors;
 
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.49f, 0.49f, 0.49f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.44f, 0.44f, 0.44f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.49f, 0.49f, 0.49f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.45f, 0.45f, 0.45f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.49f, 0.49f, 0.49f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.50f, 0.50f, 0.50f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_Text]                   = ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+    colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.71f);
+    colors[ImGuiCol_BorderShadow]           = ImVec4(0.06f, 0.06f, 0.06f, 0.01f);
+    colors[ImGuiCol_FrameBg]                = ImVec4(0.10f, 0.10f, 0.10f, 0.71f);
+    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.19f, 0.19f, 0.19f, 0.40f);
+    colors[ImGuiCol_FrameBgActive]          = ImVec4(0.20f, 0.20f, 0.20f, 0.67f);
+    colors[ImGuiCol_TitleBg]                = ImVec4(0.07f, 0.07f, 0.07f, 0.48f);
+    colors[ImGuiCol_TitleBgActive]          = ImVec4(0.07f, 0.07f, 0.07f, 0.48f);
+    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.07f, 0.07f, 0.07f, 0.48f);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.10f, 0.10f, 0.10f, 0.66f);
+    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.00f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.17f, 0.17f, 0.17f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.37f, 0.00f, 0.12f, 1.00f);
+    colors[ImGuiCol_CheckMark]              = ImVec4(0.44f, 0.00f, 0.13f, 1.00f);
+    colors[ImGuiCol_SliderGrab]             = ImVec4(0.29f, 0.29f, 0.29f, 1.00f);
+    colors[ImGuiCol_SliderGrabActive]       = ImVec4(1.00f, 0.00f, 0.27f, 1.00f);
+    colors[ImGuiCol_Button]                 = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+    colors[ImGuiCol_ButtonHovered]          = ImVec4(1.00f, 0.00f, 0.23f, 1.00f);
+    colors[ImGuiCol_ButtonActive]           = ImVec4(1.00f, 0.00f, 0.23f, 1.00f);
+    colors[ImGuiCol_Header]                 = ImVec4(1.00f, 0.00f, 0.30f, 1.00f);
+    colors[ImGuiCol_HeaderHovered]          = ImVec4(1.00f, 0.00f, 0.30f, 0.80f);
+    colors[ImGuiCol_HeaderActive]           = ImVec4(1.00f, 0.00f, 0.33f, 1.00f);
+    colors[ImGuiCol_Separator]              = ImVec4(0.10f, 0.10f, 0.10f, 0.90f);
+    colors[ImGuiCol_SeparatorHovered]       = ImVec4(1.00f, 0.00f, 0.33f, 0.78f);
+    colors[ImGuiCol_SeparatorActive]        = ImVec4(1.00f, 0.00f, 0.36f, 1.00f);
+    colors[ImGuiCol_ResizeGrip]             = ImVec4(0.98f, 0.00f, 0.26f, 0.25f);
+    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.98f, 0.00f, 0.26f, 0.67f);
+    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.98f, 0.00f, 0.26f, 0.95f);
+    colors[ImGuiCol_Tab]                    = ImLerp(colors[ImGuiCol_Header],       colors[ImGuiCol_TitleBgActive], 0.80f);
+    colors[ImGuiCol_TabHovered]             = colors[ImGuiCol_HeaderHovered];
+    colors[ImGuiCol_TabActive]              = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
+    colors[ImGuiCol_TabUnfocused]           = ImLerp(colors[ImGuiCol_Tab],          colors[ImGuiCol_TitleBg], 0.80f);
+    colors[ImGuiCol_TabUnfocusedActive]     = ImLerp(colors[ImGuiCol_TabActive],    colors[ImGuiCol_TitleBg], 0.40f);
+    colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogram]          = ImVec4(1.00f, 0.00f, 0.30f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.00f, 0.30f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg]         = ImVec4(1.00f, 0.00f, 0.30f, 0.35f);
+    colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[ImGuiCol_NavHighlight]           = colors[ImGuiCol_HeaderHovered];
+    colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
-	StyleTabLabels(colors);
-    style->NeonStyleColors = false;
+    StyleTabLabels(colors);
 }
 
-void ImGui::StyleColorsNeutralNeon(ImGuiStyle* dst)
+void ImGui::StyleColorsDark(ImGuiStyle* dst)
 {
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
+    ImGuiStyle* style = dst ? dst : &ImGui::GetStyle();
+    ImVec4* colors = style->Colors;
 
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.49f, 0.49f, 0.49f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.44f, 0.44f, 0.44f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.49f, 0.49f, 0.49f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.49f, 0.49f, 0.49f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.45f, 0.45f, 0.45f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.49f, 0.49f, 0.49f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.50f, 0.50f, 0.50f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
+    colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+    colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_FrameBg]                = ImVec4(0.16f, 0.29f, 0.48f, 0.54f);
+    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[ImGuiCol_FrameBgActive]          = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[ImGuiCol_TitleBg]                = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+    colors[ImGuiCol_TitleBgActive]          = ImVec4(0.16f, 0.29f, 0.48f, 1.00f);
+    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+    colors[ImGuiCol_CheckMark]              = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_SliderGrab]             = ImVec4(0.24f, 0.52f, 0.88f, 1.00f);
+    colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_Button]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[ImGuiCol_ButtonHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_ButtonActive]           = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
+    colors[ImGuiCol_Header]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.31f);
+    colors[ImGuiCol_HeaderHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+    colors[ImGuiCol_HeaderActive]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_Separator]              = colors[ImGuiCol_Border];
+    colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
+    colors[ImGuiCol_SeparatorActive]        = ImVec4(0.10f, 0.40f, 0.75f, 1.00f);
+    colors[ImGuiCol_ResizeGrip]             = ImVec4(0.26f, 0.59f, 0.98f, 0.25f);
+    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+    colors[ImGuiCol_Tab]                    = ImLerp(colors[ImGuiCol_Header],       colors[ImGuiCol_TitleBgActive], 0.80f);
+    colors[ImGuiCol_TabHovered]             = colors[ImGuiCol_HeaderHovered];
+    colors[ImGuiCol_TabActive]              = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
+    colors[ImGuiCol_TabUnfocused]           = ImLerp(colors[ImGuiCol_Tab],          colors[ImGuiCol_TitleBg], 0.80f);
+    colors[ImGuiCol_TabUnfocusedActive]     = ImLerp(colors[ImGuiCol_TabActive],    colors[ImGuiCol_TitleBg], 0.40f);
+    colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+    colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
+    colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[ImGuiCol_NavHighlight]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
-	StyleTabLabels(colors);
-    style->NeonStyleColors = true;
+    StyleTabLabels(colors);
 }
 
-void ImGui::StyleColorsRed(ImGuiStyle* dst)
+void ImGui::StyleColorsClassic(ImGuiStyle* dst)
 {
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
+    ImGuiStyle* style = dst ? dst : &ImGui::GetStyle();
+    ImVec4* colors = style->Colors;
 
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.98f, 0.26f, 0.26f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.98f, 0.26f, 0.26f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.88f, 0.24f, 0.24f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.98f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.98f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.98f, 0.26f, 0.26f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.98f, 0.26f, 0.26f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.35f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.00f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.98f, 0.26f, 0.26f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 0.00f, 0.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_Text]                   = ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.00f, 0.00f, 0.00f, 0.70f);
+    colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_PopupBg]                = ImVec4(0.11f, 0.11f, 0.14f, 0.92f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
+    colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_FrameBg]                = ImVec4(0.43f, 0.43f, 0.43f, 0.39f);
+    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.47f, 0.47f, 0.69f, 0.40f);
+    colors[ImGuiCol_FrameBgActive]          = ImVec4(0.42f, 0.41f, 0.64f, 0.69f);
+    colors[ImGuiCol_TitleBg]                = ImVec4(0.27f, 0.27f, 0.54f, 0.83f);
+    colors[ImGuiCol_TitleBgActive]          = ImVec4(0.32f, 0.32f, 0.63f, 0.87f);
+    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.40f, 0.40f, 0.80f, 0.20f);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.40f, 0.40f, 0.55f, 0.80f);
+    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.20f, 0.25f, 0.30f, 0.60f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.40f, 0.40f, 0.80f, 0.30f);
+    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.40f, 0.40f, 0.80f, 0.40f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.41f, 0.39f, 0.80f, 0.60f);
+    colors[ImGuiCol_CheckMark]              = ImVec4(0.90f, 0.90f, 0.90f, 0.50f);
+    colors[ImGuiCol_SliderGrab]             = ImVec4(1.00f, 1.00f, 1.00f, 0.30f);
+    colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.41f, 0.39f, 0.80f, 0.60f);
+    colors[ImGuiCol_Button]                 = ImVec4(0.35f, 0.40f, 0.61f, 0.62f);
+    colors[ImGuiCol_ButtonHovered]          = ImVec4(0.40f, 0.48f, 0.71f, 0.79f);
+    colors[ImGuiCol_ButtonActive]           = ImVec4(0.46f, 0.54f, 0.80f, 1.00f);
+    colors[ImGuiCol_Header]                 = ImVec4(0.40f, 0.40f, 0.90f, 0.45f);
+    colors[ImGuiCol_HeaderHovered]          = ImVec4(0.45f, 0.45f, 0.90f, 0.80f);
+    colors[ImGuiCol_HeaderActive]           = ImVec4(0.53f, 0.53f, 0.87f, 0.80f);
+    colors[ImGuiCol_Separator]              = ImVec4(0.50f, 0.50f, 0.50f, 0.60f);
+    colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.60f, 0.60f, 0.70f, 1.00f);
+    colors[ImGuiCol_SeparatorActive]        = ImVec4(0.70f, 0.70f, 0.90f, 1.00f);
+    colors[ImGuiCol_ResizeGrip]             = ImVec4(1.00f, 1.00f, 1.00f, 0.16f);
+    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.78f, 0.82f, 1.00f, 0.60f);
+    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.78f, 0.82f, 1.00f, 0.90f);
+    colors[ImGuiCol_Tab]                    = ImLerp(colors[ImGuiCol_Header],       colors[ImGuiCol_TitleBgActive], 0.80f);
+    colors[ImGuiCol_TabHovered]             = colors[ImGuiCol_HeaderHovered];
+    colors[ImGuiCol_TabActive]              = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
+    colors[ImGuiCol_TabUnfocused]           = ImLerp(colors[ImGuiCol_Tab],          colors[ImGuiCol_TitleBg], 0.80f);
+    colors[ImGuiCol_TabUnfocusedActive]     = ImLerp(colors[ImGuiCol_TabActive],    colors[ImGuiCol_TitleBg], 0.40f);
+    colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.00f, 0.00f, 1.00f, 0.35f);
+    colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[ImGuiCol_NavHighlight]           = colors[ImGuiCol_HeaderHovered];
+    colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
 
-	StyleTabLabels(colors);
-    style->NeonStyleColors = false;
+    StyleTabLabels(colors);
 }
 
-void ImGui::StyleColorsRedNeon(ImGuiStyle* dst)
+// Those light colors are better suited with a thicker font than the default one + FrameBorder
+void ImGui::StyleColorsLight(ImGuiStyle* dst)
 {
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
+    ImGuiStyle* style = dst ? dst : &ImGui::GetStyle();
+    ImVec4* colors = style->Colors;
 
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.98f, 0.26f, 0.26f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.88f, 0.24f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.98f, 0.26f, 0.26f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.98f, 0.26f, 0.26f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.98f, 0.26f, 0.26f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.98f, 0.26f, 0.26f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.98f, 0.26f, 0.26f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.98f, 0.26f, 0.26f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.35f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.00f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.98f, 0.26f, 0.26f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 0.00f, 0.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_Text]                   = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.94f, 0.94f, 0.94f, 1.00f);
+    colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_PopupBg]                = ImVec4(1.00f, 1.00f, 1.00f, 0.98f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.30f);
+    colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_FrameBg]                = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[ImGuiCol_FrameBgActive]          = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[ImGuiCol_TitleBg]                = ImVec4(0.96f, 0.96f, 0.96f, 1.00f);
+    colors[ImGuiCol_TitleBgActive]          = ImVec4(0.82f, 0.82f, 0.82f, 1.00f);
+    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(1.00f, 1.00f, 1.00f, 0.51f);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.86f, 0.86f, 0.86f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.98f, 0.98f, 0.98f, 0.53f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.69f, 0.69f, 0.69f, 0.80f);
+    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.49f, 0.49f, 0.49f, 0.80f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+    colors[ImGuiCol_CheckMark]              = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_SliderGrab]             = ImVec4(0.26f, 0.59f, 0.98f, 0.78f);
+    colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.46f, 0.54f, 0.80f, 0.60f);
+    colors[ImGuiCol_Button]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[ImGuiCol_ButtonHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_ButtonActive]           = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
+    colors[ImGuiCol_Header]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.31f);
+    colors[ImGuiCol_HeaderHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+    colors[ImGuiCol_HeaderActive]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_Separator]              = ImVec4(0.39f, 0.39f, 0.39f, 0.62f);
+    colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.14f, 0.44f, 0.80f, 0.78f);
+    colors[ImGuiCol_SeparatorActive]        = ImVec4(0.14f, 0.44f, 0.80f, 1.00f);
+    colors[ImGuiCol_ResizeGrip]             = ImVec4(0.80f, 0.80f, 0.80f, 0.56f);
+    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+    colors[ImGuiCol_Tab]                    = ImLerp(colors[ImGuiCol_Header],       colors[ImGuiCol_TitleBgActive], 0.90f);
+    colors[ImGuiCol_TabHovered]             = colors[ImGuiCol_HeaderHovered];
+    colors[ImGuiCol_TabActive]              = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
+    colors[ImGuiCol_TabUnfocused]           = ImLerp(colors[ImGuiCol_Tab],          colors[ImGuiCol_TitleBg], 0.80f);
+    colors[ImGuiCol_TabUnfocusedActive]     = ImLerp(colors[ImGuiCol_TabActive],    colors[ImGuiCol_TitleBg], 0.40f);
+    colors[ImGuiCol_PlotLines]              = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+    colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.45f, 0.00f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
+    colors[ImGuiCol_DragDropTarget]         = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+    colors[ImGuiCol_NavHighlight]           = colors[ImGuiCol_HeaderHovered];
+    colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.20f, 0.20f, 0.20f, 0.20f);
+    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
 
-	StyleTabLabels(colors);
-    style->NeonStyleColors = true;
-}
-
-void ImGui::StyleColorsOrange(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.98f, 0.49f, 0.26f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.98f, 0.49f, 0.26f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.88f, 0.44f, 0.24f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.98f, 0.49f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.98f, 0.49f, 0.26f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.98f, 0.49f, 0.26f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.98f, 0.49f, 0.26f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.50f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.45f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.50f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.98f, 0.49f, 0.26f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 0.50f, 0.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = false;
-}
-
-void ImGui::StyleColorsOrangeNeon(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.98f, 0.49f, 0.26f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.88f, 0.44f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.98f, 0.49f, 0.26f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.98f, 0.49f, 0.26f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.98f, 0.49f, 0.26f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.98f, 0.49f, 0.26f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.98f, 0.49f, 0.26f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.98f, 0.49f, 0.26f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.50f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.45f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.50f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.98f, 0.49f, 0.26f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 0.50f, 0.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.98f, 0.49f, 0.26f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = true;
-}
-
-void ImGui::StyleColorsYellow(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.98f, 0.98f, 0.26f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.98f, 0.98f, 0.26f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.88f, 0.88f, 0.24f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.98f, 0.98f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.98f, 0.98f, 0.26f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.98f, 0.98f, 0.26f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.98f, 0.98f, 0.26f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 1.00f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.90f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 1.00f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.98f, 0.98f, 0.26f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = false;
-}
-
-void ImGui::StyleColorsYellowNeon(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.98f, 0.98f, 0.26f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.88f, 0.88f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.98f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.98f, 0.98f, 0.26f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.98f, 0.98f, 0.26f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.98f, 0.98f, 0.26f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.98f, 0.98f, 0.26f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.98f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 1.00f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.90f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 1.00f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.98f, 0.98f, 0.26f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.98f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = true;
-}
-
-void ImGui::StyleColorsGreen(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.26f, 0.98f, 0.26f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.26f, 0.98f, 0.26f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.24f, 0.88f, 0.24f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.98f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.26f, 0.98f, 0.26f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.26f, 0.98f, 0.26f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.98f, 0.26f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.35f, 1.00f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.00f, 0.90f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.00f, 1.00f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.98f, 0.26f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.00f, 1.00f, 0.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = false;
-}
-
-void ImGui::StyleColorsGreenNeon(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.26f, 0.98f, 0.26f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.88f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.26f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.26f, 0.98f, 0.26f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.26f, 0.98f, 0.26f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.26f, 0.98f, 0.26f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.98f, 0.26f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.98f, 0.26f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.35f, 1.00f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.00f, 0.90f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.00f, 1.00f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.98f, 0.26f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.00f, 1.00f, 0.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.98f, 0.26f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = true;
-}
-
-void ImGui::StyleColorsBlue(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.26f, 0.49f, 0.98f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.26f, 0.49f, 0.98f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.24f, 0.44f, 0.88f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.49f, 0.98f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.26f, 0.49f, 0.98f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.26f, 0.49f, 0.98f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.49f, 0.98f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.35f, 0.50f, 1.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.00f, 0.45f, 0.90f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.00f, 0.50f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.49f, 0.98f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.00f, 0.50f, 1.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = false;
-}
-
-void ImGui::StyleColorsBlueNeon(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.26f, 0.49f, 0.98f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.44f, 0.88f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.26f, 0.49f, 0.98f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.26f, 0.49f, 0.98f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.26f, 0.49f, 0.98f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.26f, 0.49f, 0.98f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.49f, 0.98f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.49f, 0.98f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.35f, 0.50f, 1.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.00f, 0.45f, 0.90f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.00f, 0.50f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.49f, 0.98f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.00f, 0.50f, 1.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.49f, 0.98f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = true;
-}
-
-void ImGui::StyleColorsPurple(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.49f, 0.49f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.49f, 0.49f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.49f, 0.26f, 0.98f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.49f, 0.26f, 0.98f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.44f, 0.24f, 0.88f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.49f, 0.26f, 0.98f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.49f, 0.26f, 0.98f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.49f, 0.26f, 0.98f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.49f, 0.26f, 0.98f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.50f, 0.35f, 1.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.45f, 0.00f, 0.90f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.50f, 0.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.49f, 0.26f, 0.98f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.50f, 0.00f, 1.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = false;
-}
-
-void ImGui::StyleColorsPurpleNeon(ImGuiStyle* dst)
-{
-	ImGuiStyle* style = dst ? dst : &GetStyle();
-	ImVec4* colors = style->Colors;
-
-	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 0.54f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[ImGuiCol_Border] = ImVec4(0.49f, 0.26f, 0.98f, 0.50f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.20f, 0.20f, 0.20f, 0.00f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.44f, 0.24f, 0.88f, 0.54f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.49f, 0.26f, 0.98f, 0.67f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.40f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.49f, 0.26f, 0.98f, 0.25f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.49f, 0.26f, 0.98f, 0.95f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.67f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.26f, 0.26f, 0.26f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.80f);
-	colors[ImGuiCol_Header] = ImVec4(0.61f, 0.61f, 0.61f, 0.40f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.61f, 0.61f, 0.61f, 0.80f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.37f, 0.37f, 0.37f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.49f, 0.26f, 0.98f, 0.25f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.49f, 0.26f, 0.98f, 0.95f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.49f, 0.26f, 0.98f, 0.67f);
-	colors[ImGuiCol_Tab] = ImLerp(colors[ImGuiCol_Header], colors[ImGuiCol_TitleBgActive], 0.80f);
-	colors[ImGuiCol_TabHovered] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_TabActive] = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-	colors[ImGuiCol_TabUnfocused] = ImLerp(colors[ImGuiCol_Tab], colors[ImGuiCol_TitleBg], 0.80f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImLerp(colors[ImGuiCol_TabActive], colors[ImGuiCol_TitleBg], 0.40f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.50f, 0.35f, 1.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.45f, 0.00f, 0.90f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.50f, 0.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.49f, 0.26f, 0.98f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.50f, 0.00f, 1.00f, 0.90f);
-	colors[ImGuiCol_NavHighlight] = ImVec4(0.49f, 0.26f, 0.98f, 1.00f);
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-	StyleTabLabels(colors);
-    style->NeonStyleColors = true;
+    StyleTabLabels(colors);
 }
 
 //-----------------------------------------------------------------------------
@@ -1016,14 +434,29 @@ ImDrawListSharedData::ImDrawListSharedData()
     Font = NULL;
     FontSize = 0.0f;
     CurveTessellationTol = 0.0f;
+    CircleSegmentMaxError = 0.0f;
     ClipRectFullscreen = ImVec4(-8192.0f, -8192.0f, +8192.0f, +8192.0f);
     InitialFlags = ImDrawListFlags_None;
 
-    // Const data
-    for (int i = 0; i < IM_ARRAYSIZE(CircleVtx12); i++)
+    // Lookup tables
+    for (int i = 0; i < IM_ARRAYSIZE(ArcFastVtx); i++)
     {
-        const float a = ((float)i * 2 * IM_PI) / (float)IM_ARRAYSIZE(CircleVtx12);
-        CircleVtx12[i] = ImVec2(ImCos(a), ImSin(a));
+        const float a = ((float)i * 2 * IM_PI) / (float)IM_ARRAYSIZE(ArcFastVtx);
+        ArcFastVtx[i] = ImVec2(ImCos(a), ImSin(a));
+    }
+    memset(CircleSegmentCounts, 0, sizeof(CircleSegmentCounts)); // This will be set by SetCircleSegmentMaxError()
+}
+
+void ImDrawListSharedData::SetCircleSegmentMaxError(float max_error)
+{
+    if (CircleSegmentMaxError == max_error)
+        return;
+    CircleSegmentMaxError = max_error;
+    for (int i = 0; i < IM_ARRAYSIZE(CircleSegmentCounts); i++)
+    {
+        const float radius = i + 1.0f;
+        const int segment_count = IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC(radius, CircleSegmentMaxError);
+        CircleSegmentCounts[i] = (ImU8)ImMin(segment_count, 255);
     }
 }
 
@@ -1032,7 +465,7 @@ void ImDrawList::Clear()
     CmdBuffer.resize(0);
     IdxBuffer.resize(0);
     VtxBuffer.resize(0);
-    Flags = _Data->InitialFlags;
+    Flags = _Data ? _Data->InitialFlags : ImDrawListFlags_None;
     _VtxCurrentOffset = 0;
     _VtxCurrentIdx = 0;
     _VtxWritePtr = NULL;
@@ -1059,7 +492,7 @@ void ImDrawList::ClearFreeMemory()
 
 ImDrawList* ImDrawList::CloneOutput() const
 {
-    ImDrawList* dst = IM_NEW(ImDrawList(NULL));
+    ImDrawList* dst = IM_NEW(ImDrawList(_Data));
     dst->CmdBuffer = CmdBuffer;
     dst->IdxBuffer = IdxBuffer;
     dst->VtxBuffer = VtxBuffer;
@@ -1184,10 +617,13 @@ void ImDrawList::PopTextureID()
     UpdateTextureID();
 }
 
-// NB: this can be called with negative count for removing primitives (as long as the result does not underflow)
+// Reserve space for a number of vertices and indices.
+// You must finish filling your reserved data before calling PrimReserve() again, as it may reallocate or
+// submit the intermediate results. PrimUnreserve() can be used to release unused allocations.
 void ImDrawList::PrimReserve(int idx_count, int vtx_count)
 {
     // Large mesh support (when enabled)
+    IM_ASSERT_PARANOID(idx_count >= 0 && vtx_count >= 0);
     if (sizeof(ImDrawIdx) == 2 && (_VtxCurrentIdx + vtx_count >= (1 << 16)) && (Flags & ImDrawListFlags_AllowVtxOffset))
     {
         _VtxCurrentOffset = VtxBuffer.Size;
@@ -1195,7 +631,7 @@ void ImDrawList::PrimReserve(int idx_count, int vtx_count)
         AddDrawCmd();
     }
 
-    ImDrawCmd& draw_cmd = CmdBuffer.Data[CmdBuffer.Size-1];
+    ImDrawCmd& draw_cmd = CmdBuffer.Data[CmdBuffer.Size - 1];
     draw_cmd.ElemCount += idx_count;
 
     int vtx_buffer_old_size = VtxBuffer.Size;
@@ -1205,6 +641,17 @@ void ImDrawList::PrimReserve(int idx_count, int vtx_count)
     int idx_buffer_old_size = IdxBuffer.Size;
     IdxBuffer.resize(idx_buffer_old_size + idx_count);
     _IdxWritePtr = IdxBuffer.Data + idx_buffer_old_size;
+}
+
+// Release the a number of reserved vertices/indices from the end of the last reservation made with PrimReserve().
+void ImDrawList::PrimUnreserve(int idx_count, int vtx_count)
+{
+    IM_ASSERT_PARANOID(idx_count >= 0 && vtx_count >= 0);
+
+    ImDrawCmd& draw_cmd = CmdBuffer.Data[CmdBuffer.Size - 1];
+    draw_cmd.ElemCount -= idx_count;
+    VtxBuffer.shrink(VtxBuffer.Size - vtx_count);
+    IdxBuffer.shrink(IdxBuffer.Size - idx_count);
 }
 
 // Fully unrolled with inline call to keep our debug builds decently fast.
@@ -1254,8 +701,8 @@ void ImDrawList::PrimQuadUV(const ImVec2& a, const ImVec2& b, const ImVec2& c, c
 
 // On AddPolyline() and AddConvexPolyFilled() we intentionally avoid using ImVec2 and superflous function calls to optimize debug/non-inlined builds.
 // Those macros expects l-values.
-#define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = 1.0f / ImSqrt(d2); VX *= inv_len; VY *= inv_len; } }
-#define IM_FIXNORMAL2F(VX,VY)               { float d2 = VX*VX + VY*VY; if (d2 < 0.5f) d2 = 0.5f; float inv_lensq = 1.0f / d2; VX *= inv_lensq; VY *= inv_lensq; }
+#define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     do { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = 1.0f / ImSqrt(d2); VX *= inv_len; VY *= inv_len; } } while (0)
+#define IM_FIXNORMAL2F(VX,VY)               do { float d2 = VX*VX + VY*VY; if (d2 < 0.5f) d2 = 0.5f; float inv_lensq = 1.0f / d2; VX *= inv_lensq; VY *= inv_lensq; } while (0)
 
 // TODO: Thickness anti-aliased lines cap are missing their AA fringe.
 // We avoid using the ImVec2 math operators here to reduce cost to a minimum for debug/non-inlined builds.
@@ -1317,7 +764,7 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
                 // Average normals
                 float dm_x = (temp_normals[i1].x + temp_normals[i2].x) * 0.5f;
                 float dm_y = (temp_normals[i1].y + temp_normals[i2].y) * 0.5f;
-                IM_FIXNORMAL2F(dm_x, dm_y)
+                IM_FIXNORMAL2F(dm_x, dm_y);
                 dm_x *= AA_SIZE;
                 dm_y *= AA_SIZE;
 
@@ -1528,26 +975,34 @@ void ImDrawList::AddConvexPolyFilled(const ImVec2* points, const int points_coun
     }
 }
 
-void ImDrawList::PathArcToFast(const ImVec2& centre, float radius, int a_min_of_12, int a_max_of_12)
+void ImDrawList::PathArcToFast(const ImVec2& center, float radius, int a_min_of_12, int a_max_of_12)
 {
     if (radius == 0.0f || a_min_of_12 > a_max_of_12)
     {
-        _Path.push_back(centre);
+        _Path.push_back(center);
         return;
     }
+
+    // For legacy reason the PathArcToFast() always takes angles where 2*PI is represented by 12,
+    // but it is possible to set IM_DRAWLIST_ARCFAST_TESSELATION_MULTIPLIER to a higher value. This should compile to a no-op otherwise.
+#if IM_DRAWLIST_ARCFAST_TESSELLATION_MULTIPLIER != 1
+    a_min_of_12 *= IM_DRAWLIST_ARCFAST_TESSELLATION_MULTIPLIER;
+    a_max_of_12 *= IM_DRAWLIST_ARCFAST_TESSELLATION_MULTIPLIER;
+#endif
+
     _Path.reserve(_Path.Size + (a_max_of_12 - a_min_of_12 + 1));
     for (int a = a_min_of_12; a <= a_max_of_12; a++)
     {
-        const ImVec2& c = _Data->CircleVtx12[a % IM_ARRAYSIZE(_Data->CircleVtx12)];
-        _Path.push_back(ImVec2(centre.x + c.x * radius, centre.y + c.y * radius));
+        const ImVec2& c = _Data->ArcFastVtx[a % IM_ARRAYSIZE(_Data->ArcFastVtx)];
+        _Path.push_back(ImVec2(center.x + c.x * radius, center.y + c.y * radius));
     }
 }
 
-void ImDrawList::PathArcTo(const ImVec2& centre, float radius, float a_min, float a_max, int num_segments)
+void ImDrawList::PathArcTo(const ImVec2& center, float radius, float a_min, float a_max, int num_segments)
 {
     if (radius == 0.0f)
     {
-        _Path.push_back(centre);
+        _Path.push_back(center);
         return;
     }
 
@@ -1557,10 +1012,21 @@ void ImDrawList::PathArcTo(const ImVec2& centre, float radius, float a_min, floa
     for (int i = 0; i <= num_segments; i++)
     {
         const float a = a_min + ((float)i / (float)num_segments) * (a_max - a_min);
-        _Path.push_back(ImVec2(centre.x + ImCos(a) * radius, centre.y + ImSin(a) * radius));
+        _Path.push_back(ImVec2(center.x + ImCos(a) * radius, center.y + ImSin(a) * radius));
     }
 }
 
+ImVec2 ImBezierCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t)
+{
+    float u = 1.0f - t;
+    float w1 = u*u*u;
+    float w2 = 3*u*u*t;
+    float w3 = 3*u*t*t;
+    float w4 = t*t*t;
+    return ImVec2(w1*p1.x + w2*p2.x + w3*p3.x + w4*p4.x, w1*p1.y + w2*p2.y + w3*p3.y + w4*p4.y);
+}
+
+// Closely mimics BezierClosestPointCasteljauStep() in imgui.cpp
 static void PathBezierToCasteljau(ImVector<ImVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
 {
     float dx = x4 - x1;
@@ -1581,7 +1047,6 @@ static void PathBezierToCasteljau(ImVector<ImVec2>* path, float x1, float y1, fl
         float x123 = (x12+x23)*0.5f,    y123 = (y12+y23)*0.5f;
         float x234 = (x23+x34)*0.5f,    y234 = (y23+y34)*0.5f;
         float x1234 = (x123+x234)*0.5f, y1234 = (y123+y234)*0.5f;
-
         PathBezierToCasteljau(path, x1,y1,        x12,y12,    x123,y123,  x1234,y1234, tess_tol, level+1);
         PathBezierToCasteljau(path, x1234,y1234,  x234,y234,  x34,y34,    x4,y4,       tess_tol, level+1);
     }
@@ -1592,26 +1057,17 @@ void ImDrawList::PathBezierCurveTo(const ImVec2& p2, const ImVec2& p3, const ImV
     ImVec2 p1 = _Path.back();
     if (num_segments == 0)
     {
-        // Auto-tessellated
-        PathBezierToCasteljau(&_Path, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y, _Data->CurveTessellationTol, 0);
+        PathBezierToCasteljau(&_Path, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y, _Data->CurveTessellationTol, 0); // Auto-tessellated
     }
     else
     {
         float t_step = 1.0f / (float)num_segments;
         for (int i_step = 1; i_step <= num_segments; i_step++)
-        {
-            float t = t_step * i_step;
-            float u = 1.0f - t;
-            float w1 = u*u*u;
-            float w2 = 3*u*u*t;
-            float w3 = 3*u*t*t;
-            float w4 = t*t*t;
-            _Path.push_back(ImVec2(w1*p1.x + w2*p2.x + w3*p3.x + w4*p4.x, w1*p1.y + w2*p2.y + w3*p3.y + w4*p4.y));
-        }
+            _Path.push_back(ImBezierCalc(p1, p2, p3, p4, t_step * i_step));
     }
 }
 
-void ImDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, int rounding_corners)
+void ImDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, ImDrawCornerFlags rounding_corners)
 {
     rounding = ImMin(rounding, ImFabs(b.x - a.x) * ( ((rounding_corners & ImDrawCornerFlags_Top)  == ImDrawCornerFlags_Top)  || ((rounding_corners & ImDrawCornerFlags_Bot)   == ImDrawCornerFlags_Bot)   ? 0.5f : 1.0f ) - 1.0f);
     rounding = ImMin(rounding, ImFabs(b.y - a.y) * ( ((rounding_corners & ImDrawCornerFlags_Left) == ImDrawCornerFlags_Left) || ((rounding_corners & ImDrawCornerFlags_Right) == ImDrawCornerFlags_Right) ? 0.5f : 1.0f ) - 1.0f);
@@ -1636,44 +1092,46 @@ void ImDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, int 
     }
 }
 
-void ImDrawList::AddLine(const ImVec2& a, const ImVec2& b, ImU32 col, float thickness)
+void ImDrawList::AddLine(const ImVec2& p1, const ImVec2& p2, ImU32 col, float thickness)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
-    PathLineTo(a + ImVec2(0.5f,0.5f));
-    PathLineTo(b + ImVec2(0.5f,0.5f));
+    PathLineTo(p1 + ImVec2(0.5f, 0.5f));
+    PathLineTo(p2 + ImVec2(0.5f, 0.5f));
     PathStroke(col, false, thickness);
 }
 
-// a: upper-left, b: lower-right. we don't render 1 px sized rectangles properly.
-void ImDrawList::AddRect(const ImVec2& a, const ImVec2& b, ImU32 col, float rounding, int rounding_corners_flags, float thickness)
+// p_min = upper-left, p_max = lower-right
+// Note we don't render 1 pixels sized rectangles properly.
+void ImDrawList::AddRect(const ImVec2& p_min, const ImVec2& p_max, ImU32 col, float rounding, ImDrawCornerFlags rounding_corners, float thickness)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
     if (Flags & ImDrawListFlags_AntiAliasedLines)
-        PathRect(a + ImVec2(0.5f,0.5f), b - ImVec2(0.50f,0.50f), rounding, rounding_corners_flags);
+        PathRect(p_min + ImVec2(0.50f,0.50f), p_max - ImVec2(0.50f,0.50f), rounding, rounding_corners);
     else
-        PathRect(a + ImVec2(0.5f,0.5f), b - ImVec2(0.49f,0.49f), rounding, rounding_corners_flags); // Better looking lower-right corner and rounded non-AA shapes.
+        PathRect(p_min + ImVec2(0.50f,0.50f), p_max - ImVec2(0.49f,0.49f), rounding, rounding_corners); // Better looking lower-right corner and rounded non-AA shapes.
     PathStroke(col, true, thickness);
 }
 
-void ImDrawList::AddRectFilled(const ImVec2& a, const ImVec2& b, ImU32 col, float rounding, int rounding_corners_flags)
+void ImDrawList::AddRectFilled(const ImVec2& p_min, const ImVec2& p_max, ImU32 col, float rounding, ImDrawCornerFlags rounding_corners)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
     if (rounding > 0.0f)
     {
-        PathRect(a, b, rounding, rounding_corners_flags);
+        PathRect(p_min, p_max, rounding, rounding_corners);
         PathFillConvex(col);
     }
     else
     {
         PrimReserve(6, 4);
-        PrimRect(a, b, col);
+        PrimRect(p_min, p_max, col);
     }
 }
 
-void ImDrawList::AddRectFilledMultiColor(const ImVec2& a, const ImVec2& c, ImU32 col_upr_left, ImU32 col_upr_right, ImU32 col_bot_right, ImU32 col_bot_left)
+// p_min = upper-left, p_max = lower-right
+void ImDrawList::AddRectFilledMultiColor(const ImVec2& p_min, const ImVec2& p_max, ImU32 col_upr_left, ImU32 col_upr_right, ImU32 col_bot_right, ImU32 col_bot_left)
 {
     if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & IM_COL32_A_MASK) == 0)
         return;
@@ -1682,87 +1140,150 @@ void ImDrawList::AddRectFilledMultiColor(const ImVec2& a, const ImVec2& c, ImU32
     PrimReserve(6, 4);
     PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx+1)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx+2));
     PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx+2)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx+3));
-    PrimWriteVtx(a, uv, col_upr_left);
-    PrimWriteVtx(ImVec2(c.x, a.y), uv, col_upr_right);
-    PrimWriteVtx(c, uv, col_bot_right);
-    PrimWriteVtx(ImVec2(a.x, c.y), uv, col_bot_left);
+    PrimWriteVtx(p_min, uv, col_upr_left);
+    PrimWriteVtx(ImVec2(p_max.x, p_min.y), uv, col_upr_right);
+    PrimWriteVtx(p_max, uv, col_bot_right);
+    PrimWriteVtx(ImVec2(p_min.x, p_max.y), uv, col_bot_left);
 }
 
-void ImDrawList::AddQuad(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& d, ImU32 col, float thickness)
+void ImDrawList::AddQuad(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, ImU32 col, float thickness)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
 
-    PathLineTo(a);
-    PathLineTo(b);
-    PathLineTo(c);
-    PathLineTo(d);
+    PathLineTo(p1);
+    PathLineTo(p2);
+    PathLineTo(p3);
+    PathLineTo(p4);
     PathStroke(col, true, thickness);
 }
 
-void ImDrawList::AddQuadFilled(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& d, ImU32 col)
+void ImDrawList::AddQuadFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, ImU32 col)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
 
-    PathLineTo(a);
-    PathLineTo(b);
-    PathLineTo(c);
-    PathLineTo(d);
+    PathLineTo(p1);
+    PathLineTo(p2);
+    PathLineTo(p3);
+    PathLineTo(p4);
     PathFillConvex(col);
 }
 
-void ImDrawList::AddTriangle(const ImVec2& a, const ImVec2& b, const ImVec2& c, ImU32 col, float thickness)
+void ImDrawList::AddTriangle(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, ImU32 col, float thickness)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
 
-    PathLineTo(a);
-    PathLineTo(b);
-    PathLineTo(c);
+    PathLineTo(p1);
+    PathLineTo(p2);
+    PathLineTo(p3);
     PathStroke(col, true, thickness);
 }
 
-void ImDrawList::AddTriangleFilled(const ImVec2& a, const ImVec2& b, const ImVec2& c, ImU32 col)
+void ImDrawList::AddTriangleFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, ImU32 col)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
 
-    PathLineTo(a);
-    PathLineTo(b);
-    PathLineTo(c);
+    PathLineTo(p1);
+    PathLineTo(p2);
+    PathLineTo(p3);
     PathFillConvex(col);
 }
 
-void ImDrawList::AddCircle(const ImVec2& centre, float radius, ImU32 col, int num_segments, float thickness)
+void ImDrawList::AddCircle(const ImVec2& center, float radius, ImU32 col, int num_segments, float thickness)
+{
+    if ((col & IM_COL32_A_MASK) == 0 || radius <= 0.0f)
+        return;
+
+    // Obtain segment count
+    if (num_segments <= 0)
+    {
+        // Automatic segment count
+        const int radius_idx = (int)radius - 1;
+        if (radius_idx < IM_ARRAYSIZE(_Data->CircleSegmentCounts))
+            num_segments = _Data->CircleSegmentCounts[radius_idx]; // Use cached value
+        else
+            num_segments = IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC(radius, _Data->CircleSegmentMaxError);
+    }
+    else
+    {
+        // Explicit segment count (still clamp to avoid drawing insanely tessellated shapes)
+        num_segments = ImClamp(num_segments, 3, IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_MAX);
+    }
+
+    // Because we are filling a closed shape we remove 1 from the count of segments/points
+    const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
+    if (num_segments == 12)
+        PathArcToFast(center, radius - 0.5f, 0, 12);
+    else
+        PathArcTo(center, radius - 0.5f, 0.0f, a_max, num_segments - 1);
+    PathStroke(col, true, thickness);
+}
+
+void ImDrawList::AddCircleFilled(const ImVec2& center, float radius, ImU32 col, int num_segments)
+{
+    if ((col & IM_COL32_A_MASK) == 0 || radius <= 0.0f)
+        return;
+
+    // Obtain segment count
+    if (num_segments <= 0)
+    {
+        // Automatic segment count
+        const int radius_idx = (int)radius - 1;
+        if (radius_idx < IM_ARRAYSIZE(_Data->CircleSegmentCounts))
+            num_segments = _Data->CircleSegmentCounts[radius_idx]; // Use cached value
+        else
+            num_segments = IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC(radius, _Data->CircleSegmentMaxError);
+    }
+    else
+    {
+        // Explicit segment count (still clamp to avoid drawing insanely tessellated shapes)
+        num_segments = ImClamp(num_segments, 3, IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_MAX);
+    }
+
+    // Because we are filling a closed shape we remove 1 from the count of segments/points
+    const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
+    if (num_segments == 12)
+        PathArcToFast(center, radius, 0, 12);
+    else
+        PathArcTo(center, radius, 0.0f, a_max, num_segments - 1);
+    PathFillConvex(col);
+}
+
+// Guaranteed to honor 'num_segments'
+void ImDrawList::AddNgon(const ImVec2& center, float radius, ImU32 col, int num_segments, float thickness)
 {
     if ((col & IM_COL32_A_MASK) == 0 || num_segments <= 2)
         return;
 
     // Because we are filling a closed shape we remove 1 from the count of segments/points
-    const float a_max = IM_PI*2.0f * ((float)num_segments - 1.0f) / (float)num_segments;
-    PathArcTo(centre, radius-0.5f, 0.0f, a_max, num_segments - 1);
+    const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
+    PathArcTo(center, radius - 0.5f, 0.0f, a_max, num_segments - 1);
     PathStroke(col, true, thickness);
 }
 
-void ImDrawList::AddCircleFilled(const ImVec2& centre, float radius, ImU32 col, int num_segments)
+// Guaranteed to honor 'num_segments'
+void ImDrawList::AddNgonFilled(const ImVec2& center, float radius, ImU32 col, int num_segments)
 {
     if ((col & IM_COL32_A_MASK) == 0 || num_segments <= 2)
         return;
 
     // Because we are filling a closed shape we remove 1 from the count of segments/points
-    const float a_max = IM_PI*2.0f * ((float)num_segments - 1.0f) / (float)num_segments;
-    PathArcTo(centre, radius, 0.0f, a_max, num_segments - 1);
+    const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
+    PathArcTo(center, radius, 0.0f, a_max, num_segments - 1);
     PathFillConvex(col);
 }
 
-void ImDrawList::AddBezierCurve(const ImVec2& pos0, const ImVec2& cp0, const ImVec2& cp1, const ImVec2& pos1, ImU32 col, float thickness, int num_segments)
+// Cubic Bezier takes 4 controls points
+void ImDrawList::AddBezierCurve(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, ImU32 col, float thickness, int num_segments)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
 
-    PathLineTo(pos0);
-    PathBezierCurveTo(cp0, cp1, pos1, num_segments);
+    PathLineTo(p1);
+    PathBezierCurveTo(p2, p3, p4, num_segments);
     PathStroke(col, false, thickness);
 }
 
@@ -1800,7 +1321,7 @@ void ImDrawList::AddText(const ImVec2& pos, ImU32 col, const char* text_begin, c
     AddText(NULL, 0.0f, pos, col, text_begin, text_end);
 }
 
-void ImDrawList::AddImage(ImTextureID user_texture_id, const ImVec2& a, const ImVec2& b, const ImVec2& uv_a, const ImVec2& uv_b, ImU32 col)
+void ImDrawList::AddImage(ImTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, ImU32 col)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
@@ -1810,13 +1331,13 @@ void ImDrawList::AddImage(ImTextureID user_texture_id, const ImVec2& a, const Im
         PushTextureID(user_texture_id);
 
     PrimReserve(6, 4);
-    PrimRectUV(a, b, uv_a, uv_b, col);
+    PrimRectUV(p_min, p_max, uv_min, uv_max, col);
 
     if (push_texture_id)
         PopTextureID();
 }
 
-void ImDrawList::AddImageQuad(ImTextureID user_texture_id, const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& d, const ImVec2& uv_a, const ImVec2& uv_b, const ImVec2& uv_c, const ImVec2& uv_d, ImU32 col)
+void ImDrawList::AddImageQuad(ImTextureID user_texture_id, const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& uv1, const ImVec2& uv2, const ImVec2& uv3, const ImVec2& uv4, ImU32 col)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
@@ -1826,20 +1347,20 @@ void ImDrawList::AddImageQuad(ImTextureID user_texture_id, const ImVec2& a, cons
         PushTextureID(user_texture_id);
 
     PrimReserve(6, 4);
-    PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, col);
+    PrimQuadUV(p1, p2, p3, p4, uv1, uv2, uv3, uv4, col);
 
     if (push_texture_id)
         PopTextureID();
 }
 
-void ImDrawList::AddImageRounded(ImTextureID user_texture_id, const ImVec2& a, const ImVec2& b, const ImVec2& uv_a, const ImVec2& uv_b, ImU32 col, float rounding, int rounding_corners)
+void ImDrawList::AddImageRounded(ImTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, ImU32 col, float rounding, ImDrawCornerFlags rounding_corners)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
 
     if (rounding <= 0.0f || (rounding_corners & ImDrawCornerFlags_All) == 0)
     {
-        AddImage(user_texture_id, a, b, uv_a, uv_b, col);
+        AddImage(user_texture_id, p_min, p_max, uv_min, uv_max, col);
         return;
     }
 
@@ -1848,10 +1369,10 @@ void ImDrawList::AddImageRounded(ImTextureID user_texture_id, const ImVec2& a, c
         PushTextureID(user_texture_id);
 
     int vert_start_idx = VtxBuffer.Size;
-    PathRect(a, b, rounding, rounding_corners);
+    PathRect(p_min, p_max, rounding, rounding_corners);
     PathFillConvex(col);
     int vert_end_idx = VtxBuffer.Size;
-    ImGui::ShadeVertsLinearUV(this, vert_start_idx, vert_end_idx, a, b, uv_a, uv_b, true);
+    ImGui::ShadeVertsLinearUV(this, vert_start_idx, vert_end_idx, p_min, p_max, uv_min, uv_max, true);
 
     if (push_texture_id)
         PopTextureID();
@@ -1868,10 +1389,10 @@ void ImDrawListSplitter::ClearFreeMemory()
 {
     for (int i = 0; i < _Channels.Size; i++)
     {
-        if (i == _Current) 
+        if (i == _Current)
             memset(&_Channels[i], 0, sizeof(_Channels[i]));  // Current channel is a copy of CmdBuffer/IdxBuffer, don't destruct again
-        _Channels[i].CmdBuffer.clear();
-        _Channels[i].IdxBuffer.clear();
+        _Channels[i]._CmdBuffer.clear();
+        _Channels[i]._IdxBuffer.clear();
     }
     _Current = 0;
     _Count = 1;
@@ -1880,7 +1401,7 @@ void ImDrawListSplitter::ClearFreeMemory()
 
 void ImDrawListSplitter::Split(ImDrawList* draw_list, int channels_count)
 {
-    IM_ASSERT(_Current == 0 && _Count <= 1);
+    IM_ASSERT(_Current == 0 && _Count <= 1 && "Nested channel splitting is not supported. Please use separate instances of ImDrawListSplitter.");
     int old_channels_count = _Channels.Size;
     if (old_channels_count < channels_count)
         _Channels.resize(channels_count);
@@ -1898,22 +1419,22 @@ void ImDrawListSplitter::Split(ImDrawList* draw_list, int channels_count)
         }
         else
         {
-            _Channels[i].CmdBuffer.resize(0);
-            _Channels[i].IdxBuffer.resize(0);
+            _Channels[i]._CmdBuffer.resize(0);
+            _Channels[i]._IdxBuffer.resize(0);
         }
-        if (_Channels[i].CmdBuffer.Size == 0)
+        if (_Channels[i]._CmdBuffer.Size == 0)
         {
             ImDrawCmd draw_cmd;
             draw_cmd.ClipRect = draw_list->_ClipRectStack.back();
             draw_cmd.TextureId = draw_list->_TextureIdStack.back();
-            _Channels[i].CmdBuffer.push_back(draw_cmd);
+            _Channels[i]._CmdBuffer.push_back(draw_cmd);
         }
     }
 }
 
 static inline bool CanMergeDrawCommands(ImDrawCmd* a, ImDrawCmd* b)
 {
-    return memcmp(&a->ClipRect, &b->ClipRect, sizeof(a->ClipRect)) == 0 && a->TextureId == b->TextureId && !a->UserCallback && !b->UserCallback;
+    return memcmp(&a->ClipRect, &b->ClipRect, sizeof(a->ClipRect)) == 0 && a->TextureId == b->TextureId && a->VtxOffset == b->VtxOffset && !a->UserCallback && !b->UserCallback;
 }
 
 void ImDrawListSplitter::Merge(ImDrawList* draw_list)
@@ -1929,27 +1450,28 @@ void ImDrawListSplitter::Merge(ImDrawList* draw_list)
     // Calculate our final buffer sizes. Also fix the incorrect IdxOffset values in each command.
     int new_cmd_buffer_count = 0;
     int new_idx_buffer_count = 0;
-    ImDrawCmd* last_cmd = (_Count > 0 && _Channels[0].CmdBuffer.Size > 0) ? &_Channels[0].CmdBuffer.back() : NULL;
+    ImDrawCmd* last_cmd = (_Count > 0 && draw_list->CmdBuffer.Size > 0) ? &draw_list->CmdBuffer.back() : NULL;
     int idx_offset = last_cmd ? last_cmd->IdxOffset + last_cmd->ElemCount : 0;
     for (int i = 1; i < _Count; i++)
     {
         ImDrawChannel& ch = _Channels[i];
-        if (ch.CmdBuffer.Size && ch.CmdBuffer.back().ElemCount == 0)
-            ch.CmdBuffer.pop_back();
-        else if (ch.CmdBuffer.Size > 0 && last_cmd != NULL && CanMergeDrawCommands(last_cmd, &ch.CmdBuffer[0]))
+        if (ch._CmdBuffer.Size > 0 && ch._CmdBuffer.back().ElemCount == 0)
+            ch._CmdBuffer.pop_back();
+        if (ch._CmdBuffer.Size > 0 && last_cmd != NULL && CanMergeDrawCommands(last_cmd, &ch._CmdBuffer[0]))
         {
             // Merge previous channel last draw command with current channel first draw command if matching.
-            last_cmd->ElemCount += ch.CmdBuffer[0].ElemCount;
-            ch.CmdBuffer.erase(ch.CmdBuffer.Data);
+            last_cmd->ElemCount += ch._CmdBuffer[0].ElemCount;
+            idx_offset += ch._CmdBuffer[0].ElemCount;
+            ch._CmdBuffer.erase(ch._CmdBuffer.Data); // FIXME-OPT: Improve for multiple merges.
         }
-        if (ch.CmdBuffer.Size > 0)
-            last_cmd = &ch.CmdBuffer.back();
-        new_cmd_buffer_count += ch.CmdBuffer.Size;
-        new_idx_buffer_count += ch.IdxBuffer.Size;
-        for (int cmd_n = 0; cmd_n < ch.CmdBuffer.Size; cmd_n++)
+        if (ch._CmdBuffer.Size > 0)
+            last_cmd = &ch._CmdBuffer.back();
+        new_cmd_buffer_count += ch._CmdBuffer.Size;
+        new_idx_buffer_count += ch._IdxBuffer.Size;
+        for (int cmd_n = 0; cmd_n < ch._CmdBuffer.Size; cmd_n++)
         {
-            ch.CmdBuffer.Data[cmd_n].IdxOffset = idx_offset;
-            idx_offset += ch.CmdBuffer.Data[cmd_n].ElemCount;
+            ch._CmdBuffer.Data[cmd_n].IdxOffset = idx_offset;
+            idx_offset += ch._CmdBuffer.Data[cmd_n].ElemCount;
         }
     }
     draw_list->CmdBuffer.resize(draw_list->CmdBuffer.Size + new_cmd_buffer_count);
@@ -1961,25 +1483,26 @@ void ImDrawListSplitter::Merge(ImDrawList* draw_list)
     for (int i = 1; i < _Count; i++)
     {
         ImDrawChannel& ch = _Channels[i];
-        if (int sz = ch.CmdBuffer.Size) { memcpy(cmd_write, ch.CmdBuffer.Data, sz * sizeof(ImDrawCmd)); cmd_write += sz; }
-        if (int sz = ch.IdxBuffer.Size) { memcpy(idx_write, ch.IdxBuffer.Data, sz * sizeof(ImDrawIdx)); idx_write += sz; }
+        if (int sz = ch._CmdBuffer.Size) { memcpy(cmd_write, ch._CmdBuffer.Data, sz * sizeof(ImDrawCmd)); cmd_write += sz; }
+        if (int sz = ch._IdxBuffer.Size) { memcpy(idx_write, ch._IdxBuffer.Data, sz * sizeof(ImDrawIdx)); idx_write += sz; }
     }
     draw_list->_IdxWritePtr = idx_write;
     draw_list->UpdateClipRect(); // We call this instead of AddDrawCmd(), so that empty channels won't produce an extra draw call.
+    draw_list->UpdateTextureID();
     _Count = 1;
 }
 
 void ImDrawListSplitter::SetCurrentChannel(ImDrawList* draw_list, int idx)
 {
-    IM_ASSERT(idx < _Count);
-    if (_Current == idx) 
+    IM_ASSERT(idx >= 0 && idx < _Count);
+    if (_Current == idx)
         return;
     // Overwrite ImVector (12/16 bytes), four times. This is merely a silly optimization instead of doing .swap()
-    memcpy(&_Channels.Data[_Current].CmdBuffer, &draw_list->CmdBuffer, sizeof(draw_list->CmdBuffer));
-    memcpy(&_Channels.Data[_Current].IdxBuffer, &draw_list->IdxBuffer, sizeof(draw_list->IdxBuffer));
+    memcpy(&_Channels.Data[_Current]._CmdBuffer, &draw_list->CmdBuffer, sizeof(draw_list->CmdBuffer));
+    memcpy(&_Channels.Data[_Current]._IdxBuffer, &draw_list->IdxBuffer, sizeof(draw_list->IdxBuffer));
     _Current = idx;
-    memcpy(&draw_list->CmdBuffer, &_Channels.Data[idx].CmdBuffer, sizeof(draw_list->CmdBuffer));
-    memcpy(&draw_list->IdxBuffer, &_Channels.Data[idx].IdxBuffer, sizeof(draw_list->IdxBuffer));
+    memcpy(&draw_list->CmdBuffer, &_Channels.Data[idx]._CmdBuffer, sizeof(draw_list->CmdBuffer));
+    memcpy(&draw_list->IdxBuffer, &_Channels.Data[idx]._IdxBuffer, sizeof(draw_list->IdxBuffer));
     draw_list->_IdxWritePtr = draw_list->IdxBuffer.Data + draw_list->IdxBuffer.Size;
 }
 
@@ -2091,6 +1614,7 @@ ImFontConfig::ImFontConfig()
     MergeMode = false;
     RasterizerFlags = 0x00;
     RasterizerMultiply = 1.0f;
+    EllipsisChar = (ImWchar)-1;
     memset(Name, 0, sizeof(Name));
     DstFont = NULL;
 }
@@ -2100,112 +1624,40 @@ ImFontConfig::ImFontConfig()
 //-----------------------------------------------------------------------------
 
 // A work of art lies ahead! (. = white layer, X = black layer, others are blank)
-// The white texels on the top left are the ones we'll use everywhere in ImGui to render filled shapes.
+// The white texels on the top left are the ones we'll use everywhere in Dear ImGui to render filled shapes.
 const int FONT_ATLAS_DEFAULT_TEX_DATA_W_HALF = 108;
 const int FONT_ATLAS_DEFAULT_TEX_DATA_H      = 27;
 const unsigned int FONT_ATLAS_DEFAULT_TEX_DATA_ID = 0x80000000;
-static char FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS[FONT_ATLAS_DEFAULT_TEX_DATA_W_HALF * FONT_ATLAS_DEFAULT_TEX_DATA_H + 1] =
+static const char FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS[FONT_ATLAS_DEFAULT_TEX_DATA_W_HALF * FONT_ATLAS_DEFAULT_TEX_DATA_H + 1] =
 {
-	"..-         -.......-    .    -           .           -.......          -          .......-     ..          "
-	"..-         -.XXXXX.-   .X.   -          .X.          -.XXXXX.          -          .XXXXX.-    .XX.         "
-	"---         -...X...-  .XXX.  -         .XXX.         -.XXXX.           -           .XXXX.-    .XX.         "
-	".           -  .X.  - .XXXXX. -        .XXXXX.        -.XXX.            -            .XXX.-    .XX.         "
-	"..          -  .X.  -.XXXXXXX.-       .XXXXXXX.       -.XX.X.           -           .X.XX.-    .XX.         "
-	".X.         -  .X.  -....X....-       ....X....       -.X. .X.          -          .X. .X.-    .XX...       "
-	".XX.        -  .X.  -   .X.   -          .X.          -..   .X.         -         .X.   ..-    .XX.XX...    "
-	".XXX.       -  .X.  -   .X.   -    ..    .X.    ..    -      .X.        -        .X.      -    .XX.XX.XX..  "
-	".XXXX.      -  .X.  -   .X.   -   .X.    .X.    .X.   -       .X.       -       .X.       -    .XX.XX.XX.X. "
-	".XXXXX.     -  .X.  -   .X.   -  .XX.    .X.    .XX.  -        .X.      -      .X.        -... .XX.XX.XX.XX."
-	".XXXXXX.    -  .X.  -   .X.   - .XXX......X......XXX. -         .X.   ..-..   .X.         -.XX..XXXXXXXX.XX."
-	".XXXXXXX.   -  .X.  -   .X.   -.XXXXXXXXXXXXXXXXXXXXX.-          .X. .X.-.X. .X.          -.XXX.XXXXXXXXXXX."
-	".XXXXXXXX.  -  .X.  -   .X.   - .XXX......X......XXX. -           .X.XX.-.XX.X.           - .XXXXXXXXXXXXXX."
-	".XXXXXXXXX. -...X...-   .X.   -  .XX.    .X.    .XX.  -            .XXX.-.XXX.            -  .XXXXXXXXXXXXX."
-	".XXXXXXXXXX.-.XXXXX.-   .X.   -   .X.    .X.    .X.   -           .XXXX.-.XXXX.           -  .XXXXXXXXXXXXX."
-	".XXXX...... -.......-   .X.   -    ..    .X.    ..    -          .XXXXX.-.XXXXX.          -   .XXXXXXXXXXXX."
-	".XXX.       ---------   .X.   -          .X.          -          .......-.......          -   .XXXXXXXXXXX. "
-	".XX.        -       -....X....-       ....X....       -------------------------------------    .XXXXXXXXXX. "
-	".X.         -       -.XXXXXXX.-       .XXXXXXX.       -    ..           ..    -           -    .XXXXXXXXXX. "
-	"..          -       - .XXXXX. -        .XXXXX.        -   .X.           .X.   -           -     .XXXXXXXX.  "
-	"                    -  .XXX.  -         .XXX.         -  .XX.           .XX.  -           -     .XXXXXXXX.  "
-	"                    -   .X.   -          .X.          - .XXX.............XXX. -           -     ..........  "
-	"------------        -    .    -           .           -.XXXXXXXXXXXXXXXXXXXXX.-           ------------------"
-	"                    ----------------------------------- .XXX.............XXX. -                             "
-	"                                                      -  .XX.           .XX.  -                             "
-	"                                                      -   .X.           .X.   -                             "
-	"                                                      -    ..           ..    -                             "
+    "..-         -XXXXXXX-    X    -           X           -XXXXXXX          -          XXXXXXX-     XX          "
+    "..-         -X.....X-   X.X   -          X.X          -X.....X          -          X.....X-    X..X         "
+    "---         -XXX.XXX-  X...X  -         X...X         -X....X           -           X....X-    X..X         "
+    "X           -  X.X  - X.....X -        X.....X        -X...X            -            X...X-    X..X         "
+    "XX          -  X.X  -X.......X-       X.......X       -X..X.X           -           X.X..X-    X..X         "
+    "X.X         -  X.X  -XXXX.XXXX-       XXXX.XXXX       -X.X X.X          -          X.X X.X-    X..XXX       "
+    "X..X        -  X.X  -   X.X   -          X.X          -XX   X.X         -         X.X   XX-    X..X..XXX    "
+    "X...X       -  X.X  -   X.X   -    XX    X.X    XX    -      X.X        -        X.X      -    X..X..X..XX  "
+    "X....X      -  X.X  -   X.X   -   X.X    X.X    X.X   -       X.X       -       X.X       -    X..X..X..X.X "
+    "X.....X     -  X.X  -   X.X   -  X..X    X.X    X..X  -        X.X      -      X.X        -XXX X..X..X..X..X"
+    "X......X    -  X.X  -   X.X   - X...XXXXXX.XXXXXX...X -         X.X   XX-XX   X.X         -X..XX........X..X"
+    "X.......X   -  X.X  -   X.X   -X.....................X-          X.X X.X-X.X X.X          -X...X...........X"
+    "X........X  -  X.X  -   X.X   - X...XXXXXX.XXXXXX...X -           X.X..X-X..X.X           - X..............X"
+    "X.........X -XXX.XXX-   X.X   -  X..X    X.X    X..X  -            X...X-X...X            -  X.............X"
+    "X..........X-X.....X-   X.X   -   X.X    X.X    X.X   -           X....X-X....X           -  X.............X"
+    "X....XXXXXX -XXXXXXX-   X.X   -    XX    X.X    XX    -          X.....X-X.....X          -   X............X"
+    "X...X       ---------   X.X   -          X.X          -          XXXXXXX-XXXXXXX          -   X...........X "
+    "X..X        -       -XXXX.XXXX-       XXXX.XXXX       -------------------------------------    X..........X "
+    "X.X         -       -X.......X-       X.......X       -    XX           XX    -           -    X..........X "
+    "XX          -       - X.....X -        X.....X        -   X.X           X.X   -           -     X........X  "
+    "                    -  X...X  -         X...X         -  X..X           X..X  -           -     X........X  "
+    "                    -   X.X   -          X.X          - X...XXXXXXXXXXXXX...X -           -     XXXXXXXXXX  "
+    "------------        -    X    -           X           -X.....................X-           ------------------"
+    "                    ----------------------------------- X...XXXXXXXXXXXXX...X -                             "
+    "                                                      -  X..X           X..X  -                             "
+    "                                                      -   X.X           X.X   -                             "
+    "                                                      -    XX           XX    -                             "
 };
-
-void ImGui::StyleCursorsBlack()
-{
-	const char FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS_BLACK[FONT_ATLAS_DEFAULT_TEX_DATA_W_HALF * FONT_ATLAS_DEFAULT_TEX_DATA_H + 1] =
-	{
-		"..-         -.......-    .    -           .           -.......          -          .......-     ..          "
-		"..-         -.XXXXX.-   .X.   -          .X.          -.XXXXX.          -          .XXXXX.-    .XX.         "
-		"---         -...X...-  .XXX.  -         .XXX.         -.XXXX.           -           .XXXX.-    .XX.         "
-		".           -  .X.  - .XXXXX. -        .XXXXX.        -.XXX.            -            .XXX.-    .XX.         "
-		"..          -  .X.  -.XXXXXXX.-       .XXXXXXX.       -.XX.X.           -           .X.XX.-    .XX.         "
-		".X.         -  .X.  -....X....-       ....X....       -.X. .X.          -          .X. .X.-    .XX...       "
-		".XX.        -  .X.  -   .X.   -          .X.          -..   .X.         -         .X.   ..-    .XX.XX...    "
-		".XXX.       -  .X.  -   .X.   -    ..    .X.    ..    -      .X.        -        .X.      -    .XX.XX.XX..  "
-		".XXXX.      -  .X.  -   .X.   -   .X.    .X.    .X.   -       .X.       -       .X.       -    .XX.XX.XX.X. "
-		".XXXXX.     -  .X.  -   .X.   -  .XX.    .X.    .XX.  -        .X.      -      .X.        -... .XX.XX.XX.XX."
-		".XXXXXX.    -  .X.  -   .X.   - .XXX......X......XXX. -         .X.   ..-..   .X.         -.XX..XXXXXXXX.XX."
-		".XXXXXXX.   -  .X.  -   .X.   -.XXXXXXXXXXXXXXXXXXXXX.-          .X. .X.-.X. .X.          -.XXX.XXXXXXXXXXX."
-		".XXXXXXXX.  -  .X.  -   .X.   - .XXX......X......XXX. -           .X.XX.-.XX.X.           - .XXXXXXXXXXXXXX."
-		".XXXXXXXXX. -...X...-   .X.   -  .XX.    .X.    .XX.  -            .XXX.-.XXX.            -  .XXXXXXXXXXXXX."
-		".XXXXXXXXXX.-.XXXXX.-   .X.   -   .X.    .X.    .X.   -           .XXXX.-.XXXX.           -  .XXXXXXXXXXXXX."
-		".XXXX...... -.......-   .X.   -    ..    .X.    ..    -          .XXXXX.-.XXXXX.          -   .XXXXXXXXXXXX."
-		".XXX.       ---------   .X.   -          .X.          -          .......-.......          -   .XXXXXXXXXXX. "
-		".XX.        -       -....X....-       ....X....       -------------------------------------    .XXXXXXXXXX. "
-		".X.         -       -.XXXXXXX.-       .XXXXXXX.       -    ..           ..    -           -    .XXXXXXXXXX. "
-		"..          -       - .XXXXX. -        .XXXXX.        -   .X.           .X.   -           -     .XXXXXXXX.  "
-		"                    -  .XXX.  -         .XXX.         -  .XX.           .XX.  -           -     .XXXXXXXX.  "
-		"                    -   .X.   -          .X.          - .XXX.............XXX. -           -     ..........  "
-		"------------        -    .    -           .           -.XXXXXXXXXXXXXXXXXXXXX.-           ------------------"
-		"                    ----------------------------------- .XXX.............XXX. -                             "
-		"                                                      -  .XX.           .XX.  -                             "
-		"                                                      -   .X.           .X.   -                             "
-		"                                                      -    ..           ..    -                             "
-	};
-
-	strcpy_s(FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS_BLACK);
-}
-
-void ImGui::StyleCursorsWhite()
-{
-	const char FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS_WHITE[FONT_ATLAS_DEFAULT_TEX_DATA_W_HALF * FONT_ATLAS_DEFAULT_TEX_DATA_H + 1] =
-	{
-		"..-         -XXXXXXX-    X    -           X           -XXXXXXX          -          XXXXXXX-     XX          "
-		"..-         -X.....X-   X.X   -          X.X          -X.....X          -          X.....X-    X..X         "
-		"---         -XXX.XXX-  X...X  -         X...X         -X....X           -           X....X-    X..X         "
-		"X           -  X.X  - X.....X -        X.....X        -X...X            -            X...X-    X..X         "
-		"XX          -  X.X  -X.......X-       X.......X       -X..X.X           -           X.X..X-    X..X         "
-		"X.X         -  X.X  -XXXX.XXXX-       XXXX.XXXX       -X.X X.X          -          X.X X.X-    X..XXX       "
-		"X..X        -  X.X  -   X.X   -          X.X          -XX   X.X         -         X.X   XX-    X..X..XXX    "
-		"X...X       -  X.X  -   X.X   -    XX    X.X    XX    -      X.X        -        X.X      -    X..X..X..XX  "
-		"X....X      -  X.X  -   X.X   -   X.X    X.X    X.X   -       X.X       -       X.X       -    X..X..X..X.X "
-		"X.....X     -  X.X  -   X.X   -  X..X    X.X    X..X  -        X.X      -      X.X        -XXX X..X..X..X..X"
-		"X......X    -  X.X  -   X.X   - X...XXXXXX.XXXXXX...X -         X.X   XX-XX   X.X         -X..XX........X..X"
-		"X.......X   -  X.X  -   X.X   -X.....................X-          X.X X.X-X.X X.X          -X...X...........X"
-		"X........X  -  X.X  -   X.X   - X...XXXXXX.XXXXXX...X -           X.X..X-X..X.X           - X..............X"
-		"X.........X -XXX.XXX-   X.X   -  X..X    X.X    X..X  -            X...X-X...X            -  X.............X"
-		"X..........X-X.....X-   X.X   -   X.X    X.X    X.X   -           X....X-X....X           -  X.............X"
-		"X....XXXXXX -XXXXXXX-   X.X   -    XX    X.X    XX    -          X.....X-X.....X          -   X............X"
-		"X...X       ---------   X.X   -          X.X          -          XXXXXXX-XXXXXXX          -   X...........X "
-		"X..X        -       -XXXX.XXXX-       XXXX.XXXX       -------------------------------------    X..........X "
-		"X.X         -       -X.......X-       X.......X       -    XX           XX    -           -    X..........X "
-		"XX          -       - X.....X -        X.....X        -   X.X           X.X   -           -     X........X  "
-		"                    -  X...X  -         X...X         -  X..X           X..X  -           -     X........X  "
-		"                    -   X.X   -          X.X          - X...XXXXXXXXXXXXX...X -           -     XXXXXXXXXX  "
-		"------------        -    X    -           X           -X.....................X-           ------------------"
-		"                    ----------------------------------- X...XXXXXXXXXXXXX...X -                             "
-		"                                                      -  X..X           X..X  -                             "
-		"                                                      -   X.X           X.X   -                             "
-		"                                                      -    XX           XX    -                             "
-	};
-
-	strcpy_s(FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS_WHITE);
-}
 
 static const ImVec2 FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[ImGuiMouseCursor_COUNT][3] =
 {
@@ -2297,12 +1749,8 @@ void    ImFontAtlas::GetTexDataAsAlpha8(unsigned char** out_pixels, int* out_wid
     // Build atlas on demand
     if (TexPixelsAlpha8 == NULL)
     {
-		if (ConfigData.empty())
-		{
-			AddFontLight();
-			AddFontMedium();
-			AddFontBold();
-		}
+        if (ConfigData.empty())
+            AddFontDefault();
         Build();
     }
 
@@ -2346,7 +1794,7 @@ ImFont* ImFontAtlas::AddFont(const ImFontConfig* font_cfg)
     if (!font_cfg->MergeMode)
         Fonts.push_back(IM_NEW(ImFont));
     else
-        IM_ASSERT(!Fonts.empty() && "Cannot use MergeMode for the first font"); // When using MergeMode make sure that a font has already been added before. You can use ImGui::GetIO().Fonts->AddFontLight(), ImGui::GetIO().Fonts->AddFontMedium(), ImGui::GetIO().Fonts->AddFontBold(), to add the default imgui fonts.
+        IM_ASSERT(!Fonts.empty() && "Cannot use MergeMode for the first font"); // When using MergeMode make sure that a font has already been added before. You can use ImGui::GetIO().Fonts->AddFontDefault() to add the default imgui font.
 
     ConfigData.push_back(*font_cfg);
     ImFontConfig& new_font_cfg = ConfigData.back();
@@ -2359,6 +1807,9 @@ ImFont* ImFontAtlas::AddFont(const ImFontConfig* font_cfg)
         memcpy(new_font_cfg.FontData, font_cfg->FontData, (size_t)new_font_cfg.FontDataSize);
     }
 
+    if (new_font_cfg.DstFont->EllipsisChar == (ImWchar)-1)
+        new_font_cfg.DstFont->EllipsisChar = font_cfg->EllipsisChar;
+
     // Invalidate texture
     ClearTexData();
     return new_font_cfg.DstFont;
@@ -2367,9 +1818,7 @@ ImFont* ImFontAtlas::AddFont(const ImFontConfig* font_cfg)
 // Default font TTF is compressed with stb_compress then base85 encoded (see misc/fonts/binary_to_compressed_c.cpp for encoder)
 static unsigned int stb_decompress_length(const unsigned char *input);
 static unsigned int stb_decompress(unsigned char *output, const unsigned char *input, unsigned int length);
-static const char*  GetLightCompressedFontDataOTFBase85();
-static const char* GetMediumCompressedFontDataOTFBase85();
-static const char* GetBoldCompressedFontDataOTFBase85();
+static const char*  GetDefaultCompressedFontDataTTFBase85();
 static unsigned int Decode85Byte(char c)                                    { return c >= '\\' ? c-36 : c-35; }
 static void         Decode85(const unsigned char* src, unsigned char* dst)
 {
@@ -2382,8 +1831,8 @@ static void         Decode85(const unsigned char* src, unsigned char* dst)
     }
 }
 
-// Load embedded GroupType - Bank Gothic Pro Light.otf at size 14, disable oversampling
-ImFont* ImFontAtlas::AddFontLight(const ImFontConfig* font_cfg_template)
+// Load embedded ProggyClean.ttf at size 13, disable oversampling
+ImFont* ImFontAtlas::AddFontDefault(const ImFontConfig* font_cfg_template)
 {
     ImFontConfig font_cfg = font_cfg_template ? *font_cfg_template : ImFontConfig();
     if (!font_cfg_template)
@@ -2392,57 +1841,16 @@ ImFont* ImFontAtlas::AddFontLight(const ImFontConfig* font_cfg_template)
         font_cfg.PixelSnapH = true;
     }
     if (font_cfg.SizePixels <= 0.0f)
-        font_cfg.SizePixels = 14.0f;
+        font_cfg.SizePixels = 13.0f * 1.0f;
     if (font_cfg.Name[0] == '\0')
-        ImFormatString(font_cfg.Name, IM_ARRAYSIZE(font_cfg.Name), "GroupType - Bank Gothic Pro Light.otf, %dpx", (int)font_cfg.SizePixels);
+        ImFormatString(font_cfg.Name, IM_ARRAYSIZE(font_cfg.Name), "ProggyClean.ttf, %dpx", (int)font_cfg.SizePixels);
+    font_cfg.EllipsisChar = (ImWchar)0x0085;
 
-    const char* ttf_compressed_base85 = GetLightCompressedFontDataOTFBase85();
+    const char* ttf_compressed_base85 = GetDefaultCompressedFontDataTTFBase85();
     const ImWchar* glyph_ranges = font_cfg.GlyphRanges != NULL ? font_cfg.GlyphRanges : GetGlyphRangesDefault();
     ImFont* font = AddFontFromMemoryCompressedBase85TTF(ttf_compressed_base85, font_cfg.SizePixels, &font_cfg, glyph_ranges);
-    font->DisplayOffset.y = -1.0f;
+    //font->DisplayOffset.y = 1.0f;
     return font;
-}
-
-// Load embedded GroupType - Bank Gothic Pro Medium.otf at size 14, disable oversampling
-ImFont* ImFontAtlas::AddFontMedium(const ImFontConfig* font_cfg_template)
-{
-	ImFontConfig font_cfg = font_cfg_template ? *font_cfg_template : ImFontConfig();
-	if (!font_cfg_template)
-	{
-		font_cfg.OversampleH = font_cfg.OversampleV = 1;
-		font_cfg.PixelSnapH = true;
-	}
-	if (font_cfg.SizePixels <= 0.0f)
-		font_cfg.SizePixels = 14.0f;
-	if (font_cfg.Name[0] == '\0')
-		ImFormatString(font_cfg.Name, IM_ARRAYSIZE(font_cfg.Name), "GroupType - Bank Gothic Pro Medium.otf, %dpx", (int)font_cfg.SizePixels);
-
-	const char* ttf_compressed_base85 = GetMediumCompressedFontDataOTFBase85();
-	const ImWchar* glyph_ranges = font_cfg.GlyphRanges != NULL ? font_cfg.GlyphRanges : GetGlyphRangesDefault();
-	ImFont* font = AddFontFromMemoryCompressedBase85TTF(ttf_compressed_base85, font_cfg.SizePixels, &font_cfg, glyph_ranges);
-	font->DisplayOffset.y = -1.0f;
-	return font;
-}
-
-// Load embedded GroupType - Bank Gothic Pro Bold.otf at size 14, disable oversampling
-ImFont* ImFontAtlas::AddFontBold(const ImFontConfig* font_cfg_template)
-{
-	ImFontConfig font_cfg = font_cfg_template ? *font_cfg_template : ImFontConfig();
-	if (!font_cfg_template)
-	{
-		font_cfg.OversampleH = font_cfg.OversampleV = 1;
-		font_cfg.PixelSnapH = true;
-	}
-	if (font_cfg.SizePixels <= 0.0f)
-		font_cfg.SizePixels = 14.0f;
-	if (font_cfg.Name[0] == '\0')
-		ImFormatString(font_cfg.Name, IM_ARRAYSIZE(font_cfg.Name), "GroupType - Bank Gothic Pro Bold.otf, %dpx", (int)font_cfg.SizePixels);
-
-	const char* ttf_compressed_base85 = GetBoldCompressedFontDataOTFBase85();
-	const ImWchar* glyph_ranges = font_cfg.GlyphRanges != NULL ? font_cfg.GlyphRanges : GetGlyphRangesDefault();
-	ImFont* font = AddFontFromMemoryCompressedBase85TTF(ttf_compressed_base85, font_cfg.SizePixels, &font_cfg, glyph_ranges);
-	font->DisplayOffset.y = -1.0f;
-	return font;
 }
 
 ImFont* ImFontAtlas::AddFontFromFileTTF(const char* filename, float size_pixels, const ImFontConfig* font_cfg_template, const ImWchar* glyph_ranges)
@@ -2452,7 +1860,7 @@ ImFont* ImFontAtlas::AddFontFromFileTTF(const char* filename, float size_pixels,
     void* data = ImFileLoadToMemory(filename, "rb", &data_size, 0);
     if (!data)
     {
-        IM_ASSERT(0); // Could not load file.
+        IM_ASSERT_USER_ERROR(0, "Could not load font file!");
         return NULL;
     }
     ImFontConfig font_cfg = font_cfg_template ? *font_cfg_template : ImFontConfig();
@@ -2504,10 +1912,11 @@ ImFont* ImFontAtlas::AddFontFromMemoryCompressedBase85TTF(const char* compressed
 
 int ImFontAtlas::AddCustomRectRegular(unsigned int id, int width, int height)
 {
-    IM_ASSERT(id >= 0x10000);
+    // Breaking change on 2019/11/21 (1.74): ImFontAtlas::AddCustomRectRegular() now requires an ID >= 0x110000 (instead of >= 0x10000)
+    IM_ASSERT(id >= 0x110000);
     IM_ASSERT(width > 0 && width <= 0xFFFF);
     IM_ASSERT(height > 0 && height <= 0xFFFF);
-    CustomRect r;
+    ImFontAtlasCustomRect r;
     r.ID = id;
     r.Width = (unsigned short)width;
     r.Height = (unsigned short)height;
@@ -2520,7 +1929,7 @@ int ImFontAtlas::AddCustomRectFontGlyph(ImFont* font, ImWchar id, int width, int
     IM_ASSERT(font != NULL);
     IM_ASSERT(width > 0 && width <= 0xFFFF);
     IM_ASSERT(height > 0 && height <= 0xFFFF);
-    CustomRect r;
+    ImFontAtlasCustomRect r;
     r.ID = id;
     r.Width = (unsigned short)width;
     r.Height = (unsigned short)height;
@@ -2531,7 +1940,7 @@ int ImFontAtlas::AddCustomRectFontGlyph(ImFont* font, ImWchar id, int width, int
     return CustomRects.Size - 1; // Return index
 }
 
-void ImFontAtlas::CalcCustomRectUV(const CustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max)
+void ImFontAtlas::CalcCustomRectUV(const ImFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) const
 {
     IM_ASSERT(TexWidth > 0 && TexHeight > 0);   // Font atlas needs to be built before we can calculate UV coordinates
     IM_ASSERT(rect->IsPacked());                // Make sure the rectangle has been packed
@@ -2547,7 +1956,7 @@ bool ImFontAtlas::GetMouseCursorTexData(ImGuiMouseCursor cursor_type, ImVec2* ou
         return false;
 
     IM_ASSERT(CustomRectIds[0] != -1);
-    ImFontAtlas::CustomRect& r = CustomRects[CustomRectIds[0]];
+    ImFontAtlasCustomRect& r = CustomRects[CustomRectIds[0]];
     IM_ASSERT(r.ID == FONT_ATLAS_DEFAULT_TEX_DATA_ID);
     ImVec2 pos = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][0] + ImVec2((float)r.X, (float)r.Y);
     ImVec2 size = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][1];
@@ -2596,7 +2005,7 @@ struct ImFontBuildSrcData
     int                 DstIndex;           // Index into atlas->Fonts[] and dst_tmp_array[]
     int                 GlyphsHighest;      // Highest requested codepoint
     int                 GlyphsCount;        // Glyph count (excluding missing glyphs and glyphs already set by an earlier source font)
-    ImBoolVector        GlyphsSet;          // Glyph bit map (random access, 1-bit per codepoint. This will be a maximum of 8KB)
+    ImBitVector         GlyphsSet;          // Glyph bit map (random access, 1-bit per codepoint. This will be a maximum of 8KB)
     ImVector<int>       GlyphsList;         // Glyph codepoints list (flattened version of GlyphsMap)
 };
 
@@ -2606,26 +2015,26 @@ struct ImFontBuildDstData
     int                 SrcCount;           // Number of source fonts targeting this destination font.
     int                 GlyphsHighest;
     int                 GlyphsCount;
-    ImBoolVector        GlyphsSet;          // This is used to resolve collision when multiple sources are merged into a same destination font.
+    ImBitVector         GlyphsSet;          // This is used to resolve collision when multiple sources are merged into a same destination font.
 };
 
-static void UnpackBoolVectorToFlatIndexList(const ImBoolVector* in, ImVector<int>* out)
+static void UnpackBitVectorToFlatIndexList(const ImBitVector* in, ImVector<int>* out)
 {
     IM_ASSERT(sizeof(in->Storage.Data[0]) == sizeof(int));
-    const int* it_begin = in->Storage.begin();
-    const int* it_end = in->Storage.end();
-    for (const int* it = it_begin; it < it_end; it++)
-        if (int entries_32 = *it)
-            for (int bit_n = 0; bit_n < 32; bit_n++)
-                if (entries_32 & (1u << bit_n))
-                    out->push_back((int)((it - it_begin) << 5) + bit_n);
+    const ImU32* it_begin = in->Storage.begin();
+    const ImU32* it_end = in->Storage.end();
+    for (const ImU32* it = it_begin; it < it_end; it++)
+        if (ImU32 entries_32 = *it)
+            for (ImU32 bit_n = 0; bit_n < 32; bit_n++)
+                if (entries_32 & ((ImU32)1 << bit_n))
+                    out->push_back((int)(((it - it_begin) << 5) + bit_n));
 }
 
 bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
 {
     IM_ASSERT(atlas->ConfigData.Size > 0);
 
-    ImFontAtlasBuildRegisterDefaultCustomRects(atlas);
+    ImFontAtlasBuildInit(atlas);
 
     // Clear atlas
     atlas->TexID = (ImTextureID)NULL;
@@ -2679,14 +2088,14 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
     {
         ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
         ImFontBuildDstData& dst_tmp = dst_tmp_array[src_tmp.DstIndex];
-        src_tmp.GlyphsSet.Resize(src_tmp.GlyphsHighest + 1);
+        src_tmp.GlyphsSet.Create(src_tmp.GlyphsHighest + 1);
         if (dst_tmp.GlyphsSet.Storage.empty())
-            dst_tmp.GlyphsSet.Resize(dst_tmp.GlyphsHighest + 1);
+            dst_tmp.GlyphsSet.Create(dst_tmp.GlyphsHighest + 1);
 
         for (const ImWchar* src_range = src_tmp.SrcRanges; src_range[0] && src_range[1]; src_range += 2)
-            for (int codepoint = src_range[0]; codepoint <= src_range[1]; codepoint++)
+            for (unsigned int codepoint = src_range[0]; codepoint <= src_range[1]; codepoint++)
             {
-                if (dst_tmp.GlyphsSet.GetBit(codepoint))    // Don't overwrite existing glyphs. We could make this an option for MergeMode (e.g. MergeOverwrite==true)
+                if (dst_tmp.GlyphsSet.TestBit(codepoint))    // Don't overwrite existing glyphs. We could make this an option for MergeMode (e.g. MergeOverwrite==true)
                     continue;
                 if (!stbtt_FindGlyphIndex(&src_tmp.FontInfo, codepoint))    // It is actually in the font?
                     continue;
@@ -2694,8 +2103,8 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
                 // Add to avail set/counters
                 src_tmp.GlyphsCount++;
                 dst_tmp.GlyphsCount++;
-                src_tmp.GlyphsSet.SetBit(codepoint, true);
-                dst_tmp.GlyphsSet.SetBit(codepoint, true);
+                src_tmp.GlyphsSet.SetBit(codepoint);
+                dst_tmp.GlyphsSet.SetBit(codepoint);
                 total_glyphs_count++;
             }
     }
@@ -2705,7 +2114,7 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
     {
         ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
         src_tmp.GlyphsList.reserve(src_tmp.GlyphsCount);
-        UnpackBoolVectorToFlatIndexList(&src_tmp.GlyphsSet, &src_tmp.GlyphsList);
+        UnpackBitVectorToFlatIndexList(&src_tmp.GlyphsSet, &src_tmp.GlyphsList);
         src_tmp.GlyphsSet.Clear();
         IM_ASSERT(src_tmp.GlyphsList.Size == src_tmp.GlyphsCount);
     }
@@ -2848,7 +2257,7 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
         const float descent = ImFloor(unscaled_descent * font_scale + ((unscaled_descent > 0.0f) ? +1 : -1));
         ImFontAtlasBuildSetupFont(atlas, dst_font, &cfg, ascent, descent);
         const float font_off_x = cfg.GlyphOffset.x;
-        const float font_off_y = cfg.GlyphOffset.y + (float)(int)(dst_font->Ascent + 0.5f);
+        const float font_off_y = cfg.GlyphOffset.y + IM_ROUND(dst_font->Ascent);
 
         for (int glyph_i = 0; glyph_i < src_tmp.GlyphsCount; glyph_i++)
         {
@@ -2859,7 +2268,7 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
             const float char_advance_x_mod = ImClamp(char_advance_x_org, cfg.GlyphMinAdvanceX, cfg.GlyphMaxAdvanceX);
             float char_off_x = font_off_x;
             if (char_advance_x_org != char_advance_x_mod)
-                char_off_x += cfg.PixelSnapH ? (float)(int)((char_advance_x_mod - char_advance_x_org) * 0.5f) : (char_advance_x_mod - char_advance_x_org) * 0.5f;
+                char_off_x += cfg.PixelSnapH ? ImFloor((char_advance_x_mod - char_advance_x_org) * 0.5f) : (char_advance_x_mod - char_advance_x_org) * 0.5f;
 
             // Register glyph
             stbtt_aligned_quad q;
@@ -2877,7 +2286,8 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
     return true;
 }
 
-void ImFontAtlasBuildRegisterDefaultCustomRects(ImFontAtlas* atlas)
+// Register default custom rectangles (this is called/shared by both the stb_truetype and the FreeType builder)
+void ImFontAtlasBuildInit(ImFontAtlas* atlas)
 {
     if (atlas->CustomRectIds[0] >= 0)
         return;
@@ -2906,7 +2316,7 @@ void ImFontAtlasBuildPackCustomRects(ImFontAtlas* atlas, void* stbrp_context_opa
     stbrp_context* pack_context = (stbrp_context*)stbrp_context_opaque;
     IM_ASSERT(pack_context != NULL);
 
-    ImVector<ImFontAtlas::CustomRect>& user_rects = atlas->CustomRects;
+    ImVector<ImFontAtlasCustomRect>& user_rects = atlas->CustomRects;
     IM_ASSERT(user_rects.Size >= 1); // We expect at least the default custom rects to be registered, else something went wrong.
 
     ImVector<stbrp_rect> pack_rects;
@@ -2932,7 +2342,7 @@ static void ImFontAtlasBuildRenderDefaultTexData(ImFontAtlas* atlas)
 {
     IM_ASSERT(atlas->CustomRectIds[0] >= 0);
     IM_ASSERT(atlas->TexPixelsAlpha8 != NULL);
-    ImFontAtlas::CustomRect& r = atlas->CustomRects[atlas->CustomRectIds[0]];
+    ImFontAtlasCustomRect& r = atlas->CustomRects[atlas->CustomRectIds[0]];
     IM_ASSERT(r.ID == FONT_ATLAS_DEFAULT_TEX_DATA_ID);
     IM_ASSERT(r.IsPacked());
 
@@ -2967,8 +2377,8 @@ void ImFontAtlasBuildFinish(ImFontAtlas* atlas)
     // Register custom rectangle glyphs
     for (int i = 0; i < atlas->CustomRects.Size; i++)
     {
-        const ImFontAtlas::CustomRect& r = atlas->CustomRects[i];
-        if (r.Font == NULL || r.ID > 0x10000)
+        const ImFontAtlasCustomRect& r = atlas->CustomRects[i];
+        if (r.Font == NULL || r.ID >= 0x110000)
             continue;
 
         IM_ASSERT(r.Font->ContainerAtlas == atlas);
@@ -2981,6 +2391,23 @@ void ImFontAtlasBuildFinish(ImFontAtlas* atlas)
     for (int i = 0; i < atlas->Fonts.Size; i++)
         if (atlas->Fonts[i]->DirtyLookupTables)
             atlas->Fonts[i]->BuildLookupTable();
+
+    // Ellipsis character is required for rendering elided text. We prefer using U+2026 (horizontal ellipsis).
+    // However some old fonts may contain ellipsis at U+0085. Here we auto-detect most suitable ellipsis character.
+    // FIXME: Also note that 0x2026 is currently seldomly included in our font ranges. Because of this we are more likely to use three individual dots.
+    for (int i = 0; i < atlas->Fonts.size(); i++)
+    {
+        ImFont* font = atlas->Fonts[i];
+        if (font->EllipsisChar != (ImWchar)-1)
+            continue;
+        const ImWchar ellipsis_variants[] = { (ImWchar)0x2026, (ImWchar)0x0085 };
+        for (int j = 0; j < IM_ARRAYSIZE(ellipsis_variants); j++)
+            if (font->FindGlyphNoFallback(ellipsis_variants[j]) != NULL) // Verify glyph exists
+            {
+                font->EllipsisChar = ellipsis_variants[j];
+                break;
+            }
+    }
 }
 
 // Retrieve list of range (2 int per range, values are inclusive)
@@ -3215,8 +2642,7 @@ void ImFontGlyphRangesBuilder::AddText(const char* text, const char* text_end)
         text += c_len;
         if (c_len == 0)
             break;
-        if (c < 0x10000)
-            AddChar((ImWchar)c);
+        AddChar((ImWchar)c);
     }
 }
 
@@ -3229,12 +2655,12 @@ void ImFontGlyphRangesBuilder::AddRanges(const ImWchar* ranges)
 
 void ImFontGlyphRangesBuilder::BuildRanges(ImVector<ImWchar>* out_ranges)
 {
-    int max_codepoint = 0x10000;
-    for (int n = 0; n < max_codepoint; n++)
+    const int max_codepoint = IM_UNICODE_CODEPOINT_MAX;
+    for (int n = 0; n <= max_codepoint; n++)
         if (GetBit(n))
         {
             out_ranges->push_back((ImWchar)n);
-            while (n < max_codepoint - 1 && GetBit(n + 1))
+            while (n < max_codepoint && GetBit(n + 1))
                 n++;
             out_ranges->push_back((ImWchar)n);
         }
@@ -3250,6 +2676,7 @@ ImFont::ImFont()
     FontSize = 0.0f;
     FallbackAdvanceX = 0.0f;
     FallbackChar = (ImWchar)'?';
+    EllipsisChar = (ImWchar)-1;
     DisplayOffset = ImVec2(0.0f, 0.0f);
     FallbackGlyph = NULL;
     ContainerAtlas = NULL;
@@ -3259,6 +2686,7 @@ ImFont::ImFont()
     Scale = 1.0f;
     Ascent = Descent = 0.0f;
     MetricsTotalSurface = 0;
+    memset(Used4kPagesMap, 0, sizeof(Used4kPagesMap));
 }
 
 ImFont::~ImFont()
@@ -3286,23 +2714,29 @@ void ImFont::BuildLookupTable()
     for (int i = 0; i != Glyphs.Size; i++)
         max_codepoint = ImMax(max_codepoint, (int)Glyphs[i].Codepoint);
 
+    // Build lookup table
     IM_ASSERT(Glyphs.Size < 0xFFFF); // -1 is reserved
     IndexAdvanceX.clear();
     IndexLookup.clear();
     DirtyLookupTables = false;
+    memset(Used4kPagesMap, 0, sizeof(Used4kPagesMap));
     GrowIndex(max_codepoint + 1);
     for (int i = 0; i < Glyphs.Size; i++)
     {
         int codepoint = (int)Glyphs[i].Codepoint;
         IndexAdvanceX[codepoint] = Glyphs[i].AdvanceX;
         IndexLookup[codepoint] = (ImWchar)i;
+
+        // Mark 4K page as used
+        const int page_n = codepoint / 4096;
+        Used4kPagesMap[page_n >> 3] |= 1 << (page_n & 7);
     }
 
     // Create a glyph to handle TAB
     // FIXME: Needs proper TAB handling but it needs to be contextualized (or we could arbitrary say that each string starts at "column 0" ?)
     if (FindGlyph((ImWchar)' '))
     {
-        if (Glyphs.back().Codepoint != '\t')   // So we can call this function multiple times
+        if (Glyphs.back().Codepoint != '\t')   // So we can call this function multiple times (FIXME: Flaky)
             Glyphs.resize(Glyphs.Size + 1);
         ImFontGlyph& tab_glyph = Glyphs.back();
         tab_glyph = *FindGlyph((ImWchar)' ');
@@ -3312,11 +2746,35 @@ void ImFont::BuildLookupTable()
         IndexLookup[(int)tab_glyph.Codepoint] = (ImWchar)(Glyphs.Size-1);
     }
 
+    // Mark special glyphs as not visible (note that AddGlyph already mark as non-visible glyphs with zero-size polygons)
+    SetGlyphVisible((ImWchar)' ', false);
+    SetGlyphVisible((ImWchar)'\t', false);
+
+    // Setup fall-backs
     FallbackGlyph = FindGlyphNoFallback(FallbackChar);
     FallbackAdvanceX = FallbackGlyph ? FallbackGlyph->AdvanceX : 0.0f;
     for (int i = 0; i < max_codepoint + 1; i++)
         if (IndexAdvanceX[i] < 0.0f)
             IndexAdvanceX[i] = FallbackAdvanceX;
+}
+
+// API is designed this way to avoid exposing the 4K page size
+// e.g. use with IsGlyphRangeUnused(0, 255)
+bool ImFont::IsGlyphRangeUnused(unsigned int c_begin, unsigned int c_last)
+{
+    unsigned int page_begin = (c_begin / 4096);
+    unsigned int page_last = (c_last / 4096);
+    for (unsigned int page_n = page_begin; page_n <= page_last; page_n++)
+        if ((page_n >> 3) < sizeof(Used4kPagesMap))
+            if (Used4kPagesMap[page_n >> 3] & (1 << (page_n & 7)))
+                return false;
+    return true;
+}
+
+void ImFont::SetGlyphVisible(ImWchar c, bool visible)
+{
+    if (ImFontGlyph* glyph = (ImFontGlyph*)(void*)FindGlyph((ImWchar)c))
+        glyph->Visible = visible ? 1 : 0;
 }
 
 void ImFont::SetFallbackChar(ImWchar c)
@@ -3340,7 +2798,8 @@ void ImFont::AddGlyph(ImWchar codepoint, float x0, float y0, float x1, float y1,
 {
     Glyphs.resize(Glyphs.Size + 1);
     ImFontGlyph& glyph = Glyphs.back();
-    glyph.Codepoint = (ImWchar)codepoint;
+    glyph.Codepoint = (unsigned int)codepoint;
+    glyph.Visible = (x0 != x1) && (y0 != y1);
     glyph.X0 = x0;
     glyph.Y0 = y0;
     glyph.X1 = x1;
@@ -3352,7 +2811,7 @@ void ImFont::AddGlyph(ImWchar codepoint, float x0, float y0, float x1, float y1,
     glyph.AdvanceX = advance_x + ConfigData->GlyphExtraSpacing.x;  // Bake spacing into AdvanceX
 
     if (ConfigData->PixelSnapH)
-        glyph.AdvanceX = (float)(int)(glyph.AdvanceX + 0.5f);
+        glyph.AdvanceX = IM_ROUND(glyph.AdvanceX);
 
     // Compute rough surface usage metrics (+1 to account for average padding, +0.99 to round)
     DirtyLookupTables = true;
@@ -3362,7 +2821,7 @@ void ImFont::AddGlyph(ImWchar codepoint, float x0, float y0, float x1, float y1,
 void ImFont::AddRemapChar(ImWchar dst, ImWchar src, bool overwrite_dst)
 {
     IM_ASSERT(IndexLookup.Size > 0);    // Currently this can only be called AFTER the font has been built, aka after calling ImFontAtlas::GetTexDataAs*() function.
-    int index_size = IndexLookup.Size;
+    unsigned int index_size = (unsigned int)IndexLookup.Size;
 
     if (dst < index_size && IndexLookup.Data[dst] == (ImWchar)-1 && !overwrite_dst) // 'dst' already exists
         return;
@@ -3376,7 +2835,7 @@ void ImFont::AddRemapChar(ImWchar dst, ImWchar src, bool overwrite_dst)
 
 const ImFontGlyph* ImFont::FindGlyph(ImWchar c) const
 {
-    if (c >= IndexLookup.Size)
+    if (c >= (size_t)IndexLookup.Size)
         return FallbackGlyph;
     const ImWchar i = IndexLookup.Data[c];
     if (i == (ImWchar)-1)
@@ -3386,7 +2845,7 @@ const ImFontGlyph* ImFont::FindGlyph(ImWchar c) const
 
 const ImFontGlyph* ImFont::FindGlyphNoFallback(ImWchar c) const
 {
-    if (c >= IndexLookup.Size)
+    if (c >= (size_t)IndexLookup.Size)
         return NULL;
     const ImWchar i = IndexLookup.Data[c];
     if (i == (ImWchar)-1)
@@ -3479,7 +2938,7 @@ const char* ImFont::CalcWordWrapPositionA(float scale, const char* text, const c
         }
 
         // We ignore blank width at the end of the line (they can be skipped)
-        if (line_width + word_width >= wrap_width)
+        if (line_width + word_width > wrap_width)
         {
             // Words that cannot possibly fit within an entire line will be cut anywhere.
             if (word_width < wrap_width)
@@ -3589,26 +3048,24 @@ ImVec2 ImFont::CalcTextSizeA(float size, float max_width, float wrap_width, cons
 
 void ImFont::RenderChar(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col, ImWchar c) const
 {
-    if (c == ' ' || c == '\t' || c == '\n' || c == '\r') // Match behavior of RenderText(), those 4 codepoints are hard-coded.
+    const ImFontGlyph* glyph = FindGlyph(c);
+    if (!glyph || !glyph->Visible)
         return;
-    if (const ImFontGlyph* glyph = FindGlyph(c))
-    {
-        float scale = (size >= 0.0f) ? (size / FontSize) : 1.0f;
-        pos.x = (float)(int)pos.x + DisplayOffset.x;
-        pos.y = (float)(int)pos.y + DisplayOffset.y;
-        draw_list->PrimReserve(6, 4);
-        draw_list->PrimRectUV(ImVec2(pos.x + glyph->X0 * scale, pos.y + glyph->Y0 * scale), ImVec2(pos.x + glyph->X1 * scale, pos.y + glyph->Y1 * scale), ImVec2(glyph->U0, glyph->V0), ImVec2(glyph->U1, glyph->V1), col);
-    }
+    float scale = (size >= 0.0f) ? (size / FontSize) : 1.0f;
+    pos.x = IM_FLOOR(pos.x + DisplayOffset.x);
+    pos.y = IM_FLOOR(pos.y + DisplayOffset.y);
+    draw_list->PrimReserve(6, 4);
+    draw_list->PrimRectUV(ImVec2(pos.x + glyph->X0 * scale, pos.y + glyph->Y0 * scale), ImVec2(pos.x + glyph->X1 * scale, pos.y + glyph->Y1 * scale), ImVec2(glyph->U0, glyph->V0), ImVec2(glyph->U1, glyph->V1), col);
 }
 
 void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col, const ImVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width, bool cpu_fine_clip) const
 {
     if (!text_end)
-        text_end = text_begin + strlen(text_begin); // ImGui functions generally already provides a valid text_end, so this is merely to handle direct calls.
+        text_end = text_begin + strlen(text_begin); // ImGui:: functions generally already provides a valid text_end, so this is merely to handle direct calls.
 
     // Align to be pixel perfect
-    pos.x = (float)(int)pos.x + DisplayOffset.x;
-    pos.y = (float)(int)pos.y + DisplayOffset.y;
+    pos.x = IM_FLOOR(pos.x + DisplayOffset.x);
+    pos.y = IM_FLOOR(pos.y + DisplayOffset.y);
     float x = pos.x;
     float y = pos.y;
     if (y > clip_rect.w)
@@ -3711,79 +3168,76 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
                 continue;
         }
 
-        float char_width = 0.0f;
-        if (const ImFontGlyph* glyph = FindGlyph((ImWchar)c))
+        const ImFontGlyph* glyph = FindGlyph((ImWchar)c);
+        if (glyph == NULL)
+            continue;
+
+        float char_width = glyph->AdvanceX * scale;
+        if (glyph->Visible)
         {
-            char_width = glyph->AdvanceX * scale;
-
-            // Arbitrarily assume that both space and tabs are empty glyphs as an optimization
-            if (c != ' ' && c != '\t')
+            // We don't do a second finer clipping test on the Y axis as we've already skipped anything before clip_rect.y and exit once we pass clip_rect.w
+            float x1 = x + glyph->X0 * scale;
+            float x2 = x + glyph->X1 * scale;
+            float y1 = y + glyph->Y0 * scale;
+            float y2 = y + glyph->Y1 * scale;
+            if (x1 <= clip_rect.z && x2 >= clip_rect.x)
             {
-                // We don't do a second finer clipping test on the Y axis as we've already skipped anything before clip_rect.y and exit once we pass clip_rect.w
-                float x1 = x + glyph->X0 * scale;
-                float x2 = x + glyph->X1 * scale;
-                float y1 = y + glyph->Y0 * scale;
-                float y2 = y + glyph->Y1 * scale;
-                if (x1 <= clip_rect.z && x2 >= clip_rect.x)
+                // Render a character
+                float u1 = glyph->U0;
+                float v1 = glyph->V0;
+                float u2 = glyph->U1;
+                float v2 = glyph->V1;
+
+                // CPU side clipping used to fit text in their frame when the frame is too small. Only does clipping for axis aligned quads.
+                if (cpu_fine_clip)
                 {
-                    // Render a character
-                    float u1 = glyph->U0;
-                    float v1 = glyph->V0;
-                    float u2 = glyph->U1;
-                    float v2 = glyph->V1;
-
-                    // CPU side clipping used to fit text in their frame when the frame is too small. Only does clipping for axis aligned quads.
-                    if (cpu_fine_clip)
+                    if (x1 < clip_rect.x)
                     {
-                        if (x1 < clip_rect.x)
-                        {
-                            u1 = u1 + (1.0f - (x2 - clip_rect.x) / (x2 - x1)) * (u2 - u1);
-                            x1 = clip_rect.x;
-                        }
-                        if (y1 < clip_rect.y)
-                        {
-                            v1 = v1 + (1.0f - (y2 - clip_rect.y) / (y2 - y1)) * (v2 - v1);
-                            y1 = clip_rect.y;
-                        }
-                        if (x2 > clip_rect.z)
-                        {
-                            u2 = u1 + ((clip_rect.z - x1) / (x2 - x1)) * (u2 - u1);
-                            x2 = clip_rect.z;
-                        }
-                        if (y2 > clip_rect.w)
-                        {
-                            v2 = v1 + ((clip_rect.w - y1) / (y2 - y1)) * (v2 - v1);
-                            y2 = clip_rect.w;
-                        }
-                        if (y1 >= y2)
-                        {
-                            x += char_width;
-                            continue;
-                        }
+                        u1 = u1 + (1.0f - (x2 - clip_rect.x) / (x2 - x1)) * (u2 - u1);
+                        x1 = clip_rect.x;
                     }
-
-                    // We are NOT calling PrimRectUV() here because non-inlined causes too much overhead in a debug builds. Inlined here:
+                    if (y1 < clip_rect.y)
                     {
-                        idx_write[0] = (ImDrawIdx)(vtx_current_idx); idx_write[1] = (ImDrawIdx)(vtx_current_idx+1); idx_write[2] = (ImDrawIdx)(vtx_current_idx+2);
-                        idx_write[3] = (ImDrawIdx)(vtx_current_idx); idx_write[4] = (ImDrawIdx)(vtx_current_idx+2); idx_write[5] = (ImDrawIdx)(vtx_current_idx+3);
-                        vtx_write[0].pos.x = x1; vtx_write[0].pos.y = y1; vtx_write[0].col = col; vtx_write[0].uv.x = u1; vtx_write[0].uv.y = v1;
-                        vtx_write[1].pos.x = x2; vtx_write[1].pos.y = y1; vtx_write[1].col = col; vtx_write[1].uv.x = u2; vtx_write[1].uv.y = v1;
-                        vtx_write[2].pos.x = x2; vtx_write[2].pos.y = y2; vtx_write[2].col = col; vtx_write[2].uv.x = u2; vtx_write[2].uv.y = v2;
-                        vtx_write[3].pos.x = x1; vtx_write[3].pos.y = y2; vtx_write[3].col = col; vtx_write[3].uv.x = u1; vtx_write[3].uv.y = v2;
-                        vtx_write += 4;
-                        vtx_current_idx += 4;
-                        idx_write += 6;
+                        v1 = v1 + (1.0f - (y2 - clip_rect.y) / (y2 - y1)) * (v2 - v1);
+                        y1 = clip_rect.y;
                     }
+                    if (x2 > clip_rect.z)
+                    {
+                        u2 = u1 + ((clip_rect.z - x1) / (x2 - x1)) * (u2 - u1);
+                        x2 = clip_rect.z;
+                    }
+                    if (y2 > clip_rect.w)
+                    {
+                        v2 = v1 + ((clip_rect.w - y1) / (y2 - y1)) * (v2 - v1);
+                        y2 = clip_rect.w;
+                    }
+                    if (y1 >= y2)
+                    {
+                        x += char_width;
+                        continue;
+                    }
+                }
+
+                // We are NOT calling PrimRectUV() here because non-inlined causes too much overhead in a debug builds. Inlined here:
+                {
+                    idx_write[0] = (ImDrawIdx)(vtx_current_idx); idx_write[1] = (ImDrawIdx)(vtx_current_idx+1); idx_write[2] = (ImDrawIdx)(vtx_current_idx+2);
+                    idx_write[3] = (ImDrawIdx)(vtx_current_idx); idx_write[4] = (ImDrawIdx)(vtx_current_idx+2); idx_write[5] = (ImDrawIdx)(vtx_current_idx+3);
+                    vtx_write[0].pos.x = x1; vtx_write[0].pos.y = y1; vtx_write[0].col = col; vtx_write[0].uv.x = u1; vtx_write[0].uv.y = v1;
+                    vtx_write[1].pos.x = x2; vtx_write[1].pos.y = y1; vtx_write[1].col = col; vtx_write[1].uv.x = u2; vtx_write[1].uv.y = v1;
+                    vtx_write[2].pos.x = x2; vtx_write[2].pos.y = y2; vtx_write[2].col = col; vtx_write[2].uv.x = u2; vtx_write[2].uv.y = v2;
+                    vtx_write[3].pos.x = x1; vtx_write[3].pos.y = y2; vtx_write[3].col = col; vtx_write[3].uv.x = u1; vtx_write[3].uv.y = v2;
+                    vtx_write += 4;
+                    vtx_current_idx += 4;
+                    idx_write += 6;
                 }
             }
         }
-
         x += char_width;
     }
 
-    // Give back unused vertices
-    draw_list->VtxBuffer.resize((int)(vtx_write - draw_list->VtxBuffer.Data));
-    draw_list->IdxBuffer.resize((int)(idx_write - draw_list->IdxBuffer.Data));
+    // Give back unused vertices (clipped ones, blanks) ~ this is essentially a PrimUnreserve() action.
+    draw_list->VtxBuffer.Size = (int)(vtx_write - draw_list->VtxBuffer.Data); // Same as calling shrink()
+    draw_list->IdxBuffer.Size = (int)(idx_write - draw_list->IdxBuffer.Data);
     draw_list->CmdBuffer[draw_list->CmdBuffer.Size-1].ElemCount -= (idx_expected_size - draw_list->IdxBuffer.Size);
     draw_list->_VtxWritePtr = vtx_write;
     draw_list->_IdxWritePtr = idx_write;
@@ -3791,24 +3245,77 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
 }
 
 //-----------------------------------------------------------------------------
-// [SECTION] Internal Render Helpers
-// (progressively moved from imgui.cpp to here when they are redesigned to stop accessing ImGui global state)
+// [SECTION] ImGui Internal Render Helpers
 //-----------------------------------------------------------------------------
+// Vaguely redesigned to stop accessing ImGui global state:
+// - RenderArrow()
+// - RenderBullet()
+// - RenderCheckMark()
 // - RenderMouseCursor()
 // - RenderArrowPointingAt()
 // - RenderRectFilledRangeH()
-// - RenderPixelEllipsis()
+//-----------------------------------------------------------------------------
+// Function in need of a redesign (legacy mess)
+// - RenderColorRectWithAlphaCheckerboard()
 //-----------------------------------------------------------------------------
 
-void ImGui::RenderMouseCursor(ImDrawList* draw_list, ImVec2 pos, float scale, ImGuiMouseCursor mouse_cursor)
+// Render an arrow aimed to be aligned with text (p_min is a position in the same space text would be positioned). To e.g. denote expanded/collapsed state
+void ImGui::RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir dir, float scale)
+{
+    const float h = draw_list->_Data->FontSize * 1.00f;
+    float r = h * 0.40f * scale;
+    ImVec2 center = pos + ImVec2(h * 0.50f, h * 0.50f * scale);
+
+    ImVec2 a, b, c;
+    switch (dir)
+    {
+    case ImGuiDir_Up:
+    case ImGuiDir_Down:
+        if (dir == ImGuiDir_Up) r = -r;
+        a = ImVec2(+0.000f, +0.750f) * r;
+        b = ImVec2(-0.866f, -0.750f) * r;
+        c = ImVec2(+0.866f, -0.750f) * r;
+        break;
+    case ImGuiDir_Left:
+    case ImGuiDir_Right:
+        if (dir == ImGuiDir_Left) r = -r;
+        a = ImVec2(+0.750f, +0.000f) * r;
+        b = ImVec2(-0.750f, +0.866f) * r;
+        c = ImVec2(-0.750f, -0.866f) * r;
+        break;
+    case ImGuiDir_None:
+    case ImGuiDir_COUNT:
+        IM_ASSERT(0);
+        break;
+    }
+    draw_list->AddTriangleFilled(center + a, center + b, center + c, col);
+}
+
+void ImGui::RenderBullet(ImDrawList* draw_list, ImVec2 pos, ImU32 col)
+{
+    draw_list->AddCircleFilled(pos, draw_list->_Data->FontSize * 0.20f, col, 8);
+}
+
+void ImGui::RenderCheckMark(ImDrawList* draw_list, ImVec2 pos, ImU32 col, float sz)
+{
+    float thickness = ImMax(sz / 5.0f, 1.0f);
+    sz -= thickness * 0.5f;
+    pos += ImVec2(thickness * 0.25f, thickness * 0.25f);
+
+    float third = sz / 3.0f;
+    float bx = pos.x + third;
+    float by = pos.y + sz - third * 0.5f;
+    draw_list->PathLineTo(ImVec2(bx - third, by - third));
+    draw_list->PathLineTo(ImVec2(bx, by));
+    draw_list->PathLineTo(ImVec2(bx + third * 2.0f, by - third * 2.0f));
+    draw_list->PathStroke(col, false, thickness);
+}
+
+void ImGui::RenderMouseCursor(ImDrawList* draw_list, ImVec2 pos, float scale, ImGuiMouseCursor mouse_cursor, ImU32 col_fill, ImU32 col_border, ImU32 col_shadow)
 {
     if (mouse_cursor == ImGuiMouseCursor_None)
         return;
     IM_ASSERT(mouse_cursor > ImGuiMouseCursor_None && mouse_cursor < ImGuiMouseCursor_COUNT);
-
-    const ImU32 col_shadow = IM_COL32(0, 0, 0, 48);
-    const ImU32 col_border = IM_COL32(0, 0, 0, 255);          // Black
-    const ImU32 col_fill   = IM_COL32(255, 255, 255, 255);    // White
 
     ImFontAtlas* font_atlas = draw_list->_Data->Font->ContainerAtlas;
     ImVec2 offset, size, uv[4];
@@ -3907,16 +3414,41 @@ void ImGui::RenderRectFilledRangeH(ImDrawList* draw_list, const ImRect& rect, Im
     draw_list->PathFillConvex(col);
 }
 
-// FIXME: Rendering an ellipsis "..." is a surprisingly tricky problem for us... we cannot rely on font glyph having it,
-// and regular dot are typically too wide. If we render a dot/shape ourselves it comes with the risk that it wouldn't match
-// the boldness or positioning of what the font uses...
-void ImGui::RenderPixelEllipsis(ImDrawList* draw_list, ImVec2 pos, int count, ImU32 col)
+// Helper for ColorPicker4()
+// NB: This is rather brittle and will show artifact when rounding this enabled if rounded corners overlap multiple cells. Caller currently responsible for avoiding that.
+// Spent a non reasonable amount of time trying to getting this right for ColorButton with rounding+anti-aliasing+ImGuiColorEditFlags_HalfAlphaPreview flag + various grid sizes and offsets, and eventually gave up... probably more reasonable to disable rounding alltogether.
+// FIXME: uses ImGui::GetColorU32
+void ImGui::RenderColorRectWithAlphaCheckerboard(ImDrawList* draw_list, ImVec2 p_min, ImVec2 p_max, ImU32 col, float grid_step, ImVec2 grid_off, float rounding, int rounding_corners_flags)
 {
-    ImFont* font = draw_list->_Data->Font;
-    const float font_scale = draw_list->_Data->FontSize / font->FontSize;
-    pos.y += (float)(int)(font->DisplayOffset.y + font->Ascent * font_scale + 0.5f - 1.0f);
-    for (int dot_n = 0; dot_n < count; dot_n++)
-        draw_list->AddRectFilled(ImVec2(pos.x + dot_n * 2.0f, pos.y), ImVec2(pos.x + dot_n * 2.0f + 1.0f, pos.y + 1.0f), col);
+    if (((col & IM_COL32_A_MASK) >> IM_COL32_A_SHIFT) < 0xFF)
+    {
+        ImU32 col_bg1 = ImGui::GetColorU32(ImAlphaBlendColors(IM_COL32(204, 204, 204, 255), col));
+        ImU32 col_bg2 = ImGui::GetColorU32(ImAlphaBlendColors(IM_COL32(128, 128, 128, 255), col));
+        draw_list->AddRectFilled(p_min, p_max, col_bg1, rounding, rounding_corners_flags);
+
+        int yi = 0;
+        for (float y = p_min.y + grid_off.y; y < p_max.y; y += grid_step, yi++)
+        {
+            float y1 = ImClamp(y, p_min.y, p_max.y), y2 = ImMin(y + grid_step, p_max.y);
+            if (y2 <= y1)
+                continue;
+            for (float x = p_min.x + grid_off.x + (yi & 1) * grid_step; x < p_max.x; x += grid_step * 2.0f)
+            {
+                float x1 = ImClamp(x, p_min.x, p_max.x), x2 = ImMin(x + grid_step, p_max.x);
+                if (x2 <= x1)
+                    continue;
+                int rounding_corners_flags_cell = 0;
+                if (y1 <= p_min.y) { if (x1 <= p_min.x) rounding_corners_flags_cell |= ImDrawCornerFlags_TopLeft; if (x2 >= p_max.x) rounding_corners_flags_cell |= ImDrawCornerFlags_TopRight; }
+                if (y2 >= p_max.y) { if (x1 <= p_min.x) rounding_corners_flags_cell |= ImDrawCornerFlags_BotLeft; if (x2 >= p_max.x) rounding_corners_flags_cell |= ImDrawCornerFlags_BotRight; }
+                rounding_corners_flags_cell &= rounding_corners_flags;
+                draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col_bg2, rounding_corners_flags_cell ? rounding : 0.0f, rounding_corners_flags_cell);
+            }
+        }
+    }
+    else
+    {
+        draw_list->AddRectFilled(p_min, p_max, col, rounding, rounding_corners_flags);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -3979,9 +3511,9 @@ static unsigned int stb_adler32(unsigned int adler32, unsigned char *buffer, uns
 {
     const unsigned long ADLER_MOD = 65521;
     unsigned long s1 = adler32 & 0xffff, s2 = adler32 >> 16;
-    unsigned long blocklen, i;
+    unsigned long blocklen = buflen % 5552;
 
-    blocklen = buflen % 5552;
+    unsigned long i;
     while (buflen) {
         for (i=0; i + 7 < blocklen; i += 8) {
             s1 += buffer[0], s2 += s1;
@@ -4008,10 +3540,9 @@ static unsigned int stb_adler32(unsigned int adler32, unsigned char *buffer, uns
 
 static unsigned int stb_decompress(unsigned char *output, const unsigned char *i, unsigned int /*length*/)
 {
-    unsigned int olen;
     if (stb__in4(0) != 0x57bC0000) return 0;
     if (stb__in4(4) != 0)          return 0; // error! stream is > 4GB
-    olen = stb_decompress_length(i);
+    const unsigned int olen = stb_decompress_length(i);
     stb__barrier_in_b = i;
     stb__barrier_out_e = output + olen;
     stb__barrier_out_b = output;
@@ -4040,816 +3571,425 @@ static unsigned int stb_decompress(unsigned char *output, const unsigned char *i
 }
 
 //-----------------------------------------------------------------------------
-// [SECTION] Default font data (GroupType - Bank Gothic Pro Light.otf)
+// [SECTION] Default font data (ProggyClean.ttf)
 //-----------------------------------------------------------------------------
-// File: 'GroupType - Bank Gothic Pro Light.otf' (34216 bytes)
-// Exported using binary_to_compressed_c.cpp
+// ProggyClean.ttf
+// Copyright (c) 2004, 2005 Tristan Grimmer
+// MIT license (see License.txt in http://www.upperbounds.net/download/ProggyClean.ttf.zip)
+// Download and more information at http://upperbounds.net
+//-----------------------------------------------------------------------------
+// File: 'ProggyClean.ttf' (41208 bytes)
+// Exported using misc/fonts/binary_to_compressed_c.cpp (with compression + base85 string encoding).
 // The purpose of encoding as base85 instead of "0x00,0x01,..." style is only save on _source code_ size.
 //-----------------------------------------------------------------------------
-static const char bank_gothic_pro_light_otf_compressed_data_base85[34530 + 1] =
-"7])#######Q5e0Y'/###ZE7+>'wPP&Ql#v#2mLT9EMdK-Ra+##:G###J,0h</pF8_3g###OC*##kK.e=6Zj$`WS)##iO4U%IL<`<?.41Da-34#D<F&#<;isBb<xeuZ/q.#Ngk&#W:N]D"
-"DMkmr5_,oLH5P$M;$tLD6q;W%j&;*Mq1N*M?O%KDDTf/,,j,)#w%D5#e:V)Fo;>J#Yg3O+5O$iLoMbAF(('[J'j8*MPw-tL2,%4G%?c+vkG.%#p&3<#C9F&#/k8g1VpsSpplv^AeI1=#"
-"?<5)MwKg:d2PZYNm:kx+'nE)<M(aw'K>YY#t+9;-kbrE/5Lc##1HdtL0aUY$pt8kMBuCp.nT%##QhSe$TAlY#g0_'#.M(Z#DY2uLr.BrM/lU%kP:c@tp#Z%._=4,M+:9/L=,GX7E$AnL"
-"EPG8.L#TCHIC9?-mt:/:#^'LGp5_qD=HSt#Iv.>-XFE>.ct65/Qd<X(all-$xHce$AP'588=(^#AB<)=1:h#$RcHY>2C-?$hb+GM3LHZ$u]g1T4Udv$2:t@X7q`s%F>#J_8$&9&1$Hoe"
-"5krS&Jo`PB;HX2(8i]F-H(u_.+MC;$WaEF.#^$0#.(1B#ML-Yu01L^#[nvl/1:h#$c-KA4.+_>$O?IZ$'QfrQ@$ev$Ma);Z7q`s%vi3Mg8$&9&K.u@t9-AT&&hrS.>Zt2(D86#>Z[/Q("
-"NafYGk^T%J$'4RDCKlmB&8taG4sOVCmiAoDD0V6MHr5/G^SAO;:.C,38$ik1^DxkE/$A_59rCVC:1k(I^hx98)n[F-b1USDa9vc<*5s3Mmk&kM$2^gLPrj^-3G7]0)ir]5$&r(8W6DO+"
-"(;1eG38vLF)-7L2)NOe-Dvk?Bj5x--0]6fG=9OG-c7$lE^=N880oiiF=i3nLBlSE-%O;9CuicdG/iCrCBHjfEo>pKF+(rE-&a'kEA%o'I9g0H-7PViFTqm$8X3L'>=O%F-FDSE-4#?lE"
-"S2&aFewTt1S6Xw087M*HBsP^%a;,FHr(622d8_DI@.vLF,v_aHBFwgFXfCP8XhdxFeBEYGIYo+DUw%;HlBel/Zl,20j'(m9Ls%aFpB7L#80(@'?Cw?0sC-AFWj.@'YYbYH-&K21/HnJ;"
-";X2X:[2g,3/pYc2L9*j1t'Bs7i-7L#IQdF@NMWq)sc8JC8C$^G%?g'&1G`f1rWu1B3`SGES'm`F8]WJD`_&mBVBi]GYc[>-$6nwTI<Pq2x'AVH'TC5B&aS:Vtk>xTGlv]5E.AZCh`t3t"
-"i-?Ra0CDqD5t1kX[U'XLrRBe6J]/kX)9tQjY>*m9UVX>Hg/[-ZNwmKP7`DJ1pG&g;UDf]GomS9rmg3_]2vUk=+]+wpq,.wp@oNe?/_ufDd1o>-+JM'J*Xr?9a&s.Cor3)FI&x]G$#w9)"
-"qcSfCZl%A-GuM>Md(crL&#/qLIMg-#T$S-#)EHL-Tr.>-S`.u-8S#TMRM4RM;NM/#j=$p-/W&E>#mGoLUkFrL7KG&#'9x/M6A1sLVe=rLGAwx-750sLa*8qLoLG&#.=QD-d?:@-Oh;H^"
-"Z3CkLwXD/#^st.#e,KkL>?1sL$f`/#c5o-#KT]F-W(A>-=NJF-mSR2.-N*rLK&mM*Cd&Xh.a9<-qx8;-%GpV-Zfxj2h2#&#5(KgL[bv>#3BFV.$KA=#FxS,M71T,M(LsS%+6@D*TMw%+"
-"XfW]+](9>,a@pu,eXPV-iq18.m3io.qKIP/ud*20#'bi0'?BJ10U?']bpYc232;D37Jr%4;cR]4?%4>5d(=ZGE8E)#IDW)#MPj)#Q]&*#Ui8*#YuJ*#^+^*#b7p*#fC,+#jO>+#n[P+#"
-"rhc+#vtu+#$+2,#(7D,#,CV,#0Oi,#4[%-#8h7-#<tI-#@*]-#D6o-#HB+.#LN=.#PZO.#Tgb.#Xst.#])1/#8#krL_U(%M#xA8#F7I8#kRp2#qNB:#HCP##tVe#M=_YgL_w$##F>(7#"
-"B2l6#vuO6#dTK:#tHY##v]n#MoRu+'t&,Vmh+6PSR<#Po1m-,)_LEcVj<>]X+Q7VZ`3+JUBbr4S/ahf(*S%GVf=MiTxpj=l0@TxX7aPM'@0,/(,sj4]hfi7eLcCVH<A`(Wk0(Pfin+Se"
-"q[BigqOb1gLQE>#tv;fh#+$JhR=w4J1%xCW*LZ+ix^=PJ34no%=fr1Ktc6MK##RiKNLt=Y*V/GM,cJcM21G`N4=c%OZ+_Y#<n$>P>$@YPC9[uP6a;YYGQ<VQKp8SR5@35&;0A;$%o&ed"
-"D16;-Q&.kX/WJ0#VYQC#f$2G#TY-K#7U5j#uapq#Uv@=-FZF>-V5:?-#YEA-Uhoi-v*w^tRle+MKKG&#H'wX.dt(G#YW_@--pO41rT^q#Rp7=-BN4>-q]_@-TgX@6$,Y:vp(>uu9f-4v"
-"+a%1vM*T.v>sxXu`cGxkplanLn=8uO_lZ=OwLZ%*bBCr#B$E>#`)bJ261Ki#^Eg$'[Xq]lJu`4oBbpi#M6TO690?;#9UK:#m8u6#S1@8#B2l6#-Sp2#/rG3#g,EQ.hmGG)DkYf$PJ:;$"
-"'2G>#HsABd--(V%<$UI(GnvK#SF?$#C&A`sbxKC*HsUo&+qW<$#.-uP84'It(m*2(9?FM(/^]6,*ir$#f-/]%OAP##FXI%#q2h'#ADW)#eUG+#1n@-#V/:/#$G31#Ke53#ov%5#frCg%"
-"s_Ioe.34]kUq9fq2I82'i?320L?.29.9)2BjD?MK27l%OJs]oRcXNcV%?@VZ=%2J_Ua#>cnFk1g0-]%kHiMonaN?cr#/Y>#;eA2'SJ3&+q^WM0L?729+t55ATUZ]F+l=DN]Ls(W>4r+`"
-"pkPfhQROip(V$W$Y1P;-8fN>5dS9,;6Q;2Bh2qlJIpooR&HnrZK$X`aP;Cp%(mSP]kwViF-M%/G]9`9CxdM=BO?'2Fk^iTC==^b%BxXVC/s>LF=/2t-JBnRMf7ULM6m7WCN)]'G9Y)iF"
-"-]AF%aX0pM2KRSD<hZX(<n3cHV.]u-D2'pM3KeoDRGVt-Ja*sLWf&Z.m&4RDPPVX-uk<=:du_3O528F%68AF%8Do'&8A]b%6;Sb%68AF%8Do'&9Do'&7;Sb%/NcSAQ%dq)ILwwBP*^UD"
-"V^:4FZ,ehG_YAFIe4(%KlndXLp?87NB*q/D>CRFHAKi<Le4`e$f7`e$g:`e$h=`e$i@`e$jC`e$kF`e$lI`e$mL`e$nO`e$oR`e$pU`e$qX`e$r[`e$s_`e$tb`e$ue`e$vh`e$wk`e$"
-"xn`e$#r`e$$u`e$%x`e$&%ae$'(ae$N[tsBMB7nM*WAeG6bPC&6%VeG%^4rCH29pM>TnoD?gXO+(^IUC-mgoDTii=-o3I>%O2LNMVWbpBnG^kE,(u$'oowb@oowb@t7Oc@gsg4=I^qR3"
-"I^qR3N&IS3Lp6S3u:clE:H7RM83%.Oq9..OZ8..OvfabPgAIIOT<6D-q36D-M%qk.XJcdGP2&Z$(A]F@(A]F@-`4G@vDLo<N*F%0AVXo*),E.?.dioMu6/PDIUaqDA(:oD_NYs8Z@LO;"
-"cS8LWqa31#/4>>#:b/2'X:lr-4.GS7khEV?fvt4J-xF`Nt)7VZ:xsu5UaIM9xE08@aAVfL=q->P[UJ`W2/t4]]Dr7e(YVG2OJCMTv5erZWscuceF3j'rkeY>TbIYl`E6Gr93U,))^(d2"
-"j',p@tt(vP#9[VZO6'&bkuRSe_*(/qmwCs-FwqP8&4xY>F>J/Cd?sYG:UUAO$NaS[fXLGiJiVSnjjdcr,PCZ#Op_,)QN[29/t#T@TIH&F.PjJL,/G2^ePiVd-U;,iD,L>lmY'vuB$p2'"
-"jh:W-85Dd2Q$Qs6;T)QAZ[Q&F3F-^OdCnJU)3`>YInaDasb,jgKYmVmtcO>u;:es$LNYj'p0%9.9JIa3a&o29((A^=Aam5AlpOsH,8*NKAq6^Oj[<gU-E.ZYE+vM^[T0aasItPf4kM,i"
-"KM?vlo/aDs;4RW$K?,3'e:p#,1W#01G+4B4ZE)97O8K=-COW2*#PC<-@QbB,rcWS&68^b*F+7=-Au@T%/AXS&`TeA,7:t9&]tB;&S<N_[wkB^s+q.7ng_`6nbrr8&-i<B*S(n'Wwa`]t"
-"Yv7@:X.=LBw$v;dV2W#R/Pe;?itmf_,rWX52eR/QwB@S&@f9gU4hTWLMkmS&k]*ZL30:as$[O_N2<;<%/1x_<<*^(u8[lG,(GqA&#tGWg5(oF):3*Q&C1g0qf@X_[@S>/)f&;tVBkv_k"
-"I?;vgG@<i0pM<^8qb,>%8VMOak)5hqpixqCcA<<%,:;al3O_$%I]6HgiD=N/a*a_FO<Jf,8$/^FY`e1-1n#^X'dIl,]8pPS#-tgTm;(4T+:qhL/CdwL3=Lr&'2_e[;'dU$1?+xC*?4e)"
-"1fIF)3nFXGiU*t$,h8BF@C1/)l]w-)SXWS&*wln&6E.1(]iu8.9RF9%,F+HD$EVQ&4qE$*W&_(uVJbxsa8wU?LR7YD8#qHq:xh.[KuFH;iwnYD,YPK1=MFs6Y1?bsLIUXu)'3Xu-4K%4"
-"E2Z(@=__*NE%T//&7YU&W$VHMpoW_SGZ7vY=D42-=UCeM9ehD1<Khr%8oE,]U*uDss<Vb;Bt-gk:h7`t>+,Y#iL=&-U$##[WG(GsC.R`_ni<2-AJOjt1cA1KE,/_$`wL[Fg7l0-)drqI"
-"hZ8N+IR:QMJG'xX^_JiX@@,Q%?A_Y`BXK/%V/q6D^3((*)84pe[t#b,-^rMB]NKnEEx*PT):[VsXR+bduH,ft6Z:x=^?p:%PZa*lZ=v(%SS5Jfoahq)8)u7DODB'%MD:7X]h[5SLbAQ+"
-"?*7MQ9=%4A4J*eIJ0gZPa<dg,j:=ZKFbmS&DCx8&Z[^3Eu%voA*VCd$w`Ei&$<Au,g:/I,SRqk/0uc#YO5JPsX?iu?</]@OQTIh^Uw;Ws;>.nj2@M#u_v%u,K:],)Z3B(T-5WFs7FI#u"
-"gL2`tF+qDseoC_tkf+fC<KX;HdN:DI;9L_WnWNGUY^4`t3/a-_>fIk4;U#xUw;DS+$?4`tUbQP0-i_d$u0PqZ0D.7n'NX>Gcg?&JupU;.%E`5SbS+X$CR+]s<v510OAkI:c^pw4Xd&di"
-"dLo_,lxL/UwvZ`s4#,`E;Ts=#sa$%%?j=]AGfQ8%bOO'@FeK/%O(-9WqT6)0eX=Rb$raFs:i]X#b[@7-SJ&f)1_aADB4:`tU+oSsXGm<cU*es$@Pti$PJdGVr6A+-OQ'GHlG;`tU7aO<"
-"/ta*-38?,MVP`']M_L'88h%?5fl3RD_O^.(B^ZG&ONtw4@D&3Kt&/b@0`mr>Q>i>>rf)D%Q.5pVV$Ku$K^kWVkBbcOQcR>I1Pq<1nRiD,ch]>G><+,-wG0ZGSh5l,e6O`6rA(S,:L<R,"
-"k2Y%*rr$E3Sf>x4fSw6[>c)`3a%wh$vp1;&jBEC,_-GJ2HUNmf'ZtFsu5M`sd&UnobsTh$I--1gG$_0gZ`tcidF+Q%PWMACtt:4%A&od)6U`#Uq3mI&]UHQA$)]HDXv?8u_<).h1U(O%"
-"3PNF&3%Nd%Y>VQ&jn14%/Re9mEL8hXncfS&e9L]jaovh$&HI#uMM2`tol1asH]-0uH.:^4sk=oLr3D'%BWWc4#<FbsRQ4^CPLm.5*(+qCdJ`%uOwg^[V[&GspUH,]2]n]5ep5T1U/S'j"
-"1.gtYAg5?Gh/Y-H6?^-Heq?I:#XaJ1K7w_EUa;p74sRht'-4kO%[IDsA@mc$kYB_tp'TKg-#6mSZ6lj,DH@as<le056:%#upn^+jm#x>MACb70c,0mto#iRsE(,Y#c#,B&74IaFF2C_a"
-"L7VmLtk@iD/(p*u16nd)hBq_E2vVnD=6eI:1^q]4J6*Q&5SVQ&L/c'kAv9=>q8N1B(]lJ:CuBZ>%(677Q_<%*MBMDs.t:o$$:<A&v,&EsFYO_N?6cF%$D1v@4:r*-rN?iLWHR8[F[YQ&"
-"ldu7SMu29IZHOC)?@4/)lW>Ao-MHR&rs6as6dXipEh+)M$-CQVUgQ9-9d76IrDACj/?0j&eW8D,mB,4TNoPFs%5^u$vQ9EscDi'W;V]S&1tY9&c.t(=[FGc0O5`-I&E9^&R@d@&dNtw4"
-"c#uDsG:Q108N0B%?=Y]t)nl>u,QTas6[pY%o@-V-2M,bs:.9*uef)r-1fC$uM89asd&A8u?&u>%so@DscE@P%^];o@#(4N'wPqwsOF:FlITvd)2jRbD4r2Q&_mww4Wpmk%mB1iX38D<-"
-"VR<I&`WiL,3K?[sxrFaj6Wn`sfDGn$-2ko5^E.#ujPGn$#g;Bk[r9i&ZuTeLP(B3tJj$ZsK(q*MA7at([u<[s7_ZfLJX/77qB$AIS,#5nbj')M^QSds_FWZG`lcL02*0LTL<gxTVpc6-"
-"OZ5.;SNY^tr%L195'4`t>8lSpd6AX1jMl6<;nU/Cv*V*-KPBgho/U+X2q%P%4J;pV]FZ20/L$cDgJCh$L];^kjnmR?b::j&D),Ze]eQ&)iL^4E$[T^FK0Jf,Ou)9ICs:7@)YXt9'_QDs"
-"xLuxtfk9t6[$#J(i=oT#_[`nItT+%bfrT97[ZBB%S?W_[[dN5]dD=e,V8IvRjPCD)UX<%=]3Qxk6tCUQL5ikojMCC&+p$lbRB]O9r-AQ,W6Ia3Dmxf_38v/YdWF>D#p;d+*G2Q&F;]S&"
-"qdaX#e$]eg?LOs(?0w3g`d9h$lhdXh):C^`HZ&m%;iZAIELY/CeNVm,g1S8u^0;Q&TFkP&Qbi.IZ*rw=E1GljANEM,Zn'U#c)oh&,H$k&.&^S&)E>Q&a6RT,5o47$eSEPsh<e9vZ)St:"
-"SR#r6SPiERd@<G]3qA7/k-8Q&;s*%nah.T%ur48$3FHHbWDs>ue`V#lLBnd)XR@o.pX.SF(Wo?P8+:K,2FNUJIX0k,^f&7[f+R4A$wCPsD5p%7+ZBF2rGoHs#5QxkIAVYj@P+f&.#:_&"
-"ZFD]&&/LpLwvU%kke]IC/8,7[W5o5JLXLTf$H[7$@8L/[[vkP'<_QMh)Ltw4udivshGT?#3g%Es&_T?#iI(##WmYxOa>T2#9h)##rqi=c[w,;#lR(##8-Juc^-?;#jL(##Xrj4SrOD4#"
-"xw(##iw$GVub`4#wt(##=71GDdJM^4JD'##0C2VZ(C]5#+@2##F(:c`<gh7#A**##d?+VdGMn8#E6*##q>vLgJiNT#LK*##$NV.hR=9U#Td*##0D0`jW_^:#Zv*##us`xFpC24#0N/##"
-"S=x:HA.:/#d:(##t&5YYhi>3#KG'##1Z#AO[v&2#kO(##v-KlSYjj1#_.1##2(6PJ.g7-#f@(##H8h(EGU-K#'1)##>:qCa]&02#c7(##rP^%O7G4.#E5'##mlQS%n7v3#]&+##MOSiB"
-"VTE1#<#B##aI=VHIX$0#%+)##-0PuY29hj$5_2##NLQ%b>mq7#`.(##*0+GMa2,f$6dA>#X*GJ:&),##BHLpLo#q<jE%ZP/YG#)<`Dr+Mb0(>Yu/PrmT(cV-EF7;HQ+s(WeB]ulgS'Z#"
-"bPurH@]@PoM.q`Ef^08n>w2j9`wv]F9eQ>Phn8)W@.VJ_m7XPfB8?;mk)a`sa3Aj0(_#T@gi:)a:I1aN63]Djks;)s?<f,;%#*NKO#wSe^,'$#i'ep.=.w;Hai&Qfm//as=t`j974l)N"
-"w>s8[)nW&kLaqg(#R[T.J@'$5F&jmA3bA01<EZT@jZ2<Z4PSjp8u-[#%9cK13[kZ>W&B<Q&3lvlpU,_+5:F6JUR[^kmi5h:J6w^O8M(n]ZhTNp15GBtf1#C+m%;e;l33bE5Y8kKiruTR"
-",$D'Xr.O9eW(jWm;43=$xnG_+>;i-2D>'LC-SB-r:b1kpNp9I;ZCII;m>rb3%v949AZw6f)Q?.27g=Lhm<dRAP<8CtN@gC4rCI7SbNTI`P>HCk)kJr.wafCFd>#]P;?D+WwCgUe)NSIr"
-"Dw7S8Rpm=?5EeCX81SY$<N^r.XJSr@F%KoJ5k>iUo2mFah@a@lrb_`+)vBS8$X/GEM@p4KBg[(Xr?_7of>@5'&xS`=n:,8A3eC2(&*/AYf2LDF_HIJM7XKPTc_MV[6So%caPUfi6WWlp"
-"egGv$;k@&,htB,3>(E2:l:cSAES*vHtiGAPJsIGWw&LM_Klu+sYg$a=30^GE`g-)bB8giqqJ#T8*^V;Ivc#aO=T1)k`7f21^#R&>,$E)X$(p]lMlufrtcep&g_k/2j7ApSj[d>Z2#N,a"
-"gJlMh1$7sn/F[a+.H/B5P'Pg;@,@^GjL+^ljWKB#:IDH*0)hs72-5HELA^&YiXmk/h'i'tEkBBu+7&I_$oC_tcnvk$)eH/hJ;JF22a%htWKs<Y^tZ$u,M;.LANmMB^,/FMx1[(u_D9Es"
-"D]<[s?g%4J(557e.0f3%D:Sq)&IZqQ'B@Ssjr5HMdA,DIv,,#$7TL[XS.A^b.J7I@l5`49_uCvYZgI$tnunBjRa%Si?ko1hJUjL%aV25WB2wUU5kxJX]@,TVQJn4CeL&*uV^MUmnx<FD"
-"$c_$MuVkP'=&&:H%b,Ns^B>rt.p=DswNhtu`3T%[<T%j$u;:N'flNkSoEYk$6=Y>@n7bw5RHQs60O[@%cTZ]trNJNgX@[egYW>D&W@b]m/aYn64ES%#=$[tua[+[lBK`OuiG3-)-W(H,"
-"8]M<U]_:dr=lDgC^bO@jsN;=&>N._s7q3$Sp&I3m=[l$Oaqh<dR,k(?BrpDs4<ri(DVF<&IwxNoA?4D,@#6F&nf^PkZ.g]]#=BMs@M;UQUilI:a1.Cu$wkh0[Ihet(5-.1xc[RnRwG3<"
-"l75=M]+HD-[ERu1gMaLudC[L,],J=hiO;'MJr9ba4'P^%AZ&I=?2LaO%B#De+OF2X,G=C3HF+GexOKR[6)/^tZWWiCSSW*rOC%.KmxKO/>]^4e,(V_/`b+ZsHeD_/R9OA&M-Zeswb1s^"
-"trpqs<tL$tN6SeCFbo9ZOq%i5J;DR@qs+Ai8Oc7c-r^s=-h[FgYF13texnDs`+4-)^(u>&J&]&G;6(rtd20_-mout1mHtt1G6.$tN^=?->2hs.K3TN'hDj--1H[B#qaL`sYY`g;mxpk1"
-"FXCPej>u$*N%EdtBle8uguaj0C,a0go2DehcfpP,wB9`5:i1=Ikx#VsihbC3t5BF2au]l`&v4L#I$'+2RWCF2[8p,3iVSk?oS_V%NaG(3+LI(<p]x]?X[l7$l@-%=:P$s$G>&e$D*Not"
-"-BbjLqYX2c(pj1i(8,'tv42^td=)SX0LOLs;(]_3$j3Gi=XvNFJxYk]o(XH&q'YH&]e>*7K2vPJW[9)NvEHit,,K2%Kq.]$%c?vGxwDGWwx2,srES'MPA>TsMJhw-L]/.MX5W:6LuJw5"
-"B]CP,1dvG&wVY%*-C5;&xcfwFDpqx$mgf]bkREZ6(P2etY]Lp$Q+get2+sJk1dxc$WclDsKr5PfZu]h9TGqwkimC.)0Q<,<+]r58L#F_N5<A_t,#PQssD9Esnh2-)E`Rea=d4cs+SAcL"
-"h+;RY'7eRjTmdU#jm0qkdXT7$3BJ_tXVELsPG7D=,WHiLDUiUsbHx[sHf&:%:$FSoxGM8BNvhTC/Pg=%`D-Z^^80vLeA:i'F@8?K$Hm_tsMdc%Lu9#YL>mqW``N]sGkjX$W5t'<,/7Z$"
-"/Q6:6V8CJsCol#uYw+w#RJ,%=4*m#uIE%2t]4w=cxvY-hcx8i'x@TO&gsrer%%m%dKlQS'7@e)eelT7BnX@`to#e;%]u3ut$aT7Bt+IA-L;e]-/Pa-6J/(F`vNH.3wMtt,'mpm,?8?Ds"
-"_E>rt=u12MWaMJ<5<4Q'r]gvLjuBh3'^$u,L^:P'RcOI:i,9KIec<bbNu3xsX1Cj_SgALb#N&>qdX6sQT-_uE@'&?/h]?xnElUZ$j$X<qq_%N';'qsHRj#Zs66qx6T&M`s-ax#*TcDOs"
-">eo[Fux:Ks$1I:hIq8N'A<:+M=OvwL&XDs@:s6&2i`0k,wL)gt`jQ0%r4)[$n+OcR+TSKU+@@OV-AH.MN&Q+Y#WQN'#S@777#)5ujF/+c='=Hr,gM)`V/2@AAo_P,m,38$ApjN,@epi("
-"?]9N,>fmE,b-rFspwQ(tiYpGrSPHXP(^KOJ.&CwO$8`>lt=bp:HY[p.7Zk+`wYvB7''sM,EQi%tj*sGrrrsFLr^jr12L)M,'bQ&twxKnN3KxqD1S_;$q:b6ak<WeD&mkU$]B7H2.3DUQ"
-"fbHeiY:=]s(/=]s>:DO%YOJ4A,D7N'O[:xfRFOT#q4mb2uG-=P@GlP,^iZX.nSf#*uq%31f/%W6YRTut6`Tut<1]T%$6eOAG0rlkJG>4&sm.:Hb_(Fsd<.^tT9:>6voq^sOm/:%x77f("
-"WZ6qM4gm_tcmaU$O^OIs)tvrWiGrS++>Y=G%E.h%D3petdI8hf?/vYsG([3ev9sDqL?)Yh7'i%t-Y+Fse_;=,u;P^tdDWILq%0i<D5a=,L/0B%SY2rtAU4c,`B^rtk(&Y,aU*u#H#0B%"
-"[E5pkNBwFsjeVX,bsHu#^9Mf6j4_ER)Et<YBEGLX9F]RRkh51FtF[C%/J5,`K`0Y#rwFmA6R.+-M?7dD_B2m,b4LDji)l<V>)kiYF[C%lS=L@O[?5nE>U6h+j',gLDtb/-3-&gQaS%Gs"
-"=YmaNdqLUQJb3^kZit-LE%PLk1I,.:[2uq?@[#30HvV9FFAfQYVr&GsRS5asN]$)4H8c_FP?Jf,K$.@F*GhPSs0YB$jW%@'R))@'Gn9%U9XiP'Ip0G,'?j>&Dvxnj_WqJ,`p<:vt]QJR"
-"tX<^bp%TL9Lcl&FaS;bid+iE3`'$)*q(@Su(G?biE*Utt3$ZC%ucvJ1?YXhK%gx4n)nQ8$e:P-Q?<74foG=itZaxlsA'1jt[Ko@WGi8;&F/GC,=]>kFC[+L>,+*F`fDl@2*]i%tio*%="
-"akF6u0E>X3FfG^4m&abiv+=o7/G38$d9%%P8u?4k>R-K#G5o<lp.$@bdrNwtNN8xt'*8E%#*X]tdclDs`S1KUZj)+to5gICIn*(3Sv[]tITQ%+>hCDsVK7/4G`348kn*N'vtf9v>]qFs"
-"G6r@l=oe<LwLf<LE+i]tuApet&/I`$4LDFlq_KDslZ3Lsux6`$:(8'o-x%=1/F%8$]P/+NutH?#vZb%t)4*:&v5:G,J@btYb^0N'2:7R69'ZnReKQ&t4%$)*S<#F&wF3JI]3FatkdMaN"
-"</Lx6mX+pe)x()j>Kfh0%*P#>h/vv$:=u2;(f@o.Qh?uMD@b'M'IqSk#Mq6<6]H_t1vgj$R$8D,&+/L>=$((3$o%ptW^ums`u%YKxfV%ugn$os0/<(Toe=2:hE0j(1nTT%2R^R@nI3-)"
-"OA3/)'kpx>*Ve0^0FVI1dnMbj*ovIsd'`:m1dYEnIAb^Oq>'SI53+w#[4.V5;`c>&+%.%=i[_]t;47st@wfm$6;@nnn-41%U%jd?B=VmLRw_E4gFa)ubh-gs3Y[%%rnUI_kL1I_XCGDs"
-"C):Yd^f?gsPt2)uF'B2%,vg6<s&#2*8*/r$BuPwkSL_]t6?vnt=,Oi$sYEDsWaTut8Lqr$G[>XPiY&:QMl)N'8(nDsiGYf%^d,%=RuNOWLIxe(vk<SSjgnfhDic0)vhgE8ubo,)H'51B"
-":2eAikfBBu-:ed`2e[$uH3gI=uIoq`X8BN,UV+X7;b][s87]'txh;k:M&l?-2ujX%@8Fm:$ungs6xW-qJf2L^;X;_tDGPn$b%%c;5.5pG?tt<YC6C=YI_6%FD,MR#]E9f(&t?%O5QTas"
-"XOMA#v'Z>&lQX(jqHa8&t?d=CWkKLj8n;E<%f8csWK%6M)SNZsvi-;IK3ZesYp*%=kE-aJ[<^%44VA2p.?2P,UL/ZPpXQ^t']-#$R_4@c'ik>%uO[]tcQaM,$xEdt%3:1'Da9Zs@VsGI"
-"'PK?<nx'XiG/_3p+Z0#t*`n*LktlLF6NF/)rEm=Mh>4i+8B7gC'=r*-'/pDEgs:YMOAHaI5@T(FPk<$LJgb,Hf]_1CT-=;EX1.%+LH/.(<q8OWb*M4%PKN<VJ;;nX87^sLOC/'-&>-J["
-"LWib%b%o@+N,a1%TJ0_J^_&TIlGPg,;YS2%;n.(TP]JCSLC]m+U_hwFkGdHLJYnq6%W1N'X:rFscdTO,T^LT%$5qFsALP%=74IaFr'p*uFA&nJO8k:_+w:]c%LOG,^.Q.1>G]NI2D)>n"
-"l?<O^FfX2-.Wc(u%qN/Uwn'(*hdKG,Fg;K,Jcw5/aa.FsS7&I_?j@Dse.MUmm1?_arh(T.jVpmth%FC3L<a%YO9+oL,vmt51F/FM6XiS%@v(fs#BUO/(4tX`0]aFs@JIJjj@K8[i)od,"
-"JAuY@5:r*-h/OlWA`shDlxE,ML2nlLFubYjg;VP'9Zk(Nsf.9&Sp7J&&@O46ie/[sIj5EE]7qSg(_oJ.v1+)>f)Cm/+3RDsGH1^t3sJv.`%2Ds;`0tq]Z7J0Ippg$<st&=g@5N',=m=l"
-"^bO@j4lRN'^7lXh2pUZscKrCsZ02DsfA=j)rGoHsZJOVJaQxn/HLv$tDGpFs&kSZhYDCJshUX<6Z5421-3Z=5d[uBac$7osCgox$(S[+)$;7+)]OGDs:%,f$krqR,@T3FsE`>A5v*1c)"
-"+U=f(wVCv>7+`$u.P5bskkxx$cwZ$0hOLDsp3q^s)^bq$PwRnL8M_'YH#jOs]29Ms2*jw$8qdI:4X?I:LuFDsSr?kt%'`g$Ev1:6ZE177;4&N'rQKP8(>6FG[AhB#QBZQSuS'hhe)14)"
-"KlCJ8Sxo?%[8HuK)>/Gs$EoQG1j2j,p4t-[.X@['>/s>UxKBnf<6Ov$Ye0_@027H%FwFgGT$A1W<rjEJTE['4Im0q_p)C4J21)Eex0ur)31=au8(e<CQU2UsCGrB)E`TUsH#%PH](V;U"
-")Do3SY(0%]_8.j:2YAnfLeKjFi-/E%Lvg6`QZ%QMx+0K+QP=bFUBJf,Sh9n:.>cQYGDYn3o`wxU;HbP'<WKUs7V&vH5IJs(L-vBjGc=ps&FR&*H_^@%ovUdHZma]tQ7^,)&vE^JGnd(="
-"`+bRDRSNnSQ?RM%4'ksV?YKDs4Kf--1kJwTPR4n+O(PmY]#lP'<NA`rQ+hasct.-):+NDunTA9&e,31'5*1R[GSd4$k<I_tmlGZ$K^KtVSmQ?&J@llWHBU[kUN'F,:L.%=B+O<ut_b1h"
-"Cu6n=D^r&HV)Q(@vI5asDj0-)h:NT@h`tu@2i$A&+%-7R19NcsMrrM.hmpXsMRJ#*O^[D&t>kR,a(XfiwreJi65Dr?EL[<-QX_p$nP)vZJW4?-n[)60e<fG5$r1as'fUe$b_WD,Q4f6I"
-"v999&53Vn[]E,h10b@A&Ndh8&>&B=#%c'jLdh:ZF1E6[s24NwlIsSX%D?fC,-Ai;mMk,%))#>&M+c<Yjtq4tL,<p%#.Q:@E$tq^f)e8csC>,g)Y[OTs+)H?&r+SK<[IWE,T(2D,&vT#?"
-"Ax2P,u&Xg2r68@=^RcdM]65B,a1KPs2YFYHfhm-$'wYmJehKhLeRTA&K:Z2MY7>HrXBOC)27B6sb<6].(8GM,B6>gMrqs=Ej/`&P)dxA,`xA$g..JD,>f#m4L4mW-Hf&%'v[ID,'Vv=/"
-"'8eNq#6RL,>?69&rhTPs42=X(/]>X(I*LX(8nx3Jiq_d<ajYc<RBhs?T>7Q0^(De7u^kKPqVIJiU0ba%==/B,vMEXGW_XbDVBfqR$o:7Us;qbX8gsl]'CE4&vv7]$LpCvs_jt$=i4xmc"
-"53-5$%/DXc*R/<fwM@6:ZH;E:,O*Kf0*S1*?P.*?QM9Wau$$.$6x-*?P'*h^u/-T,`#qw4gm_#5vT_7%>r^9vALd:$Y`dh$/^O#DO6;`tXQ8h3eWqMBuwL*-@F>jBeWim,d=+]+RhYFs"
-"fV?g[K.G`t/9@_tgRgY%RC-N'3NsFs)7R&teCB9%;_)`3qn/PBgr3FI7=KMs*'Y@FZI-j^?1Cn,_3TtchRd]kBWa;5a$D4%0*T]69/3N1WsaFD)%k*@Gu/b%t@tqapA1+)gZ/HKE4I/)"
-"=m3e]ZF_1UB]H3hvrB')Y9p5i7W#7RdP0C)vWt]saG9M%r,r(B#)_hpNMmonDnt=%&E'_VZe6m]2j]Eed:uMB#xC*-Deb<m%K3a@PEo@%8^G7`A8]3o=K$gL4%KstT:j87Ao_?%vFkqL"
-"4wSI]8lCMZLHrn%tEGwU;`Wu6eob;LgcLh,^F'+rK&:;mOY`>UkS%Gs]?(_$-eUeC-u%NI6>JPsN).J9MmS79M^57gU0mIgYYdP'Vlj;te_uCssJxocJ]n<tg=f8u&qP;BQ,D`tVuP;^"
-"Xw&GsP#Ott0ov'9o8C.5Sk8:%QJ5g)TaSVe30;iOfpLehl]K')='M'6Gs^)hP.Cno15g't)UTJ%L-Q,Hq$JvGYaof,7[aJsa54hqR@B+HXA]vLRE:sLUK3s:fv-_$N-VJhmD+5-g%hJ_"
-",J1@RNeQ,_v7MOcS'uYcsnTa,2_3mS[?p:%?B+t7RaHr60ts[=)^pWsds(F^`Ti+``LhWsL>L`sP2*m)<@vn?&J4Z,MMCr$^.x%-^>Ai`s;4Z,p7uq$ltR7-D3;ODVZJh,fEX-cD;NO%"
-"9i?%iO]:dMFwtO;x>=o.Mgen$[-&[UF*KYd3[a;UDw;u5qn3wiK9sn6Ztfb)xVWRN]3*-a4FQiP^KjP'@Z[Ie?<p*M<5)T#;Z>2f)#'2nm]KOJ1'*FsEOfe(p.i_tZ-cC3O+%?7EK5f("
-"Wq8:%YIxst=JMa,KFGDsLcF@+;/>596up71/,l$0>2L=oE^$I6:&PIo'^Sb.(4b^br_XJ2N[BXdk)(h$bOTMs?X.W9@W,h$a+)lGPW;`twnI.GvcD`t$afLXT:&Gs;S?rWGTkP'*ZcwH"
-"s4NS#F;ZYsGJ%4JMr21BCX$FsC&j]tj13dtotb^$YV)2emTHDsVvbIs^7]]$w,j]tV-(s)N->u<[<D:Qnbuu:XB[8[[[5csTsvCs.Z3csibGepOoAK&@?A8m>I+)WYHPr-?@'v`@P6s$"
-"$4?I:q>8xtXq/LT@2W1%`o/[t8g1N'L:0#IQ.'PpF+<M,bpbo/Wq)q$9,:D,vP@vYN,i=T0+I6?A^oZ$rfiI,8ZW)ESqWCK4;f^$_>4j)Mh$#uJLki$+w3CNkirw$9n^tY'31N'b#3%g"
-"1]%Zs@LrCsw%M`sg?I&*TcDOsf>R:?N[&Q/I53:?5#]htMsw(ubK7N'u23as]Zi%tjOhODsdjltb%&Y,F14)6SkMe$h(^%mOf-:?&<6MjA_`#5FXiN9N@BPsrj8csX+XRA=-^(uehSF,"
-"e%;sHNfn1-cLwCuYTeh9=._/ZFujIikhqaQa9ho+#9tv1UiA_eqTsKfLj[%k-`?qLlKxS:q:,Fs(?3`t;+f.G;_gcE*i$e$mw[W9d?7aEJH+,-IpFvGSh5l,>4NAb_M27X.RD/ht1=Ue"
-"]?6@%iHYhB:FgJLCtb/-a5A,RbV%GsMnhJLE7s6E#A4(Nw4QbDS:NbhWra6$0<sk/;0)uLD%^4=u5l+%h.3rWftw[=GWR`k_&gfVV%6T@8&SbD=I/N'4(VP,(E6[sAGNJ)BxA41b*M4%"
-"Xgv&J3Z'_KkDti+TALE,Nqd?&ZbJs?G&''%JPjjYLkK%S[wTo+-3*>&>72`tPhSF,jboEr$Ho_6,?WE&rltV$V)un/P[)q$XxkDEE^(mW^F5J`Ak.&:m@47ev%@rU-(<h,m+Z`s32,g)"
-"V]JDsAFOq$K0MUmpA(,%<*$+riK0N'h53l8qJ9SI^EY[s2IVvka6-$tOYJ9&8J,oRQ'C^4=/S`tKa/:%puhe(>?4gQiSVFse'*V$W8hbtYQ@eGWXHL+`kb:&@9n>&2jK+2?4V+rc=SeC"
-"E>2kL<m^[GD<+a<m/hLKKe4T%-[IT#lRX6$%gt$=5(J5u'Qtq6Mq8N'I;O,i9,MZsrx:`sh,ne(#p,1Kf2'4^OAw^[UFT.(UGRqCg9,rH#T/vtWPfnf6v4d$DDbA[Xk&GsRx)-]Ou/Gs"
-"Dve/hH#q0K#9V?%^@Z$ZTxi3lXM#fC+WQfM]kDUs=O5DF?0_I,4P^Rs2amkA>qB>&W;/+NdsPHVR:+^A,`][sgRJaN2i$A&A@>UZJa<1M4-NJu5UA9&PPuVFJcaxsop>=-7FSt8>9UEu"
-"u<37'UnxcL+0]'/nw68$0Z-$Xk=>N%4>k$OACA+MBCx*M1u3T%YxqFs9N.At1o-^tB]9GHaGC--Oq5>T70:@k?sk?k]:a'TG5>;I+uLQW9DjH,VRXI&W^ThKn$k$Ow)dwcT2a@%^*[>M"
-"wx61K,lO]uaXGh1pPB@4U%mh:3Dq0*^.ugLQBOPCp*-WC]2tFs1fi=-p*ST%(=(I,a81Jsa3,7@idZAI.Zm7rHPRws<QqFs#nq$[N6(rtajVP'3?jh'GImd$sF`R%LsjA,+EIsm3vxE`"
-";I`o%`mm8&(0=10mlL%uX23as)<1oCNtdK^Z-T/`Uq_bDUie96$2#wt8l1asVpm@lZgph$j[lI:Y(Ce_36^Wj7_:Js6Mjdt]Ko@WHl8;&PWhI,[D6N'NGIG&b>qIB,4ST%<K_nIGvA$5"
-"ZG9dqD$fEsQWc$X<I8[svgrq6O.Fr6&wQktq=pEsNJtVhKmPv$ARi,)1H4esdu[`48h@_WaDf*`*+^et+WaM,Wp'=(lZs7%wrqS,4l7'*S3@(<Q*A=,QslFs0L+pR#i17URYKiU0']C<"
-"Xj+>%(@+hH%402pTYSbDI_6%FFt+sL5sZC#u.BUQ_ZT/U(5Zg,g44ZK%5I;7gGI^KbS?3%8_%?UU2R4ATRBPsIMrCsa3VP'w]1@'LL@IstJ348$BWIL08IC<gIpnd_P6_kSYF)<:8J#u"
-"5]NE,UlltlY2qL9&r'L,a9JRYU?c5o;9^b*K,CE,&mo$FIqxA&,)@jpg<2=-]fYh1,0DW@&]5asCj0-),g'5M+s6^rcRg`4R_N/.w9P]s+PBv)n=XE&e#HH,51ERIh*pA,2[<X1f*&r$"
-"[w<o7;0ZpLGgpHs@d5%.o*XcMnDZ`ML[3Gspsj^-LN?_8*Y/HV8CpsLtW`oG%r&N,YL#C8I.^U66ON/sJe]D&=.hh0)J;br7f`Veo62/-UGvxY.J`VeZ/E5+_8_$bIu9Q0Sn@D,g,/gL"
-"R`eG&Gb/RnRKpY6x(tVRIu'XM6<e9M*_uoJ>uO[jlJVP'qPfN,H0Um7(msYFdqGQsKUoG31a(*6^Mu`4_oQ>6v?_&=5LuCsON0(*KCE@;hfp<lVpmn.K].ZsLXj$Ge`>+2Ro]?%v0Xct"
-",Kc$G=C'@%Y2^[]H%ws$K;Px_L>5u#]2-K#1soU$2wY9&$kvCbtdR$9mf1BaK8>Cq0xZ$XbpN@&)gMxLktwntMF4E&WN=J<A8`Rp_D-AIM#:+t1nDSJiSYR,6FHHb45#C/IUIntZ<(J%"
-"2[=#GP_w`j^`e%%Y<dMK%p]?KJ(EsHOh^k,*1xcVu5%1->]^v>@fNh'07sFsN76as&5+FsseDDBRH;`tLwIHsYqqfhn`h>VRvX/_3GkC*RS/f1Zd#TFWoCC*r$_:-V_b;JVicP,B#TYe"
-"_ENt$<@QIUkr@.)ZH5c)oQ6K1-lq'<Gq;_tVjbIs<KB*<ZlCC*?ZdtPnO5Og`^'h$k)1LT,=$ghEZGN%-.qHH@7uYddU.Y#e:'OEIs.(WZNtVE=[^X#NK?)r5l_MZodSFM:SaGs'`o9;"
-")7*Q,@2]J&s1LP,qDVft)@/e+s6jRNtQ<=,q09stP1CvY&&+m,aD,:H(&hEU_W<O,B=Cm8@6`'-VLjsfrnwPJca`BJMfC?%M:5`VSo3x`Q`83-=>tE[bnbn+U=C*<I3A:-QvQ$t_n4(4"
-"&ncft>vaLs.tVw$C9#iKD-gKscBwR.HFK?-fi<7.',7&cM6eM1(:?7^oP`1`;Yc9vS%P$<W#Fh/kOS'j>j;g1vnaoT1)fhgDh/Ce-#U]M,7*_n2Pj>%gmbYcahx'jb8K=%vB@:$bM`ls"
-"sLaGIFahZssOm0U[/KI1U3-l$)$&w_1/e-JrZMm,f3ul`?JX,)9k2_@8XWu?%)PrC_ES)?VjdiaSYb:CoAaJ+w.]gXR:Wc>g)Ztau]sJU%R8eJsllB_8ck2-dIln>`^p-L/]po4nV0f3"
-"Tmxtk5I:rl5KJ`,(OYG&2)T(t@[/^t3BsFsBI2DsFah4gCN_Es)eR(tFAX%c-VtFLbYYa5TF:M,50.8$surI,.<7cs>Wi%tHBBihZP;D`fH0A7>lpM,,Qi%tSEoDsQ-g8ntL47I%hlWO"
-"=6.I&tA#E,vxpDsZs8cs3W+C&:@je1f'WL'Ff+4M0$n9SHG3D:5PpL,,6rK,%5];&::fR2XPM`ssmw)<A^_O/w*o6eoa$W%o,8:-]mKkfb%p$R)V%_kxOZ*L$['D&XGlB&-&<:&g.rFs"
-"HU6asu.fm8@I;p&Xn<vd)hd=5/i<HNjO4FD'Ug0MXE4jLd&jB:^L;kFBG:kFCT[;&&<3M,I1Z0G+Zp@&or4G-][H]/.8`c3iG/.(^e;Ia+5)V$S$:wke2X(L)k'D&nIU0G^)<:&L.rFs"
-"&CR`%W'o;&1#%qfV.NZsAd`(jo^o'NQ4.+<GHvNs=ZAVRMkHU[Llk2-0h1)>qYORek0x_<1AoM%=P-'XsmEB,$QfXhpq3ZsVBXxkIA;#j`k3ChIe8:%RHDXDlm./R:5JT+sE'F&WH*@&"
-"a*Rt)g/@*I:JQVsLe^/%Om7*IcVsP$f5[EIdJ#d3oB;Z>FqiP'N$CG,6?5T,,<nvsj4L#ulJ7cs^u1?GS+c[j*MRN'$7b-IjfHZsxD,w#cJ::?V>pF;@F4[s,DL9hHTrq-tUsfOC0*3h"
-"Hr;Hg`<*_j2ex(MSZe]G8cmJs(FOato(KEs7[vciC4>fA/S68%pSK=#`C[HDI'_Mh*x3sL@FmErCMUWneG+16$=>FrF(diMRaxvtbvl#ux7wDjufVP'vONF&WwxZs:`iB5T<Fbsa/[:?"
-",Bqt58&5d$]TvJCbKVm,/[=e?8w2/Mh[Nqm#F$_s4PlYs47Qv$CYhRIr0pSMDDeF%nJ7%OJuGO,dBbr]S2UF]6%+x4wn#l/`8>dM(/:(E^Y]CE8g%T7>=4wsBMo*DOZZeCGWwxtmlH9I"
-"_*Aws.<UMK[gZG&uE*w#6$P01=l$1B^uuPhR?t<Yi=cmUbE(1B_E8ht^<Bx7SHI*j)&K@k9Aj9&Xdc,)H2f7%n$g,)F4=7%k]0@&(q^O00AIF)m--e/oqjhs+5q7%<ba3=&_>Zs4:rDs"
-"+pmp-21L-QSC,/q;7RJ[)(jq6DVg&45^Hs$:2&fConFkfW=j^JkLrn[WANn[-;a&KIRpN0w`)MgU1]?j2fRN'3eb-IJ8wT#^A0U;SLdpscJx8ubC/@FMsLws;9V?>YnT%kBnqC,xdm.M"
-"I)ivsl5^x$Po:f1LVle1[LGDsbmnh$Kf<9[vCoqH2'_@65uL$u:D#bs@p*&%GsqC*ATLC*i^>j0>Xa1%-u_R%/1.S%59+Q'v?En<;)u=*@r<XY[u&=PZb_]tWhYft_T3a$`%L_E&dG4J"
-"ZTtrmf=wKs)jAetLgP^tFQoDs%#O>>5.BQ/d5evs0k'2KBAt=&wv?XP)pt=&C'x(65p@jpBs4h2PR?Fs+CZ=/n^Nvm1(Dr$3cmiLrJq;(gf#7I'O-'X@o)C3[xKEskQ-a-/rqFs29/Ba"
-"=vxJb(FL`sO@8+M;.k]XTI4LZjL6EEdZ5xLrNE1u:o.^tRg:[_9]j=5S5:Esgf;9c;e<T,FI0Lj#@D78nrhG%1u7(Waqxlo/D=Ds$2Ku$&?N]ttY:F;W4M4U%p2L`PZCG,_OOJ,8C/T,"
-"61Q*r.sCp.*k.?GT/^?^Fn2asfXE_&5gm*)1b+Un<E.1(ep*B,`Xgt>+WGs-U16EEk<@Q0p(.@FkxY<-s[<X%js.K,:M+48#MHO,B.PDs1Wlka'R9]$$5DctbU8]?;f'4Zta$@%uqd@&"
-"dCQ#l+5')jS`wsL>;x/t=fSP'oVDJs[=]f;c7`qH/?[G&98q)48'uw4Z6^K1]cTmS+MWi.*7F>H)?9X1)XUgL$<2=-DgOU%[1.48^r[b6w6QT,#HXlS<_bb)v^+dpg?G(D<Us9%Yo^OG"
-"kiJ'h@?<t/`<i4%FcR7V,%3h,QOxxkm*)Fse4TLT]=&jK6'6D*oOKDst8*X$rE9EsSkg4gdTN_jp`M?8JG&M%oP^9vYr3@tqAe?t01?wdKg>D&M0?biA`jc:H^S49pg_;&Mf1`t4xH36"
-"P<Gd2GO/w4BPNF&V.hh0X>.gs6$/@'=Mn*)(XqHid<$u5vNTk-FH6hE`2HT,,JcPj_0@>&j?ok&wMxLMjJ=0MVX[&Mua3Gs`'hhLa)#d$S^b/)e4Yw09vnk8x(kfOF$VXe/7WC&&w#n:"
-"T%BHQdQ=Is`UdICY4+H&_4GPs7q148tTsfcEG$l)t5A?&hrH86@F4[sFP2KUPE&ps6Sow=EV^@4+VUuRO*w$CGl8q%?&oh&Mgw+RMmvmQsQ0EstO31BZp+%#.4>>#`TXc2Pv8G;E(H]F"
-"#`b%OY+IfU%^j4]i1Flf`vhlAM(:DE.=hxOW%RfU0GPi^W#v:drm8/1G,(2T%BL;?@2SJCBS%)W.#05]M*X`ah01a*$v0#G[)KJ_0k`cij,s%t>n]2'r51d2$r%^=5*U8@pblYPXScPS"
-"2#bS[)bIDjVU42p$pxxt81Rs$Q><a*8;V)3o0#T@Y_dAFWJP5S+,G2^hleSe^qXMpp2NDs1fhv#]Lq8.p_n>>NiX,DhK/ZG&vZ2Kt#[;ZS<'aap44pe0X)ghQR'jp*8lYuQDj&+1^5K1"
-"Pk#<6hGOj92_Xv>a$<^F$^h5JHT/WQg@@jT;DBp[`)d>c1bM,iQxV8ne61jp$d]AtNg_g(iL5?,>`n&4mop,;1O+?>G/s2Ba*a#G5x+HMRs8WQe.i2T1d3WZSt[,`iVi;d70S)jV1a8n"
-"hEU/q%aJ&tqwQ^=P:5c0]NDeh%.:?%PNVxCqpvj8e6IlB4OCe3B*j]t-x=jpY:9i'JwXS&_PbA,^]Au,lLX87@_I`t8]JOsX8he1=Ooj0A=_gC_2[r)$u`L'+X8Q&,vOFE?q8OWKfYL0"
-"5*)-C,8xI,$8^b*bX0>tlLu#%d*W%=AU5f(+jhG,Za9NK_G-3%6U`#UB#6mS,D)h,cdb)Sd6jd%D`F$*?@?\?&gPmA4hVKU[KfX2-h?plU`8hnntc_[4cYIJ,4EJ#udsWS&K^_gaFkxPJ"
-"pN:7%wKN/_4U&$SH.Y2]bj3X`)Z;vciw,b,)ZAj9Zp@(-p'&sT;=wg,c2_TL+GBK+a-FLW_Z'Gsp-m>W4;I/)V8FXGWIJ?KMt91TeFD?TtX&P%A9F<V-/7-%LW%EI4_[NS:uKe-Wr=g,"
-"roJe-9:B<Vp,Q,V%B`k,c*bGVtaX,-/-J#uibUQ&J#XS&D3;L,iQtF,^g`LauKUV&Z)t'?d8wqMHXB*%x]-Q&HL.^C)L.9I@,3-)1%/-)vCZ?&jNtw49teh&MF_L%oxacR(KnfqAN?t."
-"Qn9g@Rb2K=Y-/S%^CGg)MLA:F:W:vL@Yf$V]HIW+PdE*%ivw`E'&oG&d*tKps[1^t#/)]J&^;`thF6FD,M*wXihe+-,4`6TJV,Fs;Em@H:3d:&RI1)Ra1+Q'Fe=-Q.,7(%.)hOEKM:7%"
-"xH3j^+ML`QH.Y2]d)96b@1l,=JdvfV#or?%_[ZYlRRjGVv&Y,-]7O;L2s;`tYd'+2$ZPEVvH<:)SPw9)<vF5%'#U29O[uBa0s-T%e4rwG*WLe3Nq-SHMM@`th$m3%.*Rt)_5I5fL.F`,"
-"x86^47-V'-wvU?[`a'Gs.wFmYfP*2-^B;jt$hU77@2o_$EoZ_3jsk(-62,g))'xjOl:V.MQ9CLGH,t&%_VH0Ze/I&X8G=m,2IL8[p<x+-vm[i)JZ>_DMM9`ts:KuASX2*-YBnTsIcw0K"
-"pJjm$h9r[F_Al0-YTq;6cQ_X#W,a1%aglpk)RhOLt4F7DE1vqZMU^C[D3DR%,@%$U6cR%_x:aFssG-rWv'iP'ZZEB,p%=<&IrLQ,mR+9uVjbIs,9qXG<L`R%.3=C3pdSh_x_EZV>lMss"
-"3g#[$kZ*_t.]aX$'X9OJ&rjet9OS.(^NU^$s[+r)3^Hs(r@*UedJ@I298L%uI/(v$-TDwL$JS]&21G5f/D=DsW4`rtC89aso4+Fs)HvSFI';`tlZrGsqj6,i4%wK%OQDACqbu3%hTM=B"
-"mDM<%SZo<^ixattY^_1f9,5d$Fl9'[UX&GsvChJ[XaoS&Wv7]$V=$'TH2w1h,<S@%B<>-Q;KAst,<`B7&UuiZA]/Gs#ND5GJ-;`tj[GFs,-7,i0iZK%PdrxC>BWw$os7uBgvl;%RHA[]"
-",DbbtTsU5eEi[S&QL0_@vqNe`n;Ch$3$$c%ukbIskYdBTbKPR+l12lGMT;`tY'4+Hm[xl9u:Ud$,vMD>A`OitZIt;Lm2#O+2,kI%i(anXghU,D4)*piR;MQhMo,(%^raATm8RwbRmObD"
-");3+3moT%k%v`qQDMcLZ=F'XuPMw_<3H.9IZHOC)g'0-)K-hF&dNtw4o2[^46wPJ&JdKJ&8oE[XjG9as4Gwt)O@w_<suId;1M)d$wJi*M*CZ]tQ.6FM`X,N%QI%BKgBP2KjY:--3,M^S"
-"%w]udG,?aS6<U&t[kWS&v:QD,AVWP&'ht4T7?99WKm@vY%XMc,qo+UiPDpTitlCXs(%sfQQV$s@b/*RN:sWg;-[/Q&X^WO9JgFA&]MP%ur'4csDdL%ug,?rs:ua9%OTMACT)YMZ$OnAX"
-"C@plU-FJRnCS-Rnr@Q'Ve9VM,cwmM^[8Oe,Ev[9C`R9/;ir)fO?b-Qgl28h&Ja^S,t$mS&Y:.qdhse=&KWmV&[x$t$;<*,]=<OB,6ZOB,'n)Jh),+DsY;5g)vAnd)M.?Z](0f%c3A^8X"
-"roRxI-wE6J)>6S%>=cls?4xDsq4Jst<I0.9]XKutX'=Ls@Id*jsUo;6smq_E/N;OsF%+h:[+m<I6,Q2T/w;v_tW+dRC3fWqn4fTMHG<`t%<Y,;W6bA%TtQfYFpj&%7O?3Z:fH*js>isH"
-"EI7^&'lvi7f=f>%9/]FD7an'Ei4QP%h0++D6l2k(e?p<dHK@I2N/Xb$U5UA&RkuDsP9qj%Jtk2-FLpqIc;cg,]R048l'/jT&9l,-,.o#>U7#[Lx4rC&d8AT[LfX2-O.)P,6QQ#u1RZS&"
-">%$1hg;WDsEir[$^&k<8?\?n]tK%&]$>?9ase=CV%MNWDs4-BY$m4H#8HZn]t99BY$AHT&thkbTuNHvC[Us'fsfvltlhHplo^W_.9&9+oLEOI5)4Txnj'O?K&TD)pFY`cS&PVWP&LiSE&"
-"5N6[s'v[&tg(/%bkJ0qs)_aDufw+@bjcG3ut7jmf[D#AkgTH_sqi=I%^1FL9tj<`t#PnZVb2tgj?:7^&awbeNF]e#ghC4J,Pbo5ftIHUH97)R<vaVK,MLHR&OS$_&5oVbDM$V5/54fS,"
-"^$;mLeFxT&9G1`ttQvZXo4-10-SF9%Tu8wTx:b$OGn/xTcHJ%-[weUJ?dM@Od[[l)X97aHbo3-)v5`-IU5eJ,^8mGV$/6g,lY8%U1=mS&'6Itu.]MZsq,PTIF<GT,rPCD)vLbCN:#/**"
-"t-m]tnwtV?T/Ug$0l7N'X/rbV1aMQAGqn%u>tAPs@)`C&EukkL-o$FsEO_V%0<gwFP;rx$3;nvsU@DWZZQ?B=/Dn9vlt+w#)hNbjc+=HM/B]NIuFNw$oDbi$-eV#lcNc&4-d4f(F#$c?"
-"\?YF7$s[nR&(5xt,wYQ^t*7Lk$,<3NgK$x>I'nHL,gQT$f_2gSmtvni&.Y(d$);X&m1XoYs[5h?u@*'19SYWWSA*p'-J+R#lJq6asZGrP&.a5I`BacTVY^eS&f,xw4IpBZs7&`P&JE'(3"
-"DF[;Ha;(Q&C1ws$(+31'Y$%K#A1rP&/KYS&vjInLY;l)mKox7$iuKLhARj_P*[GDI?V4f&+)419iXFIsY&nd)kB5`*p*4N'LX]ZKWtJZP`9dg,dp4B&X#p8mCu9%I=Q*K#;&=^t(5-.1"
-"fQudh/^3%gihWZs]-fpR7N6^tgQAqD[-;%E67^e&YE`_3Atd2hIKrCs^k1Ds#dRKsp1u$F,8=K1RV^S&I;^S&?VSkj;BXxk<()Um4D###?vr.C8F#&+ZK8D<n985&s1_V$r%D_&*UJ)X"
-"<l(m/KQ$4Cap4A=D+##,pUtx+(Vq(<7qY,EcKl+MW/>)4ZJ:&5j'YT8JWh+MNX?J:UIDxH7]###Ds0A=<Du(<F/rx4op2GD0L3F%^oJV6o3w(<ThOY5.t[p&aPor-F8SN:,OVf:1cef("
-"&i0^#?cR^0h2=*$cfUv#JY<rL?9(sLUh?lL$A2pL6X+rL-x.qLv(doL/4fQMEShlLifI2N^phi#1uqv#^I%d#xF:;$sw^4.m;:pL>[>e#j==e#h+*q-RMYQs7+Lk+-''2#eR/(Mq=0vL"
-"2tVxL;wXrL)``pL[9.*N=j@iLbW&%#:W]vL2iC*#_DB6v0t=6#B^h3vuhr0vm?J5#T)MP-N+W#MfZWmL4jYI#f4>o.::b]#=-ex-J`Kx7ImVG<A^jD#iYe[#E&pa#Hic+#d9p*#n+Yu#"
-"Gnl+#n/`($qH+kLl+3:/$8A5#0(G%NLJ_1M<A;'#q&W<#IR7%#`ML_&vGVwK$9^c;S<GwK&eW]F?,fQst;cQsg%B9r-&I2CHueQ-06lwMWt11Npd#<-D/n6%,>T9V#h/.$<,-&MT76DM"
-"1j30Qs2*6N>jNj0I1ml/9*',2p#NcDgttP9.l/wp)`XxX5,JS7YM9-v6U=G2hO*;?*Y$s$hHT;73K9N(A1gFrl.Ca=aY%)*1umD4-fDk=(w/.$T]GLM2oZb#Q/qB#SRrt-kpYlLeu#u#"
-"L'niLq(`#$aZ9hNO^mP.Oo@S@[vrB#q@uu#c.>>##@;mL8-UE#%M#<-c=Ru1bk*]#RS1Z#coM<#IcHiLg5VB#X'niLnoC^#6Km-.4G6IMSL'=#fK8r/VtM<#F[<1#f;J'.EO&kN4O[Q/"
-"&vQ]4$i?xkoo.Dtm]Mcs;tjV@mqb59ci*)NCA/crp1_c;3mq^o'kj-$/-k-$4<k-$=Xn-$[]l-$`il-$=#HF%i5i*M.NZY#9+uoLv(doL[6wlLHotjL'D;^#`XI)$VW.H#lm;%$:K7)$"
-"5->)3kcv_#`C&&$CaId#jZu'$@<:pL_r-A-MW_@-E7T;-u5T;-$6T;-e5T;-p5T;-(6T;-r5T;-$`&g1TL31#Fn9'#lxt.#_MwqLMME,#KFBsLs^M/#&Ui,#'?8vLB3urL,*jxL_:B-#"
-"Qq?0#lY3rLlhpvLimsmL;vRiLen#wLU6'5#KK.+M2ecgLROEmL2'2hL]>6)M,s+$MtsVxLV'C4NEE:sL8LoqL[FN$#m]#3#So<<8VTP-3>am`*@`gS.p$#,MAppV-sMj--.3k9;V=b.$"
-"hh#9/SPGxkA-grePPN/i6]>>#R*P8MQj5s-@<`*M#f=rL5CsjO[sZQNe/I3#k7u^]V_P+#6),##-`($#d$Y6#gwCEHDTl##4X@U.#)>>#1r:T.&/5##3X@U..GY##=q.>-7M3X%lP;<B"
-"H?bl8:FmuBFr9eG8#R`<m<v<B[w6fGR[CS@:c;2F'M*8MUAg*HeHx.#S=XS2<E',H'->/#^J:L,L=Oe?vLO&#s(B;-t4T;-*lP<-<fi6M-LYGM1e(HM*_uGM$:>GM)XlGM(RcGMZ-*$#"
-"Ike%#GdsjLEd4)#a[P+#1h7-#Qst.#>u5`-=*OF%)md2NpLJ'Ne_R`EZ(5DkLDS'#oZY.q=?UG)Mc#(/PPY-NXn).NVbm-N]0N.N-lR2Nf/(eRi,'5Sb2JM9COpr6Zvei9PjBrmhpmCs"
-"l2N%tpJ/]ttcf=ux%Guu<bsl&@$TM'D<5/(HTlf(LmLG)P/.)*TGe`*X`EA+]x&#,a:^Y,eR>;-ikur-m-VS.#wNM0)EKJ1A7tu5Nj^7n8lqi0Jj>ontZnl/GUTV6S5Z4o&H,,2%KGG2"
-"/pcc27D``3:fwx4@r[]4Q6mo7.)vWU:tLV63X>WN]LrKG%PlKP,(r-Qh$S-Hf[;kFl*/LGn*sKGq?S-H?neERq$687*MN88s-m9V/Gvl/2Cjl&mZq.C1435&UoSY,jdGrdMbGs..f2(&"
-"<+&(&^;>_/D_5F%iZ?X1vD<A+RT02'aQDp/hS>F%VFow'5qLcMorM7#O/5##<q.>-Z^r.M>0F7/3'Y6#[RtGMo'<$#>bYs-vaK%M-lrpLw[H>#u3G>#'%###u4T;-9:)=-j5)=-0s@U."
-"ic>N#YA;=-prrt-@KwqL[>WmN[IQ>#&d&Z.D:r$#LTT40C8J5#C+1/#h.NX('POgLCkFrL7P4<#UmD<#Y#W<#^/j<#b;&=#v.Qt1V;P>#,Gc>#0Su>#4`1?#Q2(@-GE_w-3=id*4wj68"
-"6W6X1IH<3t2)S&#.U]F-*6)=-0%Uo-V1c'&V@K&#RGJ#$i0$B#VK3L#Ni68%weT#$ZW3L#T=NP&#x5Z$l54L#t7-5/CNm3+xGP`<-k[[Huqdi0SJPlSMt](WP;Z`3L/9L#4gf4]f7W]4"
-"g(:L#BRS%b_+3?6t3;ciR-<kF)qj-$I)###UH3L#XV,eQOGYY#YT3L#R135&xnp>$^a3L#NEcu>1%Pk+a*8SRB'q=Y](8>5^c9L#?7W(aX]Q>6sTH#$u9-T/-Vd'&Mg?S@^^dA#^RK&#"
-".&1#?21XMCF:pV.pT(@0A+*s@4I_>$gRm;-h9I:Mk<$##Gl[+ME)^fLCp3<#=)c?-3(m<-ldd'8UoK#?Y2i+Mo(^fLp)8qL*#kr$J;NY5gCMn8wN?_#0x%/GWeXUCn%GG)_.Ph>0S^v$"
-"`Cf+M[xSfLok6##&5>##Q9Z8-#h98.@1xfLT'*$#7*:*#w>Ur%E,tr6bu/AO3U=Yc.^Prmg)s@tA?uf(ei,)<6I:AOg^drZ8V3Mp?p`A+c=eY>(h35S[lAMg):xM'@F5s6W>3)NMAJMg"
-"'A:Z#:YeA4=GB)EPfvfUd.TMgwFZs$4`/Z5OX%ZGVGP5So-B)WIBlYc`ag)3kU3Z>8*AsQW/7sdkMkYu(ah)3;)FgCNG$NTbfW5fu(_Z#2A3B4I.)BFi3uAX.E,ZlwYfAt#6WgC_Rf)W"
-"jfRsde;0ZuhBSN0kJON9(,ENKT)gsQ>8Vsm<xfZ5`KtsH-v+6]PI9NptgfN0A;tgCee+*W*F`ghoA4Btn<W6//*M6Ax>1tHo^dZYDJrsmGp`**JeCt6n8Q6J;c_N^NPdZl)sFBtbca**"
-"Xj&O9OMxNB%E8tZH9=8%X1'crNE]=l]cM1pj'?%tP_.F%n]0ci&JD_&&>ho.#dq%4xuJe-?iGe-W[He-I.b(WC;>f_+Y$G`8ubY,Gjx?0cGB8.BG>;$5cNcswVC2q.h4onu2KWnR:ho."
-"oIw%43>+XCr[Zf::38G;NPxf;pkM,WFHAf_6VTJ`JHvE7N(D>#<MsOfF;8>,M#BkFaT,@'`(Mq;bJYc;?rK/`cGbY#?=0dsfK#Vd#=+_Jpo2_Jwv&v#F8RV[Z6*dapAb@kFB8p&oEC>Q"
-"&fF2:n5P&5q1e?K$],XC4kOc2BOq%lcc6&YQvxjk;9R1geH#VdG-?JiH8QkO)`kgL=@UkLLS(:#CA=gLM+t4#h,p7.u1]vNKZ/%#%%kB-udEB-gAqS--_W#.hnRfLd,aaM-S448e)[;%"
-"_@xcs)3dIqDrA>Q1qm%l@5icNaV$&YH(B>QcXps.>du%48v]'/7j&W%_v7j_C$&20WdUJDQWhJD]8c'&Cvu92wA-@'=8?8%L2#EG?,fiLbNcxum#Su-X8*jLt`(#vAAB>-fdpC-<HII-"
-";4RA-LbN>.LWt&#-nx1q?@WW&9qWK-qkg%%JAFS7*jt(<b`d(W'U+kbs3IQ(j$Y3.*bCaMVYuxuB[V58k9S5'Oa10178p*#*C,+#/I5+#dee+%iEAf_:cTJ`ZSOw93^]V-(8mEIP@+KE"
-"X*vG-(<D].NeZ(#D[AN-eo,D--n,D-wm,D-465O-=tu5&Pu@kbTKHXLdZs%caF*d*D3=,WcaB(JrTaY#qQel/XI,2_9[oT8t3YjDYK_+3Z<5'v%HG'vSNP'vw;:3vT,O$MNpdw8sL2<D"
-"j>8>,7,U)4P*#q9R^PWO#-L19Hn<n4eBD,MY>m6#LB58f:OEr8f=794hDxu,jfHi$Mb*S88.Y8p;dmuR*)95+Mnw@#XuIO,og]13v95'vfGG'voMP'va5OxuB,niLtrlxuuJX&#WQ'#v"
-"r$ffLRMu$Mk3O'M?)F,:UnaDu6igOUW$aC,I%a1:7k3A';,FS7mv,Eulpa$#4in@#NaqR#cBbA#T7%@#T$b30__R%#YcZ(#Q6>%1M)hw0mJg;-m0'C-%U<nL&L6'vP_ST0-wiEPUCcp7"
-"sbf-+R7]x7<&_E#[8tW#hv3PUKx6j)Udli:eHG96IDMV.OWt&#+v<Z%.WpI_N8X1^dE#VdUfpI_GG]Y,ZiDX(wYDX(2VLJ:,KHJrt`2eddS=%tWN;'mdVZ)M3>ABN/p)*Mlp3<#$Ti]."
-"icZ(#NK+Z-aDc'&QDa3;hmJwux=F&#%0wiLncc&#^.xfLocbjLL'2hLu-<$#oZbgL?p)*M0vu&#qfv$vnQ;e.;AC3vWl*J-i<8F-q<8F-/%jE-_0/b-<U[w0r)c?TLML'S<JF-Z`nG#$"
-"9oNcsqZ2@'v7ho.w1W'AKKQ'AC3Q'AmONq2;w/9BVZn*.d:4gLk't>NP'2hLNwfN-_4f/M48A>-%Y$m%*hQ1gJaJp&hNfQaRa#Ra]ru;-%'G?-8fF?-r/*q-VJPq;SgwV%n.Cp7C#CpT"
-"A_rr7W>RW&%QE@YYbm##9xr>-eUpw%wc(:.oeZ(#4umr7Y/X2i0r/E#fq;;$;QZ`**^)SewYg`<U)[;6U](#l)Fs/1&1,$5%%x#>4u=HMitLT[,B10UxDHTnqgD0CILZY#^9ku>xigY?"
-"#s,v?$&H;@.irs@o`[iBuxw.C.+XMC;XtiC4I9/D5RTJD6[pfD8nPGE=E.&GEPuoJNr:5KGcUPKHlqlKIu62LJ(RMLK1niLL:3/MMCNJMNLjfMOU/,NT-c`O,g)&PZKCAPWH_]PXQ$#Q"
-"YZ?>Qs<=AYtEX]Y.vnP^g1D5&d(%b4RLdl/@80VQQb.F%B*0F%?_n-$&jp-$'mp-$Cw#:)C.3F%XS5VQp4Xo7.:g=Ybvj-$,$k-$-'k-$.*k-$/-k-$00k-$13k-$39k-$4<k-$5?k-$"
-"6Bk-$7Ek-$8Hk-$9Kk-$:Nk-$*dOw9YG_1TmIh9;Dmk-$Epk-$Fsk-$Gvk-$H#l-$kJ'F.K,l-$L/l-$M2l-$N5l-$O8l-$P;l-$Q>l-$RAl-$TGl-$UJl-$VMl-$WPl-$XSl-$YVl-$"
-"ZYl-$[]l-$hoJwBo.KwB7Bi=Y/kV?^q%_?^mo^?^I(]M'$4xi'.*O2(/3kM(0<0j(1EK/)3W,g)4aG,*5jcG*6s(d*7&D)+8/`D+98%a+:A@&,GUYs.?f>5/EOlS/FX1p/GbL50HkhP0"
-"J'I21d#fM1L9*j1MBE/2NKaJ2OT&g2P^A,3Qg]G3Rpxc3T,YD4U5u`4V>:&5WGUA5XPq]5YY6#6ZcQ>6[lmY6pW-n9&Jt+DcTe7R_>c'&oX=rdc>,F%iab%=4D_1T&5-F%08qI_/8l-$"
-"<$EcD`YNk+o@m-$L9p92x[m-$#`m-$$cm-$_OvL^74Co[c'n-$:B_w'3R/F%4U/F%5X/F%6[/F%8b/F%(2ArdnHn-$A?G_&1<k9;?_n-$^IPk+Ftn-$Gwn-$H$o-$I'o-$J*o-$K-o-$"
-"L0o-$M3o-$N6o-$O9o-$3uJk4Yp0F%VNo-$WQo-$XTo-$YWo-$sMp-$tPp-$#VK-Zw<Fk='mp-$67bw'=slQa,&q-$M-X-H?x2F%XSk--=Yq-$[]k--0?JcDlme7ROiFV-ifC_&+wj-$"
-",$k-$-'k-$.*k-$/-k-$00k-$13k-$39k-$4<k-$5?k-$6Bk-$7Ek-$8Hk-$9Kk-$:Nk-$.W8_8Dmk-$Epk-$Fsk-$Gvk-$H#l-$cWMk+K,l-$L/l-$M2l-$N5l-$O8l-$P;l-$Q>l-$"
-"RAl-$TGl-$UJl-$VMl-$WPl-$XSl-$YVl-$ZYl-$[]l-$dkG-Z)BM3XL+A2'._XJ(7&D)+98%a+Sh+3)XlgX#r3S>-V5T;-W5T;-X5T;-Y5T;-m->)3YTS=#UDluujX1vuQP'#vRv7nL"
-"=RxqLk$v*v*[<rL/mx#M<s+$M2Ac$Mn=S4vn62h7#3&U0jiLvutJtxux?<jL%`I$vo:^kL,44%vAJxnLR3urLC9(sL%HA#M>NJ#M+TS#M<(i%ME.r%M?:.&Mxn45v%nLvutS>d0`$`vu"
-"e*ivu9q'hL.'2hL/-;hL<3DhL59MhL3E`hL4KihL5QrhL6W%iL7^.iLPd7iL=j@iL>pIiLlAGxuWJEjL3WOjLE]XjLFcbjLGikjLHotjLJ%1kLl+:kLm1CkLM7LkLN=UkLOC_kLPIhkL"
-"QOqkLRU$lLTb6lLUh?lL%oHlLWtQlLX$[lLY*elLZ0nlL[6wlL]<*mLmt&nL>xu&##TS=#pG5s-sL<48tMN*Fw_/]XJY4;-O0qOfg*b20rO'#vMV0#vcc'w.L*t4#]<Kp8l2SDX2d1R3"
-"#`m-$$cm-$TJf:Z<bvL^c'n-$:B_w'3R/F%4U/F%5X/F%6[/F%8b/F%1`tOfKWS+`rm/F%Ed_w'fxj=Yu^n-$bnh--Ftn-$Gwn-$H$o-$I'o-$J*o-$K-o-$L0o-$M3o-$N6o-$O9o-$"
-"3uJk4Yp0F%VNo-$WQo-$XTo-$YWo-$sMp-$tPp-$'%dE[w<Fk='mp-$67bw'AA.kb,&q-$M-X-HAgT9`CFJ_&]x,F.=Yq-$`+-F.o,n=Y*x/]X*qa%=gO2W-`XVQ1rK`J#-j)P0^r*xu"
-"Rx3xu7iHiLlAGxu;C<jLGPFjL7WOjLE]XjLFcbjLGikjLHotjLJ%1kL>*Lu.H-$#5*lVA5XPq]5YY6#6ZcQ>6[lmY6]u2v6o+J59wbbm9C,<MB(lgWhgt+/(+N/VQ]XI%b&5-F%PY,ci"
-"/8l-$<l3'o0mNk+@x(F.x[m-$#`m-$$cm-$:s7R*)rP.hc'n-$:B_w'3R/F%4U/F%5X/F%6[/F%8b/F%9Ln-$cKA_/?_n-$UVw9)Ftn-$Gwn-$H$o-$I'o-$J*o-$K-o-$L0o-$M3o-$"
-"N6o-$O9o-$3uJk4Yp0F%VNo-$WQo-$XTo-$YWo-$sMp-$tPp-$m>Z9Vw<Fk='mp-$67bw'1[%_],&q-$-]4kX?x2F%XSk--=Yq-$[]k--+vFo[R6qOfR/LoIN[xUdK:a=cgG,F%-'k-$"
-".*k-$;D[w'4T,F%13k-$39k-$4<k-$5?k-$6Bk-$OtLk+<m,F%=p,F%>s,F%.W8_8Dmk-$Epk-$Fsk-$Gvk-$H#l-$g&f--h)f--L/l-$M2l-$N5l-$O8l-$P;l-$Q>l-$RAl-$TGl-$"
-"$;?_/VMl-$WPl-$XSl-$YVl-$ZYl-$[]l-$^d$Vd0W]Y#cf>8%E`GT&>Gtr-_5wV.Rd/K2=Iac2YMCa4Cf:D<1asc<TxM3Vw/@b:'vbYH*1)vHDx&eXnHA#MrOJ#MxTS#M*go#MEIl$M"
-"2*i%MM.r%M?:.&M.%55vThCvuhnLvugi)'%d>cWA$xOT#WY6Y-D$[WAv0PT#oFKU#.cEB-D5T;-E5T;-F5T;-G5T;-H5T;-%sW<9Afvof`bVw0WPl-$XSl-$YVl-$ZYl-$[]l-$nI-ci"
-"07NP&&eN`<(7?\?$$`_@kaxp-$,&q-$;Sq-$V%78%`&&.-rb.F%NwJpAa[rCalhBW.r[,29QED#$_sX>d;&%VdPBF>dAT&^d>8X<#<8q*8J$(2qOqnF%oru8.H0`$#jV5<-NS2M/@fB#v"
-"oUWjLFcbjLGikjLHotjLi1o(#Ve$nRo)doL65voL#;)pL$A2pL&MDpLX=p)v[o-qL.(8qL7.AqL44JqL5:SqL6@]qL8LoqL=kFrLWmnI-UA;=-F6T;-G6T;-H6T;-I6T;-J6T;-K6T;-"
-"L6T;-M6T;-N6T;-O6T;-3q-A-YN#<-V6T;-W6T;-X6T;-Y6T;-s6T;-00GDNRio#Mc*_k.v2/X#E5`P-bE88RwebjLUZ(:#o#a<#lYlS.S>0:#x5T;-#6T;-(ZlS.TvW9#%cpC--6T;-"
-":)m<-3N#<-4N#<-5N#<-6N#<-8N#<-96T;-MgG<-F6T;-G6T;-H6T;-I6T;-J6T;-K6T;-L6T;-M6T;-N6T;-O6T;-+@:@-YN#<-V6T;-W6T;-X6T;-Y6T;-s6T;-xZlS._HKU#(5T;-"
-";5T;-o_e6/WHtxuB@<jL%`I$v%;^kL%HA#MD(i%MhIf4v(x*(2+/FxuAZ0#v>a9#vbONjLE]XjLFcbjLGikjLHotjL]<*mL_K_&vq:P>#X7%@#Pr0hLw,-D-P#H`-:hNl=#+/R<KN0R<"
-"#+/R<*bWP/Zmsl/GbL50HkhP0hwk59hIRM'I]toSI]toSJwdpS/7e1T0:e1TE>5L5VU@N58%F_JR3-L5wKd%O>jDxLZhDxLZhDxLk)u;NF]]#MK[]#MK[]#M%4QQ#WnXQ#V`/,M`dCH-"
-"-X3B-haCH-%(@A-%(@A-%(@A-w3@A-s'@A-s'@A-s'@A-s'@A-t0[]-TB0L5tfd`a'/###6QxAFS,DG))_?o[JUOfLa)2hL83.m/K<bxu]M]9vi3f]-nZD.-OdsX(s`;onf'K1p2@Y1g"
-"aO=r)v+lX(,Ykxu=5(@-N#=R/hNwI_$`xOfDk5/$cg1*MbrV&NMddIqPi[+M<O5-MLP;V?DP>p&6BO2(LP9e?@ZEL,pVFX(F&>uuaG51N?K51NU6OcNoM=%t9d*SaFD9U<j6]2L'xd1T"
-"'#_>?OSPe$g3r9DDu@1v</OR/p+R(W%9i:ZBF0.$(dexuC7`9M[5WR*=C)W%2oTV-+9<K3hVG=Q<:1UT)'l4SVgGA'@M)&YLq12_O6*eMjI>p7H5.a/+03j_Wgg=c5X&32F:S(WaJSh$"
-"#6;KU*sP+`LLlxu$$jX-v#qx'.lkxu%+*KUaI.`aHLlxuWFEwYdJ3v%T9mxu6qo4QgSp@PSH(q)Mhl&#5.`$#ewiJCP0pI*EXrr$a@pu,Q%lr-c5LM'SAP`<]LZ[H.NQY5j$'DWm1g4]"
-"rNHP8du9L#LesCakB$3:t3;ciR:KwBY%C#CVVuu#8ONP&Qu_3=r'88%Le@)4`Su`414.q&)OFV?Ox%8@SZw6049$5A[wTiBb=)/1f$7L#G*/DEq9x(3u@f(N=j[xOStZf:KgNH<$6r:Z"
-"&YKo[I#gA>;V*XLqPMucSA.L5gI5H2@mC?#TChJ#OU@%#gx*A#h$eK#_04&#pFbA#,=3L#9gZ(#KKjD#LT,N#XxJ*#j+Yg.X'+&#P5J'.u+vlLxVL*#a7p*#hI5+#5gb.#86U@/C8u6#"
-"tv0hL_0,A#+%kB-(X?T-H^@T--kv5.j]>lL%:+)#T>hH1LPj)#t[&*#$5i$#f;#s-Yt7nL]dA%#xeJG24UG+#6`R%#)=M,#CH`,#e^#d.;n@-#$wa?3^FX&#Xst.#q:L/#.@$(#nwiuL"
-">p<4#cvJ*#OjUxLOcp5#nxLg%5xwCa=#MucA%nx=t3;ci05?5&@4PfCA'TM'M*1)*NqLcD`1B>,]P=8.ej.DE:S%&4+arr6,M$;HYmIM9%g*^#drjA#L;S#$u=#s-[.xfL$L>gL=H5gL"
-"ggm##hiTK-.Y5<-OArP-)5T;-,p#-.1?<jL.3DhL8k?lLeC+)#_/5##V)B;-l]oN/c;G###82mLII<mLtTGgL0'(*#mb/*#sF`t-0]imL97U*#jSGs-8u7nLE[$+#xYu##n;#s-UHxnL"
-"W33$#)=M,#j51pLYQ&%#%<#s-nACpL]dA%#'<#s-pYhpL`pJ%#p#@qL)Y#.#IG.%#1<#s-'5[qLYQ&%#3<#s-*AnqLZW/%#5<#s--M*rLb,p%#8<#s-0`ErL0?VhL,<(sLqY`/#Hox/."
-"A;9sLmfr/#23H-.EGKsLVr.0#(@0,.S:dtL1-u1#^TGs-@9cwLbbE4#3;xu-OjUxLdsp5#<<r$#bJR#MAt56#>m@u-gVe#Mu)H6#J`98/KJ:7#*<k$MRw)$#8%q%M:S]8#h.:w-?76&M"
-"6`o8#K$)t-DIQ&Mwq49#iZU).Qt;'MwWp0i[Yuo%9L<5&CtWP&;[jl&A'TM'Gm-)*H9KM'`1B>,V=:8.Ws,/(n0VS.ZUqo.ID'F.[S%&4#%Fv6WJ/L,#[il8*eY59_`/L,*wIM9=<xjk"
-"crl-$XnFJ(2P9Z$qJ*XCHL+_JU.RS%^F$T&&8q;-aQFv-A93jLAdl&#PF@6//K6(#5]>lLJLH##h;#s-ZBonLG:-##o;#s-WsboLYKj$#Z61pLNmj,#5g1$#(NYS.D#S-#jRQ5.qs6qL"
-"nFp-#9#)t-u)IqLdR,.#;#)t-#6[qLjk>.#Ba($#4<#s-$GwqLOkv##6<#s-$Y<rLOkv##A/RM0U:L/#H<G##S:dtLU&l1#9E3#.nwiuLB7[3#%h=(.OjUxLWap5#w&a..vSj,8%T9N("
-">xc._F?<,a<aN9ip$xCaq76&cE0t92*0QucRHF>dI<t922ai7e$6j;63lC?#?=.@#:i1$#7xU?#7V(?#>uC$#?.i?#8x(t-t$:hLdT8@#;x(t-)O$iLe)#A#GF`t-0[6iLm55A#Cx(t-"
-"4hHiL%gGA#O+i?#mTk&#Rd9B#?[,%.Ts/kL;M.C#o9xu-iY5lL-44D#lF`t-#5)mLhK_E#r]1?#^(T*#1W$o@[q6=#";
+static const char verdana_compressed_data_base85[56295 + 1] =
+"7])#######7tEDq'/###I),##c'ChLYqH##7HJf=P*=[)h->>#id>11A^n42<xT+G>7YY#VqEn/b%lj;_==0KbAc97OQUV$6PV=BJsWTPhmQS%-?uu#<0XGH+vTR5q3NP&HE.C#AKk7D"
+"wR[i).D/2'-/t71B`(*HUYI%#:LJM'^H7u/+-0%JG'+$,VQ4U%>k%##O_):C/x?N5Na*##8T$##M=BUC:@.4mKN*##F#t92f'TqLOklw5u.[w'#Tdw'I3n0F'Vkxrb6###H]CwK9B`UC"
+"9HHPaoR4S2h++##LawhFTl0)*X(,##$I@>1QK[^IxrpU#Q_2]br=Ps/+>00F#@=*Rb(m<-1+^s47%S+H&lAc+m5f:dl7YY#UcFVC;&wi0#v:;eZ(m<-vc)f34,&#,62wN'GX<5&ANuN'"
+"5`G>#:`j+M5>%R&*JW0(-5aO'j<TN':ZZ3'(dH*3xH$l1n^=A#:qv<(gJQ3'b>Tm]M%Y^(XmP3'%w>R&V^g6&D.i?#C#J4()MY?,a?Ph#ho^5'&.TV-mjw0#YhX0G=4FX:3HdE3ZW*+."
+"%FL-M4_YgLkxV0(ngj?#LhuS/8C^$.%hHiL<UV=-2,vPM0o:p.#MN=.==r0#H&%B,BmXvMv7@m//<V0(L^53'MnGhLN6E;$q5B2#-PUV$KhH(#$dAgMTqAGVE+O]X8=aP&5oqV$1`L;$"
+"I-D#$3u/i#LVo+#.Pj)#G]6s$D<V,#W3M?#;#8>-/rfcMG7-##>x'(#0D$o%+Vl##*#5>#dLOgL,k1HMUw2$#3x(t-iXbgL^?E$#.s+>#metgLY9W$#/Ag;-4YGs-sw9hLi^s$#2mx=#"
+"w-LhL_W/%#5Ag;-9YGs-'@hhLn&K%#6go=#+L$iLdv]%#<SGs-0_?iL=&xIMmD#&#:af=#5kQiLi>5&#@SGs-:'niLBDOJMrcP&#>Z]=#?3*jLn]c&#ESGs-DEEjLpiu&#FAg;-PFwM0"
+"Cg0'#CTS=#KWajLt+D'#KSGs-Pj&kLKu'kLJuB=#&0$$vH5h'#OSGs-W&BkL$P%(#Vx_5//NQ$v%M>LM'c@(#Zx(t-bDpkL)oR(#Zx_5/9m)%v)llLM,+o(#`x(t-lcGlL.7+)#b4@m/"
+"C5W%vS4<)#_SGs-u+vlL`HWMM3UX)#mXwm/LM&&vWRj)#bAg;-fYGs-*JMmL>t0*#l4@m/VlS&v[qA*#iSGs-3i%nLj/^NM=<_*#wXwm/a4,'v`9p*#mSGs-=1SnLAT-+#nAg;-x:@m/"
+"kRY'vdWG+#rSGs-GO+oLFsZ+#sAg;-'GwM0gpl+#gtV<#NbFoLJ5*,#xSGs-StboLPM<,#knM<#'ZGs-X*uoLUSW,#'TGs-^<:pLUlj,#nb;<#,ZGs-cHLpLZr/-#,TGs-gT_pLZ4B-#"
+"r[2<#1ZGs-mg$qL`:^-#1TGs-qs6qLbXp-#vU)<#v/RqL5L4RM_X5.#<#)t-%<eqLgwG.##Pv;#*N*rL:kbRMdwc.#A#)t-/Z<rLl?v.#'Jm;#4mWrL?3:SMi?;/#F#)t-9#krLq^M/#"
+"+Dd;#=/'sLmW`/#CBg;-GZGs-CABsL&'&0#/>Z;#GMTsLrv70#HBg;-LZGs-M`psL+ES0#38Q;#Ql,tLw>f0#OTGs-V(HtLPD*UM*d+1#72H;#[4ZtL&^=1#STGs-aFvtLUcWUM/,Y1#"
+";,?;#fR2uL+&l1#XTGs-keMuL-2(2#YBg;-dGwM0@/92#@&6;#rwiuL1JL2#_TGs-w3/vL_=0vL4E%;#LO,/vESp2#cTGs-(FJvL7o-3#j#`5/UnY/vxkFWM:+I3#mgG<-kZGs-4k+wL"
+"GIe3#Ljp:#nZGs-;-PwLtH2XMAU34#%Zwm/jT`0vPRD4#pBg;-tZGs-GQ1xL$niXMM6k4#S^^:#MdLxLw)/YMJ605#'hG<-+<@m/'6]1vX9J5#&UGs-Y2.#MOT^5#&Cg;-0<@m/1T42v"
+"]Wx5#*UGs-dP[#MTs56#-UGs-h]n#M,go#M-q::#=#l2vb&Y6#1UGs-pu<$MZAm6#1Cg;-;HwM0e>(7#eE9:#w1X$M_Y;7#7UGs-&Dt$MerM7#i?0:#;[Gs-+P0%Mjxi7#<UGs-0cK%M"
+";lL%M*_u9#[(I4vn+78#?UGs-7ug%MjFJ8#H6@m/eFw4vqC[8#BCg;-F[Gs-A=?&Muex8#K$`5/oeN5vNb;^Mrw=9#O$)t-K[m&Mt-P9#L_c8.#.'6v2x]e$ICZ+iSJw.iRMNJi4$K_&"
+"UhV(j'XV(j1LRe$S*8`jRfScjW%,)k93K_&_Eo@k+-4]k6[Re$Xhee$`s0Yl_XL]ld*[#m.7uLgCA-Vm^nZYm<nRe$jYd7n^t);niW8Wn2=Y1gLuDoncE88oA'Se$d3fe$uCAlorAl5p"
+"6C>lfV[xLphsklpF6Se$((uIqj/LMqH<Se$i<Se$f(T+r;L#PfcNqFrnSdfrLHSe$4qmCsnY2GsMplsek)3`s@_L%tOQSe$<K/]t$Y=atBUBoetcf=uvF=AuTaSe$wmfe$E)Guu)ob&#"
+"kC#29Jb#K)^>l'&ene%#*JY##G[,F%J)###^$v=PiZmV#*YU;$=R<T%ME#n&^8`0(n+FI)(u,c*8hi%,HZO>-XM6W.i@sp/#4Y313'@L2Cp&f3Scc(5dUIA6tH0Z7.<ms8>/S6:Nx9O;"
+"_kvh<o^]+>)QCD?9D*^@I7gvAJH%tBfae6DvSKOE0G2iF@:o+HP-UDIav;^JqixvK+]_9M;OERNKB,lO[5i.Ql(OGR&r5aS6er#UFWX<VVJ?UWg=&oXw0c1Z/f$/[=ZaG]MMGa^^@.$`"
+"n3k<a('QUb8p7ocHct1eXUZJf@Rb1gu)Yah/s?$j?f&=k;AB;$M:^TreG;*#iAP##PqH0#VYQC#/$]H#1U5j#dO*p#Uv@=-FZF>-V5:?-#YEA-w)1Z-:u(s-'nIt-=ZXu-[lHw-fV+'."
+"j',Dq#)Yuuk^,%.g+PwL3-*G#nuWB-/d1t/Op7=-BN4>--uWB-P=XB-*+XB-4Zqa5wxOuu]-?;#s[r0vV.*-v$J7%#1(`$#%pEwLaViS%<+a0lT&W0lp'OhkF%pPke8aOk5Rg@krEtLk"
+"pbpEk-9UH(PY:7#Fvb?-s.GDNj=a*M*SP8.&>P>#+=H['TG6L,kw@,ruCwCW-fJcMwRq4S75j(N=eC]OkKu=Y-N1/(I?U.q:6s7RQ@AloH#5PSHBqIq@V`4omW:YYUR]1paYd(WC<l:d"
+"BA8VZ>vViBn_t.CSm;JC`A2Vdiii7eiuIoenlWfCp@+PfMiSrZu@@on4W[.huhBigru(Vm?`f%OLoOcDQ@h%FSL-AF3HJ]FZndxF_6auGcH&;Hggx7I+hASIm/YoIrVq1KWgEi^D1SiK"
+"x%n.L6uDrmqj*J_/64]k-hV(j3<o@k.'S%k:`,M^Eo0P]G0Txbh(V%bn@r@bBI:Z,3N)/q%k'mJfsj%kZ+5(#B,(YlSl&JCpjfiTJIQ:vo9b]Y25q]c#Q%DNX1vF`t38C&W/[8]Z>i7e"
+"Je#+%/QnVR,a'kkf(=ipDLQpSnaUuY2:I`/Xxj+MThN4#r?Po.<2l6#J[+(.k'suLUnW4#ZRojLx(G1#NwP3#C'kT#V0xU.R1]G)h3uH6q*rZ#k<UJ#wle%#>i8*#H/:/#(M<1#J:[S#"
+"%A;=-l@;=-/reU.dMh/#p`.u-/_%;O&PF_0b*2,#@N=.#q=@#Mth_[MO@M'#`tu+#LochLf1/n0est4JNrDcV1c_+`/`U8J2PbE[k0kS<E5gV-fJ#;H.KOq;U%`oRC8s:Z72@hMGe35&"
+"ON22gB+$##c*We$M&>uuYuxXu(C8=#3]0H22'+G4KOC/)SknW$vSp?-A(u59f4_5B&LK59YWpF.9xYQ1EgkC?>jGY-L#n31_scL19_,Q#D^MZ[a*hk*A-5I-7)`k0@%u598qY,EU<K%B"
+"NkG<.v#(Z-@%m>)LoF2_PB%POf^p5#F7kJDqKBhG1(fpAa$)N$4'BNM:j@iLjZ:tLQ,QND,K,W-82a<LSqV7WdsY?.4heOOHscP9OJ_@BjM$[BDwn9.KQx3;o&%tADaT`<Z+YfLWI3qO"
+"m%3*PHRDnAIsYlL:jjmL<#YH=LZGY-H@HX00C^/;GiXD-/p%3N>D.F3dg'Z-TV$##.uQS%5e+/($,P:v)u0^#0Lit-_=F,Mind##L-AZ#XTs-$xUB;k#a8I$wX[[-6<Xq.vObA#?CTDt"
+"Oh&]t#PF&#'lk&#Il98.$oT#$q?7X:uje##O5Hx#1uH8%?@Yj'5pZo@^Uxo@[ppY$bA]t@Hw*2A.ET^3HgRL2Mp^#$mDsI3Bvw[YZYqiekJvqd3W^F27@;E/N696$qW6IMlYLW7F.Rs$"
+"=qoi'x,XZ#=@GS7(J:;$t_U6p&dX6pSWp>6G$kiM7E4jLLuV;$QP5'Y)Cmv$JQqn#pYjfLS#4]bG[XVd&v'KL^3=&#r(M`7nww;HsY6QJCuWRJ-'CV%rNIA,_-S@#a'ic)m2`0(jVRH)"
+"nH7&,Shn@#hKe`*IGP>#cWTu$k_DOBUYWP&S2VK(PeS2'Zoa]+'lcC+U#Q/(b%l]#An8m&SYPj'^<tP&LpLG):^BE<C_aT%TL&B78>Y@5t-8.$Te:I3e*b30oFZDmCYXL2C$u0#hO(HG"
+"9%vca]]*_OdFfo@jnlV-*+M8.6VP8.X$SX-T##H32<MhL#:#gL:9ZVd3x4H#iw<YDT>>+rXusjhx0lcu]@elDs;WM'Z#OR0E,%ipBYnw#,u[RN$jd%XX35HN%qeL#Q:L5Mh&OvMT%$v#"
+"UJ>lS3LIm/-v:D3pwvF`w^ta%ABs1+Vbx:1=k-N'+t3b+DDd<.Y0Q<6$<e)4>/$h:B@7T8YRA^=$+2x?1),KC5wwmBMd'4C'[NV76A-D,hH]t-%G`m9`*UO1sfJf36Iws$5?^Y,5*Jk9"
+"G3Gj'hR'a#Gpq`3oVB>#7Q*d*4XUv%1G*p%'ZFb+Ongx$(g:H25SC#GbNX,2d$Z^*qu^t@6KW6pvkf)MXus,#QQ&7pmnt9)Iw[7pusIO(Eqcn0?/V#AEnn8%A>Mh1_PsI31IqhL1[wm/"
+"g<7f3*S+F3<12X-OEi0,w'@H)#JBN([YWI)?c[:/E+tD#h`C<c],rV>,L.q1Zd7u/bW^kPfLoVCDOH-;[:TP9uX.OucU(pEu9TSMEh_lJIR,[uw<+I#PnVc'HIRX-6EHg%_]x)XeL8a("
+"&3;+r3DW%cK*xYu:rEX$u&/W#3xK'@2S4V?Fg_[uIBJ-#iS5/vq?@W$rh1$#Mqn%#(WH(#&=(&&Dnsp%kYRl':m3E*uwpF*?'x5/?2_7/.&C0:S.,`>U4hHD2Oh,-dHYv0Iu7p.K9PD<"
+".V:v#IaXZ#Kt&U%.gF)+B^3&+'La4)tGaT7MEcN'<j%)*#T,o/n'Ft$=gs5(&#DP03),##*nU3($E&7p&CO;pPW.@5ac5<-KAEj$'cFQ77CPX(llSL2ALOG)?]d8/K)'J3<N:B#?cWx'"
+"Tc[:/.m@d)^^D.3x#2*3a@wH][r,I]IbBP]i[[1$:Bv9MGWpk0BRJ8CK1uoC#&@8Rm+Me3DiJtk']gwa$542gxEj'&`jCX(_;LNZ:F^iZH4M`*)ZA#cD<]uGtHg,)$]VP&+1$29W_&KE"
+"['jh)(R$P1^NcI+qj-u8,oe)EdpwVJxf-QJ@1'8Jh6C)G#P*T%;c3^4sqU@,Wb^_4WE6q&sQVa4@c=:&an$<&#0>N)DiEE,L$Z_-eR*B68vY;'h:ib$bI4u'Sk<;7-6=>-qV#/_`Wa&6"
+"1%k%$vLG01=9a8.Z=H:7w>dV%H1T&$IAx$5V`,=7R29=-V':A$,PTY,PM559`E+A#*Mbe)iaW6(k$P122G*j0A=Y@5d`9D5^l^6p)rk&#$^EQ7hg45pjw9U)SpSg2ew:H#ru>]%M=tD#"
+"F.i?#%Jko71x%i)Ei(?#'Lj?#mBd)4XC[x66cY8p6etD#x5/.Mf2(@-oskU%Y7w)4^1.G?rU84MW7cnumeN&-W$?]UOq<DEc.&5Jeap:qaKeLp[cqJD^C<048I.CB2Cp@,osDH#_Vi?#"
+"'%^]Xp#Rd?UFY@.T*G>#aKXR0;9v#R8kbrZBtE?Fx%8rPU=Ji@^nMb=7Z#mFBr^L2m@E=1JTtw?Vlm&0%I#GOT),##H$XT#kY.%#&:ZU74P1v#9xl>#,d>,2X#.87Hi@Tg%.TfLG2Z69"
+"QUMq2aw(JC>rMq2r59%#A-eu%MJa&+mWNm/M/cD<cD=/:3B)QAOX2^Fpo;jKm,PSImpPg(8Csl&U)[S%B(c'#3hh`N,uWKpuV)E6iJQ;7?&o,2vQl8/XYIh([faO'3o:Z#vF9F*]wEx#"
+"9FL5c&*@>=(I@2;,fPSTJVNBe3fQJ1d9['lWg_KaK7&ciW5oUm,e;G9d7md.r<Fe#7Csd%.e=^6EQ_,)dV<.)t&$$$BUdg)Yof&$(s:k)/gU4)Or<6)kS6g#p'$8)*-xh(TDUWHvw#:7"
+"0c_;$5TSrQ;s5X$=1s4(/@Y)4%[*G4Ke4`#KkRP/_:,i(2.a<UqtC062<C_6ua0oLGQB;6kmDV-[Aj&d<U*#,G/sl/'e`_:nQDV-ej0aXgHN>G1riO(RTdv%BRPJ(_;8_4OqN%bF1Jb%"
+"b:Bd#8<KY&H;(f#XG2[&iFeg#xLf]&]JV?#METQ&O$FX$=_3t$v6iC$BHlj'lvLg%i,[-)Wi5##<^s5(Cn*9%3Q=?#Le.[#:[&Q&h7/t%Wfsl&H<lj0P0^p(HVt,#&h4N3ib'E<`j)22"
+"?K*i22sli0_,C8%<1h/)(].C#@hTD3hJ(Y$-Jn`uFoAe$Q*>E#e1i'8lliJL,Dj_7wP>8ITY[1T'LuWF]acUh$ksLT4Gr8#mxOa3lJKY$5(#>#RiLY7LC]P#0fb;ZD.)?##<b?#XBw8'"
+"00HG&Q6G>#Z$LJ%mYC;$&a/AmtI5s-c<.GM6T.AmQ:ZV-4t@X-if*F3k7mf_PMLOux%JDX/]A;6thmJV$`-xkGD4H2F:pi#+++&#DDlX77INM01;.&4NK729n_@>>8p./CM:RP&+EcY>"
+"+G:;$C:mY#iMJ3/W#OHri/j?Bg&>?#EM=87Ju0,[[p&YG7lNfL6Dwj#cuUZ#rsJ%7CgK@#xfP>#39bD<,6mPA781W$T-4,288t,#vkf)MW%]'0iKrUQt<oc2c6RA-s=^;-PReu12?tZ#"
+"-Wl##kF587TrRfL]l+87u#`Z-6>eC#s2(*MpOHuu.(96$rFUhLBl3Y7L2,##@_[@#,#w(#]rSE#8H=I##YWL#BOR[#[c[9M>`'CJ`H`22KxHa.(=)NNRk]_1,HMGu&__rdH2Gb`98vWU"
+"Mp`%OCI-vP#YVP&2.co7vX+D#R@Cr&oAuf*g'_E#sK*t&9M[h*Q/xd)CvbV-3Flj'^+[*/FG-s.hrHv$<N1*sIkm-$1vlE[u(8/(iY(^#x?IX-?;or6_T^:/GF;8.v<;^mdaJY*RtC.3"
+">n<lteZ$crvq)p%'jAtus^Z(+Cn5^ACObv-BjBZ-1AWvJ(xUxF),`lJ=q->PtfZ.LXDRLj0Ok@<][QL<2%#>U?2NI=s,>>#:f###?1hfhm]MY5'%nM9>C7w#(=#F#k$`w,=Y1Z#b3pi'"
+"mh_<-,5c]FGM>v#;Z4N3VS@12@/-u@=GvC3^9W6pY``B#Vn@X-MG>c4x?.J3@iS;62RFA4hqaAQZht@$3SUqSUx<r)46uw77$E>#f*W-HGM-g$4<F&#rJ[m<ohw]#B?(K(cD[L(C=p]$"
+"V_-S'2]<a,wsV_$wjjT'Rh#c,C/,*$<9Oa$D5VS(kEZg+ogDH,do:+$Y14U((gFf,q*hV(XoL0,;_u&#)EuK1Qb=J22vPt$A0fg:YM+v,@pbv,etP,*pq`-.@#1v-Gq@[#:E1*sKg?I$"
+")a3@554s5pjHSm2e6ho@no'edro%&4nGUv-3@Y)4stC.3``n#%v2k?#6j]VQnDMtgh)%ATBtmaC''avF9q.j0)e.7;/FW*$%m*v]=Rt*LH2s;81h]+kbGeD87R>kDi$UKu&i%Yl$FVKu"
+"BxR)#uBL]&'9=F+FF+70W$,701P+'4jZ6d3Ba4395o$T8XROV?7t=?>.AcgCra`YIHh'@H*BcG+f$fa5dBf`,etJJ1;NTJ18wg'-oJ$j'_6&[#CNFh:%?9Z-hZs-*>QK_,ON:m&k`Sp'"
+"neBa#nPf5(_k*tm?Q35(I#%12)CM2M3VKm(_fl8.n&BD5:M3^,d/sM/a%NT/,a]iLWo=c43]R+%T5%&4VUj:8rTq,+w0_F*Fg6j^[RD;$?s6m:Ll:/JBR+r'`EVC79V:O11AY3LQ9wsS"
+"[,,n0OWEphmN09p?a-c82XZJIJ:YoeI`SqCA=mW86v195B(G31C]'lDt>ECXOcY+=ZQjn8</Y#60CNeNx%It*moH(#s6Rc;09NP]YJ:5&CL1GDavU2'vCx5'aZE9'^1Km&/WTs$CUn8%"
+".b,F#7.R8%q@t873abZ#knLw,GkSm&Zgtp%6H@%%5_oi'84c87*B-T%m0^p([Q&7pxTs52T/i>7/`1@6I--@5j7JC#hp:V$Cc7H#6o0N(XADD3DtuM(e6T8kq*W`#5,[quEUhR#$`@H#"
+"N$C/:52;GV,H&##59:3vgAZtL+<bR0xdc/<Wv>V%FI(Z%h8P/*wp]Q(XT&;0neSa%.kDD+kHk#-[4s#$.?`w.Xg#j'%GF-Zm3+h:v59v-[uHA#v&P&#j[v##*=Z01$[+p%H7F&dmI:D5"
+"XTet@IDF&d;f^t@_>[h2qLOG)?@i?#A&[U%t;Rv$r06g)?+tD#ae_F*wFkcMmP1'dRU&A<v_=@EP(Y41>aWe3gfEMW5x?KuaD/a-E>_h<jF>_D`6F3;-a,w3GO(o0MM'1EK*wc*6[$S["
+"Ilc;$g2CxZ/i<T%iE22p'&R]4b:Rs8YDM4';-*i2Q&Ww.g=`d4<N>;'Z<)`-PZ-p2xKE20ZD+.)Ox)#$^RsO:wlh11SW9Z->:v##A/h?5W/6,2t#*35v?'3AY7^-M'R,@5Bkv5.0JQlL"
+"IaV6p2(F'oXZ>*nR,.&4,9+G4l1F3.b:CkLFt78%_xb;%t]`U%AL+fhfv8E942ex@L5@L_7hU9&ovp1i7G%%>#qFaQBt9Ae8BZ'G@N1s;L`,E58X#^Q=2W7m6r`W8KfJ'b?5;=I+V93'"
+"bDo[ufBH+4tqkl_a`EW1Tx[Q0vD`iUfAg60+.>>#iI(##>g72g#U3D<JO<?#Ta0B#eRYb#Oum,$.2,##HLmY#(5YY##<Ov#D30U%s3eg#+>YY#fw'hLaiD4#d8I12P[)22wUt,#[sHf("
+"B6RL2T&@3pucko@QW'B#IYi>$A>CphKc+o[oj_fqTLCs-+7>##+2)S$dCs<#ej9'#'_@c7o03e3ma6d3K[/r85r?p8iPwe<]PEu?b;.&>)l#[?4c'(>B'OrASlfNBgF>oAD]jvH5M3RJ"
+"R$*-*d9Ev#DmB[#XjP5&q/),)J$&%#=XJ30+UJ7/xxK*8)Fv@-;^?*3pjv25KoZ^3X]-9(6`9D5R$8I$m3H12m*387Ps'*)5]Jg%0Q8f3IT@l1]B'Y.AE0T.ZI)v#9E%#%0'PA#7;3,)"
+"(xkj1w>.ekL:_F$x,?Qm25&SQ>NYJ#CG4V#^s`/PwZO@L</mI=$+]pBV@;%I%+]&@n3p+R5eN6b7DmwbUt;#%m9h.Y;xp[Cadg;6;%RLEu,p9:WoG[5Z4mLuE(c.5^t9g2owSb[g05##"
+"'PVS$?+RN8+u@Z586E&+;+T;6:gN*4eB5K;nux?\?Pl/r@o^X%G)Sfm'x<XO:ib2O)R6F5&6Bi$%'&`q%q-oo%s(U*87>e217P(E8RG[B5D;EDu+&Lm(L>'KaW-J8%pg&EYA:K_4M<#N0"
+"g<7f3I]B.*O'w68xs>g)Aw#F#Vsmm4KL%vP1Sccu]$vX@.Zp+ER`8c)8Hd^@a?h`?@;NwE(7H]@@7x12].ZlX3q9eEENG_9m=B58oWO7G)J'n&dS4A#)=CM2v*LM`U@eY,Q2oburbRW`"
+"aHTp]wY3W1Tu7q/d[ZY#)3&##%b,p@-l68%<;t5(,akV$78-T%^i`w$&5G>#?B-Du7U<8p]uXL26l*F31G5s-6:x)M@[cS76(f_WC7ZY#B1LuP,da_8xed,4BOws$cZ^u$.mMw$Fixx$"
+"fnU$%1*F&%YfZG$D@vp192b]%s*#B$'aL;$/;5hM2CuC3D3wGM<W`5Mu_A@#L`CkFwsK7nZPEhGLA3%;WP$9.u#i_$tN[8#c<b[7uPp>#.Er($-HG#>P_%/1u)#,27n+j'xZYX7e:]X%"
+"rlL;$)&###ahlF#Nb,h/&x,@5mnu,#Hf)t@T*(1;gBQ=(XXiS%c3nk?R$=B#xK,r%Pk_jt%)70uu>`r;O$ng#McLrH^MM?pox#)Er#nrZ-l68%dg'B-.Nx>#9M7[#pQ_v%H-DT7;]+(."
+"k=;mL^fxF-5`fF-B&5c-r=9$n/0AX-lP_PS$j-)W,FH$$7M$c`p->>#34hWh,u(Xhg@l22QN(v#0m0W$+-;G#U(1[$tJ?C#:@r?#-1?Xh$8xfLOh@C#@]/E#kHl3.:S,lLcQaV$//N-$"
+"%HQG$IG#Fue5N]OcKtPuUf]E[tGq29_*lip`C5;-jeNp9@#1v->Q6&41>HD<jA8m8FOA#>h.ucD$QU=H-Bmo&P`>?#k6@],@SNb3grbv,j%)<-=s6v$[.9R*vv,r%2rJfL;x/o8qnF5p"
+"&KU^3/:tJ1mLG12d`9D5g6RL2=Fo#eiuId)38A$R9mF/*ZDsI3>DcE5IuoX]gp]_58HFmEn.FN9-&D<t17nieA6<<T+*^62]I%u.L'vbFI)Tx8Y_]l0Q7N+hJEAsdNrP;%g*N<#`UG+#"
+"8D6.%CwsP&JTcj'x(fl'sDl/*e@B#,,<fx,47$K)skW&-c-9/12pP,2XJLV.gn002pgUp9FX.b>B:]W$GFgS:clr<'0gXb-U;xB7UlF5*Q%E]/+M5,6ZguJ(,AbH=EJPj)8gG=$%IH]%"
+"N0?*=Rg.j2Vh`[6ci-C#TL2R8llch:+-O?#YZlC-c-Y403nZo'nUNiK&,###i^#JEi+kKpJ0^p(6Zv2Ax&>E2dhC.3Dw-87qF9F=(IE/2^/qreXc&gLcGn>%6):W-';:8.*W8f3[]B.*"
+"_;oO(vo%&4Qm:9/;)r>$>,m5/M'D.3)?&.Mcl;T/<E,6/g:+i(;YBkL6?83%88_)<]9+J:jSVI?8]m9ZiG^2Vs4X<@%iM=uaks_sd/kRDFZ?5&#r@6>Awno_v0r+Hi9GGH2fk5c-T.4E"
+"beIG7*Y@*R2>s/NG,phu<DRG6+4j7mu>'Z-RdH?;YolO#W,.6D[@MduR*]kuAP[6DJ-mr)Bdo+H9cj__NqicH]4a.G'eUo7bq()+u.anXd5YY#=r###^k52g4=35&M@Qv@c7`f:x/FZ#"
+"GnWT%YuK>#)Rl3+w]16&^1h>#EU.W$u#BvGdgp`3Rt$<&UYN5&?+Vv#Ofp>#KWGn&:[Wp%7%;$#4]&*#F<G##vOfgL/H^W$P0i_$W#%W$4r'tm:O3*s.$<F*Nw-875YrD5NKLh$?QQ=("
+"U9dtax#8T%tvhR#T*Ia-ndK#$&DT/);AN5AY7V1KJJmY,Rw6gupi+Y#(F'b$mZQg#xV''#rrg%M`w'kLIG`hLknRJ3>k-K3U2)o&XZ`c#'DP3+#Nl01EsH;%*bjv#>3>T%7^u01ntQp."
+"4Wu142%d,4.<*L)04_4(x=pkL:#'*),x,@5aMLp.^KLW5Bn_:^eA6N'$CuM(utf<]4v_`3Jc7C#<JSq)N?Po9HFSb..)#ZcDxWr90r<NusGaWWW;Co:0?Y,[x0]p/)fnvoE7#KF(p]mK"
+"ZHk*OO?nS#2v[74[?Qrdbrw:8JNuv*Z&ECAX>FX%jdS;$+-+`+?iq4)hVjGuRX/%/v,8+iCY(3CB6]uGTrtM9?iLM0ehJm:?q8q%TB]@#quje)SgJi)3#:^%A)mV'h8Kv/Q+bQ)q$Cv'"
+"&E'+*DN<l(JLW9/(9***%`On'6eX01uQ(41**p:1jo)o&ic1*s1V(9(@k,87L'i0MYsQL2`DIQ'QwG&m+1_F*HKcD<x4U)N.UnM99a1_6UI>kuJcajEN=MH#=Y*vp3q<sqr@#':NlJY8"
+"s/f*Q[?waE:.P.)Z0^ZApPDC_bRW<BN/dWo*]Ck;3C1ZU4=Sq9?_]Y#A**##]i82gNS8>,p`;W/u`Pn(Yi7='$=,Y%#7g=%M;B>#g&#;HJ`</2WYtoArojI)8k$/MF[jfL*K*7%Fcto7"
+"hu^>$ACFT%OEQJ(KG>c4p9<5]v'xgt$dsL#uqN>#:B5cf6OTcc^rO3Q1h:iF-KdouWYW)5q^@d4sR9%i;`E03IWK[07sf;#IB>qVi%5wLT6]T&m>$?.hNsr$Ax-s$e#H&4hGv&40SG##"
+"4Vl##kqc3'Gv?H)4]B68GrZ>6$1bV$uZ)229vXL2*c?X-7p0.$@v,3u$p*9uU*C-M$p32gA&?_[AQWRE[&'RE/kT`3fQi?Bh](?#k7R8%(UND<6V:v#Lqxj'6`hV$`t`@&+9$Kr78t,#"
+"hfe)M:*sE->$oj3'Bh>$]8@[#>P0gcY?.W--SMPu6K]]%D7]uGYV;)W92TS.lw/Q::=ns$Z2$v$t=xP'[e,F#'a,V'TP;[&m3lY':]It-hl)B##F8w#9`&c3-Y]c3ZZJ&&#tRt-u@vcE"
+"#Gom']1a^#oE.HDsqw+%(#xTMGdT5p^xO128lP<-'7I/6Z1s;$_o;T/;Od4(%.X@$K+Fj1%c7C#$$HJ(eXBa<nZAX-w_4)WY+u[NlP>(DH-McVgqqK#Lwmw,sJ3?[k9^@k[E&s$5hdau"
+"XWsIFpqovAm3r`b(<5JUXdd#+)KD50%#*ipl/,`a+_n%FawN$%].dlLM+JT&l;$?.daSS%E:eS%AX<9%47*T%BL.%#pqc3'#N^:'EW_G)%i]g%$NH(#ptnA6Dn/Q/Dt@X-Fl*F3pk[J3"
+"(rjRuw6lo#X3Mciur32g$?8/:XR^%OPa.Jh8bFW-_xRr%cNWv#dcZC#Z6j@&Eig>&A]1Z#O+Jx&Q:*C3bKs-$nj287-5Ph#-L570H;oO(]H7g)7xg_#pDMpbN/<eb%ejcVZ6/lAd(u21"
+"Q=s4o/wYm/S2PX7'w^lJlc2F3I@w8%o#5p%p(=I)lG;l'Q1lJC8_42AKoZ^39gR^$CuXL2F+'u$kl.U%^RG)4wu2,qIe=R4eWqD7xSG`+N/eo#n)L0c$+;K_K1sT/eh,($$`X'Jk9*##"
+"KlFwgTQ3e7_ZDZ>75uv#c+/t%cNew%('V(&qGPj'U1PZ,jKWM0<40?5F:o&4mDFJ:.wPT@]HSZG`Q#0(+DY>#7h1$#?3cm#EXN5&?`0WJmpjZ#IZlj'+6>G2h^<;$u),##ACw8'Lw&%'"
+"62q23,a9D5Eh4a<%IVdauf_%+q27DNpt@T%ovhR#8G;>0=?1K(F$nO(^EaV$@nxXuN9?oc=:CWunNMvUUg22g$u;p%kYa,bB9(sL&DHZ$?J9Q(b#?&4,;###A.)?#S6R`Et*kKpI4H12"
+":]EQ7Y``B#BD/[-B_*]=/&Ap$hZtL89Vm+sJ]Pp@>@>a73nF?#ESS]$*GLf#PMHc$eR3h#qX/e$S0;?><<hs?CMX*$o@A&&7+`Z#3c:;$p7j@$oN7D$F#r;$Bw&q%6C<T%DI.w#>L.%#"
+"r')O'YY#V'E99:%%P099sh0F*L<j/2-17.Mq2<dGjlac-&D:8.(n^T6poXV-:Z6ouamAfCB0i?#35wK#;,^xtx'sKtfMs6.YdRJN]pHlL:(Xx%sTc/<]2Q;%UnU?%9mTB%o9CsH:4r?#"
+"KNXA##PJx$rae%%KK0'%pVm(%?rC;$1QrG#-TlY#97es$31wS%3rH8%eZ=^&3*@W&>k<=$sTe0Y?(Zq7k5F^GOou,#udm6WjGQJ(4-,irpF*R#A%*X_$0dne6t:o7?$aY##v#YlNO0/q"
+"^O18.QSq;8X(ofL<YhV&d8@D*hC9'+:Cou>7N)QAABL<?ONP_=umJ&&$ej]+:DcV--Taa*)1)&/hvpi'wD'<7)Jpf)ZZ4Q9kb26h43Sm2^a7H#QQSO9FMo#I,^B8%ih`$#>>.T%.AA(#"
+"XfZ;B8;pftbTL:vD7#wA3bbV$P8r.::tM7m)rdS%>`G8%]@^dusL`mu.G@qCSXrH#`PiQ#wV[QDBteH#+/<`uqZgqut@nS#i's&d?S:5S`+3/(G*I9ith$a521&/;E3Yc<OckKC1P8c3"
+"A-t9%<_Wp%'n&w#ek-X-w,ZJ(1?9W$sD>;$nl@m'Qf2^#aW#r%%/p/j@nN;p:Qk29+%%l`xCrB#I8UEY)EbV$`PMT%:)$B9xQJ^VFhCSRW`mE>huCc4GgT,c_m&<2796j'gQ7j;ISGn$"
+"6(>C5k?XbG*kS@u[u?L2+keh%']+SImT1/q$NYc2KRi8BW,rg(a4^>,t+Fi(.LV@,F)Z;'R.o5)SX9/+,YUG-cqQMCIM.>HI^cs.29lP&OV.v$%ZUpIQen[#DQ16&Z+Z##Zxgg)M:ns$"
+"n%5_+b;oE30G?%-w0G%$1keHDPSjj$Yg7F*7&=3p-`pc$Ma^p(nJEQ7MR/Q/;/i?#a%NT/7F]q.qi@1(Wjo7L*+F%$mV?30apuc6r]_a*'smPhgMPA@%YGO$QSJBG/Qr286,1^u=a<Ea"
+"t9'p7H(u6Bt5KF_F+5]O#WJ3+g7_*8IV-Z$DT$6%O.Ka7HHA>,7iWY5kC-59,V-1:GCSY>e?S_FE&nlAr`DNKaaYK(/_+6#Jns9%_TLa#-chV$$[av#@?Yj'p5tV7nPNe)Mq82'ajF&#"
+"@*Xx#Shv`E':4C35x^t@x4_t@X#.87Iq'*)8Q0j(N1W20u%pbaV<bB#=#SW&xkXI)F_a.+,82U%WL%mS/O]i')EQS#I16B:VcVkPgk:o0GP]Sdm4YO1IR5Fu#_JN.ADNHI,`:D#7pG'."
+"$R_Of_-9*F^We2K?f.p$mm2<#$wec7VArv#+@@a+28D50:s'V.$Z4C5TwT$5lgQD4:No29*8(49MUnp8Whtr?Fs$A>0QuHElB7iC)UniC^3RnK15D=HUCO?H0*HJ(1f^>,;G?s.+7F5&"
+"vhJx$66wg)d*8%#hRv##a/S*3&o+p%2vmCdlq;E2A1es-[(s_=m)pFcCx;T/PgY=$r>GW-W6+J4$.1f)F)KpAx%vG*rHNh#6a4Z#9kLRhZaL:v)WCJ#TA(-f8Cl?[cYfR#Gj1O#GTY?>"
+"?K:;VTeAa7]L>4Y%1ScY#bkB6r8[pC8(U?A*]0J)#R,=`g)@9ocb;UDk6MP'?bJ9]$),##/8o/1Bt:2gQCHP/+AD;$ec:v#cIlv,2dtv#>FOG),@(`$aA]t@Xw*2AJNGDu`h?x%:h)Wu"
+"mu?1p)<MZ-$g/W-trc[.hM`o$$qi[%Q2NY5mkLj(ILK&$d$)($Xdd8)+Bg#,',jb3cC9J)su.m'l)bV7i;wH)F9RX&8u+878Xl`>gtWj1HL+F3Xw48&DL-E3?(G-=Uk@1P)h=r9_W431"
+"'8<@S``]]cf'2[qPM+n:P7^VYp51lJNpmu7x$8E5]aBAO#8(r9f<[##02:s9qpnY#87e8%c`E)NFZ$H)L/g#55d1v>`@Hv#@.vY#tRgl8u-=;?l;_lJ0cUV$IJ^>#3+eS%aRl'$+J(v#"
+"KQk&#E6>##[40U%8pdY5`JQ$$RZ:v#0f'tmKT(9(mS%@5Nw-87ubNe;u'pGNOp8jaC2lY%KUg#&$ZCD3;AN5AQ<;%t//&U#&O,n$LxSkL0aao$xQlf%G:&##9N72gD]qCaO'V'$`xm,$"
+"?_WP&/Y(Z#A$^m&`P*&+]lN&+#$930+Bt20O:F>5;S%a3N18E3if,-;]p.m8oGAQ8.I=?>+@A>>3e=v>7h+?>Sot(EN+:)EV+5KCuNwxFufHmJ%pZmJ'V]H)I[H<%H4Is$WuRfL0BWZ#"
+">C.w#@(;Z#Tfcn%_VV`3dm`l8oaAVH/5###RY5##FI3T'tv$['Kn.='Xpg5M[Pfj/8`cu@88JC#J?^5/40_o@(<3jLo2h)M3Ab>P)1lqu>`V>jf]%T#[%Z[d>l[]4Nsx02$spI1vV9i0"
+"nNHu,ns;kO[,;*#f[S]$Uh1$#3CIgHR%HZ#@Ra5&a^G7&+^r8&`3MC$vp@)$9qw`$3'b=&F)(+$Y&_b$S2H?&kOEH$n0vR&d9ju%NX<T%=uP>#D6'u$9%i;$@qSQ&aF=gLTl8q'9]:Z#"
+"dv^^#O=5b#RPj&+@('?5+ZKW$>ks5&2u?s$Hg$)**)7A4fxP`<:%PfCGRns$rc;w$[tU$%?;Rs$GZ0*s9Bu-$V:Y@5<,V#ArkWV$bQ=5pC:th#T^7H#Y2C8.]HNh#=*?u%`uZCuaI.Vm"
+"Asd1BYOcYuJOHVQ@v72gNZg.($qJ.UO(Won$iso@o=6hGa0<;$6x<9#=RYa7/=0/16P[&4V-QS7j7;a<]k2#GPQ9u$r])w$Z#+&%E)_'%P`ET%s$2w$Ex$W$`_kgLSX-##1i_v#7C<T%"
+"]==,MlQvv,[vUjK7g$8@I+]/j,#1e$bA]t@O0;5(o]YO-9UcO-['(.8sK0N(0JSfLWcgrm0NqRu5n@PSA#82gNfc:HOpcV?$-BMTxZxf.QQUV$<SbS4q)q]7lI<T%LKTU%:u=Y%%6b]%"
+"5G'sLEQMS]1%R8%iLSx$2(eS%f%.<$7xH8%97*p%gX,R&DRD@&o$8T.,a9D5Xs^W$OLG12.5n/:#@V>p6eYna.pvC#ZH7g)RB+T%*hVVQ^/YA=:OLS[O8?_[f7^2#ijMsuF3:7%>Mc##"
+"=g,X$)g$s$//.w#H`Ov,ujS^3+Q]j%xJk*cR%#Ds$imS%$Pnr?>>Q/U^rc9MV2Lau:Mt$MSI@##tF8$$1oC?#i,hB#SI>F#<NFI#'lsL#?=r$#FOvNFN2,##KFvxFBl-t$`;IK1&aCD3"
+"=m5Pu,9N1gq'<[0kcHoIO,:@TO^w@%DUe?Ti+$##?a/@6hr(W-d#^B%1-;hL5D=P]2iL'S`a#XUU#6,%J1['8cdMYY'u92gqbYi9UhelLNgd/;waYPA<ic]F])miKL7R5&bxdg#-`hV$"
+"WW9#$s/+*$HgLv#*:h'#sTG+#X9F,28X'(#vT<b$]xgt@qJNP8E^Zp.lB5ou[x,DcHl,h#C'uIu.o0'#wfS=ulZqA+s&xu#ATcQ#L3eKY54HO(1gHY>)@s[$vBio$8axjI$$px=;Gt@t"
+"d`Yw0$/m/*sQ.d#`lQg#06vlAruifLE7-##paf;-)1csL-^Sv0TIu@tF^+EraAcrHYf-KCrCDS$hXh/#'WH(#BY%v&n9`)+jY$?$OF5c,#L^X'=[4V17-ET)XE1<1,]jZ#lijM22^K[#"
+"n`vV%V&'#,b_sA-L2NZ%E3Yj'poNM(gqe%#2e7VQgSQ%-%=Y%$RkUdM1YT/FH&-Y>:@j;7lhe)MCQ(p$um`i2e6ho@UK.S'=wxP/>;gF4A<Ea4tO[X-;JuTU3=fL$kEl@>Gx2N=anrUC"
+"MRMcWi3#'GnfCEBEBGaCtFx>7bFRxn<8_EHpbLIIEn:F*&O-$L;3%@-2JX)>4*0R/;Z0U.:ELwQW1OA#1W3.)QXauA'c%##4-(3vJx:,%J@%%#*O']7sV.&4^[SI2$n729(s]U7j:h-D"
+"8,.QJcBBq%>;KQ(R]]Y,)+TQ&ZWo%#m$1v-?k^M'nGVo&)E1*sr+`s@lED<#SZAR.Fa3@5/wha3EUr8.bTVt6F8+l(N77<.dN1K(-=oT%'LB;QRGiaYhb3A9Aq>X<G74lmPgoP=-G7(H"
+"h9Um#jm3`;k$u9/pIi?u6.obuMMGSdq>^Cu]#Cre81LcDW3q+rk`SV-QMUv7sPV@.t3vr-@mkU.Vc%&4b6:(4*&?D<$f`E<AHvX?F.$eDhMH6Jd)V-)A[6:7vv&Z-3E5p%8^4G.9_CdM"
+":+kKpB/Z9.YQa#/Ma^5/BLd4(1/jb=^)BO3Wxpd4x?.J3x1%HYe5SD:@^LJ1-^?w;=5=3?-e^sW+m.70&oDN9hGR6:2=+N#Oa3G4Rf36:q^kxiH>7.26/5##vCDS$)Z(*%6TG[72(,J2"
+"<XXG<9uv1:`SkGD^'Xq%IwXJ(:sET'NfFZ,0_LK(Sqe%#t9>d$0aHV%UAv^]XN3*s0@A(#W5Ys-[.3:8(O,<.7gDb3X%6=MAk*F3fgt_&R9iP8I9[>DoDc:9,WLE?qp&[`#&$nUCsSp<"
+"'DD0<k`QJ(+JZO;l2MB#Z.uu#iCtbjx7i):X-h)<#crS$Yr60#Z3=&#$kv;/:P`H2VBQ<6)WB,;I>su?VX2+EvcdUI,s`P'IV5#-KP5j)DqE9%1Igm&caf%#Yc.X-o-9^-b%b]+(/%g;"
+"P_+5pfbGL%>YHs-A-hM:i@Ba<%li?#xsGJ(CqC.3JCkj1p:Rv$6ZV,u@RBf3dWmCn/);dc$M)sucvDKr`dtQ#Cx8a]_pa.DN7IL2K=Z,03?-C#LF7@#Q=(Fr7T,F]C]3r$b$kt$<DXi%"
+"ju4Q17mJM)KE>##&jFj)%u9t6N?^2'uFBT7F<cj'B@RS%if%L(U8%kKvT2'OKjq3Ac.&CuZ]J0Y,8t,#(]/Cu3+Jf$Pa7H#pR8e%XWYV-8*x9.kDsI3K)'J30bFx#n/42C1,#J#;V0Z`"
+"O@i@`L*-[$_$0FEr873uqBe$VGDY-'-/5##AbnD$<r60#wD-(#^9h_6&KI-3S[jq8,(<I;]EY0;c0ho@Xw2+EUFC)E+X<#G&Q6Z$>p#o/7+]8%#7g&$`IZj)@(v>#+XUj([v;a*]x:%-"
+"twx_#]dweMGuWKp1Ndc(Li^pT8$bs>>*6k([]Bj2;W*3(Z&@?];[kD#b_*<8t$s:8V+uGMkm$cr-m#>&4@BwA[q=^,U3ZGd=c6w7u%16M;ibY`wP=pTF5PQ=,[mUmIu+G*Y;?l1&CHx8"
+"h9ME#2h[;Q--hK<JPM'u*S3'.?=1]`%9%##3*c6#7M''%MR@%#kxV#$.]RXHXWl3'/,?=$@L82'Gqe%#YVvc*X_>/(39eaNnJR^$1LD<#s9k>74LQlLV@_;.&P-98-;kM(AM@T%(_O=$"
+"jLZb*3hUk;=w&[`QmA<^X%gp;$^S60g(NCa_?C4fh(]0f%/5##9upb%p5GDj-l68%]EFa,U?ZS7uRN`#6+.W$`7?\?#u@]lAM1blAXg_V$fN0*sH0hUmQ#.87fE36pSL;8.ghgfLQlp+M"
+"@>>H`lSc_bOL+p@=])]b=Rtc)?TC*+2.l22S^TY$f%5^%[iU,+37$U7HLeL*plcB&:ValA_+XlAmOT'+s^3&+ewEtC++ikL:E^t@drk_.],%12$oxF-tH^.>Eo#<.;Qrc)v2u?dNB%=1"
+"+LMT1E$E+*lii%X.pUm8vfOD(`*2$,c6>BGE4KtU;MQ%b,k68[HnNP&2Q`,='JBU#jN3p%`b:w,cI,v,8Z,,2V9VT7Lo^dDW[wl&+DY>#b2Cw-=ux5>g#<Q/1GG>#=:iZ#^@/A&9()$#"
+"^+S5'%JeS%$h6&O4gsWuLq,F3hx^t@UGCs-R';J<Y%vcaSTw<>SfkAuJbko@-SP&>r/pA$aRWo7o2fn#(_M@t,DKfuqAM$um5_Buw.>>#f76I$D2B'])<SY,xlP>#[g/e$gMT2#j]K>#"
+"lgT/(]VC7nb@&Q/Vl*F3kH([`821QA3*c6#E<b=$v'U'#d?.'$1%H0)sf(q8_bxv$K-&&,Wahs/la^Y$XDQV%[u#v,C]6X7>pQ'Gps;A+fLQq.thpB+1_)D+%?I2(Y>e<(nc]t@X6Q4("
+"O`9D5t9'3A$,@?6p'oA6>#sHMobw>8O(=^,7tm68U#-g)vp[GMriL:%oh0e)10nL<nIX;$C@-E3ln6O`K$;&C$MT^G_CLK[q^J0NG$qH<(>*a,*4flJF,&n0(U^(ukoJvJu`CH>,#WRd"
+"4b?gLL'rm($%OW8veIc87B3UMJ6v8#:PX*vRtNrL=#lU&#Dfr6.6fS'ZBsL)#TKU'%NYN)FtYj'/k-d)&+pm&=k?5+.b;)+YDj1+Z2hu$-nhsf;H#6@d<O2(V:w/:#8hWJTv^>$i?hio"
+"PW;W#k-MW#@qBcST/^(T@+uf1+8`=csxQJ(eR&[6*8E.q)Hh#j*`L'M@=dmuI-juL]I'%#&7X[7quE>5#/hS8q(>78i7h-D82ImJxa`^mtn,Z,(%KQ&8ke`27o0N(D-a^moHc.<pV$BC"
+"d+hN`Q/g<Es@hUOIHI=;#ppQUEdefNDWd-=G'0J1,f]D7FT3pu?dcc9[?xb.?<QfL?TxqLp+p/NRhd/;*=:&$r;((,xj)($@lE*,dd(;(E42Z#;XvU7BLsl&<ZGp%q3J=-?gdm'%>0N("
+"s'uV%p'5DZ;Xkv=kGU&C^<St&Wr[[IA?p7OWIPkuDn^.;LddC#@^RC;bhbT/hZ-o#d[K(kqF7*:Lr7T%rUHG$=;r$#hVQ&#nnU<-Hq/q%6G:;$/u3X$4;###QRn$GL[N9%7uS:)^Cr8."
+"3'oA6m_.W-r4,h<=OLp7SACW-q,^YG2h[I4%x$O`UO]i?Zx[$$j1Od;I_%T$w1U5;,@S'JO5++v=e5R$$XH(#OlD'%_ITf)*j#8/W?h,3$]q88P4l8ADZl_=t:k'>6c$aEt9@2CS7dL)"
+"3wvW(Yt]#0soQ##w1[?$3-Kv-TcM>$%Vts6$#V50*`,_+dVh:%2bX1;K&JTAhf<]$86)c=06/pClV8f3qwkj1qjWYG)6Be=+7L+*1rSfL9gn9*-br_jkAc<&8u<wJiMNdE@qT=RJ)))5"
+"oW*$f3<C<fR9qx0b^aOLa3:q9psl2cC:pg8[r8>83mHr%^9>TS,2AT23.F=.fH#L<RYr;.h2d7&*jr*#cFs%viOUr$2sn%#9[Qq&sj8j0FT:0(+;rQ&itL`+0E5p%,+iK,k?ZxOfpL0("
+"I<'E<^4HZ#4M/2(11>.3=j.4(i>=6Lh(#K3^+)X-GWm$.D&+P(k;oO(H16g)A4qw%9I+`#Ztwp2+f-wKe>*hu+?T+*R[j3C[QPN'g*Cp#VSpo7*qsjuc]=t0?2er%ln.F/fDDS$#9Ss9"
+"h3:V&o=[5J4fhV$WKuJ(vxC?#[VNA+Q-YaurhKB+dW3o8%ekAu)/i>7)&)p9,Ll)4x,Tv-(5L-'?r*F3EIDeA[v>5c%<D`+nFx^ZHD69;tQrp#&@<L>roJq/E=D581P@Z6QcriKjPT#%"
+"'%Wv7'^;w$Gixx$ht_$%;la>5j4D&==;1W$DJu?0$=bx#Ps9'#0)w(#R@p*#9MhJ#PI>^=saZp.4lLZ#5W]._>-4H+*b_r&erq4J_'v=PC42?#?eww#LZ:v#o8Z?&*FZs0OlSc=OL,HN"
+"9jdo@T]`Rh8[tiKqI3nu5lor?26-p@$u/p@$muoI1aTb%p'&##l',p@ckB`N6,Dw#q>$C#&<?$$xAZZ$0M+U&Cco]$dnU_$-_[D$9NgY&NHbE$Xc2%&^+s[&s+wg#l4s`%%PJA&(h%p&"
+"59iX/On7W$B?(0(GrTgL9`Pt$(2sw$nOW]'9H3T'Na>##u8Q0(,1EpLsMff$=V^gLJN?65lcdC#rud_u;$sXl^7Rlu<T:T#JcbY,MrL1.Y#`FMYjs0$]Is-$&'(?6Rl7/LpmLd;/Bph7"
+"qvf^+O&`G)vaEQ/KsxG;_sil8^p.m8kl^,;3wgs?,e's?4'Ls?QRV^FFckcDT[2^Fd8j^+<rQS%hICZ%qlM`%V5v7&8cF$gsne%#KvVA+1Sc>#=haT%<.@s$`vf*%P]:Z#>nwjkfaJ<$"
+"?m]._@?k),$+gx$]wu=PMR`?#l%J5'2S;<'3fL;$bV_$'eUv23f%Ne$cmeO(UTs529%s=-(F+c%-ueC#?6@su.pPXj(j^%=N@WD#/NKf:$pYx=/jPG2$p)AXCaAkF=b$JC%=vjtWhd##"
+"xt_A$_c1a<U_D#G:.rv#K9Xx#17gE#s?D,#Mrm,$O>&B+g(C]$HfU;$bCcB$*GuY#:U&m&+M1v#0K-HFuYdj'4]U;$24trLS5Hb%U;CT.M@&(#4Gi*%=kcr9]Nvq=hAo>.tU=u%Pt6Ku"
+"1f:pu6Psu>5?-p@NW)MgfwE=c:qKfLwms,#7t](M[h`s%IaAa5(`/&$Xkl'$%-f)$=sg^%toM`%>(`v#of1Z#mesD#04#-2<eiS&-;ZZ&(R(_&dJ:C&g5#3(6`9D50Dv<-`+f'&;oT:u"
+")cNLue6]Hun(<nO*3N9NE:k9MqiHoIE_'H)ND[9M)8x12wDBg:aHW/D:9_v$7@0F,humr%e>;E<Ck86&F@Do(E,wF#QeV$#f/5##/H=#-%GBT7^BO,2#gU@6gJ%12Ft6B4F'BD588JC#"
+"r-Tv-gc``3U5%&4AC7lLw_U%6)jTv-[5MG)dqh[,at@T%U(XD#vb-a]3FTV33IpnkiiUlNL^B4O4*rhGu;7]`j'4CU4LrV`+]/0PS/eq4g'OqOa]usL,@%5Jp[$m/J(-&$8)Xp'6<%`$"
+")8G>#GSMG<U*+,2X*387>9#@0<3xl/MnHoI)@k34-$F$M#I+RMV2e(>v*;j(HIvk(cNSm(nn_,)sQt@7jXW^#<iT^+F.=5&Nvf^+6@wo%h*Dw,6iu##_V>;-Q4vghuNW2(F[BOFW*SXq"
+"6T@l1qApS%'i0Xq&^7`o6p'W-F%X`oWp7]`QNQ[M-<^E#3<96$75=&#WTw#%>hjp%rbY(+bced)TwUx5nLM.;7Z;u?5q4?>PPs:@jFZAF&QqXH+/MXH(lP$,3w($>(t7x,GQw61m2-/("
+"MR<E2HD*,2VV>W-15Cq`Ku^.=td37%RbtD#%)<T%bQCD3s?L]$MeaN1AZ_?Axu8_@wAT$&xZE31AQu#AnM+oC,k@*$?xljad?WM<LO^>[W+ew;)`FODUHLSY6+LcDrP2<%Vpd(#STBb%"
+"Bn;YPt.HVH;Jp2)2G.I2K@R$Gv9JX$D^:O'Vv9B#l)l/44rIR3fE3?#SiSY,l>[1gFfi?-K':j*Ve,c,$e)L+r2Oa*GTxg:/0?X?`&6UIR:rS%NdF#-]/7T%K&5;-(*^I$A*bX$ZQ&*%"
+"m-7)*9Lu2v-Ei:'$-9w#?FoA#6)@v$>MP##`?tx#Ddq,)8@/b<OfUw#Gn6U7YeD^FG?cj'VFNp%A2(KDUCT;.]1DeP-ShJDdgW/2HiVh#qilA6>$<F*d7rp.GLs&3UNSwS8P7C#d6;p@"
+")pBm;&FvX3R5rq%[3>sgvauaRO%.W?,0QGR3`S81`6ScG`3ScGVp4uul7vju5kT<1&>1Pb(I`NW)LH_>b8Qc>MD^eq$`w@4B6]uGruoM9V8jo7gAZ,F&q&j0J2vk0KA@m0BltU&sKha#"
+"7k)q0ojr`-Ba.B7hGus02J`A/43eR&VtiZ#8Tje3oQ^u$UBF^69H20(0O1r&f%tE*g?(0(X*sv#v)9;.Y-c'#*RxQ8@R&'-n*9?7t4g^$P8qJD/TA-uIR<))x4_t@rNhV06uAgLW(rW$"
+"Z6ho@_=@8%<V*^,po8V-1#4v%cXmUAO2-g)dvL8I*Fkc4.v#e4?+MB+K,u+`,R(W1)[[23IkoY#1j+ID_4F%$vl;F3BDo`'MF($,`1FL1N7CGDaO[p.A:o:dprLJUepGA4KF$##tdv=P"
+"cPGVH;BcQ#?U%[#xsji0X?x'/5o4>%_Y4?-vpkv-d.]7N7sZ7&3g4(/Fm#YlWU@a<tuK,3hTp$.vEJvL'6xU7aI)20KJX:0nu)Z#*UYm''95s@R0QD-TLL@-xPL@-YH2&.D'nmM@N?/("
+"wJ9W7%C0?$gaE^,/NHQ:W+E:/rCDS$UpDuLnbamL9kA%#mkQfLMK6##)&78/:XKG.Ko3&N+j4c4tX;H.,PE%N)ZSf3uD/Z$ih]F-6WBd3E/?x#kw/J5a,2>5q>WA5K=I##6j$]-dUDwg"
+"DNs`=/%,/i^c`A.0jqr.UOh;%T[m50(N*##Bq%Z#-=it:1F.lLq[+.#=XR)$=U_/#rk(b7m$DJ<50hB#Jmls.$4u/2Ji=>%;9[P1(*@F#NXYv.e,k22KkZx.r2^$/98;&/giJ^+&vUT/"
+"`.&?$:oX%5;u%H+W2iK(-O5n&t=Ew$45Q8/ovql1sTCL56?g8.+&+22C8C78xq7jiT%NT/($8_+8_KF,vU*0RH8at%0^PLDEu=/('Qi`-I0Nw,?]$),7CDn&6LZ+<)1<L)__QM3g[Q:v"
+"u1V7np[>#PNQw.:D;c;-*T8c$FI:j(FdoC%9XgS8e*(Z-wD>Z-lfsw9GI1j(nK0_-MaaRExs*F.ZWw8'1MTpAL55##p5([-%+'_S=](##2j9_S3d,_SBev=P)Sj+MC>-##s.p&?8-1lo"
+"sV[YQ8k#T8oF-)/H2PuuDgV[%_E=#P3:35&pM?Z.lS?,$s%<)%-J(v#9@3p%8ll##_IZ?#tLiG%tv+b%k(%`&lkv23AT3u@l@,87I9I12.8bi2^a7H#v1:8.:bM8.P=B;6m`*GR4@)I`"
+"LN.@#$HSX#gJdG$.?uu#p.:kFvl?#>OQ4K1ZC@Z7To?8%xgf>#?[Ep%q?:lK(J:;$_Gp>#aOd?#vX.d%v,G'&m4@%'%MDIHu$Ns-^q$KFEBp;.it#gL2Bi-MVW*h`3V:s`:/T*I=>#rb"
+"4;NjLvrQ:v2R)##5U/^=WMl%=:E-)*C#Sp7GK5W.Invq7]bUAl+:?#P;5TD=#KDAP=3Os-G4Cp7,(5G.LQKI.oeQF.]cl[PmcCDjq-c]P^FwK)NeXG2Z+e]#t8j+NVBk/4B5E,EH_+8M"
+"?OPa8bJ5s.$lor[@c1#?17R>?t.DPpp&h)+:0wEN,)>Z-g3AF.*NHr%k>>Z-FsIF.ZYc[Pb#GwMLWlLu$@dU7+H'(,bd2-,C#sx+$S3N9bx?>#gs-DNGe'H)kc.;6Eqt5&3MC;$4k'/%"
+"<@nS%`b:w,@SSiB8L<T%=(%s$a9-jBEN(v#/_0JpkP)tmDI`22v-MkLsPRL2*B4:.vI8]$,t.p.Dcp@F[uTYuR6/vLNc#8R3Gpxt,:,f$9>DYPDGT##kD,MT]BAG`cu:eHL(el/Jt+u'"
+"'whv'r9.d)7r+j'9c&m&`qbf(q[U6pBdwl$k;v2AA39K)?]d8/I9f;-KC@-+[)_#$r,%PYI6@lYH1ptCRt7xBqgiS@FMYVYFJG;Y]TFuC$RIuLX#R7Vtk+mA^n##,m:7PJT>X;&*/ww-"
+"=@YC-6^sG#JAlI#i:7K#CJh,-=>d?,PIL97EA_[#n%bE**D7w#]rb;-wJFV7wXYc*9]Mv#FG-s.Y1PV-'F<?#U>ro&QIDv#*bX,2?)b@5%CO;p6RQp:F=St@2R-@5[FhI3EGKO(_AN%."
+"i`2K((<('#OD]`*gmlT%I-]]4%n:O'dL0+*.N$t]:2:ru_:Z&kScW-82I92H2r$V&t.*7WSc5/2o42O#l5>;-=7ri0GvRduiOT$-w?Yx%9=8?>mrF58(#wE^L+,##[H:;$M%E<#Q4,a7"
+":`^c35/)#$xai[,a/FT'K:b2*`lqf#t#T^+@a8q'L&(E<FBu/(Ca@[%4flY#AQ^S%B/L;._fn`*l6JW$WqNt$TBo<$0rFS7%)###SXc?Id5<I3H'$@5i;EDu=w26.b9EU8M3e,vQbj=."
+"g=j<HHfEHt/p=j)60fX-Ynn8%>3e]OQ<Q8DPoH4fpw)<&2>o+PN6vjugZJ*$lYef`I`CA4fbtr-^AnK26OY@k%r+9`hkb?Kh<q:ZdkYGD[SJP8.As=YBD2W$n>cX$q0kA-HL@7(^2,03"
+"hQt8(qiU13dhk:(NkO33@?mPA'(;TA.(m<@Zl3KE2b[MChDh8Bh2RmJGIX?H0dYm<g(q`*XBZ:0Jr07'UCw=7w)7L(>]e3'_wA2'e+GE$C$t_53n060Q06M(5b&<$V]>>#>kJJ+Bk$qr"
+"&$<F*S`+12Y>^;-7oCp.X(XGu*$`SM46vkKb<)s@*`0jKT0D*4(xkj1C4NT/s@bAf=@kJ%i[v;-O%EU%`Km(N&Th[-n^5U9pAGZ*B76u6]#b'I-]K>8AG:+K3M)?&p6?4NCso60/d$X="
+"`v.UC;hTZ7lOq+Y+NJi`F%h%1YN-F@B_<MsFKfA,6$1U/m?at6Ajt#-.A^71V9SN)+W<2E2@Hg1<;9IO4]Dc+]gv,3Utbu77R?K)&;iRLpeC>%;(D/=GQl_5:W>r+LJMG5iB9r.ZUYL<"
+"0>>s7C4jK*r,hQ&-->K124il2vWrF*qYaa*q`$(#3ZxI_BeX`W=RNP&FsL3$/>####BH0(&.&(#M7EU8QlQ$$/&Y^Tf#Y^Ts_+WMXn5[jsp2H2Ew:K$Lv<9#Vu_Y7Ygi2B=boi'(eaD<"
+"6+Rs$43=w#p=+m'WMZ?$bR0n'K?P3'-peY/&#P12X#.872x%t@sb(j2**=8.xkYcD:`V]-:()vh08<Y#Dt1Mg#J$g_#[<G`i0off[?I`%-4:on.V9Z,rJf%F4g6g1Rpw0)%p02)SJ,G4"
+"L2_H4uoFb-O?na3h85j)@s5x#_7w8%x>5p%/l1`+FvDG)Wjpu$W:G_+n`HI21Ts:Ql2q7/?22*so[vc(r:=3pFPgk($H=<#nh;1&MR7W-HovRVYt]:/*K=r7G/oP'm9W58>`,g)r_/T%"
+"m''iu;+J$H4j'nB5q;c-U$]pc:5w[,cKaD5Oi=N1OJxA6(TUjm1e.:a1&spunv#'Xdsii2uK+IX]GpVLpVTA,YVZW.pUB@b>0Wv^0^hxZSv7N-1*i:#r:;0vjYta$$tYl$33U]4(]oAH"
+":'[W(.'<P*S:j]/6hq2'-h<^,17-K)S9]9.@;211A^'V.*bqC4Eo?l9qt`FE`:Y0C#U3+E/7d(+P6sd*l%es.Z2lb+%d32(Z1*#$h5JWZF5###ggJm/J^rh2cL*E,rH@_YoKgF,Pl:v#"
+"8^XZ#;FSeOr<<E2/Y)E66KW6pgA,LM$.<E2CR1V6v-Yt(>cH?uF9JC#4_7H#uaa>-iJ^e$1&7`&rj'B#.tYo&/[^:/;0S`ErY2<%2<YYufNYS.&p+Y#2Wuo.1lGf:qL:L#I(Mi^355L#"
+"e`]qkvDw6X5Su>JJDADG9XOY-S%4uRXZnG,B3juPb2Vt:a*VJ`,]k'8;'UE#r3biBVD98R+gS5BvUrB/:2bl(_kkReMth=6h+'p7GD,H3hDZ,FN&:T.K]?D.$X2B%.rkF3-3eH3D#>r7"
+"OU3q8hTC%>pl<'>V?8C%:FE+E5P5H*6=s@#T)0e*ok%m,RI,^4eK_G3fDI12**-s.IC%p.:d;`-p7HY-PG6U.5x^t@qi4p7Js=5p-H1v7r>eZ$x,Tv-j'/oBi=^G3lMkA55$s4VM=;%t"
+"jU)o?T)uB4T)p:VBfwRUg)b)>AcY'?SUoNo8<OG2d[[Q9nRO-[>([Y#7&iJ(G';2gGj$)*,sC^-v1Ed$v9qoIG*#n&8]U;$N)Rd)kfe-)C@K2'G;/_4V?g=cTZGb%+qwl/RbMm/OP]A("
+"w%Y>)p/hUmMxO12hUV'#%XeJ3`=Y@57//(#a>0N(xE3L#:o0N(PHCD3lH+U%o_Y)4dE90Ke>cqpgHA^aq+Xu#qs-s#-PI[#uGsD#)D,j#g><L#v7eL^;sN/#C8J>,Z[N]bx0v4%>`RY>"
+"U-]rH/2%>+2,:8.QjhnucV)0%:o/M#G9P>#H4Ox#PD22%(,Qj)q-TE#9g_V$Gnr?#=HhG)p$F1so3<E2HD*,2LD0V6iZqG2_DsI3upe4dk`b4ds=#rbTIZc%Z?/=#4;DK$4C%%#VR#2*"
+"M'gQ&9lCv#Uw7@#`a<h#XW`k#1U(Z#_U/m&7fY>#>d*A%Hm>^=QK,R&//Pj)Av`hL(A]8%IBlf(bXa*.cqJ2'mQX,2;^qJ1qr$s$hoJ128>Y@5^;1I$,[FpL?@aI3^(+22QdJ,3TZ>g$"
+")m)NN1%9;-9C*j0Xdko@l*M8.XF3]-F9Xs6:]5g)nv,Z$m>@XD&po:?QLbFuknNmD(t]uYFDNc#hJ=eum227U#SvN#k(cAUm]+##3xL$#GL6c$1n'hL+H*#JeEFv#SQ0>$rSd?$?x4#%"
+"lqL_$+Tun(V<xw#EU.W$vY-mJEK10([#ic)P/[S%s[j)#3Ufi'=xF/C,hV1)$Z:6&#Bd&4sTWv#mKaV$QilA6,0pJpU7,D1rpPC#eUv23Uv[@5#[g^$;QQ=(=c*j.V<bB#L;iP-2TcO-"
+"D<YD3[D_#$:1I%=fWbgf4Y`2'$wg1p#VO&uAo6t#E^xjIW4&NKNiVV?tt(##D1U+vx724%6(+&#/pm(#<qlh#;kA6&^;`k'puEM(l*;w,.1Lf)@(&#>83:W?K#n9@HKU@>LCqK)R)w`*"
+"n4N8&w.Kb*.Vss%G9J,$5CcB&9[C$'7-Wl*7T8M+AeGO0Mc3@$b-Dr&d21>$s21)3Ar0HMVRom0&JJU)-b]uGP]ED#o8NA5qBfP/=ju-5-7Ap.j<Y@5R$8I$xT<8pp=Y@57m_a38D9H#"
+"B]e[#]::8.DlE<%,T_^#El?D%w,/J3O08@#dk%>-I,6p/$`^F*P[NT/:eTk$_)vD#k0&b?;Lu0Ha(+XM$M;xA3bbV$IWpU=X_>_C:q-J50&2x]&F4'6NwtD6U^?F64A.u^>9`a#LtZ@k"
+"5uFe5g2>5/$t3'c<S/T%O1x[d%^edue&ml18=UO;`oG1l`gupO>W;l8q@gO;Ww*##sC24#+FFE$bYI%#)dZ(#/dT`$2wrh)fR+70)aO$6X@s.;V.]Y>H/EQAE-p'=Um_@>&5$&Ff3neD"
+";we2CN:Me*,B>=[M)`k'ek;<[h:+l'[0_S2w@M'#x_;$#<QWP0esr4(RbN<mbc45(H=%,2oSZ^3,a9D5Z5gg2^a7H#%cE#H$g0^#E54_$h]DD3En4g1<#B_%jHuD#%>PjLgwre$n]E.3"
+"at9mrGdcI9@l8SaRCD>NlVCRhPLR:u9H:*BA/SEIj&wx--P+0Li+Et:oN2=6)vkU%A+?#qD$x,R`rti'Kh%m&&ST)StH4gHarqsMn/8H5B$r3X%T$1D6+^MXQjR+i<o>2^C&mi''>s80"
+"BYcr'5Z6>5;sN]%B/Tm&PeFG22^K[#Y?u/LiEfN09#H+<&+3Krv>[4Ae*^#AP&_)2uPI/3?R1V6viLZ-d9V-Mno`]$*a92^`@0#,$67#,?kf87s;,AX884AuP.n7@$##YuSr@/LJYur$"
+")tj%=HOj;$tsp)&Ze320@79;61^c#>1>>##KUFG2(?tZ#?k/6&.krR8fx%I*mnu,#9-%12%%ht@(aDb&3$$&4CL;?#fQ%[$x7jH$-iJ.$PMn208hNul<NT+_<Z8L#Y7*4#2Fsl&33d]P"
+"S)0a=GWtR8q2;9/0;rD3>HH,M.,/W$VpnI-Mt>o*`0cjTE_<VMb*5ltqD:/u`7Z9MFb)g(M,mQ#[t[t^Yv8uGclw20;YO.#)LFi$Z0`$#7YcJ2nAf68:kO$>W(uKCu)GwGsTt6&WsKQ&"
+"G99I$dQu2vFke$'/E,F%:[rkL`nWS9Nt@$G<]1Z#t`_Q&?+V$#?L@w#S8@h(Y+2v#9&Fa$;_3X$V7Zv&Y@eDaeWk,2wU1@mYo<.3O9et@T_Bdkwgji0+`rs@d$eX-8*x9.qQx*4bQ<?#"
+"d[To7&.HuPEl`uLmW=`6FQGF#G^[8ux&ehuZ_/SOmnYFu&L^2#7B:nuIZtE$@M7%#oCxV%IdYR&*eY^$>X&6&E3:,)<eqS*&'UN*Ul8B+1)N1(]+1v@`T:Y5PP$WA1q-B5tc_;.Kn)b$"
+"$9kG3jPR^$PP.F3H36H&<.3d>_T&[`BgG#Ahb`0I5BqZ7jD&&tT)DE=;.dS7fmNoR,*,pI:)tr-d?q.C/kn_+?u[?$HLG:&jW.<&7,C>&^<))-j]TV0&?Je,CC8q1ReXr1rwd5/+r3t$"
+"2oBf)Xk8/17^AB+;'.k(ZRv##ji$r%MxO12nTbd(p@&(#d]`I+_8*22YR4f,/;dt$^D=a*-[xT.p&PA#hafK'>D)pI:Ik@eJ,?X#JCD5VkvUfUfxG<<T9+,B8-+T06RurS)4&VN/^;.."
+"'r>290iQaJwpeRe_q+d3)mUG+>K@d4W>T*FoR$puYhiR^gQ8QbSlQ+#5mX+`p3tV?[]ql&xc_/E>$0U%WQg.$46%h&3`1?#9&;)3qElp@LMamA;`uY#?eNT%7hU;$F9TQ&3R1v#DRq#$"
+"DM<5&-s?W%hC@<$?LrZ#C*96&LAwo%/YL;$>esP&iQNv#eZ3$#nwD8p_j)22hZ4N3IfED#b:YDNk/RL2#@V>pI47DN[g'c%EHw@''0wGG2nPu%:H7g)[XR@#I*Qft'<mNuPTx-u1P3Lu"
+"ToKv`.@;k#[tPPu/[_:H?nl>Qe?rxtlVs,2Tu_Y7W.@W$l-l:&kGQiKFKhG)C/4J#Q<P>#JsqG)9&US%Y(N`%fJ]t@:&2F32u%t@GL0V6Q,'j2-k(]$Ho0N(Lc.Z$XtoRui`$m$^1JDt"
+"W3,DMZ#U5#@x'/#n35B$6g1$#*pSIMPhi;&Fwe%#1=x#/]JoA(e6GF@WYp2S`TB#e-4JM`q306$QZIjMh*?wL8jCEOfbC;QiRPV-RXMg*h(kS7d#7L(=SR3'B/L;.5.`$#p_^'+a#vC3"
+"A<?w$eL*C&^1-k1qCn;%d(4I)UxUO&#M,G4*-+c4*^B.*.DRD&X$VML_BVnD^e:o22FC(.wUbLD?XglCi2k]%H:'vRNah;FYwj5]0@$?$EnCrL4*d+#h)0PSAQIS[<598.Urdu>Ya:6&"
+"o%er%<Cgt%=P0;0qY><0;f%>0^RZp.c4%=-&OZc*DDQ>#X@G]%'0Xq.x_WS&#MM'#)E&7pFMeCuWjTx&/',k-^a690T.fo@.4u7'J81>GL7?g)U:@P339M($w5^f2m(tR:SuQm;dq*c."
+"CIVP2U4_Q'0wLki4?gp^CHB@@YDZh#:]vq.`5J[Yi.sb.)HDg(iOgh(nrA<ZDtc=V;pJU$LvKe;C2NX8*B+sI?`5>m*><T%,['B-90Oa$/69Y&[OlKCGs(_=AA`_=cN]N0e),##f-sr$"
+"WIj5/(xD8p)]fn9i(:<fY=a$>-0<Q/3Ygkd5,+;b$dcbI%29CJ(3h>#c%GY#NFlV#kbsko+IllY'8>5#aC6T@?Zqr$:0W<#Bam^7-rjp%n=9B+<m#01B/ZG2HFFb3q,]M9u3`1C0-B,E"
+"@9Kr.S^H)*.8v]#B`wC##i^j(e:=I)V#VG)UDLv-1GTF*wZNFp[qP'c@2^7pT%720G<,DuIq'*)Qn$b[1)f`*$.E<-tKff$]RG)4Lf`^#JG=_$bdf[#g`Hv$*]vb8<no'50><xs;JPnK"
+"a]rO#[GQU#OZ5lL4q8jG[.Tl]+$rv?Id(3G[*oUdLW5D5rD@lJRcdG#9Y4)*$d)]X.^mourq90#9.1GDM8s872H6>5d(2A=L)#NMpbG?,-#@?$5`&A$-pG]64E@B$O1A_6[Lr:'Mr#5;"
+",1pg4R@)+*]5@*=^e1UJ>uWnJV1S#H$3SrJmOpE#44?]8hc=R8L'fe*0F(A$8)C<7a2dg$^fUa<u[HQ8kEFl9#DgG3(WAq'5MXq&.pg%#^Np%#FGZ)>7Yq%#';$8(BGv2AOE(K1hl^t@"
+"`=Y@5E5+@5qi/V:ZmH12:M^-M@64N39LI6qnIYc'a%NT/j&W:-c]DD3Tp_20GF;8.U%`v#k;vPhBEqJ%jg,Q6t#Vi>bMus&[mZLX$vVU@GpL/H`kiUCJeM,Wi0#'Gh#k/@F65aCkk189"
+"AF8tt$50?-2RokMA;mV)`x]U=j0')I$w:,2GOrL2PAuteQBv6DrXMV.*fk&K*7,',Oe(E>7K5O0<mg6/A(uOD^AR77pBGT/r/#iu>2%:;XrWI)8GN^@'6>##F,qF$sM0:#[?O&#]:5a7"
+";1Yj'.Kc40f^Z`*$I>GMfr@H)&tl]6@w0h;`-l<%RvBr.Ts[u6YiWe)=Un<$BKP5&SLO^,jqno%KcEC4Bu`Y1VR]M1,65V1m7ao&1g1*svNwH;l?as@5b7H#-`1C?)).e%f<_=%@PWj1"
+"E0pG;^LSj0+S.on.C,/6du4>;'h%4p_0i@H$gu*>hhUmBn-'/.ZUF?.V[BW/X0O,[B'-T%Z8>^cTE;bluA.@#]:V>Zko*xjclIegP2/D#)rKQ4kkq],T15##%A28$dw<9#F9F&#,8rq'"
+"3a:^#@a=^,[ESM)l*w8'lWWp'3jFa$NrHc$lE)L+&fo&&-YW9)NQt9%9B%)$-BA&,k1`Z#e$G/(KMs6*:f:<-EvD&+vj'-2&Uet@(q]f$(*387mh-=7:0-@5+X+:8.I#<.WYNO',VX8/"
+"b'Fs-9#+xH[5]v5X0$;d]Ihw=vUD<t&l:PUK@mlUft(9TXY7S5YKD.hgKxo/DrA?S._n<0J1am-XpSqJ?ms@8J5YY#L=g$(Scc##/sf[$D:;?#^()j0AS:[#IGlY#DJ7I%sic;-b4`]0"
+"8DeC#lc&K&Lmr=MAP=@$[),##4U]]$&f]=#<^fW7=dVa-@UXKl@n*?#LO(?%;goW7E';'#d8I12)l]#ATDN)3x%.<.VF3]-+tAotcqmU5j9QwLTD,-N]LfVd.fZS%/io51$V]=%=(ED%"
+"=U<T%B.vY#8OWp%aI8W?K`1<$e?Z*4)J:;$.sTs$<:eS%>pek(^KW6p;S+XC=I3IN/e7ja$eH?uI[bo@(<3jL%$qc-RebVdl:tdur#p%O::d(j7%?@F;O;1uQci,#VXp6ve`UV$>)U'#"
+"'3'@%u>cS/>>;h1s^m)4ZQ%U70h#X?ob/n&I_*9%JZbY->%Gm'IMI_#4K]A,isH)*LEbT%u=)Z-^Y###EXs^#^A(M:HWlf(BUZgLU<:D5LLk$1`j)22GQQ=(d68RuSmJg2^a7H#MkAp."
+"jU5g).*ij;ST)*4;`Up$^eY)4Dc'-uj;pe$hLI]GhqZE.9Ss`uRKKV@DiTd@0Te:&Nq6nK_Q4nie,.V@;8+0?;$2]$=ia:IfThhuO`Fs3=tXp%%Nu0LA7wYOA]7V3?-YT%ojL+r6X*mS"
+";L#&+oAf%FcEF?#B'#N'd7^^+wa<m/cI#E$U6;d,j'X[&>NH^&V'1R/Aa6G,;dk-$.*FM0ifQ3';3A##X9K$$v]c40*uN70*`O6'_G6S/ZsHT6bmS^3pC*,2UQ&7pWrcW-@h=(&`xgt@"
+"V::8.Yr90k`/E.3tk0Xq6r@sZ5(7O^)Uj15DdZ0;FEoT*Mh%bP4NgU1%9IhU,?G@:?B#3L`vTP)*Dr#VX`E>.v.i*>UBEIbACFe3CK=Z^;x7L2GP(Ku=<h@;*/4IFth$&;v)$rBJ05##"
+"ZPUV$Cw<9#,GY##,C54:rswY#G5qb$H5aA+,l6s$A>cY#B5a%$MKX*$o]H,$3iqV$.lQS%,JcY#,9;G#*,EQ7I)-,2XSBI*qlSL2;9J+MS,q>$B`7H#VYH>#TxhV$SRPj#``1?#CUYbu"
+"FK%WtwK1jtQ8+_JP(b(Wr,,sH6U/2'xBv5(qU+#'vsZs&NWv,M`4?/_p:Y#M4klgLQRId+&oB#$7cU>%B:%<$*2G>#:$gQ&tm*?#igk,2J0^p(KFrkL(Gp;-(u1T.86RL2F#9;-7J?+Y"
+"<VQX$(]@5J$CF/($=CJCMtQCj-9*YPX^cR#k:h(W#mVsuWsf(aU3]6c,k`CjmGvuZ?esiLtXm#?H[3-$+4)rVnWYqV+9,F%wo8iLY7lT%A1.W$,JY>#2:5qV]qSQ&'f^wLGfH12nWWkX"
+"L(eA5R`m-.:S,lLLe`V$/FH?$*N^U#PeVuLo;+DuD05f%I?C/(rA3P8flBB#P$Rl8>OwP`GKPJ(=].-#.Ux5#XU9:#wbJW65f1$#L5dX$0rq;$>MQT%P_H>#]E/W$9/v,2vCch#xT<8p"
+"*TRL2)vJ3%(35F%gfqie'47.$Q1)1#&>#%/Sk2?#:Rp/1w2xH#Z*5N^?\?cN'>L'g%YtJ'Jt%S;dvO4/iW4-(/F0n&O5IV+vjWA_MMu@(#;[I%#c(S7NT=IOCuk*H;%/5##NmQS%lu<9#"
+"_Wt&#G=,)#<MsJ2'p'W7jd#^GljJZGC8M]GEG&(4_5e`*T_h7'1a8i)sE:K($fgF*MUR8%2-+$-#Y5@/tT]+%OmuC3QY;iamjV6p8Yfo@XBO1:P9Ev6Z3K%[c>vJ(8;2g:J?rI3hTLOf"
+"LktFDZf,)TY[.T$VP:Z#XbrS%aEk;J?I4EH4C_C@SqQu7@tKWfCL$sAJghluhsXFip*-H-@$%:Z;=PE5N5>##w_@P%pr60#s&U'#/94d7/&Z;-A/dG2rr4$6;K*.3__3Y7`viT7^e@X7"
+"k,.i;c[o^=[SaU@UaL`=mf]NB4dC&G5=;a+H)Ak()?-j'Xri>$Ko2M:.8O,4JYYZ,&AFA+Q=0/1%h7E+h8T%#ePrD546Rc*31#XAF245(M/%12?RWC5r)PT.$-AF*^v>X$eim<-GbVp$"
+"lpq0(I]B.*G[Ph%?;Rv$8c[:/0FKT%t>u.uO@0f3>B&%fBWBNai5G);RCB'o*$QD*K@*,9_U+Ml]+YVQQ$kA(XIQAT;c4,RN%'JDM4712Mt;d0TIQhF/EaD#KXR@#^U$5E3WA-q)lppW"
+"67rah(':BiO+,##Td]A$*ZK:#)LvU713Vc#7t=j'N[2Z#n&BT(W@aN=+x<2K$F&;mWH+4#Ype;%dg$]-M0573TA7q.iRRC3R6+=1;7gLp%[G)*uv1_AXt/A=U1`4'$Ph._tm(-&>bKfL"
+"Cg`v%$+gx$6R$Z$8I_>$dCsV7Qvuh1*Jl>#5u-s$-bOm#<tiDBkvZ>6OPo^$Hm+1#mW'B#5_s-$93=hu$?CEM<'BVm$a[LgT[$##>DJvL]m-=N']QR_fe3onvB$XL9[$iL60=a*hfp9M"
+"M7Xt(/5at(08at(DoO#$SaJv00r$s$&KU^3**387Ynds%(<4:.'.$$$Z:RBNJO>I$7Oq-MkuUH-poAr-W?#@KSA#5tdmK-mI5G>#@u%7M7g,u@`7JC#I#jA#H/AB#%G$fq6iwM.px$GV"
+"[SUA5G@2022(>uuJ3*]PjvaB-h9^?.(AcY#tHU&#dta3M(OE>5DjH4XoKQ'#NBvLg?>lf_pcc'&gFNP&#2s80:XWP&2oXM$f+(hL=Tjc#SUEa*=%2<636TP&WCSP##M<5&&a/AmJ/$2A"
+"c3]t@t_-9(*`sfL1^1N(XxF)4$w+F%dIVc`UAo=u$eFSnX4<gp9*:,)@_eNucC%%#'4]1v,TMo$YAS,6>*;5:x9b;?BPkGDjP2jKP77T%ul2D%1VP##VL-&$e54*$iaCv#^8OG2nh1;Q"
+"30w4]Nu?s$x%pK3ofZ.2&MS.2,a9D500e(+w$+3Abq=T%&A@W$g%]Hu'*dN#x^8au'Xhn#A<s`#[rhRu;VTquiKk&#aPRV6`>viK<XOA4*9&##tj;YPmA$)*/C>/(f98$GV<eE.@]G##"
+"]9#6/-G:;$9axnL`[F)#;[I%#cB0?Fo%U^#*N<T'O,wX.7OJM'Vb@f$6'_(#jrP3#wsU_$:r0H1q9L$5,KRJC?AY;$Ei/[52h:I3lH`228Yfo@QW'B#d@bbr2NnW$LxSkL4^H_#?9<VQ"
+"TMulSv5#,29[-K37*cT%*'ED+hV3E*^f_V$2E?j'b87l'Qfn_##VK`4sMcA#bfU?-O'TM'&&(7p.$<F*Rw$-#TB:kFfY-3:a-P>%[=8C#OM>c4,08u6J]B.*:>`:%lYWI)F5lp8.mZp."
+"ip'xoQ28l1NPu>FRnT+*.(o[oMsm31Rl$WGX6Q(+Tu07;_Cw-$j<I>#WKo+*]L6WGc36s0ed36pXWO(+Urb>Ff?2P2wTeAYA`_7;JZ].#40l6#bA2S$@HY##ax?ZGvtC/:l65X7-D8_4"
+"-P:;$)&###*6&$&(_ln0LXv]%pQmF:HJ?\?Z3foG#0PlRn7G)L>3*(L>_fVL>JcfcMVpp._i2:L>13EtC/OgM>KG1W-^'$@%4N`c#AL]'dWV*&+7K>+#j:^l8%*p]=JCvu#G`%8@aG<0("
+"=-QK+b>d>#,O$d)L/0Q(sOks6W@.W$S2RH)NNmA+FhkG)9mfJ-m8;S&_vUjKn<d&Oq:Vs$[Yvc(OO$Vug$&(#gx#K31O0CQnGUh$^hF%$Z*wU7eETZf-&hC,G8q]==PlH`WW['LbWC07"
+"-/$$,>$b5Eb$:a*`i#$$$[]&$uQk*b]#vYY7-).PL,>>#tA.m9C?Rd2w<b[7>9_5J`UuC+Dl=s6TH(k',.OX$Jdu/(Hne%#$$SrQorSB+Ni5r'n:#j'V/$fZg58.ZQFhI386RL2+J1N("
+"B-Tv-3/;v[Fn0A$3IxaO,9TL#V0b$Mq_]Yk70`K`T_am&<k.kU4x<nW<&ld'RE^9Vjiv6#Z6X&%J@%%#TKWV&bJ.L(:n1ZYYPw-).u?s$8Np5&Dq/m&h<.x,X_:kBn2;j0UjlN'Qe<5&"
+"YT4p%s5Qm/TF=3pkP)tm2DFb$/.MkLunPGDsDkM(xsOs-,QxHD*:b'I7eWj0$2YYu*r]e$MHe(WQRaJM'9k*%a2ba$xl]=uh-KloC7vu#dDF.DRYLB#6>eC#s2(*M:Ep%#pAAtuL;TM#"
+"m(NU/aR)##fGp,+R&I-27;G>#IM(v#[D:,2H5]t@Na_K1OT$fqpgf]+$S;,2I;p9;@<EJMB`d##?^:u*R>]%BTJl>#?w+j'RhDZ#f+Bs&m[9W9;A=#-eQ@dMQCta%l'OoRPH/9RwRVP&"
+"MDW]+(g:D3X2t+;fhjAQDej5&e%tA+W3Qs6evY7&/7dC+x8/u6/&89&O<AE+@>cv6#0Kq'C;2s'*v&rIWXTsIpKmtI,xc$%A+C4(pinp0@*F)+B^3&+^Y*+=rd9E<*K0[#XpmT0C:XY5"
+"sU4)#fU5l1e[[@#J=w_F61$H37:$096+c5p48t,#w$-cM$V/V6$j>8pC@Es@Vi@PJi^u_F:g6s.u;$Y-22&`Fo^Xv6Zl_#`Vr38]UZBT2i-M@jDiN@jiNirN9_TVN<`,:9/Cl9#3b,:9"
+"N8lH;,%8ib+@l9#rY)60@EPn&Nj9B#c6X;;w>A%tG$D^#,_VN9]Df'/sox;%tw,`G>]q]Pqt_'/eW1n#gEQ*N&<n'QQu0*#N5XbGm]c)OPa.JhQDGq;xR$##tdv=P85>(/F&`i4Wls,#"
+"d<mAOAC16vrl-:OjjqsLK-6`MZYp$.s-Um9gmK3()sY7(j3(;(i,*U-b(nX.auQ:vTZI*.7q:#R:JV+vjWA_MTxda$Ka>SIG$D^#5$>^GJJF&#P`*)/Vc^uPmj2p/:_AsQXt0*#wo9C-"
+"?$>G-c(>G-dJ)Y$7fjRMm=-##m2HxoWg`+QA@l9#Je4?-&xnt$*mILGf>ou,o/e&#c#F$M0@xG$.6>##?^K[#Mn&'-OM3X%6k>A4t[)>lgUvr$p`;W/3q*&%S&h'%ru2)%/M1v#3Nka$"
+"KsqV$7a]>#,$ZlAt$T'AMCEp.8Z4N3?OwFH6EbCVl]>KmtN.@#$/G>#eZvc%;<op$woVw$:f[%#NgsA5]VgK:'mg<$l2Qr%_uUw,[Pa**lC1-MAKHo/W8:'#+E&7pI<%gLAnN;pxMdA="
+".vHa38?;HMNfq;0DTed3<9Pb%S(&u@<?\?_-Cn8s$&Gsa/N,=w?tCsa/K,bW@k),##TALN$SaP`/@8>3^%'/##KW1T%FXs&3UxF)4>C^*u,.pe$#eC>#JN#N'g?;#P_?]f1C%@_%hR&a%"
+"a+T2'w_]20<_j5&^MfN0w3]oq9v<<#L4ji-sHI7_$dh-%`-*Z#Fl#PYOAQ('YnZMEmrN1YSL,YMCV.1#G]bV-8v@cr])'v#>Num#(:_c)&5NFM1SZ)4#ocHh.Tc_bxIAQ/`pFp%tN;p["
+"Ej?D*_Qb&-2LHx%[4j%&M2[d)W=A30SD-(#W:ZlfSDj&#>ncGMp@h4Nt7lt8^$`s-RlTJQ:1QGRNeVG?jaC,?UQ[5A%7%PQwwU4QjgC,?\?>+sLKu0B#5XR)$Yrn%#F?8W7aDj]+4Y<>5"
+"A00:%6Ti($iJL'#6t:I3la#<7],%12vk,Z$)aD''1U^:/K2QA#n4SNHvPZZ$p6W8%<i?fuP<ZD4Q<IU7vLi`>e]C8Id:$v#m7'58df%297T]._#E[a'F$qfLO@i,+0b;<%/64*$o=n0#"
+"@,i+Vi7K^#Z.ofL(fH12aeNt@d]aI3j+,i2UY<n0f]_P%oL_fu^S5f[+Fmv$:o/M#Nd/,MmQwjuWo60#da7F1W^K>$<cSA$YoNI)[Ibn-M:fJj&I(DNvBre$C;gF4Gqj?#@]WF3>+ST%"
+"MDim3#8cLY-iI-%P--^.7,mYuU,]gU1NrG+@tBD=nFY,M=At[$Xkth8iLh'>9p./C[68;HR.2s$dbT`N%:pd#$OAQC)IccMQ`=[&$q^#$v@)v#Y?%SmcB1$MUFPL#J0G>##)P:v:(<rm"
+"3c1?#<Y7A4Qv5H*P(Zc;.XNs-J:tC=QsREF90w+iCjLA4w0`'/<G-]kO%Aa$t16f*I*;'#JU$guwQ2w$DS%N0]F0l'1ZXZ#X(SfLZGaV$QS=v,$9o>#FV)E6Gk,87jT4lVS.fo@sv^?f"
+"xHevZddJmA=,xY,LvrY,%/5##6PUV$bw<9#ZWt&#wi>(5SrphCM=.=$Kxx;6ZY&B+0s4v,2?LsH_0@A,R08%#JU'R/h=_Z/iEI],Re39%hS1*scvuC3bN3*s6^)22XU<8pe`GW-cM40="
+"A*vM(k;oO(<MfD*1Z?a3Jc7C#,c?X-''3oAeUSM`v'xgt=G-1c8Cp4jmEmuS<i^&J4adU`$_<lS=v6oAGDh^#M485Ag5ij*P>Vm/Q[vLu?)co9f$Lj%wZ#YlhV8Z,t;Yc2Clp>@*cO6'"
+"U,d@-@-.P1ng8:'RsWq0pO?s0owIc$Kfqc-lwD207<@h($2'^+OOrv#YQw:7KS$]#Svfw6^.FM($?ux#UJ`k'$xGv,W<6R*Tr'+*5umo%C-Y,2/6H126e<E28ejl('?%12#Drs@SfSh("
+"H7i0MBkU%%%;18.K4?3<(]7C#Xe_a4`fC*4%TID*9Ze)*liq[G:,Is]J:_F$k^;cqJdMW#^6&uT#r0.?KWa8pgg<H#J+:$/7c[ET.rF%3R4.,;]CWMYpg>WJ_>,c`/QYM'ZucS%*M5rh"
+"U[_dPLp/4(pfW1L/4biu-#Z.6fG$a4I3F<[KB]A1#)>>#-G:;$cd<D<TZUAP/tb&Q`#C6&&V.6/sM'F$/N.S<RULAP-$of$QB0E<cJF&#8r0<&aNs$#6<6^7XuVM:)g[0Lu9JX$$U88%"
+"$VAc3]esl&It/6&o#6`erbbe)7l'<&]$f9.>['m&Y[.%#vre2('#vC3eN3*sdw(?8hM;s@`/rU@$>gG3VMKc$j#HT%S)TF4H_E;$5$=/<$C?ocU9/Ob<Hd>f@uu3LbClII@/g60?+aGY"
+"D^`aucq<puOAW*4TolKE&[A@uq#p60I*MP-p(Wm.#Z.%#$pZEP0G^Y,JS8M5j-^S)tfZ<8pqZEPxPoS[5$rD>R_V1:ne>^=HNb&#T&LF$3h1$##_&.i^GTZ#Pu[+idYpZ#2$`V$@eGj#"
+"piZ.26PYh2#VuGGm4p%/[OQP/nnbu%AF`V$GvCc;4^3J#=o2eF9PTl]^#]Ni4rkA#2i-W%X,>>#*,IA4>,OJh]wDM0#U'a<>C7w#57JP#=c1Z#[mcN',:=,2Zb-/399I12=GvC3>.YT^"
+"6IGH3j;W.3%IuD#'G+F3P;lLTE7@eE@c[$$l`OA4Hr^(G#6c01Q4s'Mx-%PfJ.)?55,N<#mC@Z7jXK(4Kg`6Al_uKC8YS4KugKr%I#?B=V2/#,/&M$#IweS%48b**Bh:I3M-W6pn5UbI"
+"?#YLMRhYV-_IPVC7Lx;6Ynn8%Z%:W-IgXo%;G;1M7V%a?T1'k9E[n>`vE@oT4R'^#MTdGFpki->g<G&-^(iMUKcl,@3OF'#N_Se%A^:G`GCef1WSu>73uf'-DVhu&p2FY/t)kB.@5QD."
+"Dj<h)?KQF<]7@x#CTfA,b.Ip.GQPN'O&pB+XT4u-A6[,*/h=p%[Wt,2YC:F*LV:V_fGja'Y`Z-(0U^:/c3rI3luHb%=;Rv$XmA3kl]B.*-BGsZZI)v#>B2D5k=^/Xi)Sab6Km*Ij#H0G"
+"R&_n;lF,h:G'98b#ft5Mj$(FGRd+^,R/b#6G&7D6*%c^6*XX8]T+?7EgbBV%Ns&##'+85#(=xh$VUl##YvK'#ZIf*5$Mdd;v-[iCh?a^F*@VpAYi.>H@srp&qCaC=x$5*=KhjP&)Qb;$"
+"<[SM'vt0n'M&#B,sWgi'E-kp%kXWP&W_DM0(2G>#9Z4N3Q0MkLEc+p7HrJ<7MF<E2mmuC3U4,L%1>>K3/F']$<e_p7a+Ca<ix9CgEY_&O$.cbr/3rZ#><[@@)m'`7Hi+'Q4/+WS`58S="
+".RVl4N?5&4qrT;1Ri[F2$)dF25cr$/;+-V9(COS]$>fEJIJhs0bJ$##w+KV-k7[i0Tke%#EVM)5Z5w,M&G`7)#.`,)^rV(=ql%1(vTVRs55xL(5J^B+fMR-)g/uH3&*AJ3r&BD5n[I/N"
+",<9O0^KLW5E?RL2e4gxOxvHg)^nS=HC$8cnCw9FS%&+Mg';qRe)abRj3#Haj,Up]+eY+;Q:/s^fUIv1#S?Nd$?;q'#=>N)#OoZf7C+54:FmUeEw&4jC[`ieEcJ3NKa'$=Ioq:8'F]qu&"
+"m,=Y/&f#g3,O+>7WcGG4^7941LK_=8v68)=t4Ad2h^mE3ST;S0bC%E5K)bi2V^*^m`9oo%eM]t@%Nps-7rLkL>R,@5T[(tqb@,87a0*:8weW/26dFT'Yr8H#u=c^$'u;?#bYxo7<xv5/"
+"V5aM2vYXI=*IYq.%G)JFBDk@K.EP(?5lGN(7%vtSxCeh<KnlI8qHJ88uPdT%$cjo9P31?-0*lJ.CL2e=#=5=8^Wh>.G6;&PikCM+UL:f#6a`[$]Lq='Q,GuuZ,^e$@&p=#OcJb*S>w01"
+"5;kA+f+6W$D:AbIR+IG2q3n0#=Wk-$deON'2P:v#;Fw8%<oU;$8(`v#^jJe$&b<1#>?a<%B[*9%@F[s$2W=_/d_NT%CX39%gU=gLZHx8%@?f>-+lLP/5uUv#8C3p%5bQ?$94Rs$;17W$"
+"RUt?0ePFs%Z>+KM#.gfL93X30=Fw8%;=[s$He^-6bqsp%aHn0#`Cn8%<7@W$f[FgLRHRuLJ.PG-P0RE./MlY#<XC#$gpWq)O]L;$5mVE-P;C[-ITR$9__ET%2;J^.<Ces$$,B;-DZtr."
+"EElj'hU6w^*YX,Mu=o^.8rh;$>VVQMR'/W$hVxv$CU<T%WOp9rBl2eH4;<X(mpXtCHk,F%'ID<%7(R8%BUk05-YMtCgWJ9rOTRv$g/g*%KxGb@h7T#$:(g(NM#:6&8M4_.HnWT%SP6X."
+"?R*9%QNE'/>+r;$mc_$'G^a<%H0B6&>7.W$<SgHQ'>ofLuESs$6oqV$DrO(.e[tcMNxNq-'R-L,0D'?$$C:HMK^49%h:ffL%vSvPT/lp%DeWT%D_39%?.f34uBV>nQK[e-B,S3Op%h;S"
+"m;3U-oPj6.`:ofLmG5gL0>f8%cF*^-XUp9r)M4gL),eEM4PP8.KqE9%R%hs%Iqjp%*ms63_UNp%?+r;$xL)F7n80X:etE9%(WH*M#93U-G__).(:Qq7VYIg<]Efs$sn`e.?CRs$2;]B."
+"Qvcn&jF,Z$U=d5'n23U-o83U-*>TV-0qKwK0f=gLRp+9%?4.W$Eqsp%meOgLJaOT%,^H*MhjFT%=:.<$eC+,MmN>gLP9f8%OpsS&GI-W%QS6X.Gw/6&GtlhL#@,gL'UY,M/bYHMndWr$"
+"lB,n&Hhap%24?68]=a9DaOw8%G_*9%84p,ML0YT%OZP3'CLRs$<h/6&i_CW%cO=gLr(8s$w*kB-8')m$bqjp%>M)QMHWFT%hHA[Bm2eH)4gK[0m7B9r(G+gL'6AW$M8kn38wMs%nXu^]"
+"LLn0,[O*9%r83U-$#9;-.PP8.@h/Q&3.B3kj%[$9`b<T%*X.T&_k5:r]h<;r1xkgLCcdEMI?69/HnNT%l$:HMKjbT%7uj-$jNPN'u3LHMOvbT%?Ces$=CvW%EZ$H)EeNT%+&k6.jbkGM"
+"w#CQ&gXO,Mj3$N'K%VV$1?lK.I[@<$b_HT&:7Is$(O#i#`AnHHi996&Jnd]/C@Is$J-B6&U639&J*96&.;^;-B?f>-/9BoLY[Fp%<=*T%*wFg.@Fes$%.sI.F$KQ&eVXs%r*1HMAN+9%"
+"25P&OiDnA-.oL5/VHBq%s0ugL^2_Q&@or63GfGT&GOes$6'&T&M<DiLCt)O'FRRs$D7`BS]XEp%2#,t%;+@s$#fFgL?:#gLZ,_Q&9PF#$4YY8&pBnBAb*KQ&Zu:[Br]sE*(2(L0Pj10("
+"@Cw8%ZCB9rrj1nW.O;<%NQ,n&()#REnwjp%FLe8%MBpQ&rtbgLrs:HMlH5gLV@,-MrU/R.G-Kq%EKO9rj39q%Fe<9%UP6X.NB#n&ZTRI-*Jp;-tx8;-AM;6MfgXT%hmj-$rvCk'R?pm&"
+",2^V-,<(kb[D'9&MWcN'A2bw'3xXgLA+@20[jlj'9u_;$UY.$p^Uw8%0MBZ$#<jbNwg2#Mrp$&OpfXT%M'7E.G_ET%:.?[$[w`$#<Cn8%WjYn&vKw5'nN;#PUVQ3'w61hLN6L6&K$O9%"
+"k.$6'SQ53'V9ET&U?^Q&s?e5'7Nh)0Gw86&<CRW$;@rT.CU39%tA3U-Pptv-t-lgLODfjLw*/W$ii0K-<1^gLm1j0(TH53'-2^V-&J<X(rNpQ&L?,3'KXns$xL)F7vO$6'_v10(_ahBS"
+"-V+gL>VdT/L2Ea*M3B6&0Rd;%)US/.)-s#Pc'Um&ohFgL[hkp%5;]B.f74M(%_@=%V2rg(DUET%Je3T%pKQaNYdFT%VHBq%%kL90RK53'L-^m&?Eq<LjEpm&r50I$DwDe-2uXgL`<C6&"
+"D_eW$INuJ(=WxT&Ew8Q&O996&b:%O=e]'T&.dH*M9=3U-,s2bM%LLQ&M3KQ&bV7L(X2rK(7xQ-Hu?^Q&TNgQ&S#V0(K<5N'vl_$'6NOq&_#?R&ICIW$NQ^6&KwA']jh*t$VDVo&PB^Q&"
+"Z*%W%=`04bh30q%&vf6Ej?Bq%qv6[B$AP_+&T/R.^,24'x^Wm'qWD#P^+Ek'Zpcn&x6ugLBsugLQMmj'9QOQ'TT>3',m&UD;L7m'/V>s%BBO9riZ:g(&#9;-m23U->_i=-n23U-kXa>."
+"VjY3'Y'Is%I`FP88HWX(f6B6&3ij-$@_ChLM5Ah(9%R-HY<=8'T<B6&Xp>R&RpCk'Va5n&VZ,n&b,HR&/WH*Mi^F9%hwZT&EF@W$n?$:rtvuN'OqwW$'CwP'9?4m'0M?[B;]:@,D7w8%"
+"OaPn&ShEp%O<t9%H0gm&P(39'39MhLXjHn&SB'U%Ts:0(^sJ$0WgY3']^G3'E?f>-LwDY0KtE9%HUn8%uB_-ME*(6&Qp:0(OBpm&&Y_5'U2(@-`3uSM5W+t$<.*xBh?K6&6rj-$2&+.)"
+"_Se-)fMi0(Kgl-2Zd5n&YDIh(PQl/(^&2O'Sc:7'gu3.)T9kp%M#i0(M3Tm&9VLq&DREp%g^G3'qe=gLdlDk'wDNU-6J+?/RTcj'twXgLZ^dEMom.H)w[B9rjW(0(-X(hLt)MHMpH;:N"
+"jANq-`5o?9va5n&S'bp%]2Vk']g]Q'aYnH)$=:-MSPQ3';Zqd/Iw<t$Om_,)76Sp&l_=gLjRdX0VsL0(ZmY3',b$eMWcl,Mk5Eq-uCnw':+vS&9WFU&euNI)b)M0(k]71(,S<X(%02O'"
+"Vm:0(U'bT%;TX2(KQ'8/elEe)3wQeMV8&3/O?,3'_FB9r,HZ3'#1lgL8#c?-xDNU-C;rL.T^(0(Etn2(s'u,MpvId)%fK9r#tu3'Y$k5&SNBU%tNd&O<9:6&bv>R&d);k'SCl@2TTlj'"
+"cS.L(_/)O'cc3e)8%Z8&#?[t1KOfBJtRT9r>JI['itaT%YpYn&u*lgLXYa>.aAVk'SJ[$0DJ_Tr>4V5'(qW6'pVD4'giRL([OfrLGw(hL=?_Q&agpQ&3%IhG.3;O'nC'f)YN96&Q57L("
+"QE#3'*IJJ.[=:<-^)g-6+FRT&WmP3'8^#pL):Q91#IQ,*<hap%f10b*v;Nq-f[K9r/-O1#pvhg(ji<**wnDN(aJ7L(o23U-+#Gk/`5Mk'f,;k'0mlk(ZplN'Q9tT%Me3T%#L_hLn;Cq%"
+"R^Y3'EiOC.[87h(j.6Q'8gxZPu/VHMO*872YvuN'biN**k5vN'r:k**WvXR'bPIh(YW,n&ds5n&_DDO'53oP'$u;N(v+O**)<#k(X<'U%skOgL;WJn.q,;k'7%vW-X=B9rwDi0(CDI./"
+"UBB6&0,>nE&'dn&h=B+*gM3E**lK9ru>ik'oRB9r?eh-MpH;:N`,:6&jD24'%4T?.dA.h(xgs2(-eU-M>$3O'loR1(cOB9r>O(hLxNdN'[gfm'EqEt$K<gK1P00q%b>MO'VQg6&Z?\?e6"
+"$ZRh(UdXkk0`+gLCjXZ-+ds9D,0Ke$#$)O'wu.l'n.+i(^OfrL2oo-)]jP3'h/Z3'bVik':[Lk+,WIh($>tE*EIRs$=lqKGuRK9ribes$quMk'',%@'rvhg(jY7L(1KLObmKK6&SX1H-"
+")sFk/x%8l'+$Wd*1m1L)ddbt$]SwH)K3KQ&wRLE#u[]1(/bLhL2%.7&aYeH)j]R-)fP@h(6)'UDG*Ee-x))O']#)O'^XT9rB[(hL[863''<>K)[#2k'-7*3(fS@h(U_Cd-A3LwK5%sXC"
+"tRT9r/f5c*qqIK)$MtI)4`<X(&jRL('<>K)`E9q%C$`$')Z71(#(Hc*mnK9r2WVO'UQ,R&[2Dk'cqvp.*'g/)nt>6s(Lw5'(O(hL'H#I)cr&b*lmKq%-Bp%#NE#n&&fKJ)S)`K(Y9K6&"
+"t5O1#e;-n&ur.l'wx*.)ouEe)b8@-)sIke)nxeh(vkP_+g5mn&[7@O(d8;O'`)MK(TT(0()M%@'#tcN'f(b**cArK(1Usj(nx3I)6khHM*$;-M'F5gL.?rHM?MJF-<c&gL/3N`+v.k**"
+"FH@iLYhl-2rrIL(rkYC+dY3**u:bI)X:nk(-[``+h)-n&^.B+*`,MK(>.*O(Q-Tm&,dRh(>LQQ8gg,K)0X-aN-ISh(d`[L(Od0O(g2Dk'0]=M(>5uB,+907',($g)W;.h(_KpQ&v8O1#"
+"&s&b*+(v?,8^q.*sLB+*bS71($5oL(u%oh((oKJ).FlgLN3DhL5NAh(cP[h(PN^q%)kn0#sZ,R&p+xL(-UChLWPE#.:3rhLs[eI-/>^;-7%G`N#H]h(x;'.$VmRiLb$j@,MFR-HwXx-)"
+"x[9f)n7Bb*ms5R&(]Tb*wR^b*,X@x,&)85'XDNa*is,7&=K$E0Z9bT%-ooh(.5%@''jaE*&Pte)(n:(Aw/d3'GV#.7n]i0(50AA,<l&g2Yt]Q&nL0J)u&dj'miVo&%:(hLXdiS%'ApB+"
+"3O%=-)x>(+%u>c*hx*i(-Yb.)'JbI)1CH,*4X(hLE1PI)p%4I)jrNI)S^pq%QwjN0d)v3'xOk.)3hUhLYc&Z.*($G*12TV-umn0#nnLs%N[YHM>.;hL+(.m/AI_J)4e;)+oA624xUKF*"
+"$&SL(+.C/)v')D+(f0f)[>W6NPO_J)kQKq%tek.)/XUhLxmOI)#T6e2gG(K)rZn0#;=Z(+qtCs%S_j,*4*.iLxDGI)qV7L(BOhJ)N4n[-HZG3'19bU.(<Nq-vwK9r6BO1#-J5_+7bIX-"
+".*L*+)1d(+i(4i(]ah<L8fgb*1rkI)5fvE2'AXI)s4XI)c2-r%lb1<-=v,g)48rh)%MOI)n%=e).ogF*.:Hc*82eQjE$r-M&Z@IM@MJF-=O<j0*[[X-9lte)DK=Y-W*@X(G46G*xeP_+"
+"wA)4'4=m_+TQ'8/9Bt:.Rv</M*m@iLp>xd)AvX$0FQx,3&V0f)*m=k/)O)D+uMHr%QXWg)uFpB+eCAj)ui[h(Fb6g)]3gu.Lv1k'=#?o/kA7L(xfiK(M=Jn3*0CW-,qe],>wr)+5FHG*"
+",`+2(-_.x,:[V@,3C)`+<O$G*F<Ee--X6c*%VBF*uOgF*Z)Q7&6i^F*mMik'/76,*u+oL(5LZ(+8n7A,.-+1#4KTe$%Rn0#BYR['2$o0#H'VhL=Mhb*ScHW.@g^V.[_R-HVhXb+2ctI)"
+"9nd,*-ke],Ld@iLTH[(+ONNd*um#7&*O6,*quwL(%x,c*.M]$5jc$H*J:>j`,$N`+?WLOb/&JL(FJ>nEQa[iLKUes.B6gN0G*hi'#Rnt-@ujS&13bu-hc[-)cQuh#sO+.)K'wG*O0AA,"
+"B0+Y-0(;@,HskY-B<AA,NVMP05x0/)f<Pb+2(h+**`pB+r(K'+=%&@':Pt**5?Ou-1=v_+cTAe6MZkY-56+1#7TTe$'Xn0#FfR['FBgG*B]rH*W@oQ0OKbu-qrtjLYhl-2H3j`+FJDp/"
+"1X[t-LZO#-sMwD,c_o609l+.)(EKv-+l5_+(:)D+l>7-)d$/A,W-[q74vW#-LKw&O1)=B,2eiD+4FvC+5ogF*h>,b+*J0n1UVIh(X_',3%/te)7fOe)q>2nW*0CW-DJ29/ZGh$-N^xA,"
+"A[Lj(D,6S/T)LV.K^ku-VjA&,QHEe-R'&&,;e``+$Aso&2TYK1OObB,)42@,E-N`+-r%O=S^O>-SA_v-9)9;-$ERuLa-Q?,Les9D9WKe$Tjsj1daAA,u'Pj1G^$6/GWXY-Kn))+UGY',"
+"EA29/Pm+^,Pj4#-nx(C,2N)o&Ap]a+EHRiL9YAA,F?SO9F<SA,2m=k/LY?W.@oJp&IUBQ/>0bU.=ni%,CeZ(+rdUk1%4TL;$3[h(B,U?-LYbE*@t-k(.[[=-**CW-N(J60g+3x-ZDC?-"
+"M<eg)N]DP0`YZS/W>-s.cGP#-UNEe-ZTx],D<o],.u4m'=>7e2QbB$-1b@=-Qdf],2%&O='-)?-^2P^,7&`D+0'4m';]W>-NwSqD;^Ke$SN=#-.YI@-q-gU/#PfrL[Rs50GqM`+a^j`+"
+"TcU?-d?Mk+#d)T/1=C,3l,Q3'^m+#-.4hF*>:1j(agu$.PmX>-6Y15/i(ws.ZgwaN5PK?-H^pR/HEf],L6N`+*W<.330rF=*B*.)JVQw-W+U'+IH*L)6*Ou-**CW-X[b31seSu.fr?w-"
+"WjaH*X=oi1nF8m0co;p/oxLZ-ZTEe-X:V0Gegk>-44Gm'EiN'4U2Lv-8*+u-Z5Y>-6+&O=(9Vv-$J_gMj$f.Ml>a6.NG=/M1MJF-HO<j0e9dD4(pLv-<^jE4G^$6/]f)T/`joA,mb*]-"
+"XOb31g%@<.h+es.5FOx-E8Jl'U(r?-Rp*jLAILv-]xiC=hVFjLEPhF*g->n0Uk(n'H[^m/Jtv(+Zpb>-ZDuB,uSxF4ueY[5u2EG)C`n.2lmV3(VOt/2,1QC+.]VS%Rce.21*s]5u*cN1"
+"n$l31H/L?-&M*=.q(eW.,_lr/b&8iLh1es.W5_V.N2Zs.x_Fm'kwjN0@IQG*g.nw-aJFjLBJ&q/v6:k1JT+1#?mTe$5i=s.NwSqD?jKe$cSHW.K$qu.4Tel1+PfrLhWL02]vX>-xiu>-"
+"iqjt.pQMk+6.uj1OgJ^5$gi0(so-W.<q)D+P-[g)$G0v/fuds.9Y15/-@>R0evwaN:()t.[].M1ZDh;.`/5#-F=``5]<^mCA85c*jQUo0x3N[,guPf*MPrl0**CW-#gFc4Fsjm14huR0"
+"#JVC,x2j&5=?3*40b$h2@t#70idEe-3iAq/nI8q/LB7k(aT[q7vnoQ0RP2P0(%'q/FF&O=129Q09U#r/@xS;.3B0j(FhqP0E&9;-F,TV-e7;kFthxQ0lP]p0S=)-44PfrLwufb4s(es."
+">+4t.,EVo0)hMk+FNj*4rLwT80;]h(8.B60Mjf],f)9e*>3Sq1t64eHN0AA,Ij<i2vG=bN@_wm0rngc3rXA60x=@W.g5QW8$8BbGMV(D+&WjM27wxt-#o.d+^ItJ2**CW-7xv]6^1;L3"
+"Is3225=o%-8MU<7TPY$6EpJb4W,/l1rpEe-BnLO1+LCO1[5bh)sfPL:4t$12cL4/2:tc31OU&O=6`l/2Pd7P1DFlS/6^,g)K?N/2J&9;-K,TV-oF;kF,k-123r-O2lZb'6<PfrL-%@]6"
+"0uJ60U0$70ASkM25$Nk+Y]:%69w(1;:cOI)M0Dk1^`Lv-xrcb+T]HP39-%12@Y15/b+mc4/mXbNE6TK2/t.^5.O(O17FK60.rt3;@3'VK[.@A,9f1-4JaL7/6nka,nBv)4**CW-MBus8"
+"wN'G5a+Hg3I9L#.Mb8R9lb*u7]+r[6q@CJ3&'Fe-CsW.3=E3i2m.?f*0%F(=gu(e3sKH)4P)oh2Ye&O=;7Id3hrK/3Iq6m0L#9;-3#9;-p[YHM],:kLa>a*4NEa.=$DGH=X?T-HFLh)3"
+"j46,4gfJK<=/6p8s'FB6ceIE5H3A/=M[49/-hts80R-)4-Q/f3^ZK7/HdcC50&,jLwj]v7rtw]68>4i%:Kio0E;bI3T[8r8ST;b=sn8`,iKn,#].8Q0O1uZ8vVx^50Z$[-f]P1#KUoQ0"
+"7:w03>L0Z7w?>o9O/qW72;A6:xdt>7:Le>@Zs.T0=Tq`5S)FM2B9WA5wkYD4]3*)5BnLK2Xj_1;OJY_5_A;<7x^589k9xLMLFq0Mk>a6.1qe1M1MJF-^O<j0%lHY@NIa`5o)([@G^$6/"
+"l<TV8r`0/31j:,5fPs3;'[x&6(hk>7cx.d5B-K*+_^8I4:([lLug_`5j_.'Pl[7a5]To0#x:]6:Z[jg*H[^m/L*QR0hc>G4hXv03@&2^@?#H2CC:48.C?)F=4mHe+fixG=qq4N1I]VS%"
+"FKvE=dEg4C@S'k;5M94;MF7*5NWUC6;n'$7YbU<9VF;kL_jSW7h%6g3T2Pv60XI#6rA5^6Td3e3m+KG=dOe=7&8Ju88p[2;'kOMMP_?1M;j@iLl*3^6[uM;7].sV7w$Wu0=9P5Ckg:Z7"
+"7`A7CW*@X(5rFr9$Q&G=u3?V/Z.$H=I4%;7g@TLEX6Bq1/S&D=i<-Z.RJq<77^Ka+nnE?7f//T0q)8H<T`+R:'')4b+*Ps8fTg_6nw<#7nJ#G4;F-_7H),##$),##D^dfVige<6<gGV%"
+"u@58.eYC901^vvZCe,(vwK,Z&gF]'/PYu##UE31#U&###2'9]=[N=01Wc(MTDxNfLZdR+ND.Dn%7FL^#K7YY#@p]&$qj^#$)Qk.%#@El$2i*e%Z*Mg$jBqf#FrI1$SVe#M]=0vL/b;xL"
+";@(q##5/vLobgvLOLv:$+j](MBM6f$(ChhLo<ZwLqa;xLlA^nL2JCwMKM-MTGJ>8J>ZnAG$Anr?9Wfum^TH]u.4>irn<xl&%9(GV1[-S[f#@A+nUj:d2NbuG2G-F%#cf:d4Xk:dDX]w'"
+"u=f:ddla%OKH+/1,[Goe5c8R*RY,F.um4F%]o_uG2XNF%]/juL.wi/#GxD<#Y[B:#-+Xr0q#HS@=Sbl8px#s$KoUPK5-^lpehbP9uNtxY^r4j_;PT=u7[R'>_>8GD3Q+J_gZMcD?EMdE"
+"V2o(EZDMk4jCQ`EG2#J_]>j7[TH0]bP-X%b;fK/`W_)J_:b$?$COERM%nbZ-Te5F758hP/T8Nk+M%[w0glJwB#x.F%ZYl-$pu%a3DetG)wN')W(90F%G^Rk+&0sQss;cQsj.B9rLuKwg"
+"LLsQa*?18f%h:/$/kw%cU=b.$SbrJVCa1lojAQfr+4$Z$kXc9VJd4R*/Mv.$uVY+`nB/MT3Y`+V<7Rs-_OCpL?)B%#RR8=#:=###uG*j0PD<YY^xJ>,DDir?&=KgroFRM'>o_uG-=efV"
+"WVw.i_?/W-Ka7_80gFs-l[2F%^g72gYNdl.c/&5#F)m<-R1QD-a6T;-m9Lw-hYuwLNaC:#6M.U.jqBB#Q@;=-J[lS.pf[wuTO#<-NXjY.-$:'#p6T;-.*m<-EjF<%&t_#Q(m=)jdcCk="
+"4*HwKGn6;Zln9;Z7LD5/9VG5/@+;:;g=IG`QJ`lofOr:mU9?l.ST;4#4nL5/@4###F,]fLs(#S.c)f=uI=o+sY$>,sFAPoR@[Im'&IjF%,4_#$8L)uL&MDpLGjqsLS`E:MTaP8.bXl4]"
+",+h^#ldQk$HY5lLK_d)M<(i%Mk/YX$43wiLO+:kL*fipLuxYoLi0HwLPIhkL=WUI$k+_+$G>s)%jFe<$LF*7M3%3B1tUWP$5dZ0%-u#?$%g1p.MbsY>bHp^o#m>.$DZV)*`'a9`Z####"
+"0:jl&d<cY#EG###[?*1#1eO2vhBg;-.UGs-+QsJM[+kuL/w(hL;]r'#>qb2v9r0hLVLI&Mw@%$vXCg;-jKXV.jl)%vk$)t-G>nqL-7F%vtIr]5`lH#6h9BX(KJ6VH^rmY6;0-p8L=%Z?"
+":^CX(-_X_&Lq3@05EQX(*1ae$j7SX(.t2L,n3gi'^<KJ(>fj1B)B)s[3TOe$*2de$Y+Y3Oi+_-Qkpe4]IJsV.eM?8fSxS3OmHSe$vl'F.M5nx4)()t-N^K%MjA0,.[%mlLNel&##OD&."
+"$6LPM<5voL*el&#i2H-.(NqPM/ZxYM*a+ZM+g4ZM,m=ZMvsFZM2go#MKPFjLsq3<#WZlO-*Ag;-&[,%.W]>lL%ku&#*wcW-pa=R*(&Qe$.LW'Svpi7[1855/v>dD-FIA/.FSWjLcDg;-"
+"*n,D-6]-2Ma$[lLRv1'#AQ0K-?i)M-+Nx>-l:)=-G@Qp/ZxUZuwrB'#3Gg;-Pf=(.D-<JMsiY&#3qB'#gl4wL,+o(#>Ag;-mlG<-Ejq@-wYGs-t0/vL*I2XM+O;XM/6AYMiB8#MR%1kL"
+"u4.;#FJB<MTp>2vc4pKMOCi'#w[lM1lNp+sh/@>Q3?jM1+.Dj1XrGq;Psu(3<gAj1nL]9Mm9w.:bMcf1Te`e$r,Ck=$)EV?h9BX(3?QX(/eX_&3J.:2Bx.:2+LLR*3@TX(.c[_&xEXk="
+"(&Qe$-b45&0k&,26&)pAFLP8/pYX/2,A_e$,4q.C]MsEIXMR]4]HF_&0@+:2-'J9i]%0;6KD:@-2;)=-)Hg;-p>L1M@N%(#b'I/20&7F.Nx6@0,8de$,2Qe$==,wpZ=&)3t:]e$hDhQa"
+"^%ku5='J,3[7`oopRnY6?+D,3UR6^lfDhi'):Re$3K^e$iiu?0b10;6v_<X(mqW_&kF`e$ue`e$.+M9ioe&GVubdfV#UtxYXiRV[Z2#d3ng&d3ng&d3V'A)4TGK2U^mI9i:]Qe$t<sKG"
+"l*`l84'K_&PqI)4r,d%.56LPMdc/)v`/;.M(s[(#X9])4W0(GM+b52vfI48],Qio]%KT)4b1Qe$hI$REi*>A4DVWe$+BW'8_Y7A4L>DX(,0>ul%#-v?5YdV@ds?>Q)htxYW;u`4;5ODk"
+"ssE'S5LNe$-JoFMn;Gxu_fG<-@Gg;-9pon.)U0#v`5)=-@%a.._vSKMRIhkL0k?lLp2N*Mjh?lL%j?lLF)2hLA3h&vDAg;-mYGs-t)KkL%slOM(/2PM>?N(v#5)=-+mG<-&Hg;-'Hg;-"
+"+ZGs-YqboLI4fQM5H_.vOgG<-k?Ab-KdJe?[Sgw9kJMqV9wLR*4CTX($4(GM2PJ#M-1x(#Sx33.F4qHMro1#vRxv(#?QK&5[N-T-@R-T-Ah)Q.+(*)#Cm,B5Fa@o[Dlw],HF,W.v?J_&"
+"&xwIUi*C2:u/SD=%gK>?=xvV@'H;R*@#7'ouw&GV+1efVkWT-Q/^/S[/Hmr[AcmA5^%Qe$nb6REnb6RE:FM-QNGNY5o;(^54i=(.[QsJMV`xb-LW+REWtg+MBD4)#k^K%Md7u(.<<:pL"
+"F>4)#xfY-ME;4)#sGu]5BYWq;=FwKGWtg+Mt7<MMs+elLdbg5#]KNjLwE=)#LGg;-TGg;-vS]F-g/&F-R)A>-jnc[.b9`(v_hG<-pQ&7.G)eQM'DTVMnH2XM=O;XMENfYM4ToYM/ZxYM"
+"LNJ#M_BNMM/3nlL)SD/#p.iZuVUGs-PfPlL@8=JMF]tJMEf[$vp?DX-d$8F.kvV%OqHU2:)6Oe$mL`e$%ZpW_(al%=u/SD=,^o`='T4&>(^OA>+s'^>hCr92%x`e$2<QX(]nOe?^qOe?"
+"mHPe?C%/:2L;s9M9wLR*4CTX(A^EL,(&Qe$U(0kXIFPV6>W.L,WWFM0woEwTkXKV68a1Z6/t,wpvgw.:>s1Z6Te`e$#..ciSkwV@kOQe$[m,:2xo-Z6r@6@07d=F.r]-Z6db[_&;'MR*"
+"(&Qe$@lEV?Xcfl8u<_Cs'5dV@tQ:69kO;ul$8IJ(VDn59&q;xt'htxYm*cP9Lm0poK=S]4O/wP9kETX((&Qe$uQ>X(Zl>J:Oe:3tCZ55&0nIp&qP?X(/et(3/'4m'BlfM:%5.8f9W'N("
+"3TOe$+n*AF`.N;7+=kV7)5dV@9UuM:ipX_&A,>F.^gmM:kX)..Pb<ZMogo#Ml5KnL5r3<#l=aM-Y2H-.6?fnLgu,wL<<$'v$BSD=oOdfV(-QV[*<vr[9-A>-(Cg;-S8RA-S8RA-S8RA-"
+"*;)=-*;)=-*;)=-lj&V-lj&V-9LXV.hjc+#i%kB-CRr.M'$axL&#vOM>#vOM<g>oLYxg=#g`=R*XVii'Vq3>>BBboo19kM(o$>p883K_&jV0ciwTtxY5Zmr[]UQA>$W6F.nRYY,>DJP^"
+"x]0#?+4PJiJHJq;mHSe$QIs92@x(F.9,&p]v_<X(,2Qe$AvlEI@.FV?J1iY?]nP_&3uv?0>gx.:V+=R*ue`e$$iSX(u4[_&tw'GMo^,2v8Tr.MuGVPMt;)pLGBm6#uo)M-vOE3MkaamL"
+"5UW,#oQ,W-d-NX(tb2v?vkM;@mlQ8fpYAM9B7n;@bX^CsqHU2:>wRe$s-X_&%FX_&T@CL,u4[_&.c[_&$4(GMXNJ#M'G;pLNo'*#31#O-LMo7M6-#O-vn,D-wZ`=-T%kB-@-Vl-V)Ik="
+"$0i+Mnbj,#3``=-VBrP-ivgK-+G40M#`j,#QatV@J@On-0)Q9iQD^9iLge?gw;Ck=DTdo@x'/s@d*9JrqN$j:kZ+s@2DO_&$6>s@()RX(jX'GMmN-T-eR-T-r3&N/7Gx1vGo-qLCMI&M"
+"6QYO-;CdD-HG`t-YnsRM+2tuLO5.;#1nLAMWh?lLfLL2#V*d%.t&mlL(ML2#dl(T.]&6;#=xX?-;rX?-k$)t-Fn:*M&A2pLYU34#/mG<-/Zwm/.gO2vR+85#.UGs-&A<jLDbp5#5%,s/"
+"W7-$vrPo5##q9W.bt2%v;gG<-t-A>-_YGs-<:@#M=Lb%v?Bg;--(7*.Hj@NMsPj(vZ6)=--mG<-LwX?-5;)=-*Hg;-j;)=-.)A>-;[]F-;[]F-;[]F-;[]F-<exb-pX+RE%4l+M9OJ#M"
+")^g5#VZkR-MmA,M;b+ZMce#6#;$?8]3`xb-pX+REP<N9imR-F.;$?8]3`xb-pX+RE:o(RE@N/P]x_U2U<vli'gd-p]iJ^e$#Q:-m35W]4+P8R*8Xq.C]c-^5<lLe$k9PX(VhR+`*&C#?"
+"(/Le$,g5@0Qnk34vq`q;vq`q;wt`q;wt`q;@6MR*wt`q;)@l+MH'H6#v<LP^3%lDF^?l+MH'H6#v<LP^aPRq;$I1wp7=4]bt:]e$fu+XCE:5;6EYu%cNnr%cOt%&c3[`=-Na`=-r+TV-"
+"tNNL#Ro[*#DHc>#H.+*$b<i($fIfT$u&)K$p)ZR$=g^Y$b_?0%>7;O%V_'f%uUv$&q1i(&$o'N&[A0>&r;<l&_Dns&-?C7'#nfE'/O;W'8BYb'J0At'Nn^F(Wh#?(q99Y(+e,v(ZxL,)"
+"+<d_)[MLZ)]_9f)J'Cn)GT_v)+g'3**9?G*KZ`w*t.Cr*Okp'+r_j9+vgwH+`a.t+iT@l+##$,,=;_V,<Vdk,JU1g,1&Ax,$T9/-]32<-he``-KIed-Tx+j-NQtm-Kk(8.GA_v-<w32."
+"0YAQ.+HF:.GcFB.[.PJ.N^BN.FXun.<)LV./X>Z.UG)d.+5;w.g)8E/nEuj/j`Aq/k<j50$=E=01#MS0.D5v0+paI1ajQ@1p>jT1^1Zg16S@t1XMe12Vj*q2NfLo2,,Mw2I=@53f.0J3"
+"AWZw3Mkkb3DPpf3t2v,4]S*241VlZ46oYG4q$FU4TVuv4nK^j4bd;95BqG05VcCW5Op0c5J1M`5AmQd5:X`h51>el56NSq5.=t:6$p]#6qTb'6?pb/6jOnT6KC%A6iUEM6DA&Y6C/<a6"
+"M8Lg6/(:,7QePK729`D7*Vqk7p?W*8KfBC8;A/>8;$###5QUA4#vI-##O>+#)/5##c>$(#`G:;$oG&(MH<xu-UIA_MjskZ-Bx1I$&^g;-MJL@-$f`=-(fG<-urG<-^IwA-&sG<-6X`=-"
+"YA`T.4l:$#]sG<-krZC=%;Z;%@_2QT'5>>#r(:kFqb+Vd-4$Z$'aDMh.=?v$pBIYm/FZ;%&Z:Mq0OvV%)lkA#)lG<-io#-.BJQ*NS@-##Prk8N((^fL%$A:NUL?##hqj;NUOH##?VD:2"
+"eaZ`*7$ZR*8l4R*bUj_&W5w4AOtW_&;pxQELl3DW3krS&8Nb2(e_[_&@4GR*=:]_&6#V_&I_]_&6sC_&-Hf+i;^K/)9Z9j(5WYO-TQx>-,b`=-=x(t-i=FGM<KihL`B8w#;lG<-@ocW-"
+"I]g-QCJV_&bBHR*^)9F.dUW_&GVV_&p$X_&nY9F.%CO_&x>@kX-vHQM'w,D-?jG<-Ab`=-[J>HM4G`($<G[/G_wusB#]HKFnMW<BnX@AY<i:D50a`kD1+S+H86XG-dnr.G05DEHCVIr1"
+"^DxkEg8*7D>ZOG-_GOVC+t`9Ca8+;CQJQK='DvlEbM+l4qvZR*j:dn*I#+#H,9v>-%DZdNm7--NU.,dMjQ6L2t$d-M4/rfD8ESE-%O;9CuicdG/iCrC)OZ'#6mk.#XaX.#tGwqLfLK-#"
+"UvC$#HN=.#S:>)MBBfu-nxjrL,xc.#9GwM0REX*$vuk2$&Gk$Mco`3$8<A5#FSq/#p&@A-K4S>-0N#<-m>(@-'&(1MQ^G&#B;F&#fiPlLRb6lLHa6+#sg$qL0)m.#^S1H-8t%'.ab7NM"
+"q((SM,fipL@@]qLhwc.#w2(@-Q86L-9N#<-OvQx-v/RqLV9CSM8(8qLi(8qL,:(sLs;^-#.d&gL8#%*.YU4oLeL#.#u&@A-e>iYQ&=L`PwI`]PqBS>-YA1)..T3rLgD_kLpx:'#G5O50"
+"^>:RN68>j1'Nsjt@#9A'K&+XCQ&H5BH*I>H.qX5BuwiQaTTZEe#D1DEJm%aFUjn,4vi^h&;+S5B$td9D)+2Alb12S*@Keo7Nv@5Bg$B2C*3X^O4xc.#m3$50%Q(d2iJ+j9AoLe$nmm3+"
+"st[rHK5i2CV[H]FaQ1s7Ft$^G>'*F.fmXw0Bi]9`I7Y&#T?*1#=F5+#cFNvPfV,mq&;cY#*Guu#,]UV$0u68%47no%8ONP&<h/2'@*gi'DBGJ(HZ(,)Ls_c)P5@D*TMw%+XfW]+](9>,"
+"a@pu,eXPV-iq18.m3io.qKIP/ud*20#'bi0'?BJ1+W#,2/pYc232;D37Jr%4;cR]4?%4>5C=ku5GUKV6Kn,87O0do7SHDP8Wa%29[#]i9`;=J:dSt+;hlTc;l.6D<pFm%=t_M]=xw.>>"
+"&:fu>*RFV?.k'8@2-_o@6E?PA:^v1B>vViBB88JCFPo+DJiOcDN+1DERCh%FV[H]FZt)>G_6auGcNAVHggx7Ik)YoIoA:PJsYq1KwrQiK%53JL)Mj+M-fJcM1(,DN5@c%O9XC]O=q$>P"
+"A3[uPEK<VQIds7RM&ToRjhH;$UVl1To'eV$^1.JUt<*s$fbEcVj$'DWn<^%XrT>]Xvmu=Y$0VuY*TRrZ.m3S[2/k4]6GKl]:`,M^>xc._B:Df_FR%G`Jk[(aN-=`aREt@bE%NxbZv5Yc"
+"_8m:dcPMrdgi.Sek+f4foCFlfteBig#+$Jh'CZ+i+[;ci^MkCj36S%k7N4]k;gk=lCA-VmKrDonO4&PoSL]1pXnX.q^3:fqbKqFrfdQ(smD:]b:i(cH%YjBF%qV=B.p>LF,MiEH'0c+$"
+":t6%$1O6%$Vo.Y'*g^oDk9iTC3A2eGaPH&Fu@ViFJ(u2vJ;x7]p;o4(>PFg7I>c5GT,)ZV`pD)gtV:H&:2IN](p6W%=5_W**>$p8Sp()-v]PF>IsY]Fm3d3>%b)&=9hTA=9np]=.o%g:"
+"_WfM9De*j9@_E/:*j8P:']T;6+PpV67%6s6vRhP8q=L58O*3p7_1jV7/&s20#lX@$F=vE$owk@$:59D$YGM>$=6Nx3YU$/_%5V)^*oJ4_m`U)^52-F%8@)9'&.jB4>JvB$2iI_]O262q"
+"04^e-lZ-o7YjNT.jD11:J:xX(uK;.GI^@0U9R^S7&<pC41u$`+HDKT*I@^;SEBRo'KQww'V2tx'r$9/-uH'/-F<x=LA?1.Q[g1IQ(m;mL^12Y75qMB4Ks/##hViS%q`+e#*,si'l@2L)"
+"#C)L)6=vK)I7mK)x0dK)pI^J)1na>-IPgJ)ClC`+Ni1D+9m,K)FF_hLQ9MhLR^=I)*.:hL7x@S)eSoq7MRsr$@4b@;]+X@;XoE@;&kj-$7rQG`OG`c`Js>J_JvPf_EK0M^ENBi^jJ^Ub"
+"BsEXa<E.[`-nl^_'@Ta^?Mpqbv@Wtami?w`c8($`Yaf&_`N[H`0AEa5JrTBLOIYN^T4kS^*c[Z^hT+,2))P]FT+dV$b>$(#'mk.#]Ga5&tM:m&;lh;$,JlY#wWa`<80uQ#o[(MP(hx;;"
+"T/YALZ$6h%qr'D?1W+Q#oJBg%RLOC&HsA0M:0(8MrJ1)&=,jW[xOa/%85O^[Y7t&H63oP'=^XQ'I@:a'V3I-M8Bf9.-W0Z)@94Z))Z;$H(+).?Q8+#HRuMe-H?efP^69k0GIx+HUv:GH"
+"N####G@WZ4*p'##";
 
-//-----------------------------------------------------------------------------
-// [SECTION] Default font data (GroupType - Bank Gothic Pro Medium.otf)
-//-----------------------------------------------------------------------------
-// File: 'GroupType - Bank Gothic Pro Medium.otf' (36960 bytes)
-// Exported using binary_to_compressed_c.cpp
-// The purpose of encoding as base85 instead of "0x00,0x01,..." style is only save on _source code_ size.
-//-----------------------------------------------------------------------------
-static const char bank_gothic_pro_medium_otf_compressed_data_base85[37245 + 1] =
-"7])#######jAw%B'/###ZE7+>'wPP&Ql#v#2mLT9@w93Gsf)##Fl###Cg/h<v5+E4)]*##UO*##%a+e=6Zj$`WS)##kO4U%IL<`<@7OLDF4;7#D<F&#<;isBb<xeuZ/q.#ZY-(#W:N]D"
-"DMkmr&P`hLH5P$M;$tLD5k2W%S%pE@g&M*MKO%KDkVpA8-5J+#'Di5#e:V)Fo;>J#Yg3O+5O$iLoMbAF._uTL@_LpLPw-tL>u<5G%?c+vkG.%#&pJ=#C9F&#/k8g1l*>B$+sE]AeI1=#"
-"?<5)MwKg:dbhLUNhc7D*Wu`MK`_aw'K>YY#t+9;-kbrE/5Lc##_WR#M*9lX$5$<X(Mnge$=4g*#Lah+MWhZY#NdvFr,V:;$oG<AOp/)&P2L$C#3S?(#v7YY#1r_;$.LQ?$(#x+2XlUf:"
-"Ohbh#P(`l<H5%6/DA:v#Oa-6Mx)LhMO*W+r+g[k+U@Bh5`hn@#gwchLoTNmL[ABc.3(V$#01vhLOek%=1:h#$Todu>2C-?$kwb(N3LHZ$xxc.U4Udv$6Xp=Y3X;s%9`^f`8$&9&5H`1g"
-"5krS&N=xiC:BO2(L$+N(mcxQEK5>>#>84kOJ,@MK-=`T.R>?_#0@`T.54.[#]@`T.1m[d#grG<-N2:W.D'F]#*5xU.S&q^#4tG<-/fG<-aB`T.[>H$$17D9.ciD@$24w2(N=F5Ag*0Q("
-"ZlvlJk^T%J$'4RDCKlmB&8taG4sOVCmiAoDD0V6MHr5/G^SAO;:.C,38$ik1^DxkE4Qt<79rCVC:1k(I^hx98)n[F-b1USDa9vc<c+KRC)S;2FiMmw9$%4[9Ft&^5*)(hM*7<MMo1FB-"
-"f;v11pkn+H5-xF-9-IL2*0+gM:*sE-)DbG3p*SfGgefP9,3fUC^O9QC9YvLFA_Nk+F#I>Hl6rTC%m>PE_K&XTko%oD#SI+HsO[MC6SnbH1gkVCHmI>H8=4cH=8lv%x>SxIEOL21<>E;I"
-"?B%rLH]hCIc91@-VBh<.3rw+HV2k)3M3FGH,C%12cOFs11%fFH+r3,H<rY1F@c/*#Xst.#e)1/#I<x-#U5C/#lj9'#2_jjLjs&nLu'm.#:*B;-8sY<-A-:w-(T3rLZ[ldMV3urL-&1kL"
-"WT-+#j[W3M-i@(#]8^kLL1CkLFht)#3*B;-IavD-P`.u-*0nQM_:2/#K;.6/a9q'#IZhpL5`ORMQf=rL8;SqLb/]QMTxXrL.LG&#BK?9/W;L/#fU4oL84JqL;RxqL?72/#&FV:VnF^wT"
-"OX*R<cS1`AoWVkb2U%RE9BI-Z`$?qMte#F7N+G-Z-^5kk[D*m9UVX>HkSsE[SOSEn7`DJ1vS&g;WJf]G%aL3tq5Kw^427L>1=$qrwc&qrB+0F@3kufDd+]>-')s>-`Wr?9a&s.Cor3)F"
-"-IYGEr8*aFq_U,XkeXRMM&iH-5cpC-vOP</VMh/#vGwqL0)crLW9(sLrkP.#e.;.Ml#YrL_MM/#k@qS-Qsx(%-%exFoIg--^<A_/<h&/1NtA5B@#B;IV5j`FRkDL5,Rx7Iao`MCF0q>-"
-"d1*.?d)q92efFwg8g0j1H0[>HBRf?KY&$,2>sA;IO^j;IcHQfC+ZRDFG9hJDspVqDk@XEexLh%Fb5?^?VjQ+#cRG,t&rJfLwHccM^GVG)#4Ns-q++,M5:Mt-PAr*Mlqv##_BhhL7+>DN"
-"RY$3Tu#/.*RA[`*VY<A+Zrsx+_4TY,cL5;-gelr-k'MS.o?.5/sWel/wpEM0%3'/1)K^f1?@<aN/K6(#3WH(#7dZ(#;pm(#?&*)#C2<)#G>N)#KJa)#OVs)#Sc/*#WoA*#[%T*#`1g*#"
-"d=#+#hI5+#lUG+#pbY+#tnl+#x$),#&1;,#*=M,#.I`,#2Ur,#6b.-#:n@-#>$S-#B0f-#F<x-#JH4.#NTF.#RaX.#Vmk.#Z#(/#_/:/#g/+R-IAu`3E?S5#IQo5#*%.8#u=R8#@a_7#"
-"=Z`=-Ad6#546u6#D,c6##rG3#>&Y6#J:v3#Bgh7#*DLV%a_qCaa@t:ZSJPlS`i`%X%pg1TdIIfU%Kn7[pj./:IxP%k__A`WFHGJ(k9#AX1UOucjRni''W3S[>n/2'4_PuYN&IoeM11P]"
-"eZ]rH=A$8Il'ASIj(f4fsOFlfs['MgHmToI$(_.hXXLl]^Qcc)Kf9ci)OvFiP+;8%tlc.UsSUlJx%n.L$23JLOeOfL+Sj+M/rf(N3.,DN7L(AO[h>]O=k_xOB<w:Qq+?c`aMXrQHas7R"
-"k*WS%AMU(a2<Nl]qwm,3GR;;$0U6H2M0PY#CiAE#/$]H#r(eK#,Cno#S-gR-<Bx=-Nsk>-er?@-7@KB-54Lv-3)YuuXF3#.g+PwLhw9E#YW_pLwdhsLKffo#OwSR-96f=-YDOJM8UJfN"
-">7IuupJA=#wq.luHx[due#^au#&+&#(Gc##+>'xL&uoc2a-)fT@nM.Kwg[IKx-a]bf@8U)N5l-$]+l%l8%t-$gDHrmFZK_&8_*WSPYD:#A*6;#8$-;#F>(7#P,c6#R7I8#*%.8#F?bcM"
-"dEY(Nq()(&4.UB#);5##;?hc)(Zo-MS3D.3%p*`ss0;ILT5VeLM6j-$3cK]t@M%,VX8vhK$TYY$2Tx]$8Lhn'1&IW('i9Pqu(IqLN'1'#4l:$#Z9F&#0dZ(#S%T*#u0;,#DN=.#h`-0#"
-"8.92#^E24#V>@#M_CS6crk#JhBVDonmY4##L;EA+0A[]4h4;A=LCmxF'Gs+M>*euPVfUiToKG]X129P]In*DabSr7e$:d+i<vTulT[FipmA8]t/rH8%GW:,)`=,v,18.&4h(d`<CMFGD"
-"i5hlJAEjrQ%QES[TdGYc8p#;mh,&At>*G/(up&j0QH%m8vweY>L+h`E07CAOceADW9]GM^],muc(AifUA[c^H+-&YBw?vsBtl>lE<Dnr1-d>-G$]eFHJ8k#H1,ZlE<3.RM0K.WCK)T,M"
-"dhWj0:GViFP0+cH)HxUCDpN>HRMi9.-KFVCCq9jCT5=SM/RCnDRP`t-R5tSM.'MVCD+94MSR:nDApNSM/*7oD%@Me?cSFe?5vAe?7&Ke?8,Ke?7#Be?6#Be?7&Ke?92Te?8,Ke?;Ape?"
-"8G-=_LBr$'J4(%'QOU['V[C@'Ye:@'_q(%'f6V['lEV['oK;@'@3o6BtUZm14iN88fRfS8g[+p8heF59inbP9jw'm9k*C2:l3_M:m<$j:nE?/;oNZJ;pWvf;qa;,<rjVG<ssrc<t&8)="
-"u/SD=v8o`=wA4&>xJOA>#Tk]>$^0#?%gK>?&pgY?'#-v?i_]s7'+OGH;/;9.*G%'I@etmB-JraHtveUC_:x:.'wI:CO<(3CuAFVCNvaoMf36A8rK8s7$u3R/>9`9CrdM=Bo$G59olI59"
-"olI59tlI59koaM:Ij`M:Ij`M:Nj`M:TM4K;-p(*HM/GG-p4<M-ZYnA-q36D-kU'C-e.j'Pq8..OmjlkM/]HrBT#9]8iIOA>(ORA>(ORA>-ORA>$RjY?N.iY?B]-v?kcR59]H@M.mX7fG"
-"XjEZH[5KL2Sapw@j^CvN=W2r%gKVk#3Xfi')vq%43GG]FU7a(WH-9]bSQIxt9wOJ(ceUS.GT&,;F1mxF$>s+MEKEVQf+5]tM3w%FoDO5/-^>,2DFK;6mO.#>2SSYY'Y0DsjfnV6@IE8I"
-"?9aVQj*g`WArEMp.i6W$E3#N'fOGv,ih8s?KfbGDt1]GMTM(mSq9TDWo*.)jl,a`s3([s$`75Z,3&;d2VQ%Q87BZ5AW_)^Fd*u]XLEP>c$x#jg(o`p%Od1K(c:#?,Mtl87;Nd5AW@U)E"
-"q5(TI1`8gLH<e>PmE(^XDLeG`-[`GiF2U>lV=/pns;WDs6739%R)7H)uE@T.8)m,2H4F^4b;k/:;HQp@Qrb,DuA1TI>U:aNV;,TRiL[/U65Bp[V?kDal``;d(xT2g@^F&k`'1jp.PC?#"
-"EwJQ&X;@H)^7:(E$Ar&=?lb(1/c*Oo`5D<%Mn^0@9rOk.3ARF,l5XB,:h1/)9Y/-)>P/-)2jUQ&Q_iGsx_fx$S&Q+)_Zw$4hJW(5:s(Z>Z.c)-=0YU$QPWWs+]&+idTXpLbgFatBTI5`"
-"R*'GsU;9as8m-^tev3A@IsC`tY>%5`W-'GsrN2x))J]^s`f0s.v=Ii_99.[Kq#Bx3d,Y/A8U>IqojV]tvJN[tiU9<&pMKhT*:*M,4w/)4BuD^J_-*Np(:1$%RcjcRfw%TR1dC/ZwbXH&"
-")=$h+oVL@*aJ7H&D&0^tlhe`tS,mv$Y:J)dBV?s$vvXS&OV2BT(Dl8n/xs8V;_d58%2rF,/6J#u7X9C,91,LLE%T//97YU&J))@ea@gS&8IIQ,bJ`:6cCA:6cM`:6Di'4?%&wHhjRBXa"
-"v-od)GBmA%5+%:MFIEj0d4nd)Yb4`*/:o@4aqoC*#13B&kTM>&kA6?&Whq/MYIkE,U#PP`MGJF-PHJF-@eOU%5iQN'@6BJbc%gS&tC,FsTlRLA37C[,FEe]tRqZ_5tHm87Q3C=#,).-%"
-"eUlcRh>3i0lM=e<E(:ofIfo9ZwAxq$laE`tdCkkKr5pN+IR:QM.J-xOcbWPW)`/P%lnthZH'-0%TX'JG*dY_F;YjC5NOYUGOx*atwT`4%CQZd)sKxQG6#jj,eP2RXdR[K%Z+I%;4MR-%"
-"35eA@8CQDs,#(&k2)6jT%Bu,-(S0WL:,<`tF<>C3-23EJiBS@%nD<BJWZKlk&H'@0Zf/@%ZY?/bVG_Se/<45-Yo]f)wNW]D@Y9`t^*f.Gn,,,-T7cX#.nVe+Y*]]t@/#12SrL6a_3*K:"
-"+Oxs,5t92p@2l5-mwxq)bKCdHRV^'%Ot-$UL%`8REC&Q+9bU1Qwm^h9.JA^KmDUas3t$K%[rKOGg?IBTn#mR+I[V5GKn:`t7;tmDw1;5B3%`d$Tfc;%QLrtL7/S,M)Gih,7uQ6%Q@VtL"
-"5#8gL(Dih,lk+1%;m3mAT'xuDAAkw=Gq&`^M3:asPqd>uVUFB,[P'B,?a/^tuwtB,KQ7.0ULBI,2Kw;usSjDsApu[FT'PIql(pL,&Y>F;rxtDsfWSP%G[kut)bbkoAtEF2@3^u$kZ6W$"
-"iOxPA/;X`slY=XVL=,p/)q`iFGgibVN$:VS8J/;[aFaMK0XD3bRvM1%urn/n/7sZ>GpaA%M/5Iiso$,V)/hUHapETstX?VW,mrS+`dqN?Oq:`tw]I`?(F?/2GQ0sHq/3DsUui]t3gfe$"
-"M'YgGPubhs(l+b^c2lP'4f_`?acWXc_%o'Ns+F[`O$ZU$Rio8_c[LOfw?H0@ol?GV?7.g_hJioLra`'5px2v-I=dHArMCkf?@47e%fLC&HHsFsQmAm%c91GN&Qs`s8<(?#g8NI1a*x'N"
-"8:$FsEqO+)KjI+2[KV_ElK7l/&:YU$fhg@4+oWS&pwJ:HM_&:H*J+t$m#b3EVl5C%Tn-bZVjNwVJQWJ;j`Hs(nob<mD8^b*C0Gf`#DZVs_`l9me/jO%v*]h$APZVsw]:a0u7*dVp/,d`"
-"W/&d,x99^4I+v1k=dw0q3'@%%h+bAT9P?XPxU@@_,PaFs5c*X$#Lx[s:1o(SNbJQ+-,a2p6].<-tul>uX(V;&v+$D,r_Gh^(9jh^aIDE<(N7(-DZO%uEk:g%Kg_>7l-ULL`^Feslp7x$"
-"k.Xw`35EO%stRh$^n]Xs$nl=3rxQGVi^/g_]88d,P^oC,Pe',3ToM^OkBN[=0#hmAb&nd)-Dnt5*M3:6QK5uGB./a3;G=itKcXgL1=Y$M<K'n`1E(7@atQkt`[]S&k_^XaVm4HV2H.9I"
-"#;DC3=c=msc''86gfTk,^/UlTW-od)eG&eAIC+5BZI9/;Y&26GiTk1%Bjf[_aUggY3t=[l;/&PsfiNMs2^HctGs7M`Jp-H`]5J07H]?Q&*il'W6WOJ,`N.jFm`Hs(jA$-)%G3/)$5CPO"
-"RoDGs2Ei'W?xYO,>`5C%N/=vDQHeZVa(SHsZa]A&D.BPssV4O+QrZO&,m?T%?1d7.OG]:-Kt>4&Zl5k&[,U@I:x?&@=Z)T/Xpj7.e_B-Mx*)c#hVo]t]54q$DN'UsjAX6%TtFIqv[ce:"
-"fs>(WpTQDsEd@Ds)hpJ%7;&S7<tAu$-$b'ajN*%=TE]Q,kxR_NLpO%=SFk$O>`k.uAvtgLPr_O)wv%[sjD0Us9qQk]Zs==lLPRwsDEc6ui6Fh^RuW9u6m3A%6ZN:*=b(O%0oS'sC_T1B"
-"PbgJ%3lAFr<c;Q&W[WS&]:XP&9U9'F_`0qi2_JC&W[[,54R4ZIF,5MX^N5v$^Ym6X%PTwON2X$k6MqK,j[uDsf.g-U/X*gj4EB9R+i6?0e;9`t=rF]s`aOIsj`VZs80>Ys@rk;JA0iVZ"
-"R`=2-#<EDsk4&Q&0VVXHY6YxQc5`-I8MY@&`3N@&Ih#^s.A&Es^]?[`aOG`tiW57Jd;Yg,iNJ9%*pQ^ON>9[kn^-#$gm.Fs5D,Z&:XTJ%>ED`$O=R3ScL+>%OnsL'.,PI_ax6Q&*E^aq"
-"g,SM,1Yqv#0%fqLNJ8%%;r_?Kkvd&=K'[S&Ia>v$QlVD@u'iM,>koR&G#HR&#-O.1>OgKI1%H.:Qa%.:(d&3I,p&K#;6d[p,hej&<iGR&(BcR&(dBV&pd,b&Ce0%+`G$&IIc'F.*aB:$"
-"l^`X#X0@:$c6ia1NmaU$#;7(WUu9o.L^/qiX9e&4d(2Vp7RJI(*?tDs&8).1U=?(-Ujb4&>?R^OlV@>IYDDD='DVvlj=Ggh%+4HV0tYU$:;R'A#N$6MF>jJs;_kg1f[E7.%`x20.qx$1"
-"1;YU$TsM?#0C&Kqx-qV&,D)Q&tf%j.R(3N'eK=Q&ivgsH#*5XUKob`s96u>#L$?^sk,fX#8S=7.8>]vtf?$h(Dd5^twqI0eliX8&6PKZ>G,Q?#iI(##WmYxOa>T2#9h)##rqi=c[w,;#"
-"lR(##8-Juc^-?;#jL(##Xrj4SrOD4#xw(##iw$GVub`4#wt(##=71GDdJM^4JD'##0C2VZ(C]5#+@2##F(:c`<gh7#A**##d?+VdGMn8#E6*##q>vLgJiNT#LK*##$NV.hR=9U#Td*##"
-"0D0`jW_^:#Zv*##us`xFpC24#0N/##S=x:HA.:/#d:(##t&5YYhi>3#KG'##1Z#AO[v&2#kO(##v-KlSYjj1#_.1##2(6PJ.g7-#f@(##H8h(EGU-K#'1)##>:qCa]&02#c7(##rP^%O"
-"7G4.#E5'##mlQS%n7v3#]&+##MOSiBVTE1#<#B##aI=VHIX$0#%+)##-0PuY29hj$5_2##NLQ%b>mq7#`.(##*0+GMa2,f$6dA>#X*GJ:&),##FZhpLG>k0nQIml/iORY><.>VZlk(Gi"
-"%F'g(*-22BwDES[o0.Dj,B@#,-JjY5%2ouYX8^G;(_@DjGMV;?wu9/_Bv'#l0+<T%nB*Q/I[,W6wnI#>Xb)^Fvo2jK.`ZG`Hu[Po=;Is?YP3E*4uxGMp<5aWhnFH)p4m)<VRtAXsg+Zl"
-");Cvu-/1BF[57Wdl&sDs?*/0:@h6BO+&Ym]9#;Wm_rSB+5d>01#P2*<4cJKL,,;'=kNJ?Gd@CKhJ_8h1dm7q7YwnZGWBKEa0>u#u[fdB=VgW?Pt]RNpA)V$>[T#bau,Lh1._5X?<O6bN"
-"l1`6SMOR0_WLkQoN$0:%rbl$,X_0C4x.6L:jE]$G=l/OKrtAhUYb`3^r`i?cfEmKqXxYwPeD]wY#r/o&u3]=$1#aqn>cL_t_MoeM_/lwu05OCX@BMi(j/gR]oTvkp4r`.;%01]Gkx$VR"
-"0@iOg/RI],r/]u6EnFc<cWa:[Kg0fiq8`f22M?P9uw+MU*&-`t^U',3%bScEkGg%P[Cv:[JK+MhJC3]u6tE>-u,A>6pe-2CEY3;I:*v.Vcod(kK:[%u(xJD=p:#s@urL&#alVSSM@6pA"
-"UkC2L/reVR[+-#Z;iFAcXvOMhv_a`k4-rrnHP,/r]t<Auq5m;%0cBj(HH4^,`%a50uQ6d34#Gv6sG'dNFJ5/rxiRp&aBc>H^%_AY?(s&#UU(E4Pw+K;Ai;p]t]RT&xZQd3K-])OK[-Zd"
-"uI3djGSlJr<[%*+XsB^PhUv>ZBxX&c)=P#mb9K#va_,-3e,@E=1bajC,VIZQ[K:w$g4&q/6#cZ6,_JKD3(OWR[fIak++KR@fxk't;/CJu;s.Ud%rC_tmt)l$MNVDsu[Cbs+[s[=Ap@Ds"
-"s_rp)Usn]tih)l$r9&Fsd7f,;=9,N'ZZVRsciY:p.&,@&FVw80bjbb)+^&Fs.Uh>p5%v'<6%'?JdA,DI:A(w#$qK[X`eAf`+;rH@+ifR]iUDO5>%Yd3s*`4%Y1/T%$AH5oO9M#f5.9j$"
-"Q/1c)bn5LH>][6+9CS)ZbbuPWDa60Dq?>+ujQ((atAx'<o+l^LsMkP'l4rFs*6s-CcSsfk2bX[$5;7c)HhRj0&AT1`KF;.LA29N,M3O;mat&u<8'G:$jIpL9`wEGYGa%j$818N'?qBEU"
-"mWaU$.[FF)NpGF)*AQtlx7?D,v$.I_4JB>&LnEB&sOT]sk&fHUiKaU$,_`U$iD$F,Y]+[tvb5PN(99%MbV6es7^0-)E^n)?33KN,],PR,Gj9171#IW%-]#1gp2t[VXM`Gs+TDOsL;H9I"
-"7.-1Kl*)FsP=.8>PXU%uO;P^t#iELsGU%ds5s4VbuqG`tl[`_FM6Jf,%SRn3N^1jT((Odt(5-.1whr`HXv,GsmBc>u1j+K_E4n/)[Rx_MhF:Xs@Qoq)3$O48Zqq9de^]/.G)@sLT(>es"
-"s[mDsHP*[s=jW*rw8Ns(CwaD)B+USc8n)]+P6<@&J-X'*6fHA&;_,JVF:-wsc)Ha4CP9brXgU>tC(p-i=SMJ4Hg:]j]VX=#G8Tfj>Dw$=ZL)r.djwp$0rDss>0.[tGL?OAl>]*`xbF7<"
-"&ug1jbE4xia?5wsvfi%t;#s[%(pht>M9Lsm7T@4toe&x$30OQ,pNfe(1H>b`WJG7/EG$4=`v?'N'^[]i/'W?6SD)qLaWJo5Lptes]iRN'iE$2trNqDsRpP*r?d0R%vf@7N2-At-w[KW#"
-"d,Ywb)FD_&K7_ls4U7`sDNWm)qdEI1iKeh0^HtL0M<em0(&7q9'`d'&I-0f1ap0FM@>eM1_G$N'-jo#u't<iq]OMeL)v=_tR+a4u*V`4%aD9x7C`g5TwmCPs=6.J47QrbPA$?Ns@UWP'"
-"?V8vHo[vlnZDjjLo;h#vdSO=-Gt9o.M:?v$ss]cr08R[$LV2mJQ517%oE2[$LitTsnAOR..au$'u4e$'8KlMT:2Hv$I&i*.T%n1*p^U;.VF3T'bBCPsjB4:?V:Rkrl:J-r?*aGs:2*(l"
-"L<ok&T##U;=%b)<)x1;=QR:`t;J3Ls-]GDs6Y:/_7F]:-mr1etvBGG,PPY)<w2ko,MlQ:?f.jILIlb4%Itmc$Eb8FcWQ'Gs=aYxk=oGL0dWN[tdPehLwHC%4'3n,2.T.FMXO?_tC+0Ms"
-"^D9EsP42-)uX2:g&:2as=>?JTU3QeSLC(rr:NIW#11eGVd':ZGq5:v#f.L_tbVELsJn%W7k#o`t.EtTs@U`Zs$mZ8%r6+i$3p4bBB[:`tJ4BuA0:$j1WWudI;.huQwe'btq[.#KAIZL+"
-"N%3Z>m&xn,nPN8[US;7X.(X>s:o_F;dfA:7FfG=P1MFDsRGqV$EnL'8X^Tp7e+-%=/dm#u1e?Mt2DWucrY*Ds`_?_t$XkKsoW*F+DFDI1BuAEsuZTYH_?w_<*CgF2_O?Y-ifT]n@QS_<"
-"WO_-68Kr-6r/_5MI#eYsVKJn3*V`Hs]X-1a=g?[$aQtBeUtiI18Hw>>NguL'b4fe,B*>Dsh?V]sihoJ+?rcbs6M+Ofgd,107'pHq4K'o/@5kBCX^g_Q^6P#%$NcBcr5*3ALC]&:(LDC/"
-"7,jGMSN?`$Lf^X#>8J[oB(+L5;G0%qNon[s9#.vtmJu[/E`=(EVg@ht7<T_E7QY:?K7BPsG+RW%/j4v)SLx4K?uC/%CE2[$t9][s%7x(SM_JQ+qFL#u45GPs&0UW.&?ao?s,rX%4xB<Z"
-"w/xi)Mb$`NT&Y0A6'EH_6xJC*[SDC*_<>/?IBh-IFf'K#?Hcb)A+6QO7WrH&6KUF&LgD<&wvrFsnCP&t10tJq#v`qQ(17CWJE7+3&NWDsa`[bMrS@?X0tmCs,<j/M.gi154)YO,qt?w#"
-"/E=A&Cp?\?X#Yne(O9,O4rV:D,eU4ds%-2`t9a#YULW$)tOh.Y-2A_5ktj8csdkJer@NYYs9v>&MS9ER%x;[FDri6N'18vYoTa;`s*7DW[,g>nt^fXP'nV:vd/MD[lCUKHsc9d;%eST.1"
-"bj@o.g?%<?8AHRVp&f%se[;4&*C.Zlr`w3SMf+IrU(1ia@:;7['v=c><tr?%H*wc$$_f_0f7<dtxFV]JhsJN+#S64&B#2:6rXncVJG;nX,rJ*u=lTP'R:.c2P^SIpDo*%jnmZ:lg^]kJ"
-":[u7$mRR&*@)SDsD&ie(9f:`txxoX>%au^tt3r_Ed;3>d)0KX>gZ<(ju%g]ts2)[sPqL_E)OQo[*U-],lRKDs%4XctmbSFMiLF?Kko.GstLJEBM-;`t#@DWBs@RMC>=Dd$+AP53c7Jp@"
-"jXC*-o3dv]IYPooR+p#VUU=5B<K#*[U.4vcm074-'5xs)Rq(qLe9I%+5-/*%vkH?#j:mR/FY^Rsn09MsYo?Ks`w'^sKh.Hs]D`eL1%$Fs^2TM@:*di,L`RTbTbuQ%P%sX<:Y`Ouq=t.%"
-">&]OdF5TEse[)]J&^;`t^-p;/w9bE&?m9hLK-lrL*iJ+MNbXAu;`3*JC#DHiew4cs]wmDshr#r$Q7-@&2oU$u+*nwFMO`,@#YbD7?p21B3h(6AK@UwbXJen7D[b%tYm_%*W:rqm(Jeb)"
-"n?v>>vb]]tg&1?%oQ%_O[Y*48^qjLsH4MP,(SIF)tIZVs8D%CW.7DGs)6E)u,[VksZN%G&eA`;=MIU%u$wW-=/N_%u<=WEcY^BcssV_Sc9vlP'.7V0Ghw`U$GFPA]+S<Lsa`<t[*+^et"
-"2fi4uiPMotcsov00$TetSwl#uxE`4p:%bGsB/cJ,NZCX1sC,K#61^EsGZEx#c3g<L$Eestf1bttPH;D%S<nc$GI.B&A3R>&p7j+4Bvf$ulZ&asik1o$[-`]t>Psl$x'uwB5_r`s#4Mo$"
-")c5M,ae8c)`MH[FaMbW%'3ph'Nc*GMADA8%D3&M0D'WL0SiefLDZu`s9n$CW'G`'W9(qxtSH9EsS%tX%qahn@$)b%t$*YJ,V/>JC<ZOb`Z:/9&I6GPsX+*DswF*8RGoFmsK`s-C^uj0T"
-"l2H;d<B=5-LLqv)JR/jFe;.+MshM7%$R9Eso>-tH4H-lNt+tN1AXK/%dl>Z$$$4d;n1KJh*R-`*lJ[4&F]rw4qeSqtVHF7I29LOAAks'M/V)xLE5fQM4le<*q?'@XRxacMSegt>H'T*X"
-"4VFDs$-=i$Detj)bMW'JSs@ICo$#^Xl9f+-C;ng((UgT%P:[UH6cB>&[EFB&9xrFs?N3x#NEs<l2m4>upB<DsXwe[snB7P%/8Ri$%*&K#iZb%tI4d*3];%H,]d/%=UHpu$TUo[XL1J[X"
-"_gDqm7uJ5%QiiD@tJ$6MvfD<%R#U'umhXes-HAx$pxpUHgPKUH>t/u$l<NQ,6?9@4^X@C3jx%gL=]^vL3?0HQPWuusjPBUs%]tR.)*)gt[u5Ns8/F(3#irotlvFqtBDOR.<G]PsB0Cjt"
-"W:lZGV)7[b+>b%t=w/i<GBJ?#:w&xGb]oDssG8]t/f65)8nP]2;bp,),Zjb;B%>sk]m1cu?H@<Z6q[$u6D'A7S13LufLQENJiQX>Xs%C#SX7LTj(V7%T&2=%Gb,Au56@^=pmkw$E)f?t"
-"`F'8I5<Yus9ET=>*i?j0t<petId(Os,qETs>D7h$hpjlt`U:`s2E5g)kF5u:wB^-qM=oCs3LRlT#<(C&s_SP'#63I,gv.qCtn4d2?iKsdPrnY`^B:dOT)):Q5iGe-//6B&A@]MX8n*%="
-"kP5.UHx?b?EGgD&>L8Z>vMbo,tqh`jA=ge(xLX,O57$L,wkSP'4TPD&RWvCs5CrFsF%,R,,7EsHHpY=5idB;%.e3i0OgbSdSQ#qno35hh2rStqY._,)Y/3`s&_bjJihP1F3KF/)S]jsC"
-"H6v_txCkA@O)D`tKo)OW*(ng,KkxJGV^>XT+ivg,5>LoDr<9E%g<-Ce4Z'7%mh<<a=K,d`Wjic,m?AsHvj%$Ui)%1-TSYG`oth3-'V0erVK[iQat9#u6$*e))$G,V'Q(--9P9sL8#<`t"
-"IW'dV/Rd&TC9%_sCvkr)Wk3.(a^0N'8voDsphfrH[1d?&g6a4&QZqI,S&oDsWo,6AEch@&c=Q.1>n>LI>V8N0L3Dh)m_I$`KkFqto[>=3Q:8[$cGttGa])'TVg9M%KlPdIbuUA&CKGrL"
-"f*d<I]3iM,/#0Fs&>7RR7Q@Ds'MOReS=E_WFMX]tr,?1K)-[`ssvTsH0eR(t[x@T%lu;$QVY%[s#I^Ms3=G;^&Uq8*r%6mSn_F)]Haj7.A`tn.UroS_@Zo%%A,4vB(JhcJTHig+r`h;A"
-".1%+-7cEe-I)Q2TpkbD]7@9njlU/VA0e-L,:A(w#fHjN9[;&A&gmiTC&@5$p*([?&0_)BX;bZk%XR@`t44mP]i_`k5(U?@b*BUCEJ+P%LM-,UVRgK2qeDc-M7k$R9_@qHi-#Kbsq%AWV"
-"9jep+/IGDsG>oig]7#t^JAu&%L,ouB$v`0_S%6N'qP,W-vhdnLmX&&$=YQ^t%8oDscKrCs,L7cspFGg)8NxHsRl?o%N5W1']mRvtZ`eP`R*'GsHwV?qZJLJsOf<9[Rj(P-j_#Z%7;xG&"
-"fr4Fs<o+f$,J^]tORmvtS?Fq$,2FDs<%,f$4)&H&XG4FsiZqV%r4_]tFG[stL45n$eD(V$FE3Y#FN[]tp4#.:/v/,iwMaDsCc]]tYhP^t#59Y%EpK_t%rETsS@Ae$7l^]to>qbts+J]$"
-">iFDsZxHkt)wUg$0JFDs7>wKsKhh_$=QKA#rN'e;cs;Q/sfVP'rF^Xs9O5F)i.u`2r--@%VDC3YUrPC%ULf.@&&(LRK(5U+DY*)YuVRl,?-9c)hrp2@c%P)-uTZ,DOH]f,rD;,6*d@:."
-"G(j8DJ$Bx?cj[n,suY)I`Y*I&i'%CtAK[1K:uB[/V.^q-@bCnfCwu/1SRBRH:MtUG`:X2-qUdG`e&8d,/b;te:Y3EJlx:(E@.I:E2?uu?3.(c?PBpK1M_&NF[%`HsU13h[N8#731uoZU"
-"dWC_%gHk0TDL=u5`J6AI<5A^s)uUnSn)GnnAdpm9]ahtL:xE)%3mwn$f60KHpcpj+<H@5DjNE/)M25Nf=<k(S-,,.%cjelL6E+(L.AK[TrExc`be_3-Yqj;mP*/1(kap8&gUwt>i(dR/"
-"m.6cs<_E=#I&&I_Pli5$>dJ_t+G;[$@-4<Vb&qM%:9)lYn,Q%AYr1^FV$X$Lxw>Vu@[.^t<6rcYj7kUZV8+ttun@kdsnoFs)3Cp?IF)Q8p#.<HSk8:-f0:XVwFaO%RYBOG%u6TsYtYmJ"
-"8%lq=t*GxsZ2pFsV=o@lp=(^s'L^Ms[6Ncsg783.hmpXsKw+$*,ij@&b[?-`OX`=-wvbG/sV9Bu'IEN9dnH>m1xH9Mw])aM.L2h)T[VC,ILL#tk$]a3d26CW/)hN,gEX[4'r[b2=:=9&"
-"o.;^s&<2-))qJn3d%2csm^SP'%MPm@F%p^sN5h,)Sp%Y-Os>R*49j4mv[Z^r_,g1f<#8>->JUV%TR9wsTHmr76_jvU)jGjWVh*+2AApFsNsDK,A/bOsJVIQ8s[):H+r4&[_)Il1Nqm$F"
-"8s$@'D6JN,X;rHioZSv0Ja5H--5fI,$6a>&xJo)=jB^A&TDiNXoopFs$aj$'b2BN,jA$-)W>9X1/ccD.JhJD&RT+#I$dGfAb(uxY.poA,S-^pIX^U:&>2gPsqdSiL@HXH3[Z/=GHX-L,"
-"<,H8A(JX8/T^JjU+h`A,s/(emIqR]cv4>5T0CYs/BVCK:bTs:[e0IE.s#lk6ZY+_J^sHJihRgY%UWx8&Q0610c>oDs-V_itObNo%MY8vY;`/PsXfP^tmK3RguZYT#3:)(3?TL's*sg'k"
-"R4r(5#Y;D5PiNXkk.7r,BM+6D`6IQDCgw/[Ep<K[m$`P'KVEPsNiNneuR,K#h%KEskJYO&am7+2`],Fj&VEdVW9xO&?gXO&Y]64&R#vN%K_04?344[lRfBu,+2Y(?m?EIhH(:o>mbst,"
-"hw][sNb&u$%Rkw`oG@#Qqb0hL-k1k'`:'wOb+aU$<%_X#[9@:$gPhJsUA.[s#<lh'0%LR[#MlQ%,[+i$tF.gUnL9iUNBshFxSc,-Qqp*D)Y=+D2KR8[.AFm,'#E[XY(NL'2fIGTAj)1%"
-"b*aw6xT0-2Y$_ut^(b7MKd2YK9FN9%?aS>XlO5ofdYLdd,2i,]-&$/)Zu@$`V,R68&DFeq4g0Ar@rv3S&M%F)Q2*Dslr#N%r/Mg@m^QXl&>olft9P]sv;KGrNB#N%M_tJ@2A@-%QUK$A"
-",4(QA#=vSC>bg8@P-f3HglNttI1Y>%>,O=PH=`DF(kGp@lvRn,8O@,`b__3-#9w;WIi8T+f_04K1uQ6N5FCutD:l^%?>X2Tt.oJQl4'ut8f?t-D/EPsdV7`s?d*'*Qeqv3lkvg3Q8Oal"
-"72JplO+XN18(HEj7(K0gcpL`su)hc)TGw@%G+t#Ah'&E%T;LQ`9[Yftj+mv$VZ>Dsg]8I]_CKcsm'0Eu:bk-tcu2N'UPT]sf_)ko;M5FsqM8Hoc?$-)`nk7*:YJ[O3/7HI1xND%[Hu,H"
-"8p_9/G9>)WtW=,-vuZt(O>[t(5%^#%H3>Ds/HkHr8a3PdW(dC%PSC_:7a-bs.7?J[SZfH%a7%):S^m0%q$6N'+Po6[O=1k^lKg9bm^nOdl6@IcK__nspX)O%:rNutRNpI(,KCv>B#cV7"
-"Uj@=36OvFs65uq$p$S7-@624D_)5I-hB4hb>#*O%3AubgQYuGMF<_1<&?]7.LW@n$T*j?UD:r(b6h&sUDW4o7$@+DhFT4L8[-GC*vMNRNbNIo^)b2/Q[BjP'a7wDh+962jU/=]kl[N]s"
-"[snCiXQeSsK/,+)sX#:7qI4o7?9[%%EBgctiChw,4fg]tw$l@+rVxFs^Ken7YbPFsSoc/*$%4btS>hW.V<k.p%]sY.[>D]s3)IW%E,q[2F>Mbt?/kL%C$0d;_C*7@akp@%htmc`Ep?bZ"
-"[>B.C]`e6DdoubDT$]>DN't-C8%./[of^^be6CPssouCsPFxw4>f=hkP$.oskXf6euuZ4&UEAo%@9rP8hg,[sX6<wtQWwq-itk>%&wXhK::dbi`#,^t$8jg:^V<p[O23asmt$@#+T$9&"
-"/-[Rs*x(u#%mJA#msCH&4vc9O&n-@%@WOQ,F7GDsPDD[$1lqI1k(iK$f4KDs+aun$(F9Es<uJVqZ%]QIAV(w#:s[g)>5a`sa72asOKQWES+gk,lC7:^6Dqxt12WE,A_2Z]Mwhx7uM&&t"
-"@<iBsa$6;uk[8*%7PG_tT4%Rn$?B2T@Y&iBsHJ[OxqB@I,Bhupq:HVsa#.vtOFmX/_DLOr9=[qpjNQDsxP=R*VqSCWUg@KqYhkk/l+a]sPV7`s3F*x#'p0%=`/vv$M*;4]DXl3]Xfrw$"
-"[GKF`aa'L1dfHdt2P<j0QpGF)?G)7@5IA;g@UD^4*/A$52e='*H)M8]Q_D@&Q;uVHVSe1-nLd4&@O74&8*>mJ1@iQW(%n`j>6a,]/375X?]7lg@ZJ^4#DL9hm6<cgMGx@k6Q3<on''Ms"
-"%L5UZAdQB[lU3xF[S@qCwRnC%<'H;Z](&ft[M'RDTYH;7kp1T%V8R>choV7X=YE5o*1m0hgEC?%*PCUHI6)dM@[F/-TgDJQZJ%GsKNiJLN_o3F#A4(NTuVb;s8xgo(%S)Mb-SL,U_EF,"
-"3U:L,3wQqLPv2*MQ%6wLFC@ktS>wKs#E9EsY&KA#r/Jqdpf&At&l-^tc)HOEQmk,-JXuqUYL74]^TXqcI1l2-GgR5GZ)r_E/6YnI]iYQ,]uJVqs_]QI:A(w#9p[g)2,EDsUCrH,W/A^C"
-"^QU,fCZnw.kBf%:b@;AC'sMPBNJ4xs>e(7@otAetkcA*%@pJ_t+Bo^fN<hk$wjP^toa_/s%],K#bXpDjR&VG^,#TasPQoFs1$Zo)RwZ4&M41bt))^:%TR0m$bjxCT7P[vtcqh]t-wT8@"
-"nnT(@Qk/:%TM$Jb<4k.%-'6:b;G9l8/U,J,<jq*MAIw9M/-SnN%FieDu5-^4WRvXGP*EGsY>L[FoFx*D144Rem,&FsaT]?1hAo[F&0evt;lj3fUFI4r#YA:^i5tpsW1@K%S7Ex;K+ns$"
-"x,9/=bmiU0Sl84fmKn]t[u/jB5g.q=fsNL'nLX<aupJqdk/nvtk(M7q$mP^tEh7csi&1H,Z<Ih@c]E$5d/mH,ifMpBJDYU$xLBB#8U-v)1=NL^Qv?#5kr4as.s0-)c4;37fUn>lWE.1("
-"Wc<Lg;Qn'4<x+$*4hj@&ZZR`tw+hh0J,7=-d=Y'?^EhB>Pa19&p6tG,;E8csU%)$,o%iC&p@i,2;_#Ns@puU?,XSU?rwW0p)*+5Al(<T%thg9&H/4dDF$U%JvVoPEGEv_tx+oFs4>S1Z"
-"&Er0-VDTfI`?Y7.JSRO&,+5`tVH1MkHUCRs22(:uNw6N'8l.=(?O,9M%;[1K=;EwZUSxls6d[<&0C`O9w1@['=%l0g>G?O,&]/7*2Zc'&80VlsmWSN'1AQL'2E2ZoHr'K#6cmh'Q1Oxs"
-"CB0M%R1)*Jh-9pIa8l,-:&`>TwT*AcP`M^T6R@OA0$6RoJRo<%/-vR72$d9&n*W5K:X,oLjdhsL&AmB,4XrFsLF5/)?t/-)XU.)tg^SP'QYk=m=*7[bnhWt(DA-/.`];vs6)c=&CT(H,"
-"nB*%=@q@KqPIWDsxb_/oi=(?#Bg__*[==H&TU`p)W@9w.5rOsIE5l=7Dkm]tku.^4HLZU$Psvut#<ee$s`UI1til2^fhg@4x2HJ2gNO(3EWj9dhQm+Nn,btGh4-nA?\?S[s5]b,::fv5/"
-"/A$-)Cnk7*/x@_WBRrn%c);`*Fl@=%1=]]t554J,#[:#t6?SgLq0#ko*M5FsXZbhQ^)N**;a&P/Z4qFs0GXiLg$P9qEgZG&pR>:$?o0@I?xK<Hm$Vb;'+PB&)I=hHuL6ntp9.4V.lZ8%"
-"(=f0H)'@DsRP&Ps?gP^tKwl)IvM&K#(,fwOqw1M,4njc3@fvAJHDT=%Q%g8V6?=O,7?kP'Z+mI1LP](M8Ni+ZwZW_/NrV8Il*C<.o(x2KhM?p.8FUP')hI_/51jJswW^kJ&cO(t3WU&k"
-"8W<<oHIN7,8K'$*5*Z:?)LiAtU=?JT-?(<-xWVN,NAaeSY?,Tn^s^b*_](E,<3q*MVT#B&0:Js(xD;=-)`<C4(R'b=$s4asU^0-)a$p)7NdqG,+5WiL2Rias2u.-)R;JXu4)V;&>@p-U"
-"*ob<mRw/G,ok4:M8gpHsx$e=.=fogM8./pAW]MqLMgpHsd/Z`-Ys9:)K0JX:;&l?k7(xof>&0X:+rM%uLJeA-k@rX/Z^LL,@6Uwk@U4Xe,/Uo%u-j@&GEX[4gSA.(1S`VecP):)a;-8f"
-"lV_VeF.3@'0i6cs-lQX.Bkp)3aji2%tXi2L'B5esQlq@-342iLINfYM:GK;M$%kYHYl@[sTj:H,b6AHUsThBs`1Jnns:l0Luf+l/:RZnAD7fT%pP/-)(0RN'E=^U#<L>_s7ckhgnPTas"
-"k/0Js1aCpj0oHC)Z0.<t)g-66,_R/7`oi,)A*;89SQK[DQj31'L6X0[`Nq&tK73.(a.=RIvJniLJdURdA#_xbPrr5$<nD10'F>R,tIUV%j*jO,hg0UJFrh5IJx'K#eX[U?Lw^st0L]]Z"
-"UgJPshoZ5h+xr$'Q0T=>7p)jL3G6?ZQ/RbWf&Lh$@;GL%6YxP85ENb$pcA?KNrY>%QL12XY6gu$^VdqWa^jl%$&uJqVTg3o,O31'I5/S_`O3GsoTQ%%oc&p[NVx4`&_C3_wx[PT5xm8%"
-"ZMCm`7NA]tU[b;dr,=d$TtWMaV0'Gsvgh$jHD]6ceIG`tQG#o)<6[,rhU&et=asGsV]3gLcvN8T$D]tdDh8h$a?/@F9b9,r=tAM%H3mdA&5ZS5[::mA]R:*-V+b2BlH%n,U+Qho)6hv`"
-"V7G`tK5)u69uQ'MQ*+5tJGPeiu%7,VX_7mS8_,9<fBdMO2=[rn0m.vt&32dVh)rk,fO=$%pwRh$PWCn>Oh:`t.9U7Bi]cV7bf/st*nG5NeuFsLQK?#YP:nKm:`C_LWdKJMKe@RWh^#*^"
-"K,R68*]i'WR6Tu$mZC.Cf9u-CsoR_<x;H#5/7D<@$cvIsxt74&`g=djNgbWs3B=lL7prqsUL]Jj+l^Jj=K5,cN$'Gs:MTW$gbm]tj?rM9E:/Zsl'*fC8wCp.9A6Z;gC=R*L*UK%Jngk?"
-"J<IcT<f7N'(J*8n,,[L'-cMs(>gKbVc%cps0^@i):X6&X4&U^_+_Rv^#U2GaR9?5?\?en<Z'Tv;TWW6ZAD[r*-SU-Ma*TB4?'<0[JTWNu?.w(xCcNX%eu1%%MHL'_GnxWs_JgVaTTGH/)"
-"UDl`$i>oq)u1Og<BDpG=^OYTcdh1qc2r^P'r[RxlVE9T.wd1`tn#%a$V/lw=*/+DsUs5Wd*x-_W2xX]8V6NO,FFP&tC?JpeopO_Nt+'1TKZgxVj<$_sNhrtGO1a;Xxh2j(bfjD39B5T["
-"[<NZsRdgkJ'?S9&,-sAkZ#Dj0.'188of]>&xRjCPatQYmgD#W-r_1I$(^qpL.dRJ9bEJSof+)X-d^3I$>ZJkL20PV5KKGkoXcV.1cVAM,D9`*i4P%S%TA'2MUcrJB$pxBj;:&dsTf0`t"
-"+aArGmJ[*r@O4U%s`A;&0Q]WnY3C^sx:Ifh0&:_aItZhK2%deDpU3LsOV9PT>09I`%4r3-l_mk$&H.%%Hr/;'5`$#QThnR7XBhL%ZKvmSarI9&.Ig_oe<P]sJ#>]kr31R[>ek/:>CI_k"
-"Vr&%]E(9M_uibx_&_J,`Vs%d,@L8(Wc08)aw'r3-_KRnRWL]ZKExD:QSnu9Q5lo#LCXxkt&BJ>K8&<`tb<pEs2NYX6FwiP'EUbF,^hJH,R/aXqt*wA&_gmK,bM0P,N>7hGPo(w##vP^t"
-")5GPs3YnE`;TFb`_*h0q'W:(W6OH[Fp6UvtA]=N'9(6BsXGI0q]^'Ofuoa%t$5,FsRwZu2mfK`td+`Zs=EQDs/)^P]Uloo_uo2:m2ud]@kQ&+iD%$1@5Xd9mi:=[`tMdNBbY0DG8wvAI"
-"lsf6exxa%t3Di'W-#I4A?O+4Ah1bvL*^kOscZDD%:Pv3W.g-W%79VP'HP>P,(Lwn%%spk&=9M[]DDY#uYU^MsVl?o%XukF)H+L4?lc&:HNpZ`tuvM+4F$E_tCx#Vs^.Pf$JO_]t$BZc$"
-"rQY_A49SDsMSJe$lu4as]o/EW8`=9W3[p_*qca%tb93G7[2E1B3[G.CU>>j0Z8w^sXjft>e8PX>lhY]t,*%hC:1$`#IT*u#nPVP'r]q(E_`%9&Y6I9i%W5Rqe<ZpQW%+]s[Bhk/OPJS_"
-"m@<i0ltZR%gX#M,A&.G&G$jP'v=(5s*KgaqS;:1'G5:1',^L?>tAF6%v/DR@_C*Z$sd02sY1JH,vHGr)keBMsti%([,ZtR.h@FhgE+6lLHV<rpt%b9D-#p+*$xMX>X<xc`v3r3-T[%d`"
-"l%FMNjLX7q'*;gt<BjOs`mOvK6)<`teaPFs@:haSLr&atZ`LA#l6jd%x:[R%-VRN'>0c-IJ7uW#6JUO&&+jsscHw;u]mPbD_^SO&n.7N'a$s.L(TBC,m[f7J2-E%t9#9i'p'^*ukL3hs"
-"<b4f(fM,3uXJM4%rZ?K,SaVh,`&^]tXXKutaE%p$iV_7%Z>0V$W,]]tvbUb;(:Y3h#ZsDsWux]tA924%'*3jL]ZC+t]FuQs'J2Osv_)]+H9=at,l%Hs8vpO/8;+it*<Cjt3GZ[+S&(Js"
-"UK?ct6gP^tFSqFsE0)/;)mD=7s7W$kQRtJ,/emDs0BW;3Cs?^4$,@N4&6`2pLSl12PR?Fs]rLA/bKKsmVT.gL>'2hLaPC:UwJvmSt=7.(+E.1((=4ILLHnaN<Un6ItBuCse+g1fMfS+*"
-"xSGOJW1JvUVET:e?n/KXhf)-GG08@%G+GPWTbXOSCQr<&DN;R[:856u-cSN'aCF=q+KG#qYp;`s%Thv#^Z=E,,R2#uq.;o%sB#v$G;EDsvdFDsu,K19LQ=Is8mR-%5m>R,tXW.r^oMl^"
-"-K)%+r^TBF36IPs(-5csp10EN>T2br$QV_&iQ6R*>0xlLnIpgSP;3-)9]L6a9?P<.N(OUC0Z]3/-RnDs+C$A'Bs6G,quYD4msPDOhxY<-+h#Z%^nPI,p,#7I<>.D&tlNDsB+Uph)n#^$"
-"2J$P&PMHd2,`G2`PseF2YF+UC8a+?&J,*DsesB,)jt.O4Dp'l/cQ/k94[BOAs,f<&bDX83=.TgLjCEi2#T1:?MlP<-Yux(%h=5/)+%/-)O87IL.N(0M`V6.(`;rHi%JTwQhq_A,>nlxH"
-"__#MqTi24<p+wDE4,EDsVXpFssxKvDHV&k,X+7:^>;U]t>]<=&J$E?]h]YT:'4NRIQ=v(%RhcehM#JDs%?3xF$b,NsIb@-%g#>pOZd:jp'vII&FehM,Fl?E,ptA^4^p>FqSm1Zsv3>3%"
-"D)uJ_)hwN,V9qD3l$Q<&4i.gs&UTP'h[J+2eR)D,8<&x$,,W:&CZr5IC>a;&nSHE/t>,tnc0mB&]-JC,#?KdsApmq45I'I,Taqi(Cfun%TI:=&aC$u#VSR:&m^q<1Y,dofUb'?-<V94/"
-"7[+?6s7W$kn8ka%SnHLI'B5es)dv)<N3vk&(j^8I/fO=9?/qXGn]nk&C;Eutfox]Xxu`-Irp(x+Qd%dQW%+]s[&ln.8fwJ1_v$utlM'UsqH)M,8jGND@DbKP=E&ps6Sow=EV^@4+VUuR"
-"O*w$CGl8q%uh64&BwxaS<l64&vQ0EsE[X_NZp+%#p3>>#G&w%+ee18.V8Tc;#Cbr?VKLD*(;WY5g+v%=pLk1g3HXxkQeBfq,,WPAf&LPJCNmV6]&xi94EvlAGWsrQ,gNS[MJZ2'$BLGV"
-"REBAb+[`ci-J&Z5nF`A=7<6p@-fxcMxgl]XFRRG`U@85o[]<a*q9.T.`:Ev>HJoJC(=;vPx;3sZP'=)aO.A5ov]f]t=RWp%nt:W-I6e298v<gC8t`;QtBgDWC[aDao+oSe;s5vl'Yms$"
-"xa<Q/@Y.E3V3Zs62_Xv>XO?aE$v)NK^o_2TDFR,`hMDvc*@mJhR18pnufX>u]l8B+'qEQ/BfRa3Tw,<6&(f#>Zb)BF&&3NKVGl5S)';^XAc,Q]W6=d`'+?jgN]d;man=mos/3dr5fL?#"
-"JBPN'oq:<-8sGK1I1=B4$J7B=>fX(1vY6pIb;l,--PTk$q3<L^f4U&t$]SP'5V9>&Mg:^43h#kA_)E**pjp*M+H7%%rs3cs*S.^t%lZ$u2ODksdrZ9.GUkVL.V<m-97YU&F$E_tganh$"
-"SxxtYjos<&`AR9Ca1'wOlWJX>Yr]h9iH=wl$8g=#Pt.+2_P5F%Hj7hqxC97.HR1mfrn-XS`SvSdQPf&h=4-jgX_k`,5+0Z5+L('-j)Rs]7$xg,G4DqK<tgH+W2n8^]5CcsX)Oe^P`I/)"
-"v*mFsJ[)]J%^;`t@.)]JgRl(kdkXWVc7W*i8D7-Ic,5hqLm9hL]3urL/&<*M`KInX)5+^XeXJe-ilk5%I:=iFJYiJU'2Qg,l2.@`fvU]Yrl-GVF877eRT^[42QB)aWjic,*&g(mMj%V-"
-"7t)Q&?HvNsrq7Is8+(Q&U,[tdTS[FZB5DV[sJFx_s/vYcY9Qb,02Y,;IvI(-/'hMW.%[g,1PqOEC'A@%Jun@ejCY3%-'incE/KEsZ(1WL9,<`tNP0WL8=7DbJ8dATTqQhK-;jAKP?(mt"
-"8YkV.6)<`t`[qV%OaU0-&A$'T$Lk%YA:(--8]A:&4bJ$lJjBTRDr8j.&7YU&OitW6Sw?pRLe=j,S?U#=AGgN,&Y>F;W>tDsB-jO%OQ3P6-I<noHN4a^5eKM%dJ0q5;#C7%b'nL<&cPDs"
-"JT@DsM4PN%dMl>%L_AjF41^et1J^'%r@tXVTH<,3N;F>H)8wfr%A^]tC@])EuNWebXZBcs2V,C`N2mP'CR+-Q,v$(%xMXRDjeI$TK@fm+1PSPYSQoS&KjJeiN,#bm9e7`t/@d?A^9&+-"
-"2xlTsE^&:Q#l$q$%ijOAX_g[O3CL?%=,vHsoKCkf>;1k^XXH`tCYrtH1rbU]Z_fiXolmN%.I@?U6cR%_x:aFsoQvg$39<Es4/,+)+8nvf8v?1KPe^W9<g4A%K6WEl<3e%%9;JfQ2Y?<I"
-".v%ht+7nx21aVOs#<FI:=TWDsUG4A%8%`9MPTE2F5Wv_tmOkvK@hN]cQl.?Ue4ogugRa'TF'jP')DUQ&,qB@Q5Duq$gTBG,:/^U$C3oA&7elB&P_IC,j[uDsB1Dh)wOsob?Ai3]5nZ]t"
-"pYnR7LAS19_A]]t^Ji*Mau0Q2D2oE/Vq+vcLW=5-=>1`tcR?HDmN2+NR0aS;0l88MfI4ReGt8uGIAfW$g%pfhE7Y`sni[stKn,Qo+To]t,fY]tkDXQ%#45UZ8tZg^uW`C^I`wYcOT)c,"
-"*-f>eR<tL'>H1T%v#N'sQWU7@#%)aEHrvhF7JPh^AvTVcu?I4-GE^aqB:N9%L=S6>D1WWslDrk>u@E)WCOeG`w_^t(7;<0%,TC)?Jxm8%VS6jaDIoptH-dsaKa'WHHdLs?s/=o,S^=)a"
-"-L74-Vo]f))F<ADAY9`t5dt`o5Kd0%XOxxt_2/htr^W0p/S]#L]bV?%bKCdHN>9'%^1lVV=]*otRsqjX06ep+5t92p?2l5-XhGO8AU;O,K]urIKX9jKEIRYLc^V48l`1C&bX>F;o[eW$"
-"EINAbwdd0^eU*Z$mFY.r`f2N9>&od)kea4U9YrI(Dh`KrTcdaS5vnO^@H(IY=/hL9`.'4EYZx@%N6>8edpeC%ZrpL0M':9M;AHoA,;X8[?;=2-`S'^<7,r;?lTigtOX;$Sk3wktZSbRI"
-"@a9OJ7O2,>EvC`t=8hd2@8NB4.5wE3.Aj^46Huq?G84e)/Zs>&d=:o.MXqjtCboPsZseF2IP39u_[04fNH?hg0=FE&cNo+/28^b*m9t7CNsH#%e#n&JTIApIK_Bk,:SQBT0tnS&[)S0M"
-"Pdr/%E;'I_=eF'*HN0Q327pd))sQ;dQa)c,6=ck81T)$%)_+i$$nL#ulBGG,MC*i44Wgb2&;2Q&k^`jpgkLO%Kw,1@OZwcTRWI[<NE_s-x=S6ceIG`tv'@_tK1iZs<Xp&t=oL&tkLUQ&"
-"_hM$e:UJK:sbrYlZWtDskYYU$(P877%>,#u7Rn`$LL>ft[5gEsoqO+)0:;_t#ko9Z(^(N'MRY'a>[cjBaRr(F7Q:11MrQO&$<4Y#hWK<%>^A@k=:Mwk)`qn%(Mg]t+PC_tJBIR7ju$N'"
-"1(1CEPu*v`fg=_j^)2<%IcvW<Fc?s$:v*vBs,od)f@WPo&D)Q&CRIOADDXp[@'QNsB4=B*iJNDs#/_nI7m7DX<L;AFvC27nB]2l&TitE&0UPI,1`od)@kE4S7uJ5%&D*AA,PGS&Ic&Es"
-"^goQ&`cWR,k/=_j+%)$CI+4rJIOhf;f?oq-2gWQ&0xt'E.1M?#G3O?15N7csHOI%``40GsbK/e%HT:`t8FUV&f'S_N2QInn[_a(3NGSDsIT@Ds*g7=%+9F=lFZGv$+2$S%k3-a$HTfkR"
-"s[wH%%W]xtml_b;:[nc`aAOu#=:-#uh:Oi$9oEt$g>a^Jk<^5JOkKk,fgn.Gd(J+M<SA2`I)`ZsFBQ@+aE^hUt5@Psp&5k,j[)6S;Q93IO;(@ea@gS&J=ZS&2Z[3%P0ec$Hb8FcXZBcs"
-"6OBTIpuo*>*kbU&w7g]t.t4UsCukF)*ifLB`dxf$idXOkvFi_MdUBj(d7fh9)LU:oX9Nj&A&0^tf`/LRw+&[s-%WWsxHChL^uc,cBvDd&8?[S&:mRDsQ&$S.S8HF%>W]7.gV`P'Zh?I2"
-"MQtrHK#.T@p&xn,m56I2;j3[nW^QJV6h,k&3jxxtdB5csM5&Q&@#'B%]jL^$0?47.<D2.h&V@D&Oaqi(U76^tH@v#tZ[JR,:Mg;*X;'j&S0M_ED`(Um4Hm3px,_<%^.6cs;v7HVPZ92q"
-"H+.vT]xR[spu#VsRcf^+@)1a<R]+)-kw'^sHUiGsbM-9I>i;#2%0wCssdd_scQ0.(E1hgCl]>^=k3['^PWQ#uj+xi)T&Xb;vF.N'+,?hgux4vcMEQb,54ZJ=UUlS&JLkiF_Y,O,(BS[s"
-"tUOJ,;?sFs;CLv#R<.8>OXU%ufjELs3Y`qOe[:F;Hq^T8baM^O%)WhBUs802,IWP&Pw=i&1Iv;?Ppg-2%K$Un$m'Us9fox$m9vZ$Eb5^sl03Dst)c>#SAVZsCI4F^%/Qk&.F>bWc_#=P"
-"jHga&jW/ZGm33+3R_7Q&Oard&hc1+Im-)K#Km<^tE+%2tg2]T%G+J9%HP&fC1g/@F7r$K#fC[S&TVWP&=5]S&/7*P&;@ww#bu)uH,ePJ,2`$w##&CKGcfI&Xto^f,)[)#23piOs`;p#G"
-"L4E`sj^efL^x*Lsmp2DsJFo&addU,)s&&Jh142$#6sXf_Xq)#GY'^uc*F7J_8'lf(D+mP/`N9GVBUd(jiTF>>V$A/16(crZMk-Gi:kQM9k=RPJE%m-$,%Hig%30F%PS-F%YVl-$2W^c;"
-"$o9AO=cl-$ehPI#T,>>#gw1G#[95b#O$N%$=^'+$L+W%$c/ED#s-pE#X&mlLW6W?#)5UhL4C3mLlQ-F#q1_-M6oxr6hLMZ?1qbV?I3s-$6Cn-$;Rn-$YVl-$.+n-$='TF%%(/F%aV[k4"
-"jH<J:^R6&>.UOOLKwno%>+/;?\?Dx_ssW:MBIXE_&Ok+kbsNs-$Fhbw'C^_w''p<MB#bBQBbV_c2,I5R*>*;R*Afq-$Eqn-$f$i--O]QF%g@.F%bU_l8D?&v#E,gER-?,F%2Z:5&*G:;$"
-"ConLpxJSS.T=PAG9<2F%8M]9M=%uFrs>Sh;2:k%XlrarZtl.>YMU.F%o[7F%owO6#-Qg2#Q^#3#4V@%#/`ewuv22,#4>r$#-[2uLoH7+Nq#*c#cq-A-9*OR/]gAE#<Ze[#B%`B>/oqV$"
-"&4mi9Su[fLDhQM9;njEI$9^c;w&0F%23X]F3anQs8wrjt4V*;?h;Nq-Vi*Fe(`&FR&h:/$102/$^U@%#.l1p.ah4)*bq]wKZaX-ZxNl.$;Fai09*',29dr.Cr,J)=BR0wp%`XxX?&1F%"
-"Io:-vH*^f1%rix=a,hi'h*J*4rgR:v^$1fq.;bE[wTkl&(##N1@'`QsM_Rc;#PP8.V?)58L#`A,hxep8X`8AONV'F.?DGDEwck-$'xpiB>v%:rwO(]$eZ[D$fF>F#q@uu#d7YY#c72mL"
-"9-LE#Z72mL7-ha#6f9_#)N(Z#EjD<#DDqhL]NPA#u93jLouL^#<eg<M:&`1.EkUxL6OEmLtEQ^$:[G1MU>6Yujd]F%/:LB#HmvC#&+,)MF($Y#FJX,M@eP8.6ke)$&`'B#dT4oLDSQ)M"
-"tt]+MmN>gL+klgL3FfqLl'ju7LNO&#1M#<-m3S>-ESgc.%+/5#s5T;-f5T;-b5T;-=5T;-=u)+2vkY+#tG24#3T6(##[WjLW*E.N67o(#AiR%#OVjY.a#n(#H?:@-m5T;-+3kB-%N#<-"
-"^5T;-p5T;-x5T;-o5T;-x_&g1oJ24#vQi,#,XE1#p-dTMuC._#aARm/RJPb#0^Aa#vN#<-c)m<-6t:T.Z<cY#K_BK-dgG<-.O#<-16T;-Y5T;-8N.U.C);G#H4`T.n^B^#Js:T.T9r($"
-"&M#<-B7T;-T5S>-XN#<-:O#<-*YCa32?j`#UY:Z#%j(c#BWCv#D:7[#834Z/bBSt#6@k]#N=T/$txa5v05&vLv_k3NY&9gL:$;B#_a(*MGkw&M5m<s#OsFu#]:v%cg&./$0(1hLXp$tL"
-"OC8#M`&0,MI9T;-C_Nb.?6.[#8:gW4B;r$#$####`P?(#IQQ`Ehpf.#](ofLX=?uu[UXgLO@-##UxefL^XQ##^:4gL?RGgL1)JT&rCRFHR`P33DBYf:lEvsBIV&oDBSJY>-ggKF_k(MF"
-"i9<MBqP'H3%<8uBvwE+HM28(#F78/G0t#HHen72L2g2I$slRfLrqJfLw-gfL(xSfL9jG<--lG<-+Gg;-*Gg;-$Gg;-)Gg;-0:@m/9l:$#`EX&#cSJ$2J]&*#w6D,#AB+.#<V5pM#)[xk"
-"&VO&#/Z#<-riMa-t&TF%w5W?gQG:;$oltY#d*wl/Fn1^#TY#<-XY#<-VY#<-]Y#<-k+AT%XK_Y#^B<G;K1&&4QBMP8]p.29V6Q(sj&3`sn>j@trVJxtvo+Yu/:aP&>n82'B0pi'FHPJ("
-"Ja1,)N#ic)R;ID*VS*&+Zla]+_.B>,cF#v,g_YV-kw:8.s^320&60/13D@A4M0258If)Sn7u8;64A>5/2YWY5QHil86MYP/$[ro..Zgf145DD365))3A+=>5GhPS7P'687sBtPB4YrXU"
-"Ox9s._FpS/&O6p/26/j1jHeJ2hNE,3p#^D4o,#a4uV:#6FF+W7^&lEI[=9kX)T/D#Pbvu#jSMY56v=;$AKCG)h*.5/&OJ_&;@.5/>uYcaAJ%a+d]':)B?EX(b4ij(`Olr-#I(4+&qKM'"
-"NwhP0C7dca3he6/dxK'#X4+gLJKI*NN%T,MaOH>#2+,##D?xu-wYB%MVr/-#;Cg;-YjVQ0uXM4#)@S5#QlRfL+q:HMj7'vL,6=RO[OQ>#io,tLnbC1P1N4L#EA;=-^frt-s$krL>@W$#"
-"tw9hL+O2/#):P>#D<G##0(lA#2rY<-=58_3Sg;<#WsM<#[)a<#`5s<#eJJX#Y)AC#*AY>#.Ml>#2Y(?#cIFgLEa5oLYBad*0k&786W6X1IH<3t2)S&#.U]F-*6)=-0%Uo-V1c'&V@K&#"
-"RGJ#$i0$B#VK3L#Ni68%weT#$ZW3L#T=NP&#x5Z$l54L#t7-5/CNm3+xGP`<-k[[Huqdi0SJPlSMt](WP;Z`3L/9L#4gf4]f7W]4g(:L#BRS%b_+3?6t3;ciR-<kF)qj-$I)###UH3L#"
-"XV,eQOGYY#YT3L#R135&xnp>$^a3L#NEcu>1%Pk+a*8SRB'q=Y](8>5^c9L#?7W(aX]Q>6sTH#$u9-T/-Vd'&Mg?S@^^dA#^RK&#.&1#?21XMCF:pV.pT(@0A+*s@4I_>$gRm;-h9I:M"
-"k<$##Gl[+ME)^fLCp3<#=)c?-3(m<-LKn*.JWajLZE<,#Umh3=bL[?T>i2q`9#Ls-m=nr8BiS^He3hiBx##/#u$2eG,Ym*NZQ^oLX]Z##It(F75ok3+U)###<H$)*O1*^ui^@e*VK3L#"
-".Nc'&gJ>;$,/m/C.i@H#PJoP#2;/X#2UR[#n8-_#POPb#Wesh#1nWp#Yi4:$t7a%$r3^.$CI*5$t<@<$msnD$F&SL$=iFq$l])[$n3pe$xx.p$NSvv$T*i$%heA*%%Jq/%98fP%Kj#;%"
-"cgw@%(euF%XW7H%qJOI%G*[o%iZn[%23`c%rSik%8<Bq%Jtqv%^XJ&&q=$,&.#S1&Ba,7&TB[<&h'5B&EH>J&j63l&*PxT&5X]]&pxeh&N;2o&TBns&pexx&5=j)'0xB/'@<g2'FAK:'"
-"]0aD'W*<h'(7CR'KLfX'=Hcb'4mlj'gY,r'Dcg#([mL((WOZG(YP%1(<hH4(h?:;(5U]A(0/OE(@TYJ(Ng&Q(YKUV(i0/](h5G+)e()o(F&'u(9Uox(rSn%)rY1G)2[Q0)5f75)8ps9)"
-"#or<)O<(?)x`3A)J.=I)FMc##X</=#No#;#XIm;#2qha3_b;<#JHKU#;TS=#TWt&##gv$vDSFv-M+JnLMWH'vl>=K2kK;4#I313v+AC3v85Oxuvjv9/<T'#v#0xfL[Js*Mqcm)MV46Y#"
-"Z6>)MS>4<#M3=&#LZ9#vaeZ(#b4u(.q%AnLGa-+#/I5+#KRHx/B1l6#G<(7#o$c41n*,##<W*9#F*Fxu$bCH-atY<-h%?D-h)nA/m;:3v:u[fL1p)*Mb)s7#h6K$.K0SnLoB^nLv'^fL"
-"05O'M05O'M6J<mLGM6'vUmx702TY'v3l'+vT#N.-UNZ9M<Rc-6I#a-6,)]9Mm^o(<HdLG)EsoW_YxW'AgFC;-<r6q`;'&s--IHqD02o-6,4HJ`/-Fm'aa=wTEE>G2>ufJil,TS%[UhpS"
-"j3v[tf^9cV.kw%cECecWI[3dWRJ<A++H]cauH-2_8gi;.R2l?ToYI+M=Js*MC%GCN5eA+MQfH'voNP'vq-NM-.OM=-i3`j,-qp%4*G*W7J`'_]t?QwBLR4R3l?i9DqMf9DxkcE[Ebol&"
-".W/VQM^o;-BSov$g>2'omn)AF+hb(W`=?f_4U.L5*5Rq2FD?R<_Fe?TJH%RNKN.RN==g%u1VNcsd*9Jr/&22qpxX3F$9b3Fwr[q)&?b3Fkfs3+Md&s-qkk;.oA4O,sfYq;LED+rShOcs"
-"EpfumIVL8o39L1p^c0>muE?t.64GS7g[_f:(E%RN>$%RN-e&@01Xe'/:ZJe-Na(EP8Q1N-*a,t$;.w(<rEo2DpIs*MNKs*M7AR*0QZ9#voeZ(#BBGO-skv9/`OV0vxt<$M)P)7#TJL@-"
-"dMck-gA6V<k#Ow9-5_f:he$,;(9DqM2cZc;9KWw9W&'s-?vo9;&PIQCU6nQ8H6=kOM`9_8duYf:*X7G;3$Sc;#f`Js4:SqLP:#&#)gHiLh$AK#K0ZtL>kqsL<aW0vsT#28[H8p&qJKJV"
-"4en;-eIvD-9HvD--m7^.#MV0v/#Z=&3tFk=l#c2r]#=J-tv<J-cLL@-mc-x-.%suLaW%iLdX%iLrY[&Mq(q=#gFWDu24)=-s6)=-,r.l1sOZm8_>;<+75_f:/m=G;S4Zc;+Tb+`'N'G`"
-"7j/BDtu%4Tcld##-b;<#;WT,.K:@#M9mw&MV'sAN$6hL9lm<n43VB,MY>m6#LB58f;Xa795#Zk6qtqjth>G39JDPK3umd(1p%)s7b&a$#ZH7C8j549'=MUZ3Uem##dA24#jYV4#6$@S#"
-"o:9U#klWT#tFKU#V7%@#e2I8#?\?f>-RAf>-cAf>->F$M&A7hi`3#.40&V;s7Bd-Z$bN+D)QB&9&,N$VdJ`7T%NbRc;P&MG)X*dY,fR#v,J]=;-Y:YV-de:8.<u>>#aaSS%r_;@-W%3:/"
-"8:F&#OA=gLN+E?#+r0hL*L6'v&p)%2oSFw[UCcp7^vX&H%_SmV3[&L,l?'Q_?\?C0;Tf=-=ovlp9lBW8&rTs;-u(uk%&xjl&PVpI_<G=%tN8X1^dE#VdG<HuYkUSq)xc6Jr$)3Gs+2q;-"
-"#OM=-Xv'w-m`R+MCcA+M1cA+MA]SbM3WZ)Mso)*M@I;b;mlSWnK%ho.i2q%4bFSfL)r78%HFpV.63Ym/xV5N#NiC?#CYlS.Rl:$#[=eA-S@eA-hj>%.Ou[fLJiJ+M5,$>#dbEB-'&@A-"
-"g7wx-o)O$M]cJwuMOOgLuvS%#6:@#Mkig5#<W4Q#shj#.V//vL1X/+MJ,kuLkB8#MDdWUMcD:%OhXuxu0Ke'uKVou,7Dpo.7YQ]=2beuG[MBkFkXd'/PxNk4/tx1q4@-_J;tZiLk2oiL"
-"?8xiL_@RA-9e.u-of[+MCVfBNk-aaM)Ls*MwIs*MMJs*Mum:#vDjSN-NhSN-HhSN-K/]^.>24&#ucJn.ONb&#mK_S-Xj*J-uL:@-_>:@-_>:@-X@:@-MmbZ-%XZL,3I5kibZJwu?vc[."
-"Rl:$#<w5l$,r0hLm',cMUNu$MbeK1;6j#K)pCZw0MOJ'JrlXV-Z@r3=P].R31wHwB*g/58p>r809x.C'78058lC5G.i5DjVe$Eb$s#t3glkk3.11:P8riKdOxS5E<_cXvIMJ(98I@?Z$"
-"1=q191V2N9)Q3<#'####)Pj)#fmn@#tE4M$.#%W$b,SP%B<dZ&3heH'(lD`'Q,2O'n:d?(W>e<(b`lJ(-E]x()w*1#I2Puu5vboLx4voL#;)pL$A2pLV%9)vo(o)vLo-qL.(8qL;.AqL"
-"44JqL5:SqL6@]qL8LoqL=kFrLE^_sLNdhsLGjqsLHp$tLIv-tLJ&7tLK,@tLL2ItLM8RtLN>[tLODetLTc<uL,jEuLZoNuLWuWuLX%buLY+kuLsmMxLtsVxLV2d2v>ROgL^Ej$#M4kj."
-"aGY##rM#<-BN#<-?6T;-&7T;-'7T;-CB;=-Gt:T.MRu>#)5T;-C5T;-D5T;-E5T;-F5T;-G5T;-e3S>-F=pZ.-s2%vH,9$.C(trLC9(sL&NJ#M'TS#M`fD7#D/-&M$+55vkmLvuqrUvu"
-"]dkgL,qugL-w(hL.'2hL/-;hL03DhL19MhL3E`hL4KihL5QrhL6W%iL7^.iL8d7iL9j@iL:pIiL;vRiL^m1#veIEjL7WOjLE]XjLFcbjLGikjLHotjLJ%1kLl+:kLL1CkLM7LkLN=UkL"
-"OC_kLPIhkLQOqkLRU$lLTb6lLUh?lLVnHlLWtQlLX$[lLY*elLZ0nlL[6wlL]<*mLohjmLMRq&vM._'#u;/=#pG5s-Z+V*M'4N*M#r)*MRItW##-&X#-5T;-.5T;-/5T;-05T;-15T;-"
-"35T;-45T;-55T;-65T;-75T;-85T;-95T;-:5T;-2%kB-D5T;-E5T;-F5T;-G5T;-H5T;-cq.>-K5T;-L5T;-M5T;-N5T;-O5T;-P5T;-Q5T;-R5T;-T5T;-U5T;-V5T;-W5T;-X5T;-"
-"Y5T;-Z5T;-f:eM0[$a<#:3PuuL0xfL[qd##3V1vu%UXgL#muxuHO'#vc@<jL)`I$v::^kL,44%v`u7nL0NpnL=T#oL$)doLV5voL#;)pL$A2pLV%9)v<(o)vfn-qL.(8qL;.AqL44JqL"
-"5:SqL6@]qL8LoqLftl*v4[<rL9kFrLF3urL6:(sLE^_sL_dhsLGjqsLHp$tLIv-tLJ&7tLK,@tLL2ItLM8RtLN>[tLODetLTc<uL4jEuLZoNuLWuWuLX%buLY+kuLsmMxLtsVxL%HA#M"
-"(PJ#MxTS#M*go#M7mx#MBu+$M2Ac$MNHl$ME$`%MD(i%M^.r%M?:.&MHC55vIgCvu&nLvuarUvue#`vu9jtgL1w(hL.'2hL/-;hL<3DhL59MhL3E`hL4KihL5QrhL6W%iL7^.iLPd7iL"
-"=j@iL>pIiLGPFjL/WOjLE]XjLFcbjLGikjLHotjLJ%1kLh+:kLi1CkLM7LkLN=UkLOC_kLPIhkLQOqkLRU$lLTb6lLUh?lL%oHlLWtQlLX$[lLY*elLZ0nlL[6wlLBQq&v-._'#'mx=#"
-"pG5s-xn&P8Jx.DtqkScs#LlDt.)t[te)k-$Qs<%tkS,F%13k-$39k-$4<k-$5?k-$6Bk-$OtLk+<m,F%=p,F%>s,F%QVQu-x%9kLi1CkLM7LkLN=UkLOC_kLPIhkLQOqkLRU$lLTb6lL"
-"Uh?lLEoHlLWtQlLX$[lLY*elLZ0nlL[6wlL@Kq&vZ:E)#>6>)MU3L=#6kF6#T'c6#M$a<#[5T;-d5T;-f5T;-2XkV.lTS=#UXkV.PRL7#<N#<-TY`=-C6T;-m6T;-(7T;-)7T;-d3RA-"
-",7T;-N5S>-`@:@-ChG<-]Z`=-KI5s-./*k8Y2bj;%]=)#aUT:#XD4.#FYlS.@b;<#SYlS.TYV4#-Y`=-BN#<-?6T;-=s.>-*O#<-'7T;-DhG<-=7T;-MH@6/AerO#50ZtLJ&iU#d_pU#"
-",5T;--5T;-.5T;-/5T;-05T;-15T;-35T;-45T;-55T;-65T;-75T;-85T;-95T;->YlS.xw>V#2%kB-D5T;-E5T;-F5T;-G5T;-H5T;-g3S>-K5T;-L5T;-M5T;-N5T;-O5T;-P5T;-"
-"Q5T;-R5T;-T5T;-U5T;-V5T;-W5T;-X5T;-Y5T;-Z5T;-[5T;-daDE-<`Pd0[P(vuK+E%v3.vlLdgjmLfs&nLnMpnLP?1sLGQLsLmHmwL(Z]#M)af#M3Gl$M]q*'MMw3'MuB16voX&0%"
-"9pG-+@vNW#p,)P0+t*xu0$4xuZjHiLN%1kL@Hso.lB(#5*lVA5XPq]5YY6#6ZcQ>6[lmY6v&en9,+m%F0<sL^RLdl/O0qOf?ci20rO'#vAV0#v;ZsDu<u63#]<Kp8Oh@5^2d1R3#`m-$"
-"$cm-$`'S+`fH/F%-(n-$.+n-$/.n-$01n-$14n-$27n-$4=n-$8]sE@Z3A_/<n/F%Ed_w'U<b1Tu^n-$MdG_&Ftn-$Gwn-$H$o-$I'o-$J*o-$K-o-$L0o-$M3o-$N6o-$O9o-$THo-$"
-"UKo-$VNo-$WQo-$XTo-$YWo-$sMp-$tPp-$'%dE[w<Fk='mp-$67bw'AA.kb,&q-$M-X-HAgT9`CFJ_&]x,F.=Yq-$`+-F.iFe1T9TsL^.?#>>WVd1KR#l7IgG,F%-'k-$.*k-$;D[w'"
-"4T,F%13k-$39k-$4<k-$5?k-$6Bk-$OtLk+<m,F%=p,F%>s,F%.ts=Gx<>cMmIh9;Dmk-$Epk-$Fsk-$Gvk-$H#l-$oo>_/pr>_/L/l-$M2l-$N5l-$O8l-$P;l-$Q>l-$RAl-$TGl-$"
-"$;?_/VMl-$WPl-$XSl-$YVl-$ZYl-$[]l-$hoJwBo.KwBw_f1K@2^Y#BN]V$'`?8%Y=lr-$S58.^ZRS.Vp/K2)c`c2YMCa4Rc7>5xknY6d_F59fq'm9h-_M:ndVG<L12#?ZhiY?#s,v?"
-"$&H;@V2L,bx9P9#[vW9#:)m<-3N#<-4N#<-5N#<-6N#<-8N#<-96T;-9o,D-?6T;-/&kB-C6T;-^r.>-F6T;-G6T;-H6T;-I6T;-J6T;-K6T;-L6T;-M6T;-N6T;-O6T;-;KwA-YN#<-"
-"V6T;-W6T;-X6T;-Y6T;-[&kB-wN#<-t6T;-7PYO--cDE-'7T;-<Z`=-)7T;->Z`=-YNXR-,7T;-A85O-?O#<-afF?-=7T;-dfF?-A7T;-mfF?-UNE/1Mx=Y#H#@S#BMOI#2r:T.ET_R#"
-"0M#<--5T;-.5T;-;(m<-4M#<-15T;-35T;-45T;-55T;-65T;-Oq.>-<M#<-=M#<->M#<-.cEB-D5T;-E5T;-F5T;-G5T;-H5T;-g3S>-h3S>-L5T;-M5T;-N5T;-O5T;-P5T;-Q5T;-"
-"R5T;-T5T;-$eF?-V5T;-W5T;-X5T;-Y5T;-Z5T;-[5T;-HkN?3<3PuuXOc##>iLvu>Ktxu%A<jL%`I$vk:^kLUh?lLGEX8(A;tc<H%2#?V[iY?#s,v?$&H;@&8)s@01FmBkYw.C.+XMC"
-"7LtiC4I9/D5RTJD6[pfD8nPGE=E.&G>gaYH:b)vHD;g;ICj#5JEPuoJ_L;5KGcUPKHlqlKIu62LJ(RMLK1niLL:3/MMCNJMNLjfMOU/,NT-c`O<A*&PZKCAPWH_]PXQ$#QYZ?>Qm[DGW"
-"b`?AYxQX]Y%0mr[8r88].XPS]8qCjr.go#MGGl$MF*i%MU.r%M?:.&MYF@&M*8MQ&.<+cisP^1TeA,F%w-:oegG,F%-'k-$.*k-$;D[w'4T,F%13k-$39k-$4<k-$5?k-$6Bk-$OtLk+"
-"<m,F%=p,F%>s,F%.W8_8Dmk-$Epk-$Fsk-$Gvk-$H#l-$g&f--h)f--L/l-$M2l-$N5l-$O8l-$P;l-$Q>l-$RAl-$TGl-$$;?_/VMl-$WPl-$XSl-$YVl-$ZYl-$[]l-$*iA-d-nOP&"
-"aMTpp&T#oL)BUE),Z^<-s]Ks$RIxi'-U=/(NuU_$DlgX#9fG<-35T;-45T;-55T;-:YlS..-&X#<M#<-=M#<->M#<-NM#<-OM#<-L5T;-M5T;-N5T;-O5T;-P5T;-Q5T;-R5T;-)]vf:"
-"O2BdsJl08.d9Ii^,p*2_;Lnxc8#m,*b-m=P,b&a42^WG<YWx^f%Zgl/*s_w'?_n-$&jp-$'mp-$KjRk+C.3F%w^A;$;[jl&P-SS%(8-F%Dmk-$Epk-$Fsk-$Gvk-$H#l-$?<TS%Wb8e?"
-"Y2:D<N*xCaK[g$-<0cf(umcIqTBP%XU0F_&w3F_&NMu;-6B;=-'7T;-poJ1:Qv)KV7+rr$f,k-$7Ek-$9Kk-$c=8cV%mk-$Epk-$Fsk-$Gvk-$H#l-$cWMk+UJl-$VMl-$WPl-$XSl-$"
-"YVl-$ZYl-$9hsr$iT[Y#+a%ZL4a7R*x[m-$#`m-$$cm-$&im-$Q0<xtc'n-$6tF_&3R/F%4U/F%5X/F%6[/F%8b/F%9Ln-$Vw%pJV4;5KGcUPKHlqlKIu62LJ(RMLK1niLL:3/MMCNJM"
-"NLjfMOU/,NT-c`O4)*&PZKCAPWH_]PXQ$#QYZ?>Qs<=AYtEX]YD8P^$.go#M.,MQ&Ct(fqBmpdm8tvT0M2PuuVFluu5w7nLtZ[R('wZiBVIA2C:+ij;;5b<#0U*W-Q#ij;<8b<#vbWo8"
-"KLDMqcbU2)w?8T._HKU#(5T;-;5T;-PV`E/UHtxuB@<jL%HA#M<(i%Mvtf4vRmLvu-/FxuAZ0#vlJEjLLVOjLE]XjLFcbjLGikjLHotjL]<*mL]E_&v):%@#tjVW#/5T;-75T;-95T;-"
-"ncq@-VX`=-RfG<-)SZJ:VZ3v64-Z59bm3L#S/(PS;8t8S4L[=l/8l-$1(bw'<Vq-$L7h9D_soI_.ip%l^`A2_-`D_&Epk-$Fsk-$Gvk-$H#l-$:Xo92WTZ9MG'd9Mb^2&+=si]+?c*B,"
-"Oe7/1YAu`4V>:&5WGUA5XPq]5YY6#6ZcQ>6[lmY6a7Wv6<gDA+_GxoS52TpSnFd1TrUq-$R:e1T)j32_jmh%ujmh%ujmh%ujmh%uaW0pRLH%$v0c>lLVnHlLWtQlLX$[lLY*elLZ0nlL"
-"[6wlL:3_&vbgHiL)PvwL)PvwLOLs*MOLs*M1PvwL^oN4#jH(xLUf'HSA[]#MJ5QQ#UnXQ#F5T;-G5T;-w+ADWjPXR-M$>G-EIJF-EIJF-EIJF-EIJF-b0KF-MIJF-MIJF-S*C@/lx^#v"
-"DisjLSUKF-ZT*oU:+[Y#HD>;$3Ja5Ai>su,8c###/@g=YQ#/l#&hj1#8MYS..af=#:@Rm/K<bxu]M]9vk3rlLYt@:.cmD%t/u'#vK4'`N7@7Q/BV;onf'K1p]kQ>mBI,cre]fh$=?J9v"
-"Tig@MMr:T.d,(3vhiJWQkCHL-$8)QMbA09v&LlDNciTK-GH@2.u3UhL6ZZ##O<A>-N^we-Itr_/L@CkbN//#v610%Oi`+_NMv0<.r><%t.29@'k0ELuV4aD+9Cgi#&>jX:wXltPlcA+M"
-"Rul*vE`V:M;3$>>ULaw'61D[9>jY/veMo5#pIV0vS&.>ME(KGM8/8^NSlRQ-sFYTRSbm##9KcF[1+c&#=ZUAN$%g+M?UP9'gVfH%CcgHMLFPGM%>^;-=4PDNPOonR^Ah1TP/gLU_UjJR"
-"cpg_-TLW@'E(85#:qmw'7j$cVEOan%w+b0$nE<68^U2:2lO_tMGR-W-HQFI.BRlxuIVWvP3_oRn6xkxu_iE?P#TN.hgcKB'ojmxux2qaXW'hP'+2k:Zow+;)M(Xv@cY:W.5e+/(5QAq$"
-"*/cc3Vww%#G-4&#Nl:$#wJ6(#gcZ(#7wU*3j`-0#UJ;4#^Ws)#6j=6#P*O$M86U*#7b:5/7B[8#tv7nLWi3VRbxm##0`($#a.xfLU?5&#&B2&.(A=gLR]-lLai?lLa@E$#)=M,#(61pL"
-"'VM'#4[%-#]#S-#c3h'#Bx+)3lSF.#rWH(#uL<1#>qs1#.>+OM#+R+#$3A5#T=@#M#=3,#h4TC/M*78#++eQMWV?I#?7i$#ZSI@#d$eK#nG-(#1qvC#HsYN#LxJ*#`&a..3kQiLSwu&#"
-"B8E)#<RI'2]+^*#eC,+#jO>+#ko_xLgad6#GGCR#JXR@#[-=A#20UZ$(PtS/A/Sv-Zcqdm_fR]4L/qA50^<3t#xGS7tL'58$8IJ(Ci5L#NL;J:2ZG,*@L-1;434D<6C^`*)OFV?CS%8@"
-"8JwA,^b6L#%]TiB^Jor-itUKuHdfKuJjfKu]JgKu`MTKuxwC']Zfc._2ObKun(hKup.hKuq+UKu%34$#D/i?#FJFI#LI.%#P`[@#P]bI#Vh[%#W(4A#WitI#_*+&#^@XA#^u0J#s)U'#"
-"n?-C##]6K#9gZ(#/'3D#k_psLdCMPM5F?##%+Qv$VK3L#Vq@3kS[`QjW.RS%uu,F%f^$)*`L$T&@x8v-5`2g)?45W.ddRKu63)L5c(4>5Et/^5urwE7m@ku5f`er6(P9_8u'HS7o='58"
-"&7dv$UT`l8t?Y59BmY-?)']i9l?qM:JGrE@1Wt+;:&kG<XLKwB;>Q`<-<k#?=L')*WO6L#cP@S@6#;d*YU6L#hlw4A4gY,*^b6L#pFTiB/O)F.nSo+DMk1GD9>7a+f$7L#q$i(E:GR&,"
-"h*7L#t9I`E;PnA,j07L#(kE]F;PnA,m97L#)6>VH%A#_]4kx7IILvVIwf*eZ8-YoI3lU8Ja=H'S<E:PJ)Y6pJ6$6_Ac6w:Qpe;,WlY+F.7('DW9BPAYb$BX(S&Oo[w2M8]K(Uw9YJKl]"
-"?GA5^)>,F.^c,M^RnZ,aTh>>,g(:L#pRf:dC[%@02ai7eiM_Ve@.-F.6#JoeLZ>8f+_J_&?cBigj,;2hi[^'85wu9#]e:?#8c($#GrL?#;uU?#@%M$#A4r?#A+i?#LI.%#M_[@#I1r?#"
-"Vh[%#P'4A#C4@m/_*+&#U?XA#fPii1kNb&#]^0B#]OI@#KgsjL^ArB#.D3#.Y5TkL+(xC#8D3#.p(mlLdXkD#lF`t-#5)mLle'E#ED3#..Y`mLr3_E#N%,s/[xJ*#2/5##nG5s-e'ChL"
-"m;#gL)H5gLhP3e$(;f+MM_d##@;#s-w83jLV?a$#DMYS.VD-(#$;X3.j]>lLaC+)#cGY##[;#s-F[imLLXZ##f;#s-Jt7nLG:-##n;#s-MHxnLM_d##xMYS.9<M,#9g=(._<:pL(0t,#"
-"?G.%#@*]-#tr6qLXKs$#/<#s-v(IqLXKs$#1<#s-x4[qLXKs$#3<#s-s@nqLYQ&%#5<#s-tL*rLWEj$#8<#s-w_ErL[W&%#</'sLLY`/#$@0,.EGKsLrv70#eg=(.hX;uL1-u1#d#)t-"
-"4k+wLacE4#3;xu-OjUxLdsp5#-7>##bJR#M5t56#?m@u-i]n#Mn;Q6#A0`$#2=#s-q;k$MJF6##0cK%MH;88#Qm@u-8%q%MFS]8#twQx-UFV/8I->#%9L<5&AnWP&77RS%=esl&:e82'"
-"?tJM'C95/(9W'N(nuC_&la1,)=&?g)oSKe$#W*&+HfrD+w:D_&'pa]+DfR&,#AD_&72B>,WFUS.R?45&ujNM0Ai^21Ej.L,R2``3q1mD47YLe$DwG,kjgs?#YrA*#w0pE#tYu##L4dL0"
-"-][-#";
-
-//-----------------------------------------------------------------------------
-// [SECTION] Default font data (GroupType - Bank Gothic Pro Bold.otf)
-//-----------------------------------------------------------------------------
-// File: 'GroupType - Bank Gothic Pro Bold.otf' (36120 bytes)
-// Exported using binary_to_compressed_c.cpp
-// The purpose of encoding as base85 instead of "0x00,0x01,..." style is only save on _source code_ size.
-//-----------------------------------------------------------------------------
-static const char bank_gothic_pro_bold_otf_compressed_data_base85[36235 + 1] =
-"7])#######tN_o*'/###OZf+>(g1$#Q6>###diT9<Ag,Ddpv<(SPYi96TdL<WB0PI0d?S@P-=G2/ExF>[pjHJ48cu>;Js20tC#f=ZZ[kEid*##D.$##TuA0F&94`N(u&##Bl###h/DUC"
-"QwY9dOkLk+02q-$f'TqL+Gi8IJUE_&i0s-$T3n0FIa^w/#U&##N[*##q9T=BVgGJ:1u@Y-nJ0I$w:]=B1YSv*8K6_Af$i--w#FiF>TX%O7`###ds*##D7?>#0[Q_#Jnm6B=&$t'X#(v#"
-"M5DX(_HGusij_F%Z4.wu5hO2$9Ei9.(/5##uCbA#vR0Q^)8###UFl--^?%sZ<njk+(r9B#hLN`<.esJ1wUN`W<3]V$;51G`N'm0,],LF%(]T:#P^]=#ul8Z$a&p*%%4[0#=3l)#iO(F."
-"j*Cm92kmrLn5K`tq6#'vQPo7McYfb-CVHk=2[F3bXQd&#=jJgM^2(@-nVjfLmZGs-Pne/NaF6##TsB1NUL?##,6h1NVRH##@EV6NWXQ##Mib8NX_Z##`b-:N/RGgLM/(<N]w)$#_H2>N"
-"1_YgLJ#f2N`<a$#InnM(:]k#$1:<p%(4oJMv:JcMS@-###sECNTF6##1^A,NUL?##6^l-N2'IAOpXQ##P&J7Ne_Z##un6:N[qv##GG)>N^*E?#r8@BN^'3$#M3N+NcEa$#lTX0N)Hk$#"
-"0VJ[8DX=gG&>.FHMeZ<0m@UiF:X%F-f%?LF871@'hb%;1u1NX8'eZL2(A.@-^meF-0-4&H9CM*H,,lVCYUx8BeU+m9.WXnDjopbG[Z=lE.fsjM#2^gLNla^-2>r@0'fr]5vc:G7U'v3+"
-"(;1eG38vLF)-7L2(E4I->QoBAh&Sh,0]6fG=9OG-c7$lE^=N880oiiF;]wmLBlSE-%O;9CuicdG/iCrC><jfEo>pKF+(rE-&a'kEA%o'I9g0H-7PViFTqm$8T3L'>=O%F-FDSE-4#?lE"
-"S2&aFewTt1S6Xw087M*HBsP^%a;,FHr(622d8_DI@.vLF,v_aHBFwgFXfCP8XhdxFeBEYGIYo+DUw%;HlBel/Zl,20j'(m9Ls%aFpB7L#80(@'?Cw?0sC-AFWj.@'YYbYH-&K21/HnJ;"
-";X2X:[2g,3/pYc2L9*j1t'Bs7i-7L#IQdF@NMWq)sc8JC8C$^G%?g'&1G`f1rWu1B3`SGES'm`F8]WJD`_&mBVBi]GYc[>-T/j`FtPQ2C'*p92x'AVH2u@5BxGsXUpR^@TEfv]5Al`#C"
-"jij?BmGs.CQGkGN-%ZoLJxXrL(B]qLO_4rL3JhkLFQ6LM=*XB-(xRu-/B3RMiU#oL@)m.#IomL-.r.>-<edEMQ,TNM9gXRM79`P-kL-T-alLYSlA]qL4LG&#IGuG-*pWB-p2H-.#N*rL"
-"r92/#FSrt-:-W$8*ZncEXnQwKr5oKPp'r?9'==SIHuK`E020#HWc'vHIW)dEC7*FIYDFwgx(p+Dvfi>-jwPx%9Jg--^<A_/<h&/1ItvQW_qHe-#7;_8t4'aFR'&kk4dx^]sO9MB:%PDF"
-"i.,#HB-&?`U,j?B4F&;H#-QY5+v4L#KqLwBD+af1NCH]FPBI>HDUA5B`n-j1XC,aF4RHe-J2_=-eYN08<QF&#tUB#$&iB^#flRfLP:$##q++,M5:Mt-PAr*Mbqv##_BhhL7+>DNRY$3T"
-"g&B%#R_R%#Vke%#lpi[%+5TY,cL5;-gelr-k'MS.o?.5/sWel/wpEM0%3'/1)K^f1ck`L21&v(35>V`39V7A4=onx4v-k^o.5@)#G>N)#KJa)#OVs)#Sc/*#WoA*#[%T*#`1g*#d=#+#"
-"hI5+#lUG+#pbY+#tnl+#x$),#&1;,#*=M,#.I`,#2Ur,#6b.-#:n@-#>$S-#B0f-#F<x-#JH4.#NTF.#RaX.#Vmk.#Z#(/#_/:/#g/+R-IAu`3E?S5#IQo5#*%.8#u=R8#@a_7#=Z`=-"
-"Ad6#546u6#D,c6##rG3#>&Y6#J:v3#Bgh7#*DLV%a_qCaa@t:ZSJPlS`i`%X%pg1TdIIfU%Kn7[pj./:IxP%k__A`WFHGJ(k9#AX1UOucjRni''W3S[>n/2'4_PuYN&IoeM11P]eZ]rH"
-"=A$8Il'ASIj(f4fsOFlfs['MgHmToI$(_.hXXLl]^Qcc)Kf9ci)OvFiP+;8%tlc.UsSUlJx%n.L$23JLOeOfL+Sj+M/rf(N3.,DN7L(AO[h>]O=k_xOB<w:Qq+?c`aMXrQHas7Rk*WS%"
-"AMU(a2<Nl]qwm,3GR;;$0U6H2M0PY#CiAE#/$]H#r(eK#,Cno#S-gR-<Bx=-Nsk>-er?@-7@KB-54Lv-3)YuuXF3#.g+PwLhw9E#YW_pLwdhsLKffo#OwSR-96f=-YDOJM8UJfN>7Iuu"
-"pJA=#wq.luHx[due#^au#&+&#(Gc##+>'xL&uoc2a-)fT@nM.Kwg[IKx-a]bf@8U)N5l-$]+l%l8%t-$gDHrmFZK_&8_*WSPYD:#A*6;#8$-;#F>(7#P,c6#R7I8#*%.8#F?bcMdEY(N"
-"q()(&4.UB#);5##9-1,)jm[-MQ3D.3%p*`ss0;ILT5VeLM6j-$0YK]t@M%,V_onbM$TYY$rYU_$Jeg#(C>Hc(6$xCuu(IqLL'1'#4l:$#Z9F&#0dZ(#S%T*#u0;,#DN=.#h`-0#8.92#"
-"^E24#V>@#M]CS6crk#JhBVDonmY4##L;EA+0A[]4h4;A=LCmxF'Gs+M>*euPVfUiToKG]X129P]In*DabSr7e$:d+i<vTulT[FipmA8]t/rH8%GW:,)`=,v,18.&4h(d`<CMFGDi5hlJ"
-"AEjrQ%QES[TdGYc8p#;mh,&At>*G/(up&j0QH%m8vweY>L+h`E07CAOceADW9]GM^],muc(AifU?Uc^H+-&YBw?vsBtl>lE<Dnr1-d>-G$]eFHJ8k#H1,ZlE<3.RM0K.WCK)T,MdhWj0"
-":GViFP0+cH)HxUCDpN>HRMi9.-KFVCCq9jCT5=SM/RCnDRP`t-R5tSM.'MVCD+94MSR:nDApNSM/*7oD%@Me?cSFe?5vAe?7&Ke?8,Ke?7#Be?6#Be?7&Ke?92Te?8,Ke?;Ape?8G-=_"
-"LBr$'J4(%'QOU['V[C@'Ye:@'_q(%'f6V['lEV['oK;@'@3o6BtUZm14iN88fRfS8g[+p8heF59inbP9jw'm9k*C2:l3_M:m<$j:nE?/;oNZJ;pWvf;qa;,<rjVG<ssrc<t&8)=u/SD="
-"v8o`=wA4&>xJOA>#Tk]>$^0#?%gK>?&pgY?'#-v?i_]s7'+OGH;/;9.*G%'I@etmB-JraHtveUC_:x:.'wI:CO<(3CuAFVCNvaoMf36A8rK8s7$u3R/>9`9CrdM=Bo$G59olI59olI59"
-"tlI59koaM:Ij`M:Ij`M:Nj`M:TM4K;-p(*HM/GG-p4<M-ZYnA-q36D-kU'C-e.j'Pq8..OmjlkM/]HrBT#9]8iIOA>(ORA>(ORA>-ORA>$RjY?N.iY?B]-v?kcR59]H@M.mX7fGXjEZH"
-"[5KL29vVX8WFJtN%_uq%.,Sl#-xmo%?-,/(QDw%+A0w.:(LFV?XT9PJhgm7[OT5Yc3)Donm`O>#Z(^Y,w>GG2Ic#8Rsk:##L7?AFi$u4f/*f%kQL4Mpv%c>#(wulAVt*;m0#D)30]H;H"
-"OI'#Y5T9>lhjv(sRrb;-,ZP,2k$pS@uY-mJ54YDNhhscVTv_Vd3*JDjIYvrm,V_v#D0,N'_x8^+8Y3^4_,=j9%%J#>E;S/Cm/:pIH5hMT8.wc`U-mcrUuXv,.HKj0>S%E3WHMp7$r7^="
-"POM#G&p?mJAq-^OWJY5S6)X8[OhI,`&rK2gQr2smv]o]tFNUg(jb(<-?i*B4b/4N9.L=Z>H>JjB[R$EEuYHmJQ,,TR*<.ZYE%Z2^^#d>c(4Q/hD&C#l^w0jp4%[W$LHGN'c(9B+,0bm/"
-"<;;H2U6)97$fi&=F,s2BY@LdD.@rA,%=V=-va[A,$Tg*%H+;F`f4U&tJxIM1[q&X8;SKsJdvkes*2]x$9G2>1X8gj9nTV6_=JF;=lua-_E&B_t4/,CW41bDWwrpf,9)Q`I9ImS&+vH9I"
-"-,4/).r.-)Dp<481GZrs)H8i').A5u?C56/Xm1I,4OBC*%w&R,;D1`t2po]tYxZs$%-<J82#^nfJgk5-?k9o.'V;gtvQMC30JjSeF0-b,AV@c9YO:`t3fUQ&J5/Psd;>GsG%(Q&U<3-)"
-"b=o.M8=sl(S^MOBn2<]BU%<Ug.%'I_C+j,g]>NN90hW]37+od)D02B%5+7UMM3Y)3`4nd)[_9o72kr:$cX2F%YE3L,)T@<&=wx+<_F[S&J;A$5]e$TRL_4j,QBHV>Bw<j(p/+R-Dxq_%"
-"Gi(h)mPm';3khj,Da*HTMcLE&GT:^4Y-u&-F%=C30Yh^s*t3E&I$BN,+:Gx+@qb,)*c3*Jba+A%G@jiF`&;?s#-+C/rD[?%WK`ckI(ws$*Hu&in$xZTM:]m+:+c2ZXZoS&Pa3LhRc?<p"
-"KE8`tAE&a@hpo+-_MbTsC[+CW&E)(*C#%st2Y@`tD$<u5B7XE0OEwFsrort,sKf7-H^qq)aZ6aIS^m0%Q$R?URI[5SK_AQ+ZP90RS,I[FhQ9EsUA[K%^$>3?2JV>VM+,U+=W,><QO:`t"
-"Q4M3;2[1)=ie&$HQINU?+>S>L;xND%(DPwK_-+atd4fx$Pi5[K*?vMKpY(h,q$-4%k/xc$@E(%eW^'Gskp)Me3dlP'[GpUH`i;H,P2on.#lf9&,p0k)Fq*JIH(0k,EHksV5m+I%Ing,A"
-")`=#%GL><BNhufqSDEWs`n`fQrM=;IjSWnN6k=G46qr+RqJxuHgD<RN;QuR.,j(TJLDa2Bo&on,$U@/_jRL3-0#h@u#l6csLWI#u1B]S&MK$%b%ZQN'pjRXW>uZF&Ns[i/SUpI,bO;A&"
-"8d_kA_7]`&[o_$lYF86rKE8`t@>4Ts5X4+)D:qn.0t^/%Gn>Z$b&lC&91t89JkW,%77)mX.1kot6AUv^M/Br+/Si/E_vkY'I$@`$1qt1LR_s9%EW1eQ_t*wt<3nd)P;xfhCEUa,83CC*"
-"hs?%%R5?i$s#2^t/JK>&iC0T7/N>q,8KhC*W[g2%vDSc$YjrMiW>Ccs9SRN'(Y(R%Q#6i$gsDL%QEWkS4s[YV]#@uZf6f8gg=JRn4&.T%^jODsnN@DsqfhKAs-Tet(')hF.]>L+vcfM%"
-"9-;3d6(b0pv<IeiZC6bctW=4StaT;CE)]HWA6:vcD*qa,ZZW,;o;7(-,<(@eUN'Gs-`M@O[ZiI1n.WD%a$CUg39)S=%d7I,8d_kAY:ba&_1s<1@dpeUU)$1KKSd/f6ZQN%Il`=<uC[#i"
-"rwG'%;9ph$1Eg=<K=:`tr(?:9lJWF&Y1aCd/@jg71SE0%eE&3K7G?tCfb2@&/=6asg%&&$U]vw41go]tVfY]tOApasPPl^tuZ5=5h2]P@JEgu$@K9BFPdsFs-(Q$$v1sae&[?N%EHgh$"
-"-4.Ss,sPM5E#SHWtEGI,`4<a3E#UC,0O:;&U:Q1M$VWS&6]$LgpAV9`&8A:&`9+t$^I(Qds&2H,id6Y,90,Ys+)>N%b7.cjqP'`32@$$SHN-Gsi8x8W9WIp+cc-N'4/w9&u-h[O(#KEs"
-"fB9EsYL:RsaoJI&4-Y>cL2*c,?qDO,oiY&=&bjo,'j6F&Fpdr)v<eBSL*1N'sJpM%@6^h$%mFwLt0W*8@Wi,W5..C,='sFsK2[S&[1ZS&`_=wUuUi?Brkg%%vgWLTpH3LT1&k&%*i;Ws"
-"Gu;Ws_%^lsL]High<-Dsk>t'*g>tDsp'Ad`6d,c2G1XMp4AgVQtU,aS0<GaVHUrq3RSk?ILTsFs@3OU&R:XP&hQwG&8'+i%HRhs?sd`m,[KoA_<RK;71mXP'q@fx$,Y`[$Jpj>&@DDJ8"
-"ivbS&+?j#NJ&3H&41gn7>`hEj#/j<d'h?I24OBC*c.%D&Y-<%?wXL*-x':gqJ#uDsVEi'Wp&bP,D:.%=?\?Oi%J9^b2'>j2gGN6UZv]Zvc+i%CWwK'3KT86tHX&`I,7#f>IeZ9C&FbBQ/"
-"r&[S&Ks*Fs4O,ftBj[b2aT04/t1p]t`(3l$%V.N'*il'Woj'o.Pc*TR[)WL%[B&Ca<%8(WHiuBaMfEtt@:9asqvJI(B$VDsuAro$(vjlt)oNI%dw?@k(&;Q&^Q%Fs0q=qtXdKO/4Yh^s"
-"vBvhK?f=DsnD9Es)^hR@0Ue@%B.Y]tp6tDs:e$@%-@]hKq#8S.N&MC*d+3)u@P1?%.mge1dOde12ew@&.Bn@%iENB,@[b-Il/GR&pU'`$R/0Sfupl,;BmId`Ok_5QwP)S&_a24iRB&I_"
-"q92oXXD%8-OD<s)'6icthS*]+K?mn7WDen7+:7@&$QKI1/(qn.'TjDs`RSQ&o:XP&M,DC*A<@(u&OgMs$UhBs0#'FsgXKut8J;3T97YU&eD.H;Y1LF&H+[D,E/rn@?`)V5T:PDsIGuxt"
-"7^iN9NVN^ON()CaHSKF&>b&3*?>?u>VHUP'C8W?%:#OiWbKYQ&*pcJU(E(--@Jd&Jp:Gf%.GV4/R^XL'm?;o.Re5hqsxsI&heb]sK9<Ds`VP#uvA_.iJSXnI%TuB&ZUL?#LXDI1.r2Ws"
-"kNVP'c-JHsFTqHI=h=ZK7&<`tD4kD<nJR(-aA9csh2xDsZXrGs%5A[s?M%B0j#Ex+p,-10GZIqDJqt$4=1N9%Q/(k7>r.PuTP'V&ei=C3sUB^#D7q<1H+eh0I2@@+WSHR&jv)uHffQG,"
-">=clsd?9D4Ws[S&)E>Q&;?FbjANc1Xe>_Y&&M-oLWX`u$ceUe7pV.tH:G'K#Yr22i42j2gP'7^tJ0Y)M]0jGs'H5^tE>'2t#V7`s^XJC4(HOat'c-b$[%H?#N#)Zs4r.f1Pg7UDnX1J&"
-"#?x_Od;g-U6h*t$Wq;d%2DuDsfXE9%_$T5%^)]RsmskIs`L;_tY-]HspV-9I$Fg_*P^k^&T8vn%fwvn%).Tx$DI*N'+0%iLkj<2*c+/&$uA,MTvhi4#Zu'##wB6`aVXT:#>w)##N](JU"
-"qI;4#@'*##NJGiTm1m3#e=(##qso=YsUM4#o[(##sjSxX*`$s$6^&##5+SlJ-c;E,&.)##/gHo[40l6#6_)##Z6f:dDA[8#C33##iZ'SeH]<T#KH*##tG;igO.k9#NT3##-;kCjSIKU#"
-"Ug*##9oc=lYn,V#>v&##&=s1B55o-#B,'##,iNoRt[V4##%)##::m1KQ9w0#Xo'##MRc.U2)]-#gC(##>2VuPcD^2#IA'##q$0PS3/f-#8d&##KMLrZ)If5#8e)##F`3SR=lk.#Wl'##"
-"YXt7IeUs)#+;###Q*Dul?#.8#2WA>#lA-DEC+CJ#D50##J8l:Z,[+6#$()##C%Y+`8H:7#;q2##$E7VQP?aH$W(h>#n,l+DejLc@pa7##>IMmLD?bqaaAkY#xY_`3,?`iB`tF]XX8r7e"
-"3KVA+UY_]=W-SVHCWJSRg]`rdZT`%tc#K]k?9O;Hlf,,`U6tG2If'dDdQoVHFafSR9%7,`tepigQLOMp.i?W$c@5Z,NjS,;kleGM9o,ZPeA[Jq<tFN'3]AZ5ui9j^<i/jps9.9.EA4KC"
-"6hVvPWvJ?#'W_d2&XGT@=$Uvc@^X&k7:N9%LKjj9JDfjB+`XdM-J6K_.q*Ejjn]dV)T$9nrnuZ,&^$qI](30U:o=KquciB43<iQA@wB?c2@63gBf3b3LildiUIVq.BW)U@Od]<Q?,=wY"
-"`Z^EaRu.tmarf'+46Xq.jG0O99UxB=mZ4[GXgN$Px6T-Vg8D$c0rtTe^R4qn3oBX65Qqn&a,r?cru-=HHqPbW6>c't<FdU7TjmwcUM;(=Qx3:n=rV@G3Orkg7[e49c7:lBYWE(O[6B.`"
-"L5Oc*fH;]5G$Y(=m[_1C%xsOTq&hI`+(m(+/t6V@#k2`X),J%c'gB(t600;.,M;M:vQJcEuR3SSjNb1_X>U+jVBG;%^C+/2<Xt(=Na'>QV4v:[G6Jlgurwl'-TbiCv<H/)27%)O@BtY-"
-"1JdP9ecJ;@>2I>HnDKDOFHmiUZl'&Yo988]-^HJ`A+Y]cUNjofl(@Gj*LPYm>palpR=r(tJ_d>6RLh`X*gMGam*qrnK#=s@aAU>Q?uOAcfdGZ$VL>d33dX>ZYYVDkYK1<%fw<dEhdwJM"
-"74+WR(aiGaCRXZ$kbMjCb9i2LEK`/VjUQ#ZFL-ZdX$KB#1Skm'f['02DTu;RBFQvds7[,jRCnDtVSVT/`S4<@'Zt,N0Po-h,=>FuBCn@%h%O$t7$vftq`MXG/E(<-Ov*Fsi)ba$PQi`s"
-"p_qs)?/k]tZq4f$CP)CWitL4%LUp%5^7UfWW_%Hsb>G,Eq3Eg7bBd3%%'8l/+hXU%0fMI(HTrq->b7I,ZR(K#HH+Ds(fNu)M-BE^iR_`Q_NPBCnA6c+)flDsZdGoo:_c=f+Yji$Q/1c)"
-"b[g0H>c[6+T-X,YckC2XKM&IE-W7-u'FXOSmFlk/lc4#MuVkP'KJrFsaY4FDj'4Ls.wmB5a2KmtRQkQ%b[=rt)<lh$G_8N'lOOkS4E>[Di:9c$7(rI1JC&E32@Rgah9gL9[-blZmOGjg"
-"I=(Xu)q_b*h($S%c*CtmlT*xkip(S,,NQsd,Y)FVu:+Ue%K@I2ucj=&7BOxli+3BIHHcYsDB5esm+3/)u2ub@O;-O,rN(4+Z&qh7K/)M1504<4=tg-ILM<=,:ul-$exhYT'9kTsw&;$^"
-"?,nG2+mo]tGiELsQ)->QTAnvRbD7^$tWlv>wXL*-=?4f1x@u?&;i4?M^,aaMK4:XsfE]q)Q0c?Mbr9bag3)M1:cmDs%PT]s/>X*rbO'[Tl/'HstK1>t-bL=&MW^I(U3mYsm$rHim5:Es"
-"NDtug53nYM_hJKsXLk]svdU>tVp)+.&TJK,pUZ@=?D]RR<iAPs;NrCs%HUv#Px&F7qJwIsIfk5luS7M^o<sWs+PqR%K>jh'+Ue0^*'q05`v?'N+W(&rM77$73k[RR)/xZTIY4`s=Mxh;"
-"f-J+2=]NYb)Sh<b9+r$u0'WN'Hc2WsnLEko*DN9M)E0$-pRjBI.e]XshcQ10c'ik/Uh4Cleq:o.bUPR.WLik/g9R10`$s=4cIe--29vZ$V)3]+C5XwX)v=_t1c]5u1e]X#-#Z=>6C3'/"
-"2l(xH`Z/R<kLF0tcP1^tCG5MR)xeKs)0sq-DS`ZsaXJ;I&2gasxT6;[:<39[xC7pIsJ[crCOB^$WDC_&TTw(sgDAr-n(*dV9c=Ds-FKSMuBdwLUL27%mT-W$dWS;i<:^`tUAs634&.@'"
-"0J>']fdaX#W*ae1dDk-$/8otdZ;nk&UV@@+ubPFsO(mFs45sILH5vw4^a*ghCEUa,YK)b40Pa,)BYgk/rJUYVI=OrdEW>l&Z`pp.m1W/1[B/f10#k4%i#fc$NQ,d$h)nA#^eU_%7k_,)"
-"^hLQmOOd%u.K-5baO-0uZCYP'YIiB&)/P@FhM7<&AZgnn.YtEaa.:@4b^Ybs(6u>#JBMGs_59#$AhD_tI4+oLUEg?/aMU.1.)YOSua>8e0eb<%:B>i$.Q&IA:=:`tK8Iw@'V+p/MtSKH"
-":fo%PQQ>1PLqZ21Hvk,Hg#m_tPkLO`W<'Gs<rx5Y*s[1-ZDO>4kU3Ls76h>AN7t%p2>4poLwv[F9,Ks6wb-%==&^^bnsNL0)J$'PIQEtZl/^EsVxCR%4IR&M&`>tZfIfb)3eVO</&wct"
-"e#e;%^CBvtkXVO<qr?]-6MIk4.@-_sRtm92w(2Hs<Mn*djb4c)Dw)IDQbu^tiJU[-h[e'&3/]e,p.(V%7vlFpR]1=>X$#J(F1BPs'NrCswE2DsTV`p)Xm8d_2WWe<.d<g1gn402mHLro"
-"ng8p_:3PxM=6]5%)LT>=NU(6pG=vNskoZqL.t-RT*5F`s'i,w)7.>+D=LoF)?;A+D7lo*D=4JF)C_8N'#kBL9.c0LT^XMH,G8m<ModkQ^1,RN'&Dh[4'2<7u;_Kxn+B9EsKK5ZlcV6+)"
-"Tec%t7&nDsYF(2tFU7`s^]W$587hM,oAWRs.B`h`1A#Fs:4q^sXC_n[+@'o/.$nk&8pGUZgXwm/pV[nRx)#7ef`j>.=32r$'eb]Y(:X7/qu$_s+TRfL@wVm52Kh#ZZ+eb2QLT0I,*(BY"
-"/nRN,1UHkL9^%G&6,:fsUur%$Zp6;&<'2`ts1I0YJ2J_&40.mA&q/6I:-jERA]%%*8(h]t6hYFsIS,Z$@Hn(uGAZc$1_oN0nc1.(et$@#u).u,_=j-_ggoB&%<j+4lH)x)xuQ4A7vW]t"
-"E_Hk]Dpnk]sCM_&VeQ^t%5GPsA[GFsPRw@#QXdh0m%6rs=WSU-Zb@sfledXPoY2T%H`QDsH6/,iRmd=,bYl^?uWNA5)LZVbErvJfI[4o7B[EE,mDgmtl$gEqH?EDqu::Yl7W=Isj^R9$"
-"Sm5'*@)SDsJVa_*?x:`tNYhR@)/V_t/g_OJhY&vd4vCR@K5AWnJL_]thWg#sg-AE%@FJZso9c3f8Tj9[o>nW%B1:jKIQL0-B&(d`V#sc,Q2Hv>W.G)-K>/.(CK$VsBS&lJ.5>G>D08@%"
-"VDUMae[5,rqW*bS@`L`][=aFssfEE_e_G`t7gLOK@J([B@P$s$Q5@JQ=;c;Q>k[v5Fpj&%[UIA#D'4o/cw1^Obax'3K]8:-wjb4oP?A4&NRc%tWj(h)lGQb:<q1j,xs7ieuu?4]r1t3]"
-"*A@m/'GT'j>$4`t4I&V/Rq3E&HX1%*R4i;--aM[%-&x]XrHf+-tpR_OL?e[+wP9EsZ5pn.l;O@&Z`m(uxDfb2';n0@817`%$dc%tg>wD,[5GPs;N`GsSN+w#7?b$bR-XAukhELse%ZGA"
-"MG9Es4tsFs:S>Fsn^^B#b>b_3PXc%t>p[i)eV3Y,R/u3J`j0`3qDc_3C[5=5/8hJ%Q-w<4,oO#%`1Q,4PCE9%Qd%)l(cO#%Cf]9lO0-m9ATil^.>:NUHSKF&fRj*MkmQ?*PwtU637Ho."
-"F`wU6Y`om^IJ0._Nvm@+&)Ee-W'[9*:8Wp`n_,LIdu;=5Ccjn7f<-iL,cZqZo'nb`on9FD&tG`G;.;mL`.(xLW.aaM.#>[th21fspWQ_sg*:(EW@'utP76[bo45Ijr8/xt6%*qI6b(Ca"
-"M5jK,k-On3Ug=OSJL(At3SR>192ICWq_]XYsxS]t3Ip831iX#%;(rtl9.e6no?C?%GL%nLsK2m1,W'+2_#P?*:abJ,Y-+#$-:xw4A3K`VfG1Rs(J3LsFqR(t@nSf)lj*P,<%WD&_D-E&"
-"fva7%jUj.DB%bX%vLlDspLYqtp0t$497#x+#sE<&F<up)HSRKsi%B:@P0U]tZ:ip$)%hhLbVTvL_IWMMa3vB*erTkSu'vfhnuh6-&&JwBEA$r$uOMot+R8ls:NBN,-Xpq6Gl#nZutAEu"
-"OpT$l/?uw4qL-/Z?%WWs3E`eL9+tG2cY`Gs8aAXsv,jL%vkH?#Vj9j%0^vw4a6:+CYmU;tt`K19LU$0uaK]lsC#%c;i@5c_C*Tu$,MY$C;O,9MGDVt.>UI%u#o7dsixvO&D$+&ubulbs"
-";<rU6]LmW_x>NDsqaOIs)5A]$;B,N'8M]]%qBK_tDSaDsLm1o$rp`]t,aOit7M)d$*-IDsdmgut7@_r$jKHDscRnSs$'`g$jRoH,qqst5'1&9tOAAcaT=Z[FIueuHx;EDs1%pHq-c#Fs"
-";2I=5c=P^t(bi<%Tuf(X`b_3tF_lhsVOe`$RpX?-%tX?-FL<t%jIXat?GKTn.ovatp^oN0slelsQT7`sapg(*Y2(Rn8ONt$]GLRn%9$Nspw$Ss+Klf$`?wkt(.;`sAJih)kjG.6u0'Lp"
-"i+3BI)`bQ>IGG?#,dlV-/UGhO_PPcGRs,GsCrTBuk+R6gP4'WakGCPBMN5as>1dG,S,k>&Fl'K#xUO&t>n*%=A[f_WH`1e>O+)F&FRh2978Qq,cVoFsBlBNB)vg%O1n<B,)1(BU6)w?X"
-"LOqDs(HjOsj2V:6TC@9%CTO.1BpB&raUYxk1NlGIY2QI(2$CC*>O+(*37B(*BU$FsdoEmA,Mw#JPRuQ[YZ,`BkNS*%h9j.=9$[/CTRRJIH,ZAJ%JwIDW90%L<'fJG3g=lKDejvDGa$Lg"
-"4KASc(+4L%H,Cc98eBQJn*Z&T[KC0-ZXJ;d;-x4-D-::W>VN^Lh=Edt]PcHRi=iiLQ$PwKe:;7[N4chQe?lj,h$r3S;Kwvt(eS_E]^JRLFch5KxieI,jvhD3-WA3Kx0G@+bwXG&;pQO&"
-":aP.:T4?T&mSM5Nbcfvt5nAA&<3oI1V6Y=%)6nW$n^lhBAdSx$ZHuKGZPE?%[OcpVNZ;=IdA,DId'YG&R71FsNMdwF.6@Ds=c64]:IK_NCDX]t&b-o@vgZ`sAK<nKHtR(t'Mn20FkwB&"
-"wlge1+Gl-$NFk-aXf5<*W2>mSVDH2Yp25S%GhD7%aR$bcR'O)%662AA'/5NHBqlf+As-<A'(.+-A<+O4/3Y2T[c2jY=w1hlQnwjk9*VP'aMBMBtl79&VekC*higB>h2^VIAiwJ1rrTBu"
-"TYEaW2CaB&<ZXKl`cirR_k&=ULXDD%pKSC&9wb-I3$cb)cDc-MtZiX.*OrHiM(1FsQ>-BT%?%p+2hGDs[U/&bp<@JbE47(%OBd@A(v`0_HA5N'%QPrdcK$qr:%j#$AYQ^t*,nDscKrCs"
-"5+6as%OQd)]^F(3BFh]tgdW]t^52c)MM1G%WcZBd%S=#%/ajX$3'H_NBZHG&B:+9.DF`<-SvWL'omNps0seF2V8hbtqY4Is,^#]4[g&2u#qhg_-sulpNI.3MDG`u$#=P`0qwY]tS#lat"
-"Cg=[XRA;w$bn?_/p0%6%[YO]q6&)N'O9fQ,;XD_t*l<TsYFJe$^3`]tO-+atSpYZ$h9HDsc.[kt+kCg$UeGDsmvtIs)Jf]$CdKA#72.-`pZ+B&T)oDsK-0#$<a^-53XE-;^@IWU>.)7@"
-"XM`IYBX1Gav:?rac:Y97XJ`NYh&UL'S=a;?SY=)-o6$KCNBSf,fF5.%Ef)WCEbj@?ednn,suY)I%6#S,i'%Ct]JR[u7r6[BW8/[BNib<u7k1Lq3$Q%J5]/Gs,oo*BTn:`t#@69e;Yw)J"
-"[EM7@ALa7F0wxx>-c+f>QK5h1JRa2F@guL'a-8)a0*.@MuEv]UNUNwBCpNEsFZHXGOJaWsvPBUsZqGhggr+Fsx$QU7d8*7NKXB*%-Q[n$3S[GQlKf%%2#2d>;HEDsTn@pRIR+j,?g[b2"
-"7n-KYRCom+iAcF^xMlP'nY5lRI+hasm?1/)i@FIu&[J9&PA@T%.&qT#?6q^i6@RnnoeB>t83q&TlpcR+?H>]S)V)h,=Ra(3'a]ICQ7;Q,O%Sl>Hf:_t;tpagu$pFs=*d&XT=&GsHUQ7X"
-"mOPcjAQl1XF.IuSU1B<&w$7cs$,3/)>+NDuj;wD,/%xG,d9b5o,oSR7'E8=-V#j*i)_1[cCR:+i2HGWH'7vq-4$5R*1NmQWZ[#r6&T4B,JmqZ^lWViL;k1HM-jPAukB_c3oe1:4t70DP"
-"*Y)@&q]IO8QiBL9<ZSB,kcCmR%,4/)<rOw9ps'fspAbt(Bpdt(K9qt(,nVn[o0%hCf^1Bitr#Ysi?D6sQu110JD4L,lNH=nNI+I,gX-6i9^X#ULZ;)[>KD@+,(o@l)Phm80+`:4?SGs-"
-"R>,9@dt498/<$Ysv9SiL<9v]sT;3-)L:/kXDAQhTG7PJ,B;b>&:0D)Flk4)6P>2KEt._.796/t%@'/[s?].HBe-[6T46KRL8lL@&BC2[ckVN#.Ac8kLOY0F,4nwC,fY]8S>a7I,<K'I3"
-"0satPBD8I,gBCNBw4X8/u>t`b_lA/MAIx6MI%r@M`WbWs$8N/31a^>&-H9>&4?jh'a9^d485L2MVn=sLX$f*1bGe)<BQj4^QS/f)Jg:F;NGL%+2wHW$YqdrsX*(%+xT#.q&kg[s(eNf_"
-"N?'XmcB?$tw`UI9R;#89Z5d7gPbGIgu1rf2+=;iFa8/iXVo[=MC`seFZ8:Es)TEPsEYGFsZGb[l)gb]spZXTmB.c%t<ePo)pK2i05P%/30K-28E#SHWn3GI,.)Od3c;6a3=#,^tBhc[+"
-"+V1`t0v^O0Rf06%?OSm8P;11I<$?/rK8@@+5JoCsB'(Js,YD%$MGUL'/ao]t(C&Q/Q13ctjO)d+&U]OOU_%_s?SI`ti5+^XtSIl,@36$%u%IW%jN?F&iUc]t@+Zv6G];bt;=5`*3stKG"
-"?Psa%fwD,`CmAUs6eW.fa9r5-6kgVN0T%Tc7slP'Xrrn%8Bxn%bue_**VI'Ms2;'8*Bc<m<os-Cu?3j^]).2W_#DZscmdK%i:;@=wHZ[+VB#N%Jxrp=05.-%:J%*?9[(QAq-mSC6Ig8@"
-"O'=OHYs-stSs<A%qDA(Evc)]+1iU?%X%NgbDe^/%iREWa@$S2^/a8-]7pgXQr8*7NlUc<m`Wrn.9F@pRY?brMh[p^'wEN'Icl+K##iwKp2',9gl&D99Mt>H97w&HgxDN39+@r<uKE1br"
-"IY<7$aa?_s'<7iBF6#wAq><.LIIVaBOxcq?S^sL0_$#]$h$0vc$0O5-H,w;61A.%>7>a1%3xl>&lDqg(LXDI1x]d_*ZwDI1xc)@XZD.[s:kd'Tc@./MDodaI5`J+2Xw`e17c/BK>_?x4"
-"6J3:)<L>$%=mjX$>kb,)vY=5dPZVb;pQ*Kb0J>/)'55d[bnR.V`bm'dM;@@bTC@9%p=eKss?ww403JC_nFt/e&>8CE2>PeU`#8OgE?j@n>t7`tMMCr$Uxw%-jcX+bo;4Z,<oFDsYP+>k"
-"Jbob<TpC3MrGH3DIMAPgexWSbGYhV%'YQ5>Z.ditevXrfbX&dV&Kr0-P%vkGKT;`tMh6qhtnXJh8#gPsWv2qM=@52:>Q7pR3;i--;wh$Y[@8^s@hYAij.,:lG7HL04I:=ksCQVsK/,+)"
-"sX#:7qI4o7^Cm(%EBgctiChw,4fg]tw$l@+rVxFs&Len7YbPFsMJ,/*^WA1MX:hW.LkeLo#J<#.5`vCM9%IW%V:)u3LVrbt'Z*L%qb.h$Bx7Hs(FiW@qihJUE72j^_8Sd,/E?p@X:(*-"
-"ss(QAjQ@n,20]J_$7($Mfv&*#e6CPssOvCs9HWDs9%4:?w88I_CX$Fs(*i]tCwn`tHdGZ$c+Vfo3gqlod<(^sTupO/Sl[[s5lqut@trn%Fxe05:mIwR76g,jiMInn5JoCsRZ3csfDguH"
-"g2O3P1JMqmuma0_TKZQQb_DD%%MxH&RbPsH4Gs[sbvN$kF<^ptp=<UIbFP]tT<8IC%qXGVxU>I:-BsEDE1-K#PH+Ds)Mi-iOgYX5tuZO&e?agbd2F]c?:d07*tc=5'O0<?ScYtE&Ki]$"
-"+aV'sO2j1%Uaa10UAf`s?l>J&MH<10&01N'R7YRstOWrLe*H?I&6mNs@0/I_hW=rB9kOdtuGE-=t<Ha3m;pEs$Qo*DANtB&D?)KVHB#FsG?xn%A^*K#NZlt5ZeK>t;QpFsO]0j$$]?o%"
-"tbWet1gl8.fAmt5U3'9A(&eOAl]x*%c$,N'JxZ&I/SqHH)6+K#rnSkLR9M.3fGr-a(-bR%MY4d;>:gJLEEL0-6+7f1e?ae18<:jK)@eNXaY9,i@4p4Y+_YVVbfT7o[OWm8ntVjjovB6l"
-"a8vCsQ11v#PcR*r,c<I%Jw,HABKw%%W*)xAesRDsIxRDWMr3gt.t,?A[,bY?Pk.'Cra'2%6GA0ZbJ+U%UrL_t7%l9urbPDsSj.q)r;+4OdaluZ*x(MPI,*.1>Dx^JQ^si+x+q0Gjrdb2"
-"pWOWOI&ahBk#gD,HJgsLX(^fL>qKAT/f8J,=4MXGi1FJ,/(qn.g;h11*mU,%qu55E'3<PGXs[h+4oE9&jX-&kA?&H]XHK_^f*#`tsDlDsJi=V`=nPxH-/9frq'`H,3IX$.U'aq$8gBR,"
-"XdvHAoAWag50;_-X.)?:FY'K@$EQSAo]?4&&s=_t)J`e166nYP'k-9*Lb_]t.w+f$hjP^tQ6*-=_n5Q8TA+K#S(Q$$Z.'u,^?qw4BYi'bI/SHW-;hUHidmN%<vf&hEstL0ep+N9s5%(-"
-"?sX)<KHrFs`%O%u,rEbF4#w?X5eGd;;]]#*=KKb$2fS2BCI&N'^Yk$I;x2.(kwsLs_6Deh`Z%Fsb$sotWg9btIH9EsDZaDsw2kTsVk7Hs#TNO8<%l'a-rcq[wi;ohETo?9M.TG=#9C`t"
-"4v*]+:,s35wBmL0[)$C%LOG/jEiZs$bRMGg%'XTs=4r_t*[]ginRM3935:(*0c#?&&vti@N`a?5T%bUCD]nt5CQ9Es@*NR7$UmO]=</^t>`TI$`oeD&I2g@&GBOtl39'o/8@o@leE.1("
-"&Cq*i(JTq)_#=+i`L?[H1<0.1SOBPsxL5/)EwNL:HIo/1/N@u.;0_7@S^2H&.fMS,GM$>QPKQK%K<_[4UZW$ukqIds^MTasSiG?#n:*7%nvY31)gL,%ol,5E(3<PGWpRh+F$q:&e;jS["
-"xFs7XY?k'^fwx_tstmDsRG=I&`@9FDF%k$O8/Fer&sh;%>p@;Mwx61K,lO]uaXGh1TF,F`MOZO9sMV5*mhugLh5Lts<+Hi_9mIVM?qugLcc7?R4-j?&$iRSqC%QNs[HaBIua,Ns-`sKp"
-"9sbA&H<B1K=mW0p.G_A&:krFs3v2-)A$0-)tM$,tmYJl^hY5lR@HcYsN[FU%q7)B,X7WU?[`L%u?o5cs0[8uAXo04/q[UaqM>lYsT4JI(ePUI(A%moR%b*r.nNTet<WL&4+@e[+w':J%"
-"V/-i$KZbKh`cjvtupde$vPZI(KNi*MhUgH@JEgu$89OA%5.0eVR`[[si(OdM?j1*kK%$@&K5$C&U0i_tABqg(a?EI1dIHI1pnHe_1KWDsCXWDsx'n0u'=C=,PS.T%M''^F4W;now#OA&"
-"KfrFsI5Q&tLn*%=eP0^Fc^G0`Bct.utI53^nM+Fs;(%c;O18XG'J4CHYSoDsQ=dc-2,A(<:.Au,E8[B4EnEa$_RjOs8gP^tsCD%]sX'^swA6lLxV+dt4Ks*DnY<ZQAaSN'rRI['A-GLs"
-",Xb'ateO(tg?Y)ji%0_k_i%sZ^uK%uDO7<&n-fnn(2]T%71t'G)QWta]wVH,j+3-)#m&p7o_][sQE]q)n9n0@N?h)W*DWcs0b.u-^u]kLm-xD,BI9[k4.K$l8xR.LgAqreB,Qa4@KnQ."
-"5ClxsLFdw)wH@L,RMg@&*#p$F4wT<7bUNvliK@I2e:/L5Sax'<X=;pJB=TgLCnr&.1MtgLM0pr4E_DU)LKbq;`fgX#;4xofT+Hq;*cv*76w+O=b`3TM$U7L,3m4U;FR#+M?O;B,TE'3I"
-"_LGM,iOLt:xjr'EBX;B,.#;Mqo`_Ve`GSe-8D/9@ueJGNFD[csW[su.(qk[3-EIqM+Js(t*wmi2--1]3n3#g`MEL-I<DMR7Kih0,`tA[ba*3C,(c*CW?#cC,'`]RLh9Vasb<I?#fNh;&"
-"#cL@&F%]0pC4VC,R5TlL^kQ1M`M%I,alHnnN+FxskghutLY6N'm;+H1P[QwPbY2vm'nn?kKEn0ht80U[4-)<%X33_2,[jebVk&Gs`jD9bt]lP'3PJPs`KrCs'Zdt-%Kt?kN]rT#l`_Bi"
-"qCv7tx72`t@0Q^h?lK8/Z0(AY+6@tLNGCPsWU7`s/g]U^kb+(*VZQ^tSuDUHN.t20i&2h)H_S-WEYN6_dvNq$a-5nCC:A?KjG:Y6ZZ,lGY'pq-v;WRXJA[thx7g=&_&aKCBfJI&g*O`:"
-"2#QJ2.hP%%3tfh$=t<`:>Rur7E+6H5*J;?%Y+<Cd5cFl1au`=,`)$C%aeXtfXqiop/18F&@(nt>00e[jfIjdtag'Dl#t_KCLinq6Swm]t)_nJ:t2]2`5C?@+513L%EIkR>($rf/ci*Z>"
-";SF)-&k0W?xd*o,VBJjo,=$1ejOG`t%ka[>J_v$M?[o)t*c*@lFp%-W`hV5SNsiM>rs;jOh1:GaJN0.(bRFL%#Y5&TqaM%?rZ.F.lNY>cT-`g%$eE&%.`FJ<0^ddtIY8?%klFSMwgt]t"
-"9*iMm@Ngu+BI[<L)rMnWmHCo+#1kWaZ&30tkEwt)gN`]t;Vjdt?CC_$j?HDs#B0b$_XEI12h8kL)DHIsUpkh0>e@9]a7jV7_<SgVk:/(4&A9lLCZR&%ad6F&T^iI1mVgethp&1Be'OaZ"
-"(tK#Zd=#B%*[`=-oF5,%9:LZVon8N'?**DsEKkrHmubU$5>U6o?Wt3J(4f0Uw09:6S*$l$m*h&^)/EEKoZ2m,g,K2i>JX,)<KFXB@KPoA8lhSD^<8d>#2<,b^LZSD(vAK+x`;nVU4Nc>"
-"h6ctaYh5K1&@SaKag<H]+>O2-eOun>QvD[OCg:>;i1Pn:*[KMe:igieKRVb,]0GcaH)@,P]EDN?*2O.@,A8Hsl>J&$.maM,0(xfO2?D^sJ^j;6bc_4pb+:YXVh,25KNMH&1pPS,AB<?&"
-"s>8cse0VT.]US+sR&W%@0njoTTHU6Z=)db24HL-IRTn@Y*_RN,_^1:&QeZ)j3`Nj0cF<KCMpYG,soKaQ*4-Z$orU5/9l>MCu[VpL?X629(@)W%]D#W->Pw9)ZYKkLQU'Z5>AdL'1@Zeq"
-"2acD&JmOe:Y>%Iqf=f,ttNf'&ARZ<&GkqU6P`4[ti*I/tD@A['ErK;&U.JHsnOjb)'Yeb))CaB&?^COAID1`tFU=U%2qfS[$W'6Wie^CNJSd/fNk.CW%V9x=J,fF2)AaK%l&YKL,0ANI"
-"$%TP'YJVO&>V#ajXlT%ku,<UQ[&bL'?fYn]gEEkaH9I`b8F8TbZ6Y>cGBZb,Mt8(W&p)sdD0+5-%k_wOT.a#K'V3xFn9m(%UD='JI#`LKZXRMLM/fAGNRWrLHBC`Jx>8w>i'pFsL<3AG"
-"_H,FsEhK#ua#rFseZ750fW*H&5YQ^tY4GPsk3Sp[L;.wsf?cb)DY;(WIlDR@;4/+)fLgN%/$GS,s<X]s]dsFsD(Q$$KvCC*movct5mx'3]jTUshBK+AF,odWK5/mfAt^a,/T*Q8v#D'-"
-"aWIj90m,q,ht>/hS)(6-Q,+UD$G'%+T4RJckD0Us'DVI1%g>ntG7geta,get$UAv0pjGnt@vl#u>FX(kV/NDFe;3R90<f(WuVu$4H:G`saRJq$CZDC*uTPwH,`H8%KrqM,%_)N,`h2+4"
-"#gF_t,4?Vs=r4f$w)a]tRs#c$j-#(A#$SDsv(ad$mx4aspXD[Z<p0@M=ReFs:a#$$:^wKPaVg]tYeWltdQ1g$=u,eQo-Mn[d=Wdtud-KsKiQO]>TZ9MJ<=GsMGT#$7q5$Gh+=J,cJQN'"
-"UpcX4`pNhq%OOE&#[Hk]B:N9%Jlr=<KJ5lL/4-T0F?KD&GZ$5Ki@G^sr2kTs]dsFsOXD%$PL(>&,F=a3&`O#%Pq=DsDIf8q/6(G,Ea?r),2avo5(<kWxmjjL'ku.%%4LwBAsHF)+64k3"
-"1w1r?IokYP+-8ScZh#u#]L6Fck@7`%lAL5%^/jL9eZNwkcSrMST0J?#`#JHs.s(L)#0UP'rta-IIsCC*'<vNs#%d-hHh$FsV,.st<K%-udH=esYK@<Z(ZUC&,7TP'QCR(tQEwt)Sk_]t"
-"<M9ut=:io$V[GDsgmnh$89,N'`5S>-YTTD4mmXatZ4b-_$qEm/LYGHsXE2i0I3+oL.)`x0(=&Xs7gmk$`(&_4&v+N1@<)uL&kb+FSuX]t+=hC*]M2c)IUU]t@+]qH/M@.Li:BDs9s,10"
-"'wik/u4%N'#0*M,SjUG&1vP^tv*OI(sqi3(tiVP'rviq6<0xC,9dKN(PT-;&/dY.#p7BN2PR?Fs9Wm&0MIMX-W/<=&<3O7/YdXIs@$MS8hWsvmxaG:&<kjw=f%'jLCo*hs(cuCs%`_Bi"
-"xc'0*7ow*MRl`#U:]Mr@W<,-I]5<`t9(^t:@=Dcsa&<V[1=0I,r_#7X?Vie(G@mg(E5gh0>,Q=>;R2.hrdZiL>X,48]xl(d*82IL-XM658*1Ms_SiI15rlFsmfI-%MlDJ+ev^F,V#HaW"
-"c`l;-=?<Y$37F7F'u$Ts_Y650MdT3I(wQ=&Qe_>&;'Ap&+#Q<-xn7Y-Fcj$'tv(E&5x$UnN)/1(R:-B,/<j*Md*Ke$YE<>&r/Bf$UvX@&/0/mL/8al_jk5/)=x3/)CWbc.ZM^,if(inq"
-"'r1]+_73@=BR/(Wo.l.bTEuh$Id5N'w[Lumm2A[sBuMWsAEEiIC('fNv'k8&Ok&9I0I,;&g/:Us?jj%G(IxF/hBq>c<jejLCTq#E$)4/)+%/-)9ie'Wei8&G(`TwL]<kBMkpOWsihr1L"
-"4,1[FE1-K#ZAaY$U*t]rv]`S=2V*I%YWHh@sV/'h53M$.,_B/%GRh>]vw$g,kr>DsACEm)aH`]tWPIh$Vs4UZ*@:$%FFIeUwv0N'w&QI,D?t<Y[9FCNp$I4]t)oFsO)3^t^@'Us>4TQ]"
-"QADE&Q*qD3.D.F,2]rfsR=RN'^t>x4:e,;&9EA=%&@wC,O2a5IQos;&Q$F$0wGgwm+gwENI&B_2IM.m0?NjA,vQK8MK&,BIQ(YQs%4QY<da<kq1m/lL4E,R,UvcofQU'?-NBB@4U>pP'"
-"HF1gLJLA2)8C4/)o&lm<x$ZRsfZaU$&`0^ttX*V$2:W3N>^kh0EC2i0aFPS8ssf]s.Yne(o-SE&/r0CE#5#Q8;>S/h@_Btt9N'Us'KQD&Q@-APPE&ps6Sow=EV^@4+VUuRO*w$CGl8q%"
-"1YkDshwbb)$L'Es^jL3'mW9Es=i).L_&,%#$4>>#w]q%4mtar?dd=SIVet=Ya1^.hvt[M'`IYV-K6aP/.mlc2Ugni9)Utr?JcFGDrqPfhOTwi9+&gl]PET]bhjm(s<b8m&T[^MBZtM>G"
-"eiCDa'IDGi,Zj;-OsfG;+I=v>KfbGD<U:&OZfC2T=]#m]P-ODaCSVSn'>Jv5p@2a<70_8@g)qPJ?k$^O`1I/Ua>M;d;;`SnrV+#u9@<T%aL:W-_c:a<E/&NB;9]8RSmU;d)1-jgO@F2p"
-"&&P>ul$%9.ZQVp75$Us?NcFgCkao;HV`$NT1v&T[te5jgQ.8pnkaH,r+5Y>uM^CK(mqLW-8#Zg1U0ds6r.6H;/Cf#>?N?T@gHAZG;F(ENS&TsQo-^)WIO@g_f5Q#c'+?jgS4Apnl^6gq"
-")#,^tKKlj'jC^^+&bnp.Cow&4^a.68u1$-;/=S^=cRn*JNbdc<;MQ&JdNf@%Q=Y5W[WC)Wv>71-<*6D*IhS>cN&*c,gZG9&&i;E,3BUQ&Hr^b*D+7=-Ax@T%k&od)]`@@+Y__]thg<xY"
-">$`iiD#.^$TnKb=ZUc3%B*<ehl*cC3/86VslSB/%A8UV.(H9asbx]+g#D0GsJlnFs<tVQ&g^;.=j?'E%g/xc$QFbH71J_)<5vR(-XOAf$SS9^tl&7`$E@_]t`m>u87Y5Fs*=pFsv0])a"
-"NsX@=OnPGrP@hVQtO#aSPRJI(p:]x$Q/.JQNoc;QDFxi,g.'&%;#uDs'GUj?X3;`tFOba?S;D`t96bm`Lb&GsT(Uv`gdoS&#`5wtim9bX4R#'=xTU$%h('Y%@)Qkgm0e'd+G>/)=^cpa"
-"BbeFamHA<fUIW.1OuR6:6#PA%D+/@eu)5hq-EJL<rED?%Q$_Qh/7:$%oW=&i>w6vtQvq%*JR/jFN?\?0%U>:nXLH)^X$ZIl,)Tv]XpBf+-isAmtoMf>-dJf>-WMf>-Kr-W%:Nuq$g-J,`"
-"?gCTU;K8kYX,<r[W((.bND[[brASF>Tx$C%AOqaZ>bb^Igi/K+C$#(dWE'Gs9CLocrkG`t:>oq)&5,[KRV^'%R7>&T2J;mSX6lj,t,0mS+gC--co(6N`Z-pMCTS#M$D9vL]?1sL%N)[K"
-"N,?p2^]w-)VbWS&;a=J,1k,9&Hu)C&2b+C&L]2C&gnuJqpj=<0OeoQ&C8<:g_CgS&8`8gq175T%x1TP's@,FsN++iAI6n],Sme]tV+ua4w^Mp7_l,+).5@-%L@,,R;w,Y#Phcb<o(<um"
-"1>=Ds/L3Ls$DT,-T*<7%op_=LTH,nE4qdh+,L2^/bC.>iU.]ZU=:^*`Y'_TR+(.>LcGsMB&.`*-,t?t)Q^-pe__j:$w/P+%qodB7=m=A%T5mlq=9n%%#jMiPLa^bGcUsX>#Wc4&KRCRs"
-"tHUU6b-JHsY4CB%BX*7NTsA/G8^v_tcTDqM)r6Db5n*,R5TPbD0U3e)&NxU6s/`iimWGI1%e48nNJ47.r5Z>cRDM^,Mm1jKx1kbIEM4Fo7aof+`rZW$wqqL0#(uBAf[%K:g/[U$rsF+%"
-"SLI>i8QjI1v9WqMED<`tQo`q1S-UlOD<)YQF0x7W>s]kLo(.FsRR>hgOd:T%=xT^s=,pX#GAIs(?@*Ue_J@I2`]ZcthmO#b(1d2-nj(:ZYl%x$f?XXckB4Xca@fx$Q,$V?gt_q)NeInt"
-"AAT&t].UQ&2O'`3+`P?&qwce:9I+t$ClR(iJs<Ds+R,YsDkkb)RGZ.(OI0k.x63]D;SP95J0@5b+e^/%/ZaX$v&;mA:[CDsMT&-;NkZq4uJF5;jx='-DMgY$@Tq$Md(>RI)O68[Pp(EE"
-":NJ#uZpo#Gt/IPsuZUQ&[C]Q:BEZQ&W5sO%@<ph$P]F>%tgtw4v^Y@UA_J(XRo9ebqwD:Q_$_k;$Pg=%f)oc$G2c<KPf3tt-=tbH<C)M+TLh?%l77v`M&=DsEX5Tk(RB/%xO(Q&CY*T%"
-"^@0D,P+GvGQw#l,c4tL%K(5mAk>47.W[o[Uv>;S+/)NdAL';`tqN^YAcM#s@Gb`d$$?6iL.BMgt5PrxJQ3jM+2[2L%7e-+],aHs(1Sc<mVr^b*;uubsmEO48T,UbtE@fHskA,i9[djlt"
-"ZE6%FZs*=G7m64A6T3e)6op>&9(,SoQ*8QAp>tDs9mGeUGF1Tn8nj;U@vjw$XBCdHBP)WHOqgk,P1s?U6*oS&h<(;&)&XOS138OSR;o/3lXkS&_kj=,q)4cs3_.^t?JZ$uWK=esCVp&t"
-":]H`OTRF9%Qcv18P)w`tp-]Hsfd/QAX`I4J/QxP/Br'jt9Lq8eB'T,YRN]%%W[K(@J>;Q&U<%Fsah.dsq&v;%(ApI:vDN`sE:]Hs3^.=%t6QR.b<8*%P7P_E/)^X#>Y(_t#7Spt6NN[t"
-"x=$N0Pp3Y#-&oA#9fWX%ob;_tIhbb)5-#N'_C$#uq&Y,rS#q0KatQkt06cF%BUI`t&<rS&40WNtF'FXGQ:9sar9jf):mB4JBOTk;t50f13pQ>5K7)Q&c+OI(^w71'GnIdswcnT&BB%4A"
-"x;Jk4#r5*X:-`=IWDaH&;Fgn7v.PbsxHlEr3oiOsMNlI%-gdNsM:Vt,aX^5UruN>dGK@I2]/R#24Q5$*=D5@=-pRFMw+9m8suuJs/mV,M^o_pLg[.Fs/MuR&S=d-=LJ-at,)6S%JOcK,"
-"g+[q2q(>R&PffSchI4ReBj]x$eWW<9hXXBKulugLOgfmI5'Z2T@(es$e@0M%QcpKHdX[;HRd=,-:5erUwZe%c_[=wUAN6^tM2wCsZvkIs2f3HV<vIFI0V-eKpbX7*bImFgKpWkOAV7a3"
-"fvO?*JN).h:6GYsn4r7uYhsDs=h;=c929j9*L*%=Dm+`<,*Qjs*5W1'B5(+2kQd`s+(.`$Y-1@cu+6Vs7ecX5`6'1Ut#`OswoLl,:?Yn3w2jK,cf2sLVYTHs,u/qi]rdb2#Z=I$XY2UO"
-"G`-FOX($Fs8L]ptVbe?TS.PDs<BhjAB3Cg1n.WD%Qh6fYf))w$nOfkY^0q*WldU0-j.7*JYFdS&Z$Km/x5W]tQSdnt1j</%[e++)9NYW/8D1`t#M:RshE>T%wo`Zs&lhRsvmm@+WI+t$"
-"Q#oAJ<EO8R3D..-PeTa:QsEn<&h`B%g/9ntM7$)OrEQitA<(d,?+[bOIMaX,O;6asni$%+Xs%Eso&9csZ4xDs_mQPdxqG`tcR;O,FX?-D<x?ctYXJRSv?[h&=kpJ%l`R_$a+NL'+xi=,"
-"`6)-G477W?olnd)LmmYY#<B>lMAoq-gd7bi-NUN'JLkiFG@XE&2A7X+J<S08cWbS&$dkh0pOlk/JrAPs?6vv>he@Q,-.QO/dvXR,$t8@_hhrg(E^g^+6F#Q:b_6$gcF]HgD3hj%?qpii"
-"U#k2gM04?Ih-c]s$q=59RLDP,^EVRsjW*opmWQ.%DqoVH#/ajKW6AF2IaPx5b-]Hs6#ZURgDM7W`9oHsR=cjB/@/*<([_R%8LZ21`b&Z.OM5FsIPP8.uu9o.qNq/1`_F=fIowcVfH@p."
-"f;&V-Vf@st5Z$`&VdjP&EKHW&<=0+)-]OOg.F4HVHt%'.?EjjL1Df`tw*%2tCV7`s3:SgSUiAI&OH(w,ld=Q&,D)Q&Fd>ko#T'hL0FaR%XAdb):Y5i&l=db8+^1N'KQXP&ODdR&pWi*M"
-"7xdO,j0CI&:(=kq%9v*r]pa*E'gpwkY.VC<%+M;Iw:rl-[eAX(6el1%]f.x$1>uu#$(+*$vYe[#.3,b#Tl+Y#KW+:$38a`#a$N%$-6At#SK1v#used#;a(($N?k]#WO9#$&3)mLT%BH#"
-"UO*rLHVOjL`6wlL<3CE#-BFe#eK#lL$A2pLVQF&#1:3A=w=+87V/CG2aF5GDe^t(3<KY`3u:+87X7kr6.t[p&CJYV$)J$d3Ami2:U$gf(&i0^#^>;E/OL7)$[l](M3FfqL6X+rL]<*mL"
-"8e=rL4LoqL/.AqLw.moL(`%QMuZ6+#QcEB-CL<B/&wm(#P)D*M*kZ'vSSLpL;hG.#T:-5.%uQiLmY0(MkIBvL#Tsq-rD_w'S`df1Ue.F%b><R*dwr-$g)p-$/-j--h4K#$:wlcEuteF4"
-"QiEfqO5qoIis-s6$Qe(sr=F87FZGH*xqrP&6A@-dA8,_]gb+p8KHvU8oY+###K98%fuZ`3:/>G;.<EM9itbP9A^jD#ZZe[#VEs`#uMGF#N4#F#Ua+u#_r(G#M_(($JI+kLfJ:@-G^_@-"
-"YeRU._hmC#6F_1M?T]0#Bte%#XXq/#_GC_&ZAx-#]FuG-nl+G-7&Vp.ork.#'ScQs%TcQsh4K#$lsmQaVM3_SCu:Db002/$tDtP'/'x5'1S0fhV@L]l%.UwTu1HR*xBG.$Za^f19*',2"
-"WJ@PA3.8X@u'5;6X_XxXaXKS7n8H-dYQ'/17:R`<?OBD*c@UR0`oiLp#eG.qoGP]=KF?>#tsh;.Wm`QsK8JV6.Fv.:T:W`3'dYa4_9?JCC'j9;d5'F.1U/R<Dmk-$v8fo[=s%:rwO(]$"
-"#=.D$v(gE#q@uu#d7YY#M2)mL8'CE#w1)mLb^j2M48'/L?aZD*GuJ`NVcg9;m3N]F$mk-$_Z-Mp$8Kfh;b6kb+*PiT5bkV7EH:W7;7&)3Hm_A,@7_,<Kl3,M,uhP/hqw(3wR3looo.Dt"
-">5)d*KmQ.$oaGV?(]P8.VGP`<8,X`kkJm+ss=F]umIg>$)S%pARpxc3GbL50#r#Z$@x8v-lnP`kYXp&#;JU`<V>:&5h-_M:2NgJ)4aG,*o2Sh;CqN]=-]),2q46D<N7m-$'FF_&jO@F%"
-"3+5#57o_YG%:fY>0,nk40J2F%rIm-$uRm-$WPl-$qFm-$sLm-$7P5.-e90DaNVFYPHwO`Wa^p(Won%)X;F5F%;FDM9GPNV6n[2F%1X:R*@%3F%O+vXu+&6A=kkI_&I@3F%RBo-$wXm-$"
-"O-cw'/x7A=GXE_&BJAD*`12F%=J2A=$&-F%VOr-$qFl--ul1F%Ue3F%;l2F%%RY`3osWV$<5>G;iO_Y#e8hi'iIC>#8R0ipZ)su,MEV'RFlb%tm$F_JV=b.$b=tV.x[k&#=4-ciRc/gi"
-"gIF+rDUuG-3jVfPw#0j0kkd9MfiIwK`lKwK;BIAGuAQ5g*l3DW$Wk@H6c>>#-(35&d:_._GuI=BddUS%f.<X(G)P:vc>,F%J8YY#e+<X(Riqr$s<Lk+O)Uw0hB-3Bf&G/#q7'%H7(GnC"
-"ZIV-#[2+7DJmSfFi?f.#)1+cHg..*HfoWLD-d>-G#6x+HN&$;HE:]+H@F48Mf2eTM$E#W-R?3L#tNj-$*T_$'.0a9D,4$Z$1X;s%*=vV%$]'^#)4Z;%(+?v$4*J9&I2<A+pZEM0svK_5"
-"aiP`<1<ZlAQRdxFs7)4=W$>%NT.x4AqD6Jr(dnA#=Z#<-+ncd0(Dc>#pIlY#<#^gMD3pf1XjA,3VWaJ2]8YD4-;dV@WT7gUgBlY#]MGF#KpvC#QoJE#[rA*#VG8=#jSJ=#n`]=#rlo=#"
-"vx+>#0uL?#>(`?#B4r?#F@.@#JL@@#NXR@#Ree@#Vqw@#Z'4A#_3FA#c?XA#gKkA#kW'B#s&_B#&9$C#3v)D#L`&*#JQ)W#6;E)#5mBB#28ND#Pl8*#7sKB#$e9B#.E6C#4ddC#6^ZC#"
-"A2ED#G]/E#';2mLE0K-#>-5'^sQFjL_^XjL*3$-N.3CkLj>UkLj]HLMnc6lLoi?lLu+elLpl0E#'GuG-kIvXMQ5eY#N5>##j+3)#6<G##AF.%#h^''#H$)t-Jpf,N<`U[M?j@iLenl-M"
-"BbY-M3Xs$#`EX&#E'Su-3xTHMN+UKMjcM7#IU;daO_ZY#r9Lk+L-RL,Fd]q)YWf._,oQS%HaJp&rn2F%k8m=c-l[PBMKiB#uqC>#(1)##TQj-$9PNX(j1AX(,=5Y(6't4S:cw9)nh';)"
-"5.V`EU+voJ8=:^#XeBe6iHcf(#75R*mC5VZC6JYGV.+GMa<=5&CW.&Ge8hqoUXxLpYqX.q^3:fqbKqFrGP[fL.udY#,VC;$0o$s$41[S%2;6X1En8X1=LIP/C8`I(KsEhL'V$lL,Yfb-"
-"dI(RE*uAX(/jYKlo_OfL`/OJ-O[kR-kIm-.V.xfLH@6##%;#s-]FFgLJLH##);#s-pW6iLN_Z##P,KkL@+o(#^[Z.3j`-0#;^,3#CR?(#jQD4#*J(xL-7f(#6j=6#G<k$M,C=)#9b:5/"
-"+B[8#h-vlL@`YgLLF6##T(ofLswSfL4aZ##Z@=gLIF?##(;#s-aXbgLMXQ##n`ErL<?80#-;F&#x&/5#@[n#M,C=)#0+B;-Vu;M-PW*+.K^jjLO:-##dV3B-_V0K-,.m<-$Hg;-2Hg;-"
-"kK`.Mc$/>-8MM=-JE1x$Y0i3OCjr&#pcFuuEr+^#q&poosJT[03,[w'J-Z9M?Bb8.-Ur,#pA*^#pE^MCRRZ&vkJG&#]/@J(d1W/1mW[+Hc@WEEjjf.#r(1LM+3SB.7xL$#]WdA#FNe_#"
-"&>uu#pk<UI0;C>#SX[V$,h79&TYDw$nwk3+#E>O#%*fH#D'dN#Oo$S#>HmV#&%`Z#')Cf#BqYj#YHKq#@<bx#%Zk*$PWi0$'jiS$vtoA$d?#J$=%RO$(b*X$cge`$vK>f$e2oh$lmGn$"
-"*Uws$<7P#%Or))%cVX.%(TV4%01I8%Gwa9%xOS=%,W7H%ST5N%NlVW%3)$_%FdRd%YH,j%n6w4&*i4u%=Md$&P2=*&dml/&.H^6&'gg>&R1qF&r;TQ&_gEX&fq+^&TcBb&+uB/'0*Is&"
-"*KR%'nl[-']:f5'n>I@'&;FI'Z.]P'74AX'N>'^'QHcb'LxTf'0<#j'_)9q'4W*x'Cbf&(S76G(bC=2('Y`8(6>9>(5CQc(263P(rd$W(un`[(xxEa(:S7h(]5gm(pp?s(-Uox(,/b&)"
-"XRm(),*>F)RA,3)vGY##X</=#No#;#]b;<#jTS=#`kVW#I@Rm/PWt&##gv$v>)A>-;(A>-WLXV.@5Oxuj_98/<T'#vq/xfL)Js*Mw1N*MRrgX#Z6>)MM8X<#xvdiLrx:#vReZ(#Mgi&."
-"#&AnL2b-+#+I5+#ZPQ9/d*,##jDQ&M1=Gxu^cDE-QtY<-f2'C-;C=?/X;:3v:u[fL9Rp$.r$ffL3fm##bU^C-nG5s-@=;mL.L6'v64(@-4E]+/pAb@kk,IwB(HB_/5o?_/b]JwBg^o(<"
-"C3'K)0s^?TEn7X:gFC;-rO%XU?'&s-fp@8.Z)Uq2=Wk-$EE>G2rV@Jiw(#W%SZMk==Q)XLsxRG)P6(L5gWl34aK(44wfpI_GJ.W7jF;eH-4Me-P-'2q^6ccsf.<X(:%[c;.p<kO*3JqD"
-"vQUj;>RGgL?k'=#k%a<#O/&X#`S[bMH-fiLqMcxu+=8F-#Di=/&[u##p,4)8HSe]G+nW2(P%?p&k8ji_56.2_8_[JVMDg9;>14_J)hk>[V0YsLJT0K-Qw&$.F+V*M$WfBNrp)*MG2N*M"
-"ufB(MLH[V#[4u(.'eBYXIUY,Mn2kB-`3kB-K'kB-K'kB-@M#D/cCP##HWajLFq)*M)p)*M2hDxL?AC2#7jc>-%#$)dTA<$#iTS=#laf=#&2UXP?A.*0NZ9#voeZ(#B*#O-6'[6%acuW_"
-"DRQo[nF5gLt^e;#6h1*M0(h(Mj6OW#,R2W#lA%+MYOGh825sS&iRG,MrdbjLV_D/#(/`$#.G.%#SWT,.$xE$M<k,Q#*k3$M$5[3#+If>-xa^C-:teQ-5U^C-XV^C-d#.>%+at%c:1--M"
-"b[4?-RY4?-g&JjLek<^M1@1p7fgMcscXl%l:D+2_Df)T8[C_#v0HG'v9NP'vIs,Y+8>BP8ZHN9+)5_f:>2Q'Jx%R'JG3b+`'N'G`X6*w;qcCR]pF5gLtx3<#sNc)MlC8#M%Il$ML@m@N"
-"vgO483m<n40L?,MY>m6#LB58fmh7]-jfCjr%(=79,V%KsPRLE'ts]R8mP@E59f$[3h`dC#5bQv.F8vt7m0up'*7XR9+gK^-q(ld:8OVs)/DmJ:N4Bg6HGl*X)<x.XSbDA;;H73)Yj>79"
-"fK@l-[e<>-.gps$u9QuYX(i:m3*UG)N]]Y,^YaEl_>QQ#d;eS#H4J5#9qeU.=Bbxuw6)=-=2J3%%)]q)SOi;-/hr=--hr=-?)l?-A/l?-75l?-*Ws'%=p^V$X#-/(3Dl-$?DB%t+HZcs"
-"eRhlL:u[(#Jlls-h+niLa9xiLAD4jL?.gfLSV/+MjuxbMm(^fL5V/+M`ifbM52$-NG?6)MG?6)MSJ'=#-a%^.qfv$vrg^w%x4+gL[9^7N?^&W;'qfcN+>Ncs',n+sC+&RUS=L=#K6Xxu"
-"%^9#v7s1(vx3U+vU>dD-:)%:M2q)*Mc0hhTvOLp7Wn3^,U<q?BSCg-6.>rEIG]Nk4dDn+MMU448tM;s%K.7>d_M8p/#Cjv%IwjO#5JTp7Y]MW%Ws,/(nSEU-Q>:@-'f:@-X@:@-OmbZ-"
-"%XZL,;(<r;;naq;wNkl&2Ou3`>Y_A&`Yt[t*_6kraaxFO@u,wL_'2hL$m2?#g]Gs-Zr[fL7x2?#0TS=#K)hW7nKLp^C2-t$ZiY68YnI,t9KA78pBJv$Z^tg$ZUT9n1_Nk)&oH68tEX*&"
-":>'58(mF+/$Q59.G3Oxu:WHU%%0vb<'/###&Mfr6ae4)*mC8AX)E4Z#C?wfhm(ls-`j46SQltgC4PWNKGb0*WK1i6/Lr<*W#roNK@&TS.^(;ulUUm-$x[m-$#`m-$$cm-$;jqRntRN1p"
-"c'n-$:B_w'3R/F%4U/F%5X/F%6[/F%8b/F%9Ln-$MdG_&Ftn-$Gwn-$H$o-$I'o-$J*o-$K-o-$L0o-$M3o-$N6o-$O9o-$+,r92Yp0F%VNo-$WQo-$XTo-$YWo-$sMp-$tPp-$6IAul"
-"c;,F%f@78%c,Q]4)h3D<BsaYHC&'vH&928]'BMS]3Y>GaOK0;eIQ5se;[WP&C=5s.DFP8/EOlS/FX1p/GbL50HkhP0r4v`478Xp/@80VQ5,Fp/x)0F%?_n-$&jp-$'mp-$/$kl/#.3F%"
-"XS5VQp4Xo7.:g=Ybvj-$,$k-$-'k-$.*k-$/-k-$00k-$13k-$39k-$4<k-$5?k-$6Bk-$7Ek-$8Hk-$9Kk-$:Nk-$*dOw9YG_1TmIh9;Dmk-$Epk-$Fsk-$Gvk-$H#l-$kJ'F.K,l-$"
-"L/l-$M2l-$N5l-$O8l-$P;l-$Q>l-$RAl-$TGl-$UJl-$VMl-$WPl-$XSl-$YVl-$ZYl-$[]l-$hoJwBo.KwB=Bi=YV<88%h'<D<5fPGa]?O3b'=O3b#1O3bI(]M'$4xi'.*O2(/3kM("
-"0<0j(1EK/)3W,g)4aG,*5jcG*6s(d*7&D)+8/`D+98%a+:A@&,C=5s.3jR8/EOlS/FX1p/GbL50HkhP0J'I21d#fM1L9*j1MBE/2NKaJ2OT&g2P^A,3Qg]G3Rpxc3T,YD4U5u`4V>:&5"
-"WGUA5XPq]5YY6#6ZcQ>6[lmY6pW-n9)fp(E+e?o[_>c'&ct+/(JX=rdgcC_&w44PA4D_1T&5-F%08qI_/8l-$L`MoI`YNk+<.@_/se.F%T,Ik4x[m-$#`m-$$cm-$ZOvL^fH/F%-(n-$"
-".+n-$/.n-$01n-$14n-$27n-$4=n-$<+5_A8In-$A?G_&5a,R<?_n-$MdG_&Ftn-$Gwn-$H$o-$I'o-$J*o-$K-o-$L0o-$M3o-$N6o-$O9o-$THo-$UKo-$VNo-$WQo-$XTo-$YWo-$"
-"sMp-$tPp-$'%dE[w<Fk='mp-$67bw'AA.kb,&q-$M-X-H=B=w^CFJ_&]x,F.=Yq-$`+-F.:%SoI4'@o[V])N0?$`vu(*ivuop'hL.'2hL/-;hL<3DhL59MhL3E`hL4KihL5QrhL6W%iL"
-"7^.iLPd7iL=j@iL>pIiL>xR0+jNOJ1i8+j1MBE/2NKaJ2OT&g2P^A,3Qg]G3Rpxc3T,YD4U5u`4Eb<&5WGUA5XPq]5YY6#6ZcQ>6[lmY6h':m9$n.?@$2N*MqKs*Mm3N*MJnBX#)EJX#"
-".^oX#4M#<-15T;-35T;-45T;-55T;-65T;-Oq.>-<M#<-=M#<-a+l58[INcsoRNJrMP'F.M2l-$N5l-$O8l-$P;l-$Q>l-$RAl-$TGl-$D]Pw9VMl-$WPl-$XSl-$YVl-$ZYl-$[]l-$"
-"8G'crbQWV$j+ZS%Q078.nB+B5Q#RV6d_F59fq'm9h-_M:M^mcER)W)FRSK]FD/B;ISo>8Jm[DGW(Kio])T.5^+gel^ab,2_2P#,aWKoxcL#%2hYP@MhL5nih[`X^?/NVp9>9PP&t;sr-"
-"k+PS.Rd/K2AUac2YMCa4j2T`<RMbYHC&'vH%0mr[>,38]+NMS]<U3>dEwNYd?q/;eOjGse%t]P&Qf<'f<D@2'eC[M'jXwi'.*O2(/3kM(<a0j(5QK/)3W,g)4aG,*5jcG*6s(d*7&D)+"
-"Px`D+=D%a+>M@&,?V[A,C=5s.3jR8/EOlS/FX1p/GbL50HkhP0J'I21l;fM1i8+j1MBE/2NKaJ2OT&g2P^A,3Qg]G3Rpxc3T,YD4U5u`4%V;&5WGUA5XPq]5YY6#6ZcQ>6[lmY6]u2v6"
-"6W.n9)poo.eIrUmM=m-$?wxUmdJp;-<R)f'sMol8$lNVnKS4o$R9.#,A:7/1QPol8o?XVn`bVw0WPl-$XSl-$YVl-$ZYl-$[]l-$6#fIq=)^Y#?Q=8%KwRS%MVo,bv5]0#O_.W-T;h,b"
-"<u63#]<Kp8slPGa2d1R3#`m-$$cm-$P*b5/=.x)vlt6qL;.AqL44JqL5:SqL6@]qL8LoqLj*m*v`et*v%[<rL=kFrLwTi+v`/'sLE^_sLcdhsLGjqsLHp$tLIv-tLJ&7tLK,@tLL2ItL"
-"M8RtLN>[tLODetLTc<uL4jEuLZoNuLWuWuLX%buLY+kuLsmMxLtsVxLQj52v.DI#MxTS#M*go#MA$M.&)RxCahqn,bv8]0#bfF?-p3+K25rYN#CZhR#2BiG#6U4Q#7(m<-0M#<--5T;-"
-".5T;-;(m<-4M#<-15T;-35T;-45T;-55T;-65T;-Oq.>-<M#<-=M#<-F@Rm/](CJ#>JMO#6=9C-D5T;-E5T;-F5T;-G5T;-H5T;-odF?-pdF?-L5T;-M5T;-N5T;-O5T;-P5T;-Q5T;-"
-"R5T;-T5T;-$eF?-V5T;-W5T;-X5T;-Y5T;-Z5T;-[5T;-h#jE-3e,e5qLo5#@3Puu8Fluu#Pc##UHtxu,P'#v5A<jL)`I$vR:^kL,44%v*kPlLx6wlLdgjmLfs&nLh)9nLnMpnLL)doL"
-"Z5voL#;)pL$A2pLV%9)v-(o)vun-qL.(8qL;.AqL44JqL5:SqL6@]qL8LoqL=kFrLWBbG%/tRw9Ckn-$^IPk+Ftn-$Gwn-$H$o-$I'o-$J*o-$K-o-$L0o-$M3o-$N6o-$O9o-$;h$F7"
-"Yp0F%VNo-$WQo-$XTo-$YWo-$[MTw9wr1F%tPp-$7alQax/'<-<Z`=-)7T;->Z`=-YNXR-R9_M9=ulca@FD_/=Yq-$>,1W-LkD_/I(r-$'rC%t>,P+`J<s=GFiH%b?#pI_gG,F%-'k-$"
-".*k-$;D[w'4T,F%13k-$39k-$4<k-$5?k-$6Bk-$OtLk+<m,F%=p,F%>s,F%.W8_8Dmk-$Epk-$Fsk-$Gvk-$H#l-$g&f--h)f--L/l-$M2l-$N5l-$O8l-$P;l-$Q>l-$RAl-$TGl-$"
-"$;?_/VMl-$WPl-$XSl-$YVl-$ZYl-$[]l-$.7YEeg&^Y#N)>8%>bNP&LH?v-P_pV.Rd/K2=Iac2U5u`4dx$B5[ARV6d_F59fq'm9.^._6CcK=#Tp-A-x5T;-#6T;-,).m/J9R8#`>0:#"
-"-6T;-:)m<-3N#<-4N#<-5N#<-6N#<-8N#<-96T;-9o,D-?6T;-3>9C-C6T;-^r.>-F6T;-G6T;-H6T;-I6T;-J6T;-K6T;-L6T;-M6T;-N6T;-O6T;-;KwA-YN#<-V6T;-W6T;-X6T;-"
-"Y6T;-[&kB-wN#<-t6T;-(JvD-&7T;-'7T;-<Z`=-)7T;->Z`=-j)LS-LB;=-=7T;-?7T;-A7T;-as.>-^Au`3Kl+Y#R`ET#soYN#_FKU#O;eS#0M#<--5T;-.5T;-;(m<-4M#<-15T;-"
-"35T;-45T;-55T;-65T;-Oq.>-<M#<-=M#<->M#<-.cEB-D5T;-E5T;-F5T;-G5T;-H5T;-g3S>-h3S>-L5T;-M5T;-N5T;-O5T;-P5T;-Q5T;-R5T;-T5T;-$eF?-V5T;-W5T;-X5T;-"
-"Y5T;-Z5T;-[5T;-m+[i0_f1$#e(E%v-.vlLdgjmLfs&nLoS#oLP?1sLGQLsLmHmwL(Z]#M)af#MHq*'MIw3'MuB16v?CFR-;CFR-CTSg'UbDWo.<rI9l8l%l%0t;-[-6N/dt'#5>*C>5"
-"XPq]5YY6#6ZcQ>6[lmY6pW-n9ml'v#8goI_M=m-$3;q-$ql08.d9Ii^,p*2_;Lnxc+@$C#VYgl/ILZY#mgku>xigY?#s,v?$&H;@&8)s@01FmB.Px.C.+XMC7LtiC4I9/D5RTJD6[pfD"
-"8nPGE=E.&GEPuoJNr:5KGcUPKHlqlKIu62LJ(RMLK1niLL:3/MMCNJMNLjfMOU/,NT-c`O,g)&PZKCAPWH_]PXQ$#QYZ?>Qs<=AYtEX]Y.vnP^v_D5&mp5eQ064eQ&+KV?V6gr?$&H;@"
-"*PMs@Z#[iBGq=2C.+XMC;XtiC4I9/D5RTJD6[pfD8nPGE=E.&GEPuoJNr:5KGcUPKHlqlKIu62LJ(RMLK1niLL:3/MMCNJMNLjfMOU/,NT-c`O,g)&PZKCAPWH_]PXQ$#QYZ?>Qs<=AY"
-"tEX]Y,j[P^f84eQ4A3/(#[U%Oxfk-$%gp-$<Vq-$PT[%O%D7cV:A=%t=2&cr,]D_&Dmk-$Epk-$Fsk-$Gvk-$H#l-$#^f--2A'crA$92't-XJ(7&D)+98%a+;J[A,B4pV._dI21YAu`4"
-"P?<9^q<*mL&hjmLw=7I-Yr/C/^IH$vc:^kLQj52v#ug%MhIf4v[l*J-[S[I-45TC/XfB#v1VWjLFcbjLGikjLHotjLdgjmLXqugLDW/+Mt/$Y#8j+Y#=YlS.>v=Y#NM#<-U5T;-V5T;-"
-"W5T;-X5T;-Y5T;-Z5T;-`YlS._mx=#5&KV-3/[a.nS42v+Th`.0:e4v)6PG-^e'S-/5T;-75T;-=scT%3UM21oBow%R3_&vbgHiL5C8#M5C8#MOLs*MOLs*M=C8#M=C8#M=C8#MA[]#M"
-"-Ls*M-Ls*M-Ls*MWqUE%qQ)qrqQ)qr'_sl/Wj820HkhP0iXGOGt*kof^?gofU'gofU'gofU'gofM47>db47>dM47>dM47>dM47>dRRe>dma#VdQUKF-ZT*oU:+[Y#F>>;$18*T@g8su,"
-"8c###5x7cVQ#/l#xB31#'@H*NTwm##w_#7v;'7RRt)&cr8:(#v@%t$O&41@OIWKO0FKm;#fdV8vomk<O?l<SS@)&creas%cP=2_A2@wI_+eS_&WD-L,#SS1p8@(#v9/.'N;r&gLEr@QM"
-")a/%#tZD'O8u]+M.[>pNS3$##jnpxu^j<nLCc@jNp=L[O[Js*M1.b^-Ic5(/:9@k=Ho&l4rCW-Q-65c`R`'##fHxIUD<,8f_^mxuP3^V-GZ<wT+'K.v+Xx;M6DT;-OBhPN?7$##lc/r-"
-"Ai+l+=I)W%t1TV-Sm++%,Pkxu&nlHMT]lT'cD/h$Eo#IMoe6A/3S###Z:+GML,NR'HhpI$RLS.-R-`Js&Tts7OEPr)35''-NN)VZ^nqJW]RZM&oD/`&W`rI-1x9#v>u?4vIB;X-keMF%"
-"$Skxu4</dVuS1M'60YxBNqlxu#R#-MXDtL^BqY/$VQMNRU'WX-2/&s)gO;/Q59a68ngBL5mYE5v_2VuPifPxPHtL=PpC6##'o/oM7?OC,5gsx+GDSY,NBkl&wDYc2g,q%4ZW^w'F3:PJ"
-"U6^(W^[go76Mg1^#=wF`fw9m9g(:L#`)e7eFGBJ:8O^-6J4mW%0135&3rUV$/9H^,Mu08.&=2W%wV4L#00Q]454M9&(LFV?Mr%8@RQ[q/49$5AZtTiBa4di0f$7L#8'/DEJ^V3OAAf(N"
-",m;&PJGFqDKWe,<x#;YYgbk8].56A=A7#RNg8MucxuG;@dV%6/6mC?#K]bI#NU@%#]rw@#vIqJ#9gZ(#@'3D#N-92#>ke%#6qZiLX8x(#u+vlLjJL*#a7p*#hI5+#_iWV2=,85#GGCR#"
-"JXR@#[-=A#mB1k$H/5##<IwN)(s@v-A/b;%Q+%a4J)qA5.K[Qs#xGS7tL'58$8IJ(Ci5L#GEG3bQr&)*Gu5L#V34D<P$Td*)OFV?^(M;@6DwA,^b6L#%]TiB^Jor-gbujtJLg+MpO%(#"
-"Z.As7nf&V-b&^7.J=@#MdD#OMjc5oL_IJ8#nj&V-V5Do%.5PfCB0pi'KnOG)Mth(EQ2.)*SN-&+T?I`E[oa]+Y#E>,Z^*AFdI#v,b`=8.kDbxF-dGG2(w'&4,.o1KMHIM9hfM?pdT_?p"
-"vxe+MLXZ###;#s-`:4gLPq)$#&;#s-xLOgL2KihL`aYgL@>+jL5G`hLhfl&#4>,8.5iPlLH@6##X;#s-9uclLLRH###82mLxnk)#mYu##cMYS.mb/*#sF`t-0]imL77U*#jSGs-8u7nL"
-"AO$+#6_Xv-DConLLnQ+#&B=?/)=M,#m51pL]dA%#%<#s-qACpL`v]%#'<#s-sYhpLc,g%#p#@qL)Y#.#LYI%#1<#s-*5[qL]dA%#3<#s--AnqL^jJ%#5<#s-0M*rLe>5&#8<#s-3`ErL"
-"`pJ%#</'sLUZ`/#;-PO/jMh/##@BsLKRQ##C<#s-(LTsLQqv##S:dtL1-u1#^TGs-@9cwLbbE4#uox/.OjUxL^ap5#vw]7.bJR#MAt56#>m@u-gVe#Mu)H6#J`98/KJ:7#-<k$MRw)$#"
-"8%q%M:S]8#h.:w-?76&M6`o8#K$)t-DIQ&M'.59#QCP##Qt;'MwWp0i[Yuo%9L<5&F'XP&;[jl&A'TM'@-pi'A$KM'MpLG)L&.)*IBgi'WV*&+OMa]+r]Ke$12B>,Tuxu,8B.L,C%;8."
-"[RUS.]DDG)ujNM04;Bm0cv_-6NdGG2W5P)4m>`-6eC9;6:e+Z6J0>X(nkpr6B3c;7$g`-6#[il8HjZ59'p`-6.wIM92]YY#K7m-$Ywbf(mN)Z$)<a;%nE?^#YT3L#ZONP&$+Qv$tM4L#"
-"li08.-'Fm'vS4L#%4=G2WNiWh_fR]48R8B5niHJ(9J5L#Fr#29Nl_s-Ut7nLG:-##n;#s-MHxnLLXZ##xMYS.9<M,#=5U@/1Oi,#eACpLaj/%#@*]-#tr6qLXKs$#/<#s-v(IqLXKs$#"
-"1<#s-x4[qLXKs$#3<#s-r@nqLYQ&%#5<#s-sL*rLV?a$#8<#s-v_ErL[W&%#</'sLLY`/#$@0,.EGKsLrv70#eg=(.hX;uL1-u1#d#)t-4k+wLacE4#3;xu-OjUxLdsp5#-7>##bJR#M"
-"5t56#?m@u-i]n#Mn;Q6#@*V$#2=#s-p;k$MJF6##0cK%MH;88#Qm@u-8%q%MFS]8#twQx-UFV/8T;jP(9L<5&AnWP&6.78%=esl&9b82'>k/2'C95/(9W'N(nuC_&la1,)=&?g)oSKe$"
-"#W*&+HfrD+w:D_&'pa]+DfR&,#AD_&72B>,VCUS.Q6oo%ujNM0Ai^21Ej.L,R2``3q1mD47YLe$fLTV6mUEv6dbv?0.k.29uqci9tATS%SJO-7oF(##";
-
-static const char* GetLightCompressedFontDataOTFBase85()
+static const char* GetDefaultCompressedFontDataTTFBase85()
 {
-	return bank_gothic_pro_light_otf_compressed_data_base85;
+    return verdana_compressed_data_base85;
 }
 
-static const char* GetMediumCompressedFontDataOTFBase85()
-{
-	return bank_gothic_pro_medium_otf_compressed_data_base85;
-}
-
-static const char* GetBoldCompressedFontDataOTFBase85()
-{
-	return bank_gothic_pro_bold_otf_compressed_data_base85;
-}
+#endif // #ifndef IMGUI_DISABLE

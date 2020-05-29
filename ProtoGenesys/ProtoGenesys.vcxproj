@@ -32,26 +32,26 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)Detours\Include;$(ProjectDir)SteamSDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Detours\Lib\x86;$(ProjectDir)SteamSDK\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)Detours\Include;$(ProjectDir)SteamSDK\Include;$(ProjectDir)VMProtect\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Detours\Lib\x86;$(ProjectDir)SteamSDK\Lib\x86;$(ProjectDir)VMProtect\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;PROTOGENESYS_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;IMGUI_DEFINE_MATH_OPERATORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;PROTOGENESYS_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;IMGUI_DEFINE_MATH_OPERATORS;VMProtectDecryptString=VMProtectDecryptStringA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
-      <DebugInformationFormat>None</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;WinInet.lib;detours.lib;steam_api.lib;VMProtectSDK32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -63,6 +63,7 @@
     <ClCompile Include="Core\Drawing\Drawing.cpp" />
     <ClCompile Include="Core\Hooks.cpp" />
     <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp" />
+    <ClCompile Include="Core\License\License.cpp" />
     <ClCompile Include="Core\MainGUI.cpp" />
     <ClCompile Include="Core\Mathematics\Mathematics.cpp" />
     <ClCompile Include="Core\Profiler\Profiler.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="Core\Engine\Thunk.hpp" />
     <ClInclude Include="Core\Hooks.h" />
     <ClInclude Include="Core\FurtiveHook\FurtiveHook.h" />
+    <ClInclude Include="Core\License\License.h" />
     <ClInclude Include="Core\MainGUI.h" />
     <ClInclude Include="Core\Mathematics\Mathematics.h" />
     <ClInclude Include="Core\Profiler\Profiler.h" />
@@ -109,9 +111,8 @@
     <ClInclude Include="ImGui\Addons\TabWindow\imguitabwindow.h" />
     <ClInclude Include="ImGui\Addons\WICTextureLoader.h" />
     <ClInclude Include="ImGui\DX11\imgui_impl_dx11.h" />
-    <ClInclude Include="ImGui\Fonts\Eurostile_Bold.hpp" />
+    <ClInclude Include="ImGui\Fonts\Bank_Gothic_Pro_Light.hpp" />
     <ClInclude Include="ImGui\Fonts\Eurostile_Extended.hpp" />
-    <ClInclude Include="ImGui\Fonts\Eurostile_Regular.hpp" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_internal.h" />
@@ -120,14 +121,7 @@
     <ClInclude Include="ImGui\STB\imstb_textedit.h" />
     <ClInclude Include="ImGui\STB\imstb_truetype.h" />
     <ClInclude Include="ImGui\Win32\imgui_impl_win32.h" />
-    <ClInclude Include="Resources\Resource.h" />
     <ClInclude Include="StdAfx.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Resources\Resource.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resources\Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

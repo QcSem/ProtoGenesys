@@ -41,11 +41,11 @@ namespace ProtoGenesys
 					vAntiAimTargetInfo.push_back(AntiAimTargetInfo);
 				}
 
-				Vector3 vMinTemp = { FLT_MAX, FLT_MAX, FLT_MAX }, vMaxTemp = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+				ImVec3 vMinTemp = { FLT_MAX, FLT_MAX, FLT_MAX }, vMaxTemp = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 				for (auto& Bone : vBones)
 				{
-					GetTagPosition(&CG->CEntity[i], RegisterTag(vBones[Bone.first].second.second), GetDObj(&CG->CEntity[i]), EntityList[i].vBones3D[Bone.first]);
+					GetTagPosition(&CG->CEntity[i], RegisterTag(vBones[Bone.first].second.second), GetDObj(&CG->CEntity[i]), &EntityList[i].vBones3D[Bone.first]);
 
 					for (int j = 0; j < 3; j++)
 					{
@@ -67,15 +67,15 @@ namespace ProtoGenesys
 
 			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
-				Vector3 vViewOrigin;
+				ImVec3 vViewOrigin;
 				VectorCopy(CG->CEntity[i].vOrigin, vViewOrigin);
 				vViewOrigin[2] += M_METERS;
 
 				EntityList[i].bW2SSuccess = _drawing.Calculate2D(EntityList[i].vBones3D, EntityList[i].vBones2D, EntityList[i].vPosition, EntityList[i].vDimentions) &&
 					_drawing.Calculate3D(&CG->CEntity[i], EntityList[i].vCenter3D, EntityList[i].vCorners3D, EntityList[i].vCorners2D) &&
-					WorldToScreen(EntityList[i].vCenter3D, EntityList[i].vCenter2D) &&
-					WorldToScreen(CG->CEntity[i].vOrigin, EntityList[i].vLower) &&
-					WorldToScreen(vViewOrigin, EntityList[i].vUpper);
+					WorldToScreen(&EntityList[i].vCenter3D, &EntityList[i].vCenter2D) &&
+					WorldToScreen(&CG->CEntity[i].vOrigin, &EntityList[i].vLower) &&
+					WorldToScreen(&vViewOrigin, &EntityList[i].vUpper);
 
 				_mathematics.WorldToCompass(CG->CEntity[i].vOrigin, _drawing.Compass.vCompassPosition, _drawing.Compass.flCompassSize, _drawing.Compass.vArrowPosition[i]);
 				_mathematics.WorldToRadar(CG->CEntity[i].vOrigin, _drawing.Radar.vRadarPosition, _drawing.Radar.flScale, _drawing.Radar.flRadarSize, _drawing.Radar.flBlipSize, _drawing.Radar.vBlipPosition[i]);
@@ -91,7 +91,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				EntityList[i].bW2SSuccess = WorldToScreen(CG->CEntity[i].vOrigin, EntityList[i].vCenter2D);
+				EntityList[i].bW2SSuccess = WorldToScreen(&CG->CEntity[i].vOrigin, &EntityList[i].vCenter2D);
 				continue;
 			}
 
@@ -198,10 +198,10 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisibleInternal(sCEntity* entity, Vector3 position, bool autowall, float* damage)
+	bool cTargetList::IsVisibleInternal(sCEntity* entity, ImVec3 position, bool autowall, float* damage)
 	{
-		Vector3 vViewOrigin;
-		GetPlayerViewOrigin(vViewOrigin);
+		ImVec3 vViewOrigin;
+		GetPlayerViewOrigin(&vViewOrigin);
 
 		if (WeaponIsVehicle())
 		{
@@ -241,7 +241,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisible(sCEntity* entity, Vector3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index)
+	bool cTargetList::IsVisible(sCEntity* entity, ImVec3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index)
 	{
 		bool bReturn = false;
 

@@ -12,7 +12,7 @@ namespace ProtoGenesys
 	{
 	public:
 
-		Vector3 vAntiAimAngles;
+		ImVec3 vAntiAimAngles;
 
 		void AntiAimPitch(sUserCmd* usercmd);
 		void AntiAimYaw(sUserCmd* usercmd);

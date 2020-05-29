@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Document Version="2">
+    <Protection InputFileName="ProtoGenesys.dll" Options="525256" VMCodeSectionName=".genesys" WaterMarkName="InUrFace">
+        <Messages>
+            <Message Id="0">Debugger Found</Message>
+            <Message Id="1">Virtualization Tools Found</Message>
+            <Message Id="2">File Corrupted</Message>
+            <Message Id="3">Serial Number Required</Message>
+        </Messages>
+        <Folders />
+        <Procedures>
+            <Procedure MapAddress='string &quot;/raw/3u6sp9jj&quot;' Options="0" CompilationType="1" />
+            <Procedure MapAddress='string &quot;www.pastebin.com&quot;' Options="0" CompilationType="1" />
+            <Procedure MapAddress='string &quot;ProtoGenesys&quot;' Options="0" CompilationType="1" />
+            <Procedure MapAddress='string &quot;text/*&quot;' Options="0" CompilationType="1" />
+            <Procedure MapAddress='string &quot;HTTP/1.0&quot;' Options="0" CompilationType="1" />
+            <Procedure MapAddress='string &quot;GET&quot;' Options="0" CompilationType="1" />
+            <Procedure MapAddress="SteamID" Options="0" CompilationType="2" />
+            <Procedure MapAddress="EntryPoint" Options="0" />
+        </Procedures>
+        <Objects />
+    </Protection>
+    <DLLBox>
+        <Folders />
+    </DLLBox>
+    <Script />
+    <LicenseManager />
+</Document>

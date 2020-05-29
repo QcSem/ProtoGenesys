@@ -176,7 +176,7 @@ struct MemoryEditor
     }
 
     // Standalone Memory Editor window
-    void DrawWindow(const char* title, bool* p_open, void* mem_data, size_t mem_size, size_t base_display_addr = 0x0000)
+    void DrawMemoryEditor(bool* p_open, void* mem_data, size_t mem_size, size_t base_display_addr = 0x0000)
     {
         Sizes s;
         CalcSizes(s, mem_size, base_display_addr);
@@ -185,7 +185,7 @@ struct MemoryEditor
         Open = true;
 
         ImGui::SetNextWindowSize(ImVec2(637.0f, 500.0f));
-        if (ImGui::Begin(title, p_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
+        if (ImGui::Begin("MEMORY EDITOR", p_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
         {
             if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) && ImGui::IsMouseClicked(1))
                 ImGui::OpenPopup("context");

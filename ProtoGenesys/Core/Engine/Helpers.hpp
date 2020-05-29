@@ -7,7 +7,7 @@
 namespace ProtoGenesys
 {
 	template<typename Return, typename... Parameters>
-	static Return VariadicCall(DWORD_PTR address, Parameters... params)
+	FORCEINLINE Return VariadicCall(DWORD_PTR address, Parameters... params)
 	{
 		typedef Return(*tFunction)(Parameters...);
 		tFunction Function = (tFunction)address;
@@ -17,7 +17,7 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	template<typename... Parameters>
-	static std::string VariadicText(LPCSTR format, Parameters... params)
+	FORCEINLINE std::string VariadicText(LPCSTR format, Parameters... params)
 	{
 		char szBuffer[4096] = { NULL };
 		sprintf_s(szBuffer, format, params...);
@@ -27,7 +27,7 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	template<typename Type>
-	static void WriteMemoryProtected(LPVOID address, Type value)
+	FORCEINLINE void WriteMemoryProtected(LPVOID address, Type value)
 	{
 		DWORD dwProtection = PAGE_EXECUTE_READWRITE;
 
@@ -38,7 +38,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static MODULEINFO GetModuleInfo(LPCSTR name)
+	FORCEINLINE MODULEINFO GetModuleInfo(LPCSTR name)
 	{
 		MODULEINFO ModuleInfo = { NULL };
 		HMODULE hModule = GetModuleHandle(name);
@@ -52,7 +52,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static bool Match(const BYTE* data, const BYTE* signature, const char* mask)
+	FORCEINLINE bool Match(const BYTE* data, const BYTE* signature, const char* mask)
 	{
 		for (; *mask; ++mask, ++data, ++signature)
 			if (*mask == 'x' && *data != *signature)
@@ -63,7 +63,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static DWORD_PTR FindPattern(const char* signature, const char* mask)
+	FORCEINLINE DWORD_PTR FindPattern(const char* signature, const char* mask)
 	{
 		DWORD_PTR dwAddress = (DWORD_PTR)GetModuleHandle(NULL);
 		DWORD_PTR dwLen = GetModuleInfo(NULL).SizeOfImage;
@@ -77,7 +77,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static DWORD_PTR FindPattern(DWORD_PTR address, DWORD_PTR length, const char* signature, const char* mask)
+	FORCEINLINE DWORD_PTR FindPattern(DWORD_PTR address, DWORD_PTR length, const char* signature, const char* mask)
 	{
 		for (DWORD_PTR i = 0; i < length; i++)
 			if (Match((BYTE*)(address + i), (BYTE*)signature, mask))
@@ -88,7 +88,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static DWORD_PTR ReadPointer(DWORD_PTR address, DWORD_PTR offset)
+	FORCEINLINE DWORD_PTR ReadPointer(DWORD_PTR address, DWORD_PTR offset)
 	{
 		if (!address)
 			return 0;
@@ -101,7 +101,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static DWORD_PTR FindDmaAddy(DWORD_PTR address, std::vector<DWORD_PTR> offsets)
+	FORCEINLINE DWORD_PTR FindDmaAddy(DWORD_PTR address, std::vector<DWORD_PTR> offsets)
 	{
 		DWORD_PTR dwPointer = *(DWORD_PTR*)address;
 
@@ -134,7 +134,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	static DWORD_PTR SwapVMT(DWORD_PTR address, DWORD_PTR hook, int index)
+	FORCEINLINE DWORD_PTR SwapVMT(DWORD_PTR address, DWORD_PTR hook, int index)
 	{
 		DWORD_PTR* dwVTable = *(DWORD_PTR**)address;
 		DWORD_PTR dwBackup = NULL;

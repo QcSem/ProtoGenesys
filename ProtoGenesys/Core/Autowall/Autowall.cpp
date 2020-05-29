@@ -8,7 +8,7 @@ namespace ProtoGenesys
 {
 	cAutowall _autoWall;
 
-	float cAutowall::Autowall(sCEntity* entity, Vector3 start, Vector3 end)
+	float cAutowall::Autowall(sCEntity* entity, ImVec3 start, ImVec3 end)
 	{
 		int iClientNum = CG->iClientNum;
 		sCEntity* pCEntity = &CG->CEntity[iClientNum];
@@ -63,15 +63,15 @@ namespace ProtoGenesys
 			float flExitDepth = 0.0f;
 			float flSurfaceDepth = 0.0f;
 
-			Vector3 vHitPos = { 0.0f };
-			Vector3 vTemp = { 0.0f };
+			ImVec3 vHitPos;
+			ImVec3 vTemp;
 
-			for (int iSurfaceCount = 0; bEnterHit && iSurfaceCount < ((sDvar*)dwPenetrationCount)->Current.iValue; ++iSurfaceCount)
+			for (int iSurfaceCount = 0; bEnterHit && iSurfaceCount < FindVar("penetrationCount")->Current.iValue; ++iSurfaceCount)
 			{
 				flEnterDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Enter.iSurfaceType);
 
 				if (HasPerk(6))
-					flEnterDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
+					flEnterDepth *= FindVar("perk_bulletPenetrationMultiplier")->Current.flValue;
 
 				if (flEnterDepth <= 0.0)
 					return 0.0f;
@@ -130,7 +130,7 @@ namespace ProtoGenesys
 						flExitDepth = GetSurfacePenetrationDepth(iPenetrateType, TR_Exit.iSurfaceType);
 
 						if (HasPerk(6))
-							flExitDepth *= ((sDvar*)dwPenetrationMultiplier)->Current.flValue;
+							flExitDepth *= FindVar("perk_bulletPenetrationMultiplier")->Current.flValue;
 
 						flEnterDepth = min(flEnterDepth, flExitDepth);
 
@@ -145,13 +145,13 @@ namespace ProtoGenesys
 
 					if (!bStaticModel && iWeaponType == WEAPTYPE_BULLET)
 					{
-						Vector3 vLength;
+						ImVec3 vLength;
 
 						VectorSubtract(TR_Exit.vHitPos, TR_Enter.vHitPos, vLength);
 
 						float flLength = DotProduct(vLength, vLength);
 
-						if (flLength > ((sDvar*)dwPenetrationMinFxDist)->Current.flValue * ((sDvar*)dwPenetrationMinFxDist)->Current.flValue)
+						if (flLength > FindVar("bullet_penetrationMinFxDist")->Current.flValue * FindVar("bullet_penetrationMinFxDist")->Current.flValue)
 						{
 							if (!bEnterHit)
 								return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
@@ -177,7 +177,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	float cAutowall::TraceBullet(sCEntity* entity, Vector3 start, Vector3 end)
+	float cAutowall::TraceBullet(sCEntity* entity, ImVec3 start, ImVec3 end)
 	{
 		int iClientNum = CG->iClientNum;
 		sCEntity* pCEntity = &CG->CEntity[iClientNum];
@@ -215,9 +215,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cAutowall::TraceLine(sCEntity* entity, Vector3 start, Vector3 end)
+	bool cAutowall::TraceLine(sCEntity* entity, ImVec3 start, ImVec3 end)
 	{
-		Vector3 vStart, vEnd;
+		ImVec3 vStart, vEnd;
 
 		VectorCopy(start, vStart);
 		VectorCopy(end, vEnd);
@@ -225,7 +225,7 @@ namespace ProtoGenesys
 		sTrace Trace;
 		ZeroMemory(&Trace, sizeof(sTrace));
 
-		LocationalTrace(&Trace, vStart, vEnd, CG->iClientNum, 0x803003);
+		LocationalTrace(&Trace, &vStart, &vEnd, CG->iClientNum, 0x803003);
 
 		return (Trace.wHitID == entity->NextEntityState.iEntityNum || Trace.flFraction == 1.0f);
 	}
@@ -258,14 +258,14 @@ namespace ProtoGenesys
 	float cAutowall::GetRemainingDamage(sBulletFireParams* fireparams, sBulletTraceResults* traceresults, int weapon)
 	{
 		float flDamage = 0.0f;
-		Vector3 vHitPos, vStart;
+		ImVec3 vHitPos, vStart;
 
 		if (fireparams->flPower > 0.0f)
 		{
 			VectorCopy(traceresults->vHitPos, vHitPos);
 			VectorCopy(fireparams->vStart, vStart);
 
-			flDamage = (float)GetWeaponDamageForRange(weapon, vStart, vHitPos) * fireparams->flPower;
+			flDamage = (float)GetWeaponDamageForRange(weapon, &vStart, &vHitPos) * fireparams->flPower;
 			flDamage = GetWeaponHitLocationMultiplier(traceresults->Trace.wPartGroup, weapon) * flDamage;
 
 			if (flDamage <= 0.0f)

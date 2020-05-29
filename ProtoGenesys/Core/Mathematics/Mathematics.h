@@ -12,24 +12,24 @@ namespace ProtoGenesys
 	{
 	public:
 
-		float CalculateFOV(Vector3 position);
-		float CalculateDistance(Vector3 start, Vector3 end);
-		void VectorAngles(Vector3 direction, Vector3 angles);
-		void AngleVectors(Vector3 angles, Vector3 forward, Vector3 right, Vector3 up);
-		void VectorNormalize(Vector3 direction);
-		void ClampAngles(Vector3 angles);
+		float CalculateFOV(ImVec3 position);
+		float CalculateDistance(ImVec3 start, ImVec3 end);
+		void VectorAngles(ImVec3 direction, ImVec3& angles);
+		void AngleVectors(ImVec3 angles, ImVec3& forward, ImVec3& right, ImVec3& up);
+		void VectorNormalize(ImVec3& direction);
+		void ClampAngles(ImVec3& angles);
 		void ClampMove(char value[]);
-		void CalculateAimAngles(Vector3 start, Vector3 end, Vector3 angles);
-		void CalculateAntiAimAngles(Vector3 start, Vector3 end, Vector3 angles);
-		void MakeVector(Vector3 angles, Vector3 out);
+		void CalculateAimAngles(ImVec3 start, ImVec3 end, ImVec3& angles);
+		void CalculateAntiAimAngles(ImVec3 start, ImVec3 end, ImVec3& angles);
+		void MakeVector(ImVec3 angles, ImVec3& out);
 		void MovementFix(sUserCmd* usercmd, float yaw, float oldyaw, float forward, float right);
-		bool WorldToScreen(Vector3 world, ImVec2& screen);
-		void WorldToCompass(Vector3 world, ImVec2 compasspos, float compasssize, ImVec2& screen);
-		void WorldToRadar(Vector3 world, ImVec2 radarpos, float scale, float radarsize, float blipsize, ImVec2& screen);
-		void RotatePoint(Vector3 point, Vector3 center, float yaw, Vector3 out);
+		bool WorldToScreen(ImVec3 world, ImVec2& screen);
+		void WorldToCompass(ImVec3 world, ImVec2 compasspos, float compasssize, ImVec2& screen);
+		void WorldToRadar(ImVec3 world, ImVec2 radarpos, float scale, float radarsize, float blipsize, ImVec2& screen);
+		void RotatePoint(ImVec3 point, ImVec3 center, float yaw, ImVec3& out);
 		void ApplyPositionPrediction(sCEntity* entity);
 		void ApplyAnglePrediction(sCEntity* entity);
-		float EntityInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale);
+		float EntityInterpolation(sTrajectory* trajectory, int time, ImVec3& result, float scale);
 	} extern _mathematics;
 }
 

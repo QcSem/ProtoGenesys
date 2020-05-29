@@ -54,7 +54,7 @@ namespace ProtoGenesys
 	*/
 	void cRemovals::FirstBulletFix()
 	{
-		Vector3 vAngles;
+		ImVec3 vAngles;
 
 		if (CG->flShockSensitivity != 0.0)
 			CG->flZoomSensitivity *= CG->flShockSensitivity;
@@ -76,7 +76,7 @@ namespace ProtoGenesys
 			vAngles[2] = CG->vOffsetAngles[2] + CG->vKickAngles[2];
 		}
 
-		SetUserCmdAimValues(vAngles);
+		SetUserCmdAimValues(&vAngles);
 		SetUserCmdWeapons(GetLastWeaponForAlt());
 		SetExtraButtons();
 

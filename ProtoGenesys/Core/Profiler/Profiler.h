@@ -200,10 +200,7 @@ namespace ProtoGenesys
 		} ePlayerSnapLines;
 
 		std::shared_ptr<sCvar> gMenuTabs = std::make_shared<sCvar>("Menu Tab", std::vector<std::string>({ "Aimbot", "ESP", "Misc.", "Tweaks", "Styles", "Players", "Console" }), MENU_TAB_AIMBOT, MENU_TAB_AIMBOT, MENU_TAB_MAX);
-		std::shared_ptr<sCvar> gMenuColor = std::make_shared<sCvar>("Menu Color", std::vector<std::string>({ "Neutral", "Neutral (Neon)", "Red", "Red (Neon)", "Orange", "Orange (Neon)", "Yellow", "Yellow (Neon)", "Green", "Green (Neon)", "Blue", "Blue (Neon)", "Purple", "Purple (Neon)", "Rainbow", "Rainbow (Neon)" }), MENU_COLOR_NEUTRAL, MENU_COLOR_NEUTRAL, MENU_COLOR_MAX - 1);
-		std::shared_ptr<sCvar> gMenuCursor = std::make_shared<sCvar>("Menu Cursor", std::vector<std::string>({ "Black", "White" }), MENU_CURSOR_BLACK, MENU_CURSOR_BLACK, MENU_CURSOR_MAX - 1);
-		std::shared_ptr<sCvar> gMenuFont = std::make_shared<sCvar>("Menu Font", std::vector<std::string>({ "Light", "Medium", "Bold" }), MENU_FONT_LIGHT, MENU_FONT_LIGHT, MENU_FONT_MAX - 1);
-
+		
 		std::shared_ptr<sCvar> gAimBotMode = std::make_shared<sCvar>("Mode", std::vector<std::string>({ "Off", "Manual", "Auto" }), AIMBOT_MODE_OFF, AIMBOT_MODE_OFF, AIMBOT_MODE_MAX - 1);
 		std::shared_ptr<sCvar> gAutoZoom = std::make_shared<sCvar>("Autozoom", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAutoFire = std::make_shared<sCvar>("Autofire", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
@@ -251,6 +248,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gSpreadFactor = std::make_shared<sCvar>("Spread Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gAntiAimCustomPitch = std::make_shared<sCvar>("Anti-Aim Custom Pitch", std::vector<std::string>(), 0.0f, -85.0f, 85.0f);
 		std::shared_ptr<sCvar> gAntiAimCustomYaw = std::make_shared<sCvar>("Anti-Aim Custom Yaw", std::vector<std::string>(), 0.0f, -180.0f, 180.0f);
+		std::shared_ptr<sCvar> gFieldOfView = std::make_shared<sCvar>("Field Of View", std::vector<std::string>(), 65.0f, 65.0f, 120.0f);
 
 		std::shared_ptr<sCvar> gColorAxisVisible = std::make_shared<sCvar>("Axis Visible", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorAxisInvisible = std::make_shared<sCvar>("Axis Invisible", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));

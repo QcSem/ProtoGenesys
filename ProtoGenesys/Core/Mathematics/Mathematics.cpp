@@ -8,11 +8,11 @@ namespace ProtoGenesys
 {
 	cMathematics _mathematics;
 
-	float cMathematics::CalculateFOV(Vector3 position)
+	float cMathematics::CalculateFOV(ImVec3 position)
 	{
-		Vector3 vViewOrigin, vDirection, vAngles, vAimAngles;
+		ImVec3 vViewOrigin, vDirection, vAngles, vAimAngles;
 
-		GetPlayerViewOrigin(vViewOrigin);
+		GetPlayerViewOrigin(&vViewOrigin);
 		VectorSubtract(position, vViewOrigin, vDirection);
 
 		VectorNormalize(vDirection);
@@ -33,9 +33,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	float cMathematics::CalculateDistance(Vector3 start, Vector3 end)
+	float cMathematics::CalculateDistance(ImVec3 start, ImVec3 end)
 	{
-		Vector3 vDirection;
+		ImVec3 vDirection;
 
 		VectorSubtract(start, end, vDirection);
 
@@ -44,7 +44,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::VectorAngles(Vector3 direction, Vector3 angles)
+	void cMathematics::VectorAngles(ImVec3 direction, ImVec3& angles)
 	{
 		float flTemp, flYaw, flPitch;
 
@@ -80,7 +80,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::AngleVectors(Vector3 angles, Vector3 forward, Vector3 right, Vector3 up)
+	void cMathematics::AngleVectors(ImVec3 angles, ImVec3& forward, ImVec3& right, ImVec3& up)
 	{
 		float flAngle, flSinRoll, flSinPitch, flSinYaw, flCosRoll, flCosPitch, flCosYaw;
 
@@ -120,7 +120,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::VectorNormalize(Vector3 direction)
+	void cMathematics::VectorNormalize(ImVec3& direction)
 	{
 		float flLen = VectorLength(direction);
 
@@ -143,7 +143,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::ClampAngles(Vector3 angles)
+	void cMathematics::ClampAngles(ImVec3& angles)
 	{
 		while (angles[0] > 180.0f)
 			angles[0] -= 360.0f;
@@ -183,9 +183,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::CalculateAimAngles(Vector3 start, Vector3 end, Vector3 angles)
+	void cMathematics::CalculateAimAngles(ImVec3 start, ImVec3 end, ImVec3& angles)
 	{
-		Vector3 vDirection;
+		ImVec3 vDirection;
 		VectorSubtract(start, end, vDirection);
 
 		VectorNormalize(vDirection);
@@ -201,9 +201,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::CalculateAntiAimAngles(Vector3 start, Vector3 end, Vector3 angles)
+	void cMathematics::CalculateAntiAimAngles(ImVec3 start, ImVec3 end, ImVec3& angles)
 	{
-		Vector3 vDirection;
+		ImVec3 vDirection;
 		VectorSubtract(start, end, vDirection);
 
 		VectorNormalize(vDirection);
@@ -222,7 +222,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::MakeVector(Vector3 angles, Vector3 out)
+	void cMathematics::MakeVector(ImVec3 angles, ImVec3& out)
 	{
 		float flPitch = DegreesToRadians(angles[0]), 
 			flYaw = DegreesToRadians(angles[1]);
@@ -246,37 +246,67 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cMathematics::WorldToScreen(Vector3 world, ImVec2& screen)
+	bool cMathematics::WorldToScreen(ImVec3 world, ImVec2& screen)
 	{
-		float flCenterX = CG->RefDef.iWidth / 2.0f,
-			flCenterY = CG->RefDef.iHeight / 2.0f;
+		sScreenPlacement* ScreenPlacement = GetScreenPlacement();
 
-		Vector3 vLocal, vTransForm;
+		ImVec3 vDirection(world - CG->RefDef.vViewOrigin);
 
-		VectorSubtract(world, CG->RefDef.vViewOrigin, vLocal);
+		ImVec3 vProjection(DotProduct(vDirection, CG->RefDef.vViewAxis[0]), 
+			DotProduct(vDirection, CG->RefDef.vViewAxis[1]), 
+			DotProduct(vDirection, CG->RefDef.vViewAxis[2]));
 
-		vTransForm[0] = DotProduct(vLocal, CG->RefDef.vViewAxis[1]);
-		vTransForm[1] = DotProduct(vLocal, CG->RefDef.vViewAxis[2]);
-		vTransForm[2] = DotProduct(vLocal, CG->RefDef.vViewAxis[0]);
+		if (vProjection.x >= 0.0f)
+		{
+			screen = ImVec2((1.0f - vProjection.y / CG->RefDef.flFovX / vProjection.x) * ScreenPlacement->vRealViewportSize.x / 2.0f,
+				(1.0f - vProjection.z / CG->RefDef.flFovY / vProjection.x) * ScreenPlacement->vRealViewportSize.y / 2.0f);
 
-		if (vTransForm[2] < 0.01f)
+			return true;
+		}
+
+		else
+		{
+			vProjection *= -1.0f;
+
+			screen = ImVec2(vProjection.y, vProjection.z);
+			
+			if (abs(vProjection.y < 0.001f))
+			{
+				if (abs(vProjection.z) < 0.001f)
+				{
+					screen.y = ScreenPlacement->vRealViewportSize.y * 2.0f;
+
+					return false;
+				}
+
+				screen.x = 0.001f;
+			}
+
+			while (ScreenPlacement->vRealViewportSize.x > abs(screen.x))
+			{
+				screen.x *= ScreenPlacement->vRealViewportSize.x;
+				screen.y *= ScreenPlacement->vRealViewportSize.x;
+			}
+
+			while (ScreenPlacement->vRealViewportSize.y > abs(screen.y))
+			{
+				screen.x *= ScreenPlacement->vRealViewportSize.y;
+				screen.y *= ScreenPlacement->vRealViewportSize.y;
+			}
+
 			return false;
-
-		screen.x = flCenterX * (1.0f - (vTransForm[0] / CG->RefDef.flFovX / vTransForm[2]));
-		screen.y = flCenterY * (1.0f - (vTransForm[1] / CG->RefDef.flFovY / vTransForm[2]));
-
-		return true;
+		}
 	}
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::WorldToCompass(Vector3 world, ImVec2 compasspos, float compasssize, ImVec2& screen)
+	void cMathematics::WorldToCompass(ImVec3 world, ImVec2 compasspos, float compasssize, ImVec2& screen)
 	{
 		float flAngle;
 
-		Vector3 vViewOrigin, vDirection, vAngles;
+		ImVec3 vViewOrigin, vDirection, vAngles;
 
-		GetPlayerViewOrigin(vViewOrigin);
+		GetPlayerViewOrigin(&vViewOrigin);
 		VectorSubtract(vViewOrigin, world, vDirection);
 
 		VectorNormalize(vDirection);
@@ -293,11 +323,11 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::WorldToRadar(Vector3 world, ImVec2 radarpos, float scale, float radarsize, float blipsize, ImVec2& screen)
+	void cMathematics::WorldToRadar(ImVec3 world, ImVec2 radarpos, float scale, float radarsize, float blipsize, ImVec2& screen)
 	{
-		Vector3 vViewOrigin;
+		ImVec3 vViewOrigin;
 
-		GetPlayerViewOrigin(vViewOrigin);
+		GetPlayerViewOrigin(&vViewOrigin);
 
 		float flCosYaw = cosf(DegreesToRadians(CG->vRefDefViewAngles[1])),
 			flSinYaw = sinf(DegreesToRadians(CG->vRefDefViewAngles[1])),
@@ -324,7 +354,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::RotatePoint(Vector3 point, Vector3 center, float yaw, Vector3 out)
+	void cMathematics::RotatePoint(ImVec3 point, ImVec3 center, float yaw, ImVec3& out)
 	{
 		float flAngleCos = cosf(((-yaw + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE),
 			flAngleSin = sinf(((-yaw + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE),
@@ -341,7 +371,7 @@ namespace ProtoGenesys
 	void cMathematics::ApplyPositionPrediction(sCEntity* entity)
 	{
 		float flResult;
-		Vector3 vOldPosition, vNewPosition, vDeltaPosition;
+		ImVec3 vOldPosition, vNewPosition, vDeltaPosition;
 
 		flResult = EntityInterpolation(&entity->CurrentEntityState.PositionTrajectory, CG->OldSnapShot->iServerTime, vOldPosition, CG->flFrameInterpolation);
 		EntityInterpolation(&entity->NextEntityState.LerpEntityState.PositionTrajectory, CG->NewSnapShot->iServerTime, vNewPosition, flResult);
@@ -361,7 +391,7 @@ namespace ProtoGenesys
 	void cMathematics::ApplyAnglePrediction(sCEntity* entity)
 	{
 		float flResult;
-		Vector3 vOldAngles, vNewAngles, vDeltaAngles;
+		ImVec3 vOldAngles, vNewAngles, vDeltaAngles;
 
 		flResult = EntityInterpolation(&entity->CurrentEntityState.AngleTrajectory, CG->OldSnapShot->iServerTime, vOldAngles, CG->flFrameInterpolation);
 		EntityInterpolation(&entity->NextEntityState.LerpEntityState.AngleTrajectory, CG->NewSnapShot->iServerTime, vNewAngles, flResult);
@@ -378,7 +408,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	float cMathematics::EntityInterpolation(sTrajectory* trajectory, int time, Vector3 result, float scale)
+	float cMathematics::EntityInterpolation(sTrajectory* trajectory, int time, ImVec3& result, float scale)
 	{
 		float flResult = 0.0f;
 

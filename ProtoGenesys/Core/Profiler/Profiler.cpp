@@ -68,6 +68,7 @@ namespace ProtoGenesys
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.FieldOfView", gFieldOfView->Current.flValue);
 
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue[0]);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue[1]);
@@ -188,6 +189,7 @@ namespace ProtoGenesys
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AntiAimCustomPitch", gAntiAimCustomPitch->Current.flValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AntiAimCustomYaw", gAntiAimCustomYaw->Current.flValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.FieldOfView", gFieldOfView->Current.flValue);
 
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue[0]);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue[1]);

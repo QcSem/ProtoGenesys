@@ -48,14 +48,14 @@ namespace ProtoGenesys
 		void PredictPlayerState();
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
-		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, Vector3 start, Vector3 position, Vector3 normal, Vector3 alphanormal, int surface, int eventnum, int eventparm, int contents, char bone);
+		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int eventnum, int eventparm, int contents, char bone);
 		void TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
 		void CalcEntityLerpPositions(int localnum, sCEntity* entity);
-		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, Vector3 matrix[], Vector3 origin);
+		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin);
 		void GetAddr(bool renew);
 		
 		int GameTypeSettings(int settings);
-		int GetPlayerStatus(int localnum, DWORD xuid1, DWORD xuid2);
+		int GetPlayerStatus(int localnum, QWORD xuid);
 		bool SteamIDIsValid(CSteamID* steamid);
 
 		CSteamID* GetSteamID(CSteamID* steamid);
@@ -71,6 +71,7 @@ namespace ProtoGenesys
 
 		std::string Randomize(std::string name);
 		void RefreshFriends();
+		void SetThirdPerson();
 
 		StdThunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;
 	} extern _hooks;

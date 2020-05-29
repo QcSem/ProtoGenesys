@@ -15,9 +15,9 @@ namespace ProtoGenesys
 		typedef struct
 		{
 			bool bW2SSuccess;
-			ImVec2 vHitPos2D, vStartPos2D;
-			Vector3 vHitPos3D, vStartPos3D;
 			int iStartTime;
+			ImVec2 vHitPos2D, vStartPos2D;
+			ImVec3 vHitPos3D, vStartPos3D;
 			ImVec4 cColorShadow, cColorHitMarker, cColorTracer;
 		} sTracer;
 
@@ -44,8 +44,8 @@ namespace ProtoGenesys
 		void DrawString(std::string text, ImVec2 position, bool shadow, ImVec4 color);
 		void DrawClient(sCEntity* entity, ImVec2 bones2d[BONE_MAX], ImVec2 corners2d[8], ImVec2 center, float scale, float distance, std::string name, ImVec4 color);
 		void DrawEntity(std::string name, ImVec2 center, float distance, ImVec4 color);
-		bool Calculate2D(Vector3 bones3d[BONE_MAX], ImVec2 bones2d[BONE_MAX], ImVec2& position, ImVec2& dimentions);
-		bool Calculate3D(sCEntity* entity, Vector3 center, Vector3 corners3d[8], ImVec2 corners2d[8]);
+		bool Calculate2D(ImVec3 bones3d[BONE_MAX], ImVec2 bones2d[BONE_MAX], ImVec2& position, ImVec2& dimentions);
+		bool Calculate3D(sCEntity* entity, ImVec3 center, ImVec3 corners3d[8], ImVec2 corners2d[8]);
 		void CalculateTracers();
 		void DrawESP();
 		void DrawCompass();
