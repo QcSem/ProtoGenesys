@@ -767,10 +767,6 @@ namespace ProtoGenesys
 				ImGui::End();
 			}
 
-			static MemoryEditor MemEdit;
-			static bool bShowMemoryEditor;
-			MemEdit.DrawMemoryEditor(&bShowMemoryEditor, hT6mp.lpBaseOfDll, hT6mp.SizeOfImage, (size_t)hT6mp.lpBaseOfDll);
-
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
