@@ -591,13 +591,11 @@ namespace ProtoGenesys
 
 					for (int i = 0; i < MAX_CLIENTS; i++)
 					{
-						if (!CG->ClientInfo[i].iInfoValid)
-							continue;
-
-						if (std::string(ServerSession[i].szName).empty() && !DwordFromBytes(ServerSession[i].iIPAddress) && !ServerSession[i].qwXuid)
+						if (!IsUserRegistered(GetCurrentSession(), i))
 							continue;
 
 						ImGui::Separator();
+						ImGui::PushID(i);
 
 						if (ImGui::Selectable(ServerSession[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
 						{
@@ -691,6 +689,8 @@ namespace ProtoGenesys
 						{
 							bWriteLog = true;
 						} ImGui::NextColumn();
+
+						ImGui::PopID();
 					}
 
 					ImGui::Columns(1);
@@ -766,6 +766,10 @@ namespace ProtoGenesys
 
 				ImGui::End();
 			}
+
+			static MemoryEditor MemEdit;
+			static bool bShowMemoryEditor;
+			MemEdit.DrawMemoryEditor(&bShowMemoryEditor, hT6mp.lpBaseOfDll, hT6mp.SizeOfImage, (size_t)hT6mp.lpBaseOfDll);
 
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

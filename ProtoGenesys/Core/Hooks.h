@@ -48,7 +48,7 @@ namespace ProtoGenesys
 		void PredictPlayerState();
 		void WritePacket();
 		void KillSpam(DWORD attacker, DWORD victim);
-		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int eventnum, int eventparm, int contents, char bone);
+		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int eventnum, int eventparm, int contents, char bone);
 		void TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
 		void CalcEntityLerpPositions(int localnum, sCEntity* entity);
 		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin);

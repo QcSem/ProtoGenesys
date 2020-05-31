@@ -27,8 +27,8 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval,
 typedef HRESULT(WINAPI* tPresent)(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 tPresent oPresent;
 
-void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int _event, int param, int contents, char bone);
-typedef void(USERCALL* tBulletHitEvent)(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int _event, int param, int contents, char bone);
+void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int _event, int param, int contents, char bone);
+typedef void(USERCALL* tBulletHitEvent)(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int _event, int param, int contents, char bone);
 tBulletHitEvent oBulletHitEvent = (tBulletHitEvent)dwBulletHitEvent;
 
 void USERCALL hTransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
@@ -110,7 +110,7 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* swapchain, _In_ UINT syncinterval, 
 
 //=====================================================================================
 
-void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int _event, int param, int contents, char bone)
+void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int _event, int param, int contents, char bone)
 {
 	oBulletHitEvent(localnum, sourcenum, targetnum, weapon, start, position, normal, alphanormal, surface, _event, param, contents, bone);
 

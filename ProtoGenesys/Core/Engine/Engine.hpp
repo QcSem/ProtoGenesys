@@ -826,6 +826,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwSetExtraButtons = bIsSteamVersion ? 0x4840B0 : 0x6994D0;
 	static DWORD_PTR dwGetWeaponName = bIsSteamVersion ? 0x458190 : 0x9502B0;
 	static DWORD_PTR dwGetCurrentSession = bIsSteamVersion ? 0x4823F0 : 0x534520;
+	static DWORD_PTR dwIsUserRegistered = bIsSteamVersion ? 0x6181A0 : 0x44D670;
 	static DWORD_PTR dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
 	static DWORD_PTR dwGetPlayerXuid = bIsSteamVersion ? 0x45C710 : 0x667A00;
 	static DWORD_PTR dwJoinSessionFromXuid = bIsSteamVersion ? 0x6EB1E0 : 0x43D980;
@@ -1219,6 +1220,13 @@ namespace ProtoGenesys
 	FORCEINLINE LPVOID GetCurrentSession()
 	{
 		return VariadicCall<LPVOID>(dwGetCurrentSession);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE bool IsUserRegistered(LPVOID session, int clientnum)
+	{
+		return VariadicCall<bool>(dwIsUserRegistered, session, clientnum);
 	}
 	/*
 	//=====================================================================================

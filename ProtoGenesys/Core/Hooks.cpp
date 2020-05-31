@@ -12,8 +12,6 @@ namespace ProtoGenesys
 	{
 		*(DWORD_PTR*)dwTacSSHandle = 0x1;
 
-		SetThirdPerson();
-
 		CG->PlayerState.iSatalliteTypeEnabled = _profiler.gOrbitalVsat->Current.iValue;
 
 		if (_profiler.gHardcoreHud->Current.iValue && CG->iMatchUIVisibilityFlags & 0x200)
@@ -226,6 +224,8 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
+			SetThirdPerson();
+
 			_targetList.GetInformation();
 			_drawing.CalculateTracers();
 			_aimBot.SetAimState();
@@ -352,7 +352,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3 start, ImVec3 position, ImVec3 normal, ImVec3 alphanormal, int surface, int eventnum, int eventparm, int contents, char bone)
+	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int eventnum, int eventparm, int contents, char bone)
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
@@ -373,7 +373,7 @@ namespace ProtoGenesys
 						cDrawing::sTracer Tracer;
 
 						VectorCopy(vTracerStart, Tracer.vStartPos3D);
-						VectorCopy(position, Tracer.vHitPos3D);
+						VectorCopy(*position, Tracer.vHitPos3D);
 
 						Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
 						Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
