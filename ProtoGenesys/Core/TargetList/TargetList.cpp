@@ -97,7 +97,7 @@ namespace ProtoGenesys
 
 			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 			{
-				if (_profiler.gBoneScanPriorities->Current.iValue && !bIsPriority[i])
+				if ((_profiler.gBoneScanPriorities->Current.iValue && !bIsPriority[i]) && (_profiler.gBoneScanRiotShielders->Current.iValue && !EntityHasRiotShield(&CG->CEntity[i])))
 				{
 					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
 					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
@@ -111,7 +111,7 @@ namespace ProtoGenesys
 
 			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
 			{
-				if (_profiler.gBoneScanPriorities->Current.iValue && !bIsPriority[i])
+				if ((_profiler.gBoneScanPriorities->Current.iValue && !bIsPriority[i]) && (_profiler.gBoneScanRiotShielders->Current.iValue && !EntityHasRiotShield(&CG->CEntity[i])))
 				{
 					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
 					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);

@@ -43,9 +43,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;PROTOGENESYS_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;IMGUI_DEFINE_MATH_OPERATORS;VMProtectDecryptString=VMProtectDecryptStringA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>5208;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

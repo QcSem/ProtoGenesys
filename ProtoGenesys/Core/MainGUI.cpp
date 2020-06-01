@@ -409,6 +409,11 @@ namespace ProtoGenesys
 						bWriteLog = true;
 					} ImGui::NewLine();
 
+					if (DrawOption(_profiler.gBoneScanRiotShielders->szName, _profiler.gBoneScanRiotShielders->szItems[_profiler.gBoneScanRiotShielders->Current.iValue], &_profiler.gBoneScanRiotShielders->Current.iValue, _profiler.gBoneScanRiotShielders->Domain.iMin, _profiler.gBoneScanRiotShielders->Domain.iMax, 1))
+					{
+						bWriteLog = true;
+					} ImGui::NewLine();
+
 					if (DrawOption(_profiler.gNamePrestigeSpam->szName, _profiler.gNamePrestigeSpam->szItems[_profiler.gNamePrestigeSpam->Current.iValue], &_profiler.gNamePrestigeSpam->Current.iValue, _profiler.gNamePrestigeSpam->Domain.iMin, _profiler.gNamePrestigeSpam->Domain.iMax, 1))
 					{
 						bWriteLog = true;
@@ -431,6 +436,7 @@ namespace ProtoGenesys
 						_profiler.gReloadCancel->Current.iValue = _profiler.gReloadCancel->Reset.iValue;
 						_profiler.gNoFlinch->Current.iValue = _profiler.gNoFlinch->Reset.iValue;
 						_profiler.gBoneScanPriorities->Current.iValue = _profiler.gBoneScanPriorities->Reset.iValue;
+						_profiler.gBoneScanRiotShielders->Current.iValue = _profiler.gBoneScanRiotShielders->Reset.iValue;
 						_profiler.gNamePrestigeSpam->Current.iValue = _profiler.gNamePrestigeSpam->Reset.iValue;
 						_profiler.gTrickShot->Current.iValue = _profiler.gTrickShot->Reset.iValue;
 

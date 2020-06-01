@@ -54,6 +54,7 @@ namespace ProtoGenesys
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanRiotShielders", gBoneScanRiotShielders->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NamePrestigeSpam", gNamePrestigeSpam->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.TrickShot", gTrickShot->Current.iValue);
 
@@ -175,6 +176,7 @@ namespace ProtoGenesys
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanRiotShielders", gBoneScanRiotShielders->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NamePrestigeSpam", gNamePrestigeSpam->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.TrickShot", gTrickShot->Current.iValue);
 
@@ -279,6 +281,7 @@ namespace ProtoGenesys
 		gReloadCancel->Current.iValue = FALSE;
 		gNoFlinch->Current.iValue = FALSE;
 		gBoneScanPriorities->Current.iValue = FALSE;
+		gBoneScanRiotShielders->Current.iValue = FALSE;
 		gNamePrestigeSpam->Current.iValue = FALSE;
 		gTrickShot->Current.iValue = FALSE;
 	}

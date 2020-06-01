@@ -234,6 +234,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gReloadCancel = std::make_shared<sCvar>("Reload Cancel", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gNoFlinch = std::make_shared<sCvar>("No-Flinch", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gBoneScanPriorities = std::make_shared<sCvar>("Bonescan Priorities", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gBoneScanRiotShielders = std::make_shared<sCvar>("Bonescan Riotshielders", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gNamePrestigeSpam = std::make_shared<sCvar>("Name/Prestige Spam", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 
