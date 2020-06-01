@@ -222,10 +222,10 @@ namespace ProtoGenesys
 	*/
 	void cHooks::DrawBigFPS()
 	{
+		SetThirdPerson();
+
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			SetThirdPerson();
-
 			_targetList.GetInformation();
 			_drawing.CalculateTracers();
 			_aimBot.SetAimState();

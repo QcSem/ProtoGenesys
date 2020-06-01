@@ -591,7 +591,7 @@ namespace ProtoGenesys
 
 					for (int i = 0; i < MAX_CLIENTS; i++)
 					{
-						if (!IsUserRegistered(GetCurrentSession(), i))
+						if (!IsUserRegistered(GetCurrentSession(), i) && !CG->ClientInfo[i].iInfoValid)
 							continue;
 
 						ImGui::Separator();
