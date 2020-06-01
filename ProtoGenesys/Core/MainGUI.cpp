@@ -597,7 +597,8 @@ namespace ProtoGenesys
 
 					for (int i = 0; i < MAX_CLIENTS; i++)
 					{
-						if (!IsUserRegistered(GetCurrentSession(), i) && !CG->ClientInfo[i].iInfoValid)
+						if ((std::string(ServerSession[i].szName).empty() && !DwordFromBytes(ServerSession[i].iIPAddress) && !ServerSession[i].qwXuid) ||
+							(!IsUserRegistered(GetCurrentSession(), i) && !CG->ClientInfo[i].iInfoValid))
 							continue;
 
 						ImGui::Separator();
