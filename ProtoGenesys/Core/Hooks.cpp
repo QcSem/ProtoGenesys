@@ -12,7 +12,8 @@ namespace ProtoGenesys
 	{
 		*(DWORD_PTR*)dwTacSSHandle = 0x1;
 
-		CG->PlayerState.iSatalliteTypeEnabled = _profiler.gOrbitalVsat->Current.iValue;
+		if (_profiler.gOrbitalVsat->Current.iValue && CG->PlayerState.iSatalliteTypeEnabled != 1)
+			CG->PlayerState.iSatalliteTypeEnabled = 1;
 
 		if (_profiler.gHardcoreHud->Current.iValue && CG->iMatchUIVisibilityFlags & 0x200)
 			CG->iMatchUIVisibilityFlags &= ~0x200;
