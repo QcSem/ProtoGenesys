@@ -12,8 +12,8 @@ namespace ProtoGenesys
 	{
 	public:
 
-		void SetRankXP(int value);
-		void SetPLevel(int value);
+		void SetRankXP(DWORD value);
+		void SetPLevel(DWORD value);
 		void HashAndSignStats();
 		void UnlockAll();
 	} extern _stats;

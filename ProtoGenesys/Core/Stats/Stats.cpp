@@ -8,7 +8,7 @@ namespace ProtoGenesys
 {
 	cStats _stats;
 
-	void cStats::SetRankXP(int value)
+	void cStats::SetRankXP(DWORD value)
 	{
 		*(DWORD*)dwRankXP = value;
 		HashAndSignStats();
@@ -16,7 +16,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cStats::SetPLevel(int value)
+	void cStats::SetPLevel(DWORD value)
 	{
 		*(DWORD*)dwPLevel = value;
 		HashAndSignStats();
@@ -26,11 +26,8 @@ namespace ProtoGenesys
 	*/
 	void cStats::HashAndSignStats()
 	{
-		int iRankXP = *(DWORD*)dwRankXP;
-		int iPLevel = *(DWORD*)dwPLevel;
-		QWORD qwXuid = strtoll(GetXuidstring(), NULL, 0x10);
 		char szHash[8];
-		*(QWORD*)szHash = iRankXP ^ iPLevel ^ qwXuid;
+		*(QWORD*)szHash = *(DWORD*)dwRankXP ^ *(DWORD*)dwPLevel ^ (QWORD)strtoll(GetXuidstring(), NULL, 0x10);
 		*(DWORD_PTR*)(dwMemoryBase + 0x28FC) = 0x18;
 		HashMemory(FindHash((LPCSTR)dwTigerHash), szHash, 0x8, (LPSTR)(dwMemoryBase + 0x2900), (int*)(dwMemoryBase + 0x28FC));
 		RegisterPrng((LPVOID)dwPrng);
