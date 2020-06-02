@@ -724,11 +724,12 @@ namespace ProtoGenesys
 				{
 					bWriteLog = true;
 				} ImGui::SameLine(0.0f, 3.0f);
-				LPCSTR szSavePath = SaveDialog.saveFileDialog(bSaveButton, SaveDialog.getLastDirectory(), NULL, ".xml", "Save Profile");
+				LPCSTR szSavePath = SaveDialog.saveFileDialog(bSaveButton, szLastDirectory.c_str(), NULL, ".xml", "Save Profile");
 
 				if (strlen(szSavePath))
 				{
 					_profiler.SaveProfile(szSavePath);
+					szLastDirectory = SaveDialog.getLastDirectory();
 				}
 
 				static bool bLoadButton;
@@ -736,11 +737,12 @@ namespace ProtoGenesys
 				{
 					bWriteLog = true;
 				}
-				LPCSTR szLoadPath = LoadDialog.chooseFileDialog(bLoadButton, LoadDialog.getLastDirectory(), ".xml", "Load Profile");
+				LPCSTR szLoadPath = LoadDialog.chooseFileDialog(bLoadButton, szLastDirectory.c_str(), ".xml", "Load Profile");
 
 				if (strlen(szLoadPath))
 				{
 					_profiler.LoadProfile(szLoadPath);
+					szLastDirectory = LoadDialog.getLastDirectory();
 				}
 				
 				bool bReclaimFocus = false;

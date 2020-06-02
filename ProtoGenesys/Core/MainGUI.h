@@ -31,7 +31,7 @@ namespace ProtoGenesys
 
 		bool bInitialized, bShowWindow, bWriteLog, bIsAirStuck;
 
-		std::string szIniFileName, szLogFileName;
+		std::string szIniFileName, szLogFileName, szLastDirectory;
 		ImGuiFs::Dialog SaveDialog, LoadDialog;
 
 		ImFont* Bank_Gothic_Pro_Light, * Eurostile_Extended;
