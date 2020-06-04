@@ -55,7 +55,12 @@ namespace ProtoGenesys
 
 			else
 			{
-				vAntiAimAngles[0] = -40.0f - CG->PlayerState.vDeltaAngles[0];
+				vAntiAimAngles[0] = -40.0f - CG->vRefDefViewAngles[0];
+
+				if (vAntiAimAngles[0] > 85.0f) vAntiAimAngles[0] = 85.0f;
+				if (vAntiAimAngles[0] < -85.0f) vAntiAimAngles[0] = -85.0f;
+
+				vAntiAimAngles[0] -= CG->PlayerState.vDeltaAngles[0];
 			}
 		}
 
@@ -131,7 +136,12 @@ namespace ProtoGenesys
 
 			else
 			{
-				vAntiAimAngles[1] = -170.0f - CG->PlayerState.vDeltaAngles[1];
+				vAntiAimAngles[1] = CG->vRefDefViewAngles[1] - 170.0f;
+
+				while (vAntiAimAngles[1] > 180.0f) vAntiAimAngles[1] -= 360.0f;
+				while (vAntiAimAngles[1] < -180.0f) vAntiAimAngles[1] += 360.0f;
+
+				vAntiAimAngles[1] -= CG->PlayerState.vDeltaAngles[1];
 			}
 		}
 

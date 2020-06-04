@@ -148,7 +148,18 @@ namespace ProtoGenesys
 	*/
 	void cAimbot::SetReloadState()
 	{
-		static int iTime = Sys_Milliseconds();
+		static DWORD iTick, iWait;
+
+		auto Ready = [&]()
+		{
+			return ((Sys_Milliseconds() - iTick) > iWait);
+		};
+
+		auto Wait = [&](DWORD timeout)
+		{
+			iTick = Sys_Milliseconds();
+			iWait = timeout;
+		};
 
 		if (_profiler.gReloadCancel->Current.iValue)
 		{
@@ -173,16 +184,19 @@ namespace ProtoGenesys
 				break;
 
 			case RELOADED:
-				if (Sys_Milliseconds() - iTime > 35)
+				if (Ready())
 				{
 					CycleWeapon(0);
 					ReloadState.iIncrement++;
-
-					iTime = Sys_Milliseconds();
+					Wait(35);
 				}
 
-				if (!(ReloadState.iIncrement % 2))
+				if (ReloadState.iIncrement == 2)
+				{
+					ReloadState.iAmmo = 0;
+					ReloadState.iIncrement = 0;
 					ReloadState.iReloadState = RELOAD_DEFAULT;
+				}
 
 				break;
 			}

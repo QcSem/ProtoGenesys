@@ -165,17 +165,17 @@ namespace ProtoGenesys
 	*/
 	void cMathematics::ClampMove(char value[])
 	{
-		while (value[0] < -128)
-			value[0] = -128;
-
 		while (value[0] > 127)
 			value[0] = 127;
 
-		while (value[1] < -128)
-			value[1] = -128;
+		while (value[0] < -128)
+			value[0] = -128;
 
 		while (value[1] > 127)
 			value[1] = 127;
+
+		while (value[1] < -128)
+			value[1] = -128;
 
 		if (value[2] != 0)
 			value[2] = 0;
