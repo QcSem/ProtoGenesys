@@ -65,10 +65,18 @@ namespace acut
 		if (path.empty())
 			return path;
 
-		auto idx = path.rfind('\\');
-		
-		if (idx == path.npos)
-			idx = path.rfind('/');
+		auto idx = path.npos;
+		auto idxb = path.rfind('\\');
+		auto idxf = path.rfind('/');
+
+		if (idxb != path.npos && idxf != path.npos)
+			idx = max(idxb, idxf);
+
+		else if (idxb != path.npos)
+			idx = idxb;
+
+		else if (idxf != path.npos)
+			idx = idxf;
 
 		if (idx != path.npos)
 			return path.substr(idx + 1);
@@ -84,10 +92,18 @@ namespace acut
 		if (path.empty())
 			return path;
 
-		auto idx = path.rfind('\\');
-		
-		if (idx == path.npos)
-			idx = path.rfind('/');
+		auto idx = path.npos;
+		auto idxb = path.rfind('\\');
+		auto idxf = path.rfind('/');
+
+		if (idxb != path.npos && idxf != path.npos)
+			idx = max(idxb, idxf);
+
+		else if (idxb != path.npos)
+			idx = idxb;
+
+		else if (idxf != path.npos)
+			idx = idxf;
 
 		if (idx != path.npos)
 			return path.substr(0, idx);
