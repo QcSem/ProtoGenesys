@@ -47,17 +47,26 @@ namespace ProtoGenesys
 				{
 					GetTagPosition(&CG->CEntity[i], RegisterTag(vBones[Bone.first].second.second), GetDObj(&CG->CEntity[i]), &EntityList[i].vBones3D[Bone.first]);
 
-					for (int j = 0; j < 3; j++)
-					{
-						if (EntityList[i].vBones3D[Bone.first][j] < vMinTemp[j])
-							vMinTemp[j] = EntityList[i].vBones3D[Bone.first][j];
+					if (EntityList[i].vBones3D[Bone.first].x < vMinTemp.x)
+						vMinTemp.x = EntityList[i].vBones3D[Bone.first].x;
 
-						if (EntityList[i].vBones3D[Bone.first][j] > vMaxTemp[j])
-							vMaxTemp[j] = EntityList[i].vBones3D[Bone.first][j];
-					}
+					if (EntityList[i].vBones3D[Bone.first].x > vMaxTemp.x)
+						vMaxTemp.x = EntityList[i].vBones3D[Bone.first].x;
+
+					if (EntityList[i].vBones3D[Bone.first].y < vMinTemp.y)
+						vMinTemp.y = EntityList[i].vBones3D[Bone.first].y;
+
+					if (EntityList[i].vBones3D[Bone.first].y > vMaxTemp.y)
+						vMaxTemp.y = EntityList[i].vBones3D[Bone.first].y;
+
+					if (EntityList[i].vBones3D[Bone.first].z < vMinTemp.z)
+						vMinTemp.z = EntityList[i].vBones3D[Bone.first].z;
+
+					if (EntityList[i].vBones3D[Bone.first].z > vMaxTemp.z)
+						vMaxTemp.z = EntityList[i].vBones3D[Bone.first].z;
 				}
 
-				VectorAverage(vMinTemp, vMaxTemp, EntityList[i].vCenter3D);
+				EntityList[i].vCenter3D = (vMinTemp + vMaxTemp) / 2.0f;
 			}
 
 			if (WeaponNames[(BYTE)CG->CEntity[i].NextEntityState.iWeaponID].szDisplayName)
@@ -68,8 +77,8 @@ namespace ProtoGenesys
 			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
 				ImVec3 vViewOrigin;
-				VectorCopy(CG->CEntity[i].vOrigin, vViewOrigin);
-				vViewOrigin[2] += M_METERS;
+				vViewOrigin = CG->CEntity[i].vOrigin;
+				vViewOrigin.z += M_METERS;
 
 				EntityList[i].bW2SSuccess = _drawing.Calculate2D(EntityList[i].vBones3D, EntityList[i].vBones2D, EntityList[i].vPosition, EntityList[i].vDimentions) &&
 					_drawing.Calculate3D(&CG->CEntity[i], EntityList[i].vCenter3D, EntityList[i].vCorners3D, EntityList[i].vCorners2D) &&
@@ -141,7 +150,7 @@ namespace ProtoGenesys
 				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
 			}
 
-			VectorCopy(EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].vHitLocation);
+			EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex];
 
 			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
 			{

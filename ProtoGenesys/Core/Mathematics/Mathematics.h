@@ -14,6 +14,8 @@ namespace ProtoGenesys
 
 		float CalculateFOV(ImVec3 position);
 		float CalculateDistance(ImVec3 start, ImVec3 end);
+		float DotProduct(ImVec3 left, ImVec3 right);
+		float VectorLength(ImVec3 left, ImVec3 right);
 		void VectorAngles(ImVec3 direction, ImVec3& angles);
 		void AngleVectors(ImVec3 angles, ImVec3& forward, ImVec3& right, ImVec3& up);
 		void VectorNormalize(ImVec3& direction);

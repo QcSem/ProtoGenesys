@@ -419,60 +419,60 @@ namespace ProtoGenesys
 
 		if (entity->NextEntityState.LerpEntityState.eFlags1 & EF1_PRONE)
 		{
-			vMinimum[0] = center[0] - 32.5f;
-			vMinimum[1] = center[1] - 20.0f;
-			vMinimum[2] = center[2] - 10.0f;
+			vMinimum.x = center.x - 32.5f;
+			vMinimum.y = center.y - 20.0f;
+			vMinimum.z = center.z - 10.0f;
 
-			vMaximum[0] = center[0] + 32.5f;
-			vMaximum[1] = center[1] + 20.0f;
-			vMaximum[2] = center[2] + 10.0f;
+			vMaximum.x = center.x + 32.5f;
+			vMaximum.y = center.y + 20.0f;
+			vMaximum.z = center.z + 10.0f;
 		}
 
 		else if (entity->NextEntityState.LerpEntityState.eFlags1 & EF1_CROUCH)
 		{
-			vMinimum[0] = center[0] - 20.0f;
-			vMinimum[1] = center[1] - 20.0f;
-			vMinimum[2] = center[2] - 21.0f;
+			vMinimum.x = center.x - 20.0f;
+			vMinimum.y = center.y - 20.0f;
+			vMinimum.z = center.z - 21.0f;
 
-			vMaximum[0] = center[0] + 20.0f;
-			vMaximum[1] = center[1] + 20.0f;
-			vMaximum[2] = center[2] + 21.0f;
+			vMaximum.x = center.x + 20.0f;
+			vMaximum.y = center.y + 20.0f;
+			vMaximum.z = center.z + 21.0f;
 		}
 
 		else
 		{
-			vMinimum[0] = center[0] - 20.0f;
-			vMinimum[1] = center[1] - 20.0f;
-			vMinimum[2] = center[2] - 32.5f;
+			vMinimum.x = center.x - 20.0f;
+			vMinimum.y = center.y - 20.0f;
+			vMinimum.z = center.z - 32.5f;
 
-			vMaximum[0] = center[0] + 20.0f;
-			vMaximum[1] = center[1] + 20.0f;
-			vMaximum[2] = center[2] + 32.5f;
+			vMaximum.x = center.x + 20.0f;
+			vMaximum.y = center.y + 20.0f;
+			vMaximum.z = center.z + 32.5f;
 		}
 
-		VectorCopy(vMinimum, corners3d[0]);
-		VectorCopy(vMaximum, corners3d[7]);
-		VectorCopy(vMinimum, corners3d[1]);
-		VectorCopy(vMinimum, corners3d[2]);
-		VectorCopy(vMinimum, corners3d[3]);
+		corners3d[0] = vMinimum;
+		corners3d[7] = vMaximum;
+		corners3d[1] = vMinimum;
+		corners3d[2] = vMinimum;
+		corners3d[3] = vMinimum;
 
-		corners3d[1][0] = vMaximum[0];
-		corners3d[2][1] = vMaximum[1];
-		corners3d[3][0] = vMaximum[0];
-		corners3d[3][1] = vMaximum[1];
+		corners3d[1].x = vMaximum.x;
+		corners3d[2].y = vMaximum.y;
+		corners3d[3].x = vMaximum.x;
+		corners3d[3].y = vMaximum.y;
 
-		VectorCopy(corners3d[0], corners3d[4]);
-		corners3d[4][2] = vMaximum[2];
+		corners3d[4] = corners3d[0];
+		corners3d[4].z = vMaximum.z;
 
-		VectorCopy(corners3d[1], corners3d[5]);
-		corners3d[5][2] = vMaximum[2];
+		corners3d[5] = corners3d[1];
+		corners3d[5].z = vMaximum.z;
 
-		VectorCopy(corners3d[2], corners3d[6]);
-		corners3d[6][2] = vMaximum[2];
+		corners3d[6] = corners3d[2];
+		corners3d[6].z = vMaximum.z;
 
 		for (int i = 0; i < 8; i++)
 		{
-			_mathematics.RotatePoint(corners3d[i], center, entity->vViewAngles[1], corners3d[i]);
+			_mathematics.RotatePoint(corners3d[i], center, entity->vViewAngles.y, corners3d[i]);
 
 			if (!WorldToScreen(&corners3d[i], &corners2d[i]))
 				return false;
@@ -493,12 +493,12 @@ namespace ProtoGenesys
 			{
 				WorldToScreen(&Tracer->vStartPos3D, &Tracer->vStartPos2D);
 
-				Tracer->cColorShadow[3] = 1.0f - ((float)iDeltaTime / 1000);
-				Tracer->cColorHitMarker[3] = 1.0f - ((float)iDeltaTime / 1000);
-				Tracer->cColorTracer[3] = 1.0f - ((float)iDeltaTime / 1000);
+				Tracer->cColorShadow.w = (1.0f - ((float)iDeltaTime / 1000)) * Tracer->flAlphaShadow;
+				Tracer->cColorHitMarker.w = (1.0f - ((float)iDeltaTime / 1000)) * Tracer->flAlphaHitMarker;
+				Tracer->cColorTracer.w = (1.0f - ((float)iDeltaTime / 1000)) * Tracer->flAlphaTracer;
 			}
 
-			if (Tracer->cColorShadow[3] <= 0.0f || Tracer->cColorHitMarker[3] <= 0.0f || Tracer->cColorTracer[3] <= 0.0f)
+			if (Tracer->cColorShadow.w <= 0.0f && Tracer->cColorHitMarker.w <= 0.0f && Tracer->cColorTracer.w <= 0.0f)
 				Tracer = vTracers.erase(Tracer);
 
 			else
@@ -591,7 +591,7 @@ namespace ProtoGenesys
 						(_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALLIES && EntityIsTeammate(&CG->CEntity[i])) ||
 						_profiler.gWallHackMode->Current.iValue == cProfiler::WALLHACK_MODE_ALL)
 					{
-						float flAngle = (((CG->vRefDefViewAngles[1] - CG->CEntity[i].vViewAngles[1]) + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
+						float flAngle = (((CG->vRefDefViewAngles.y - CG->CEntity[i].vViewAngles.y) + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE;
 
 						ImVec2 vBaseX = ImVec2(Compass.flArrowSize / -2.0f, 0.0f);
 						ImVec2 vBaseY = ImVec2(Compass.flArrowSize / 2.0f, Compass.flArrowSize / 2.0f * -0.75f);

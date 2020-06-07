@@ -267,8 +267,13 @@ namespace ProtoGenesys
 			CopyMemory(pNewCmd, pCurrentCmd, sizeof(sUserCmd));
 			++ClientActive->iCurrentCmd;
 
-			VectorCopy(iBackupAngles, pOldCmd->iViewAngles);
-			VectorCopy(pCurrentCmd->iViewAngles, iBackupAngles);
+			pOldCmd->iViewAngles[0] = iBackupAngles[0];
+			pOldCmd->iViewAngles[1] = iBackupAngles[1];
+			pOldCmd->iViewAngles[2] = iBackupAngles[2];
+
+			iBackupAngles[0] = pCurrentCmd->iViewAngles[0];
+			iBackupAngles[1] = pCurrentCmd->iViewAngles[1];
+			iBackupAngles[2] = pCurrentCmd->iViewAngles[2];
 
 			++pOldCmd->iServerTime;
 			--pCurrentCmd->iServerTime;
@@ -373,13 +378,17 @@ namespace ProtoGenesys
 					{
 						cDrawing::sTracer Tracer;
 
-						VectorCopy(vTracerStart, Tracer.vStartPos3D);
-						VectorCopy(*position, Tracer.vHitPos3D);
+						Tracer.iStartTime = Sys_Milliseconds();
+						Tracer.vStartPos3D = vTracerStart;
+						Tracer.vHitPos3D = *position;
 
 						Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
 						Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
 						Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
-						Tracer.iStartTime = Sys_Milliseconds();
+
+						Tracer.flAlphaShadow = _profiler.gColorShadow->Current.cValue.w;
+						Tracer.flAlphaHitMarker = _profiler.gColorText->Current.cValue.w;
+						Tracer.flAlphaTracer = _profiler.gColorAccents->Current.cValue.w;
 
 						_drawing.vTracers.push_back(Tracer);
 					}
@@ -411,10 +420,10 @@ namespace ProtoGenesys
 				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
 					if (_profiler.gAntiAimPitch->Current.iValue > cProfiler::ANTIAIM_PITCH_OFF)
-						CG->ClientInfo[entity->NextEntityState.iEntityNum].vViewAngles[0] = _antiAim.vAntiAimAngles[0] + CG->PlayerState.vDeltaAngles[0];
+						CG->ClientInfo[entity->NextEntityState.iEntityNum].vViewAngles.x = _antiAim.vAntiAimAngles.x + CG->PlayerState.vDeltaAngles.x;
 
 					if (_profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)
-						entity->vViewAngles[1] = _antiAim.vAntiAimAngles[1] + CG->PlayerState.vDeltaAngles[1];
+						entity->vViewAngles.y = _antiAim.vAntiAimAngles.y + CG->PlayerState.vDeltaAngles.y;
 				}
 			}
 

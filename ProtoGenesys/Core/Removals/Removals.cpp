@@ -10,9 +10,7 @@ namespace ProtoGenesys
 
 	void cRemovals::RecoilCompensation()
 	{
-		RecoilAngles->vAngles[0] *= _profiler.gRecoilFactor->Current.flValue;
-		RecoilAngles->vAngles[1] *= _profiler.gRecoilFactor->Current.flValue;
-		RecoilAngles->vAngles[2] *= _profiler.gRecoilFactor->Current.flValue;
+		RecoilAngles->vAngles *= _profiler.gRecoilFactor->Current.flValue;
 	}
 	/*
 	//=====================================================================================
@@ -64,16 +62,12 @@ namespace ProtoGenesys
 		if (WeaponHasPerk(GetViewmodelWeaponIndex(), 7) &&
 			UsingSniperScope() && CG->PlayerState.flZoomProgress == 1.0f)
 		{
-			vAngles[0] = CG->vOffsetAngles[0] + CG->vKickAngles[0] * 0.25f;
-			vAngles[1] = CG->vOffsetAngles[1] + CG->vKickAngles[1] * 0.25f;
-			vAngles[2] = CG->vOffsetAngles[2] + CG->vKickAngles[2] * 0.25f;
+			vAngles = CG->vOffsetAngles + CG->vKickAngles * 0.25f;
 		}
 
 		else
 		{
-			vAngles[0] = CG->vOffsetAngles[0] + CG->vKickAngles[0];
-			vAngles[1] = CG->vOffsetAngles[1] + CG->vKickAngles[1];
-			vAngles[2] = CG->vOffsetAngles[2] + CG->vKickAngles[2];
+			vAngles = CG->vOffsetAngles + CG->vKickAngles;
 		}
 
 		SetUserCmdAimValues(&vAngles);

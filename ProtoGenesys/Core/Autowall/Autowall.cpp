@@ -34,12 +34,12 @@ namespace ProtoGenesys
 		FP_Enter.flPower = 1.0f;
 		FP_Enter.iBulletType = (pWeaponDef->bRifleBullet != 0) + 1;
 
-		VectorCopy(start, FP_Enter.vViewOrigin);
-		VectorCopy(start, FP_Enter.vStart);
-		VectorCopy(end, FP_Enter.vEnd);
+		FP_Enter.vViewOrigin = start;
+		FP_Enter.vStart = start;
+		FP_Enter.vEnd = end;
 
-		VectorSubtract(end, start, FP_Enter.vDir);
-		float flLength = VectorLength(FP_Enter.vDir);
+		FP_Enter.vDir = end - start;
+		float flLength = _mathematics.VectorLength(FP_Enter.vDir, FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
 		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
@@ -76,10 +76,10 @@ namespace ProtoGenesys
 				if (flEnterDepth <= 0.0)
 					return 0.0f;
 
-				VectorCopy(TR_Enter.vHitPos, vHitPos);
-				VectorSubtract(vHitPos, FP_Enter.vStart, vTemp);
+				vHitPos = TR_Enter.vHitPos;
+				vTemp = vHitPos - FP_Enter.vStart;
 
-				if (VectorLength(vTemp) >= flLength)
+				if (_mathematics.VectorLength(vTemp, vTemp) >= flLength)
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
@@ -95,13 +95,12 @@ namespace ProtoGenesys
 						return 0.0f;
 
 				CopyMemory(&FP_Exit, &FP_Enter, sizeof(sBulletFireParams));
-				VectorScale(FP_Enter.vDir, -1.0f, FP_Exit.vDir);
-
-				VectorCopy(FP_Enter.vEnd, FP_Exit.vStart);
-				VectorMA(vHitPos, 0.0099999998f, FP_Exit.vDir, FP_Exit.vEnd);
-
 				CopyMemory(&TR_Exit, &TR_Enter, sizeof(sBulletTraceResults));
-				VectorScale(TR_Exit.Trace.vNormal, -1.0f, TR_Exit.Trace.vNormal);
+
+				FP_Exit.vDir = FP_Enter.vDir * -1.0f;
+				FP_Exit.vStart = FP_Enter.vEnd;
+				FP_Exit.vEnd = (FP_Exit.vDir * 0.0099999998f) + vHitPos;
+				TR_Exit.Trace.vNormal *= -1.0f;
 
 				if (bEnterHit)
 					AdvanceTrace(&FP_Exit, &TR_Exit, 0.0099999998f);
@@ -147,11 +146,9 @@ namespace ProtoGenesys
 					{
 						ImVec3 vLength;
 
-						VectorSubtract(TR_Exit.vHitPos, TR_Enter.vHitPos, vLength);
+						vLength = TR_Exit.vHitPos - TR_Enter.vHitPos;
 
-						float flLength = DotProduct(vLength, vLength);
-
-						if (flLength > FindVar("bullet_penetrationMinFxDist")->Current.flValue * FindVar("bullet_penetrationMinFxDist")->Current.flValue)
+						if (_mathematics.DotProduct(vLength, vLength) > FindVar("bullet_penetrationMinFxDist")->Current.flValue * FindVar("bullet_penetrationMinFxDist")->Current.flValue)
 						{
 							if (!bEnterHit)
 								return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
@@ -195,11 +192,11 @@ namespace ProtoGenesys
 		FP_Enter.flPower = 1.0f;
 		FP_Enter.iBulletType = (pWeaponDef->bRifleBullet != 0) + 1;
 
-		VectorCopy(start, FP_Enter.vViewOrigin);
-		VectorCopy(start, FP_Enter.vStart);
-		VectorCopy(end, FP_Enter.vEnd);
+		FP_Enter.vViewOrigin = start;
+		FP_Enter.vStart = start;
+		FP_Enter.vEnd = end;
 
-		VectorSubtract(end, start, FP_Enter.vDir);
+		FP_Enter.vDir = end - start;
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
 		BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
@@ -219,8 +216,8 @@ namespace ProtoGenesys
 	{
 		ImVec3 vStart, vEnd;
 
-		VectorCopy(start, vStart);
-		VectorCopy(end, vEnd);
+		vStart = start;
+		vEnd = end;
 
 		sTrace Trace;
 		ZeroMemory(&Trace, sizeof(sTrace));
@@ -262,8 +259,8 @@ namespace ProtoGenesys
 
 		if (fireparams->flPower > 0.0f)
 		{
-			VectorCopy(traceresults->vHitPos, vHitPos);
-			VectorCopy(fireparams->vStart, vStart);
+			vHitPos = traceresults->vHitPos;
+			vStart = fireparams->vStart;
 
 			flDamage = (float)GetWeaponDamageForRange(weapon, &vStart, &vHitPos) * fireparams->flPower;
 			flDamage = GetWeaponHitLocationMultiplier(traceresults->Trace.wPartGroup, weapon) * flDamage;

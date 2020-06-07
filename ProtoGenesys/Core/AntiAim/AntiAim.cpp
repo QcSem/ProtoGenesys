@@ -12,12 +12,12 @@ namespace ProtoGenesys
 	{
 		if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_UP)
 		{
-			vAntiAimAngles[0] = -85.0f - CG->PlayerState.vDeltaAngles[0];
+			vAntiAimAngles.x = -85.0f - CG->PlayerState.vDeltaAngles.x;
 		}
 
 		else if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_DOWN)
 		{
-			vAntiAimAngles[0] = 85.0f - CG->PlayerState.vDeltaAngles[0];
+			vAntiAimAngles.x = 85.0f - CG->PlayerState.vDeltaAngles.x;
 		}
 
 		else if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_JITTER)
@@ -27,12 +27,12 @@ namespace ProtoGenesys
 			switch (bMode)
 			{
 			case false:
-				vAntiAimAngles[0] = -85.0f - CG->PlayerState.vDeltaAngles[0];
+				vAntiAimAngles.x = -85.0f - CG->PlayerState.vDeltaAngles.x;
 				bMode = true;
 				break;
 
 			case true:
-				vAntiAimAngles[0] = 85.0f - CG->PlayerState.vDeltaAngles[0];
+				vAntiAimAngles.x = 85.0f - CG->PlayerState.vDeltaAngles.x;
 				bMode = false;
 				break;
 			}
@@ -43,35 +43,35 @@ namespace ProtoGenesys
 			std::random_device Device;
 			std::uniform_real_distribution<float> RandomPitch(-85.0f, 85.0f);
 
-			vAntiAimAngles[0] = RandomPitch(Device) - CG->PlayerState.vDeltaAngles[0];
+			vAntiAimAngles.x = RandomPitch(Device) - CG->PlayerState.vDeltaAngles.x;
 		}
 
 		else if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_REVERSE)
 		{
 			if (_aimBot.AimState.bAntiAimTargetAcquired || _aimBot.AimState.bIsAutoAiming)
 			{
-				vAntiAimAngles[0] = _aimBot.AimState.vAntiAimAngles[0];
+				vAntiAimAngles.x = _aimBot.AimState.vAntiAimAngles.x;
 			}
 
 			else
 			{
-				vAntiAimAngles[0] = -40.0f - CG->vRefDefViewAngles[0];
+				vAntiAimAngles.x = -40.0f - CG->vRefDefViewAngles.x;
 
-				if (vAntiAimAngles[0] > 85.0f) vAntiAimAngles[0] = 85.0f;
-				if (vAntiAimAngles[0] < -85.0f) vAntiAimAngles[0] = -85.0f;
+				if (vAntiAimAngles.x > 85.0f) vAntiAimAngles.x = 85.0f;
+				if (vAntiAimAngles.x < -85.0f) vAntiAimAngles.x = -85.0f;
 
-				vAntiAimAngles[0] -= CG->PlayerState.vDeltaAngles[0];
+				vAntiAimAngles.x -= CG->PlayerState.vDeltaAngles.x;
 			}
 		}
 
 		else if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_CUSTOM)
 		{
-			vAntiAimAngles[0] = _profiler.gAntiAimCustomPitch->Current.flValue - CG->PlayerState.vDeltaAngles[0];
+			vAntiAimAngles.x = _profiler.gAntiAimCustomPitch->Current.flValue - CG->PlayerState.vDeltaAngles.x;
 		}
 
 		if (ReadyForAntiAim() && _profiler.gAntiAimPitch->Current.iValue > cProfiler::ANTIAIM_PITCH_OFF)
 		{
-			usercmd->iViewAngles[0] = AngleToShort(vAntiAimAngles[0]);
+			usercmd->iViewAngles[0] = AngleToShort(vAntiAimAngles.x);
 		}
 	}
 	/*
@@ -86,7 +86,7 @@ namespace ProtoGenesys
 			if (flAngle > 180.0f)
 				flAngle -= 360.0f;
 
-			vAntiAimAngles[1] = flAngle - CG->PlayerState.vDeltaAngles[1];
+			vAntiAimAngles.y = flAngle - CG->PlayerState.vDeltaAngles.y;
 
 			flAngle += 45.0f;
 		}
@@ -98,22 +98,22 @@ namespace ProtoGenesys
 			switch (iMode)
 			{
 			case 1:
-				vAntiAimAngles[1] = 0.0f - CG->PlayerState.vDeltaAngles[1];
+				vAntiAimAngles.y = 0.0f - CG->PlayerState.vDeltaAngles.y;
 				iMode = 2;
 				break;
 
 			case 2:
-				vAntiAimAngles[1] = 90.0f - CG->PlayerState.vDeltaAngles[1];
+				vAntiAimAngles.y = 90.0f - CG->PlayerState.vDeltaAngles.y;
 				iMode = 3;
 				break;
 
 			case 3:
-				vAntiAimAngles[1] = 180.0f - CG->PlayerState.vDeltaAngles[1];
+				vAntiAimAngles.y = 180.0f - CG->PlayerState.vDeltaAngles.y;
 				iMode = 4;
 				break;
 
 			case 4:
-				vAntiAimAngles[1] = -90.0f - CG->PlayerState.vDeltaAngles[1];
+				vAntiAimAngles.y = -90.0f - CG->PlayerState.vDeltaAngles.y;
 				iMode = 1;
 				break;
 			}
@@ -124,35 +124,35 @@ namespace ProtoGenesys
 			std::random_device Device;
 			std::uniform_real_distribution<float> RandomYaw(-180.0f, 180.0f);
 
-			vAntiAimAngles[1] = RandomYaw(Device) - CG->PlayerState.vDeltaAngles[1];
+			vAntiAimAngles.y = RandomYaw(Device) - CG->PlayerState.vDeltaAngles.y;
 		}
 
 		else if (_profiler.gAntiAimYaw->Current.iValue == cProfiler::ANTIAIM_YAW_REVERSE)
 		{
 			if (_aimBot.AimState.bAntiAimTargetAcquired || _aimBot.AimState.bIsAutoAiming)
 			{
-				vAntiAimAngles[1] = _aimBot.AimState.vAntiAimAngles[1];
+				vAntiAimAngles.y = _aimBot.AimState.vAntiAimAngles.y;
 			}
 
 			else
 			{
-				vAntiAimAngles[1] = CG->vRefDefViewAngles[1] - 170.0f;
+				vAntiAimAngles.y = CG->vRefDefViewAngles.y - 170.0f;
 
-				while (vAntiAimAngles[1] > 180.0f) vAntiAimAngles[1] -= 360.0f;
-				while (vAntiAimAngles[1] < -180.0f) vAntiAimAngles[1] += 360.0f;
+				while (vAntiAimAngles.y > 180.0f) vAntiAimAngles.y -= 360.0f;
+				while (vAntiAimAngles.y < -180.0f) vAntiAimAngles.y += 360.0f;
 
-				vAntiAimAngles[1] -= CG->PlayerState.vDeltaAngles[1];
+				vAntiAimAngles.y -= CG->PlayerState.vDeltaAngles.y;
 			}
 		}
 
 		else if (_profiler.gAntiAimYaw->Current.iValue == cProfiler::ANTIAIM_YAW_CUSTOM)
 		{
-			vAntiAimAngles[1] = _profiler.gAntiAimCustomYaw->Current.flValue - CG->PlayerState.vDeltaAngles[1];
+			vAntiAimAngles.y = _profiler.gAntiAimCustomYaw->Current.flValue - CG->PlayerState.vDeltaAngles.y;
 		}
 
 		if (ReadyForAntiAim() && _profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)
 		{
-			usercmd->iViewAngles[1] = AngleToShort(vAntiAimAngles[1]);
+			usercmd->iViewAngles[1] = AngleToShort(vAntiAimAngles.y);
 		}
 	}
 	/*

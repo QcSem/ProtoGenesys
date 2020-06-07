@@ -12,21 +12,18 @@ namespace ProtoGenesys
 	{
 		if (!_profiler.gSilentAim->Current.iValue && AimState.bTargetAcquired)
 		{
-			AimState.vAimAngles[0] *= _profiler.gAimPower->Current.iValue / 100.0f;
-			AimState.vAimAngles[1] *= _profiler.gAimPower->Current.iValue / 100.0f;
+			AimState.vAimAngles *= _profiler.gAimPower->Current.iValue / 100.0f;
 
 			if (_profiler.gAutoAimTime->Current.iValue)
 			{
-				AimState.vAimAngles[0] *= (float)AimState.iCurrentAimTime / (float)_profiler.gAutoAimTime->Current.iValue;
-				AimState.vAimAngles[1] *= (float)AimState.iCurrentAimTime / (float)_profiler.gAutoAimTime->Current.iValue;
+				AimState.vAimAngles *= (float)AimState.iCurrentAimTime / (float)_profiler.gAutoAimTime->Current.iValue;
 			}
 
 			if (AimState.iCurrentAimDelay == _profiler.gAutoAimDelay->Current.iValue)
 			{
 				if (AimState.bLockonTarget)
 				{
-					ViewAngles->vAngles[0] += AimState.vAimAngles[0];
-					ViewAngles->vAngles[1] += AimState.vAimAngles[1];
+					ViewAngles->vAngles += AimState.vAimAngles;
 				}
 			}
 
@@ -46,8 +43,8 @@ namespace ProtoGenesys
 			{
 				float flOldYaw = ShortToAngle(usercmd->iViewAngles[1]);
 
-				usercmd->iViewAngles[0] += AngleToShort(AimState.vAimAngles[0]);
-				usercmd->iViewAngles[1] += AngleToShort(AimState.vAimAngles[1]);
+				usercmd->iViewAngles[0] += AngleToShort(AimState.vAimAngles.x);
+				usercmd->iViewAngles[1] += AngleToShort(AimState.vAimAngles.y);
 
 				_mathematics.MovementFix(usercmd, ShortToAngle(usercmd->iViewAngles[1]), flOldYaw, usercmd->szMove[0], usercmd->szMove[1]);
 			}
@@ -132,7 +129,7 @@ namespace ProtoGenesys
 			ImVec3 vViewOrigin;
 			GetPlayerViewOrigin(&vViewOrigin);
 
-			VectorCopy(_targetList.EntityList[AimState.iTargetNum].vHitLocation, AimState.vAimPosition);
+			AimState.vAimPosition = _targetList.EntityList[AimState.iTargetNum].vHitLocation;
 
 			_mathematics.CalculateAimAngles(AimState.vAimPosition, vViewOrigin, AimState.vAimAngles);
 			_mathematics.CalculateAntiAimAngles(CG->CEntity[AimState.iTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);

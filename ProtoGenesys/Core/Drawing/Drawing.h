@@ -19,6 +19,7 @@ namespace ProtoGenesys
 			ImVec2 vHitPos2D, vStartPos2D;
 			ImVec3 vHitPos3D, vStartPos3D;
 			ImVec4 cColorShadow, cColorHitMarker, cColorTracer;
+			float flAlphaShadow, flAlphaHitMarker, flAlphaTracer;
 		} sTracer;
 
 		std::vector<sTracer> vTracers;
