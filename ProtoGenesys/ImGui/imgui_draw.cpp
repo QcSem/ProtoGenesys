@@ -216,10 +216,10 @@ void ImGui::StyleColorsFurtive(ImGuiStyle* dst)
     colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.07f, 0.07f, 0.07f, 0.48f);
     colors[ImGuiCol_MenuBarBg]              = ImVec4(0.10f, 0.10f, 0.10f, 0.66f);
     colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.00f);
-    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
     colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.17f, 0.17f, 0.17f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.37f, 0.00f, 0.12f, 1.00f);
-    colors[ImGuiCol_CheckMark]              = ImVec4(0.44f, 0.00f, 0.13f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
+    colors[ImGuiCol_CheckMark]              = ImVec4(0.13f, 0.44f, 0.13f, 1.00f);
     colors[ImGuiCol_SliderGrab]             = ImVec4(0.29f, 0.29f, 0.29f, 1.00f);
     colors[ImGuiCol_SliderGrabActive]       = ImVec4(1.00f, 0.00f, 0.27f, 1.00f);
     colors[ImGuiCol_Button]                 = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
@@ -231,9 +231,9 @@ void ImGui::StyleColorsFurtive(ImGuiStyle* dst)
     colors[ImGuiCol_Separator]              = ImVec4(0.10f, 0.10f, 0.10f, 0.90f);
     colors[ImGuiCol_SeparatorHovered]       = ImVec4(1.00f, 0.00f, 0.33f, 0.78f);
     colors[ImGuiCol_SeparatorActive]        = ImVec4(1.00f, 0.00f, 0.36f, 1.00f);
-    colors[ImGuiCol_ResizeGrip]             = ImVec4(0.98f, 0.00f, 0.26f, 0.25f);
-    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.98f, 0.00f, 0.26f, 0.67f);
-    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.98f, 0.00f, 0.26f, 0.95f);
+    colors[ImGuiCol_ResizeGrip]             = colors[ImGuiCol_ScrollbarGrab];
+    colors[ImGuiCol_ResizeGripHovered]      = colors[ImGuiCol_ScrollbarGrabHovered];
+    colors[ImGuiCol_ResizeGripActive]       = colors[ImGuiCol_ScrollbarGrabActive];
     colors[ImGuiCol_Tab]                    = ImLerp(colors[ImGuiCol_Header],       colors[ImGuiCol_TitleBgActive], 0.80f);
     colors[ImGuiCol_TabHovered]             = colors[ImGuiCol_HeaderHovered];
     colors[ImGuiCol_TabActive]              = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);

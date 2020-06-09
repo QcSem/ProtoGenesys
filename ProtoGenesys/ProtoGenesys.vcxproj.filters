@@ -65,11 +65,11 @@
     <ClCompile Include="Core\Stats\Stats.cpp">
       <Filter>Core\Stats</Filter>
     </ClCompile>
-    <ClCompile Include="Core\License\License.cpp">
-      <Filter>Core\License</Filter>
-    </ClCompile>
     <ClCompile Include="ImGui\Addons\WICTextureLoader.cpp">
       <Filter>ImGui\Addons</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\License\License.cpp">
+      <Filter>Core\License</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

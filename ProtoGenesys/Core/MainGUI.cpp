@@ -604,7 +604,7 @@ namespace ProtoGenesys
 						ImGui::Separator();
 						ImGui::PushID(i);
 
-						if (ImGui::Selectable(ServerSession[i].szName, &_targetList.bIsPriority[i], ImGuiSelectableFlags_SpanAllColumns))
+						if (ImGui::Selectable(ServerSession[i].szName, &_targetList.Priorities[i].bIsPrioritized, ImGuiSelectableFlags_SpanAllColumns))
 						{
 							bWriteLog = true;
 						}
@@ -641,6 +641,20 @@ namespace ProtoGenesys
 									CG->ClientInfo[i].qwXuid));
 
 								bWriteLog = true;
+							}
+
+							if (ImGui::Selectable("Ignore"))
+							{
+								_targetList.Priorities[i].bIsIgnored = !_targetList.Priorities[i].bIsIgnored;
+
+								bWriteLog = true;
+							}
+
+							if (_targetList.Priorities[i].bIsIgnored)
+							{
+								ImGui::SameLine();
+								ImGui::RenderCheckMark(ImGui::GetCurrentWindow()->DrawList, ImGui::GetCurrentWindow()->DC.CursorPos, ImGui::GetColorU32(ImGuiCol_CheckMark), ImGui::GetCurrentContext()->FontSize);
+								ImGui::NewLine();
 							}
 
 							ImGui::Separator();

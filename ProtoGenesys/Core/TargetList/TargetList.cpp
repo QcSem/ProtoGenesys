@@ -31,7 +31,7 @@ namespace ProtoGenesys
 
 			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
-				if (bIsPriority[i] && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
+				if (_targetList.Priorities[i].bIsPrioritized && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
 				{
 					AntiAimTargetInfo.iIndex = i;
 
@@ -106,7 +106,7 @@ namespace ProtoGenesys
 
 			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 			{
-				if ((_profiler.gBoneScanPriorities->Current.iValue && bIsPriority[i]) ||
+				if ((_profiler.gBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
 					(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
 				{
 					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
@@ -126,7 +126,7 @@ namespace ProtoGenesys
 
 			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
 			{
-				if ((_profiler.gBoneScanPriorities->Current.iValue && bIsPriority[i]) ||
+				if ((_profiler.gBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
 					(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
 				{
 					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
@@ -152,9 +152,13 @@ namespace ProtoGenesys
 
 			EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex];
 
+			if (i < MAX_CLIENTS)
+				if (Priorities[i].bIsIgnored)
+					continue;
+
 			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
 			{
-				TargetInfo.bIsPriority = bIsPriority[i];
+				TargetInfo.bIsPriority = _targetList.Priorities[i].bIsPrioritized;
 				TargetInfo.iIndex = i;
 
 				TargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);

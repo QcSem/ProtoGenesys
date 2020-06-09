@@ -45,6 +45,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>None</DebugInformationFormat>
       <DisableSpecificWarnings>5208;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

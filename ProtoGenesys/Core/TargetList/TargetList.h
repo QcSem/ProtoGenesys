@@ -41,7 +41,10 @@ namespace ProtoGenesys
 			ImVec4 cColor;
 		} EntityList[MAX_ENTITIES];
 
-		bool bIsPriority[MAX_CLIENTS] = { false };
+		struct sPriorities
+		{
+			bool bIsPrioritized, bIsIgnored;
+		} Priorities[MAX_CLIENTS];
 
 		void GetInformation();
 		bool IsVisibleInternal(sCEntity* entity, ImVec3 position, bool autowall, float* damage);
