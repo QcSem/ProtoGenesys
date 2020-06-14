@@ -27,6 +27,14 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval,
 typedef HRESULT(WINAPI* tPresent)(_In_ IDXGISwapChain* pSwapChain, _In_ UINT SyncInterval, _In_ UINT Flags);
 tPresent oPresent;
 
+void WINAPI hDrawIndexed(_In_ ID3D11DeviceContext* pContext, _In_ UINT IndexCount, _In_ UINT StartIndexLocation, _In_ INT BaseVertexLocation);
+typedef void(WINAPI* tDrawIndexed)(_In_ ID3D11DeviceContext* pContext, _In_ UINT IndexCount, _In_ UINT StartIndexLocation, _In_ INT BaseVertexLocation);
+tDrawIndexed oDrawIndexed;
+
+void WINAPI hClearRenderTargetView(_In_ ID3D11DeviceContext* pContext, _In_ ID3D11RenderTargetView* pRenderTargetView, _In_ const FLOAT ColorRGBA[4]);
+typedef void(WINAPI* tClearRenderTargetView)(_In_ ID3D11DeviceContext* pContext, _In_ ID3D11RenderTargetView* pRenderTargetView, _In_ const FLOAT ColorRGBA[4]);
+tClearRenderTargetView oClearRenderTargetView;
+
 void USERCALL hBulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int _event, int param, int contents, char bone);
 typedef void(USERCALL* tBulletHitEvent)(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int _event, int param, int contents, char bone);
 tBulletHitEvent oBulletHitEvent = (tBulletHitEvent)dwBulletHitEvent;
@@ -106,6 +114,24 @@ HRESULT WINAPI hPresent(_In_ IDXGISwapChain* swapchain, _In_ UINT syncinterval, 
 	_mainGui.Present(swapchain, syncinterval, flags);
 
 	return oPresent(swapchain, syncinterval, flags);
+}
+
+//=====================================================================================
+
+void WINAPI hDrawIndexed(_In_ ID3D11DeviceContext* pContext, _In_ UINT IndexCount, _In_ UINT StartIndexLocation, _In_ INT BaseVertexLocation)
+{
+	_mainGui.DrawIndexed(pContext, IndexCount, StartIndexLocation, BaseVertexLocation);
+
+	oDrawIndexed(pContext, IndexCount, StartIndexLocation, BaseVertexLocation);
+}
+
+//=====================================================================================
+
+void WINAPI hClearRenderTargetView(_In_ ID3D11DeviceContext* pContext, _In_ ID3D11RenderTargetView* pRenderTargetView, _In_ const FLOAT ColorRGBA[4])
+{
+	_mainGui.ClearRenderTargetView(pContext, pRenderTargetView, ColorRGBA);
+
+	oClearRenderTargetView(pContext, pRenderTargetView, ColorRGBA);
 }
 
 //=====================================================================================
@@ -274,7 +300,9 @@ void Initialize()
 	_hooks.dwNoDelta = *(DWORD_PTR*)dwNoDeltaDvar;
 	*(DWORD_PTR*)dwNoDeltaDvar = cHooks::VEH_INDEX_NODELTA;
 
-	oPresent = (tPresent)SwapVMT((bIsSteamVersion && bGameOverlayRenderer) ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)&hPresent, (bIsSteamVersion && bGameOverlayRenderer) ? 0 : 8);
+	oPresent = (tPresent)SwapVMT(_mainGui._swapChain, &hPresent, 8);
+	oDrawIndexed = (tDrawIndexed)SwapVMT(_mainGui._deviceContext, &hDrawIndexed, 12);
+	oClearRenderTargetView = (tClearRenderTargetView)SwapVMT(_mainGui._deviceContext, &hClearRenderTargetView, 50);
 
 	AttachHook(oBulletHitEvent, hBulletHitEvent);
 	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
@@ -305,7 +333,9 @@ void Deallocate()
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 	SetUnhandledExceptionFilter(_hooks.pUnhandledExceptionFilter);
 
-	SwapVMT((bIsSteamVersion && bGameOverlayRenderer) ? (DWORD_PTR)&dwPresent : dwPresent, (DWORD_PTR)oPresent, (bIsSteamVersion && bGameOverlayRenderer) ? 0 : 8);
+	SwapVMT(_mainGui._swapChain, oPresent, 8);
+	SwapVMT(_mainGui._deviceContext, oDrawIndexed, 12);
+	SwapVMT(_mainGui._deviceContext, oClearRenderTargetView , 50);
 
 	DetachHook(oBulletHitEvent, hBulletHitEvent);
 	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
@@ -321,28 +351,28 @@ void Deallocate()
 	fhAtoiCall2.UnHook();
 
 	if (oGetSteamID)
-		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
+		SwapVMT(_hooks._steamUser, oGetSteamID, 2);
 
 	if (oGetPersonaName)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetPersonaName, 0);
+		SwapVMT(_hooks._steamFriends, oGetPersonaName, 0);
 
 	if (oGetFriendCount)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendCount, 3);
+		SwapVMT(_hooks._steamFriends, oGetFriendCount, 3);
 
 	if (oGetFriendByIndex)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendByIndex, 4);
+		SwapVMT(_hooks._steamFriends, oGetFriendByIndex, 4);
 
 	if (oGetFriendPersonaState)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendPersonaState, 6);
+		SwapVMT(_hooks._steamFriends, oGetFriendPersonaState, 6);
 
 	if (oGetFriendPersonaName)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendPersonaName, 7);
+		SwapVMT(_hooks._steamFriends, oGetFriendPersonaName, 7);
 
 	if (oGetFriendGamePlayed)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendGamePlayed, 8);
+		SwapVMT(_hooks._steamFriends, oGetFriendGamePlayed, 8);
 
-	_mainGui.pDevice->Release();
-	_mainGui.pDeviceContext->Release();
+	_mainGui._device->Release();
+	_mainGui._deviceContext->Release();
 
 	ImGui_ImplWin32_Shutdown();
 	ImGui_ImplDX11_Shutdown();
@@ -370,12 +400,12 @@ void HookFriendApi()
 	if (!_hooks._steamFriends)
 		return;
 
-	oGetPersonaName = (tGetPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetPersonaName, 0);
-	oGetFriendCount = (tGetFriendCount)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendCount, 3);
-	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendByIndex, 4);
-	oGetFriendPersonaState = (tGetFriendPersonaState)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendPersonaState, 6);
-	oGetFriendPersonaName = (tGetFriendPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendPersonaName, 7);
-	oGetFriendGamePlayed = (tGetFriendGamePlayed)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendGamePlayed, 8);
+	oGetPersonaName = (tGetPersonaName)SwapVMT(_hooks._steamFriends, &hGetPersonaName, 0);
+	oGetFriendCount = (tGetFriendCount)SwapVMT(_hooks._steamFriends, &hGetFriendCount, 3);
+	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT(_hooks._steamFriends, &hGetFriendByIndex, 4);
+	oGetFriendPersonaState = (tGetFriendPersonaState)SwapVMT(_hooks._steamFriends, &hGetFriendPersonaState, 6);
+	oGetFriendPersonaName = (tGetFriendPersonaName)SwapVMT(_hooks._steamFriends, &hGetFriendPersonaName, 7);
+	oGetFriendGamePlayed = (tGetFriendGamePlayed)SwapVMT(_hooks._steamFriends, &hGetFriendGamePlayed, 8);
 }
 
 //=====================================================================================
@@ -399,7 +429,7 @@ void WINAPI SteamID(LPWSTR xuid)
 	if (!_hooks._steamUser)
 		return;
 
-	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
+	oGetSteamID = (tGetSteamID)SwapVMT(_hooks._steamUser, &hGetSteamID, 2);
 }
 
 //=====================================================================================

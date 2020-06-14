@@ -31,7 +31,7 @@ namespace ProtoGenesys
 
 			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
-				if (_targetList.Priorities[i].bIsPrioritized && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.iValue)
+				if (_targetList.Priorities[i].bIsPrioritized && !_targetList.Priorities[i].bIsIgnored)
 				{
 					AntiAimTargetInfo.iIndex = i;
 
@@ -82,9 +82,9 @@ namespace ProtoGenesys
 
 				EntityList[i].bW2SSuccess = _drawing.Calculate2D(EntityList[i].vBones3D, EntityList[i].vBones2D, EntityList[i].vPosition, EntityList[i].vDimentions) &&
 					_drawing.Calculate3D(&CG->CEntity[i], EntityList[i].vCenter3D, EntityList[i].vCorners3D, EntityList[i].vCorners2D) &&
-					WorldToScreen(&EntityList[i].vCenter3D, &EntityList[i].vCenter2D) &&
-					WorldToScreen(&CG->CEntity[i].vOrigin, &EntityList[i].vLower) &&
-					WorldToScreen(&vViewOrigin, &EntityList[i].vUpper);
+					_mathematics.WorldToScreen(EntityList[i].vCenter3D, EntityList[i].vCenter2D) &&
+					_mathematics.WorldToScreen(CG->CEntity[i].vOrigin, EntityList[i].vLower) &&
+					_mathematics.WorldToScreen(vViewOrigin, EntityList[i].vUpper);
 
 				_mathematics.WorldToCompass(CG->CEntity[i].vOrigin, _drawing.Compass.vCompassPosition, _drawing.Compass.flCompassSize, _drawing.Compass.vArrowPosition[i]);
 				_mathematics.WorldToRadar(CG->CEntity[i].vOrigin, _drawing.Radar.vRadarPosition, _drawing.Radar.flScale, _drawing.Radar.flRadarSize, _drawing.Radar.flBlipSize, _drawing.Radar.vBlipPosition[i]);
@@ -100,7 +100,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				EntityList[i].bW2SSuccess = WorldToScreen(&CG->CEntity[i].vOrigin, &EntityList[i].vCenter2D);
+				EntityList[i].bW2SSuccess = _mathematics.WorldToScreen(CG->CEntity[i].vOrigin, EntityList[i].vCenter2D);
 				continue;
 			}
 
@@ -174,10 +174,10 @@ namespace ProtoGenesys
 			{
 				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flFOV < b.flFOV; });
 
-				auto ItTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
+				auto itTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
 
-				if (ItTargetInfo != vTargetInfo.end())
-					_aimBot.AimState.iTargetNum = ItTargetInfo->iIndex;
+				if (itTargetInfo != vTargetInfo.end())
+					_aimBot.AimState.iTargetNum = itTargetInfo->iIndex;
 
 				else
 					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
@@ -187,10 +187,10 @@ namespace ProtoGenesys
 			{
 				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDistance < b.flDistance; });
 
-				auto ItTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
+				auto itTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
 
-				if (ItTargetInfo != vTargetInfo.end())
-					_aimBot.AimState.iTargetNum = ItTargetInfo->iIndex;
+				if (itTargetInfo != vTargetInfo.end())
+					_aimBot.AimState.iTargetNum = itTargetInfo->iIndex;
 
 				else
 					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;

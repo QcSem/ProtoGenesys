@@ -134,10 +134,10 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD_PTR SwapVMT(DWORD_PTR address, DWORD_PTR hook, int index)
+	FORCEINLINE LPVOID SwapVMT(LPVOID address, LPVOID hook, int index)
 	{
-		DWORD_PTR* dwVTable = *(DWORD_PTR**)address;
-		DWORD_PTR dwBackup = NULL;
+		LPVOID* dwVTable = *(LPVOID**)address;
+		LPVOID dwBackup = NULL;
 
 		MEMORY_BASIC_INFORMATION MBI;
 
@@ -145,7 +145,7 @@ namespace ProtoGenesys
 		VirtualProtect(MBI.BaseAddress, MBI.RegionSize, PAGE_EXECUTE_READWRITE, &MBI.Protect);
 
 		dwBackup = dwVTable[index];
-		dwVTable[index] = (DWORD_PTR)hook;
+		dwVTable[index] = (LPVOID)hook;
 
 		VirtualProtect(MBI.BaseAddress, MBI.RegionSize, MBI.Protect, &MBI.Protect);
 

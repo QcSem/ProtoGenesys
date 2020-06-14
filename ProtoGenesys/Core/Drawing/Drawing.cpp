@@ -387,7 +387,7 @@ namespace ProtoGenesys
 
 		for (auto& Bone : vBones)
 		{
-			if (!WorldToScreen(&bones3d[Bone.first], &vTemp))
+			if (!_mathematics.WorldToScreen(bones3d[Bone.first], vTemp))
 				return false;
 
 			if (vTemp.x < vMinTemp.x)
@@ -474,7 +474,7 @@ namespace ProtoGenesys
 		{
 			_mathematics.RotatePoint(corners3d[i], center, entity->vViewAngles.y, corners3d[i]);
 
-			if (!WorldToScreen(&corners3d[i], &corners2d[i]))
+			if (!_mathematics.WorldToScreen(corners3d[i], corners2d[i]))
 				return false;
 		}
 
@@ -489,9 +489,9 @@ namespace ProtoGenesys
 		{
 			int iDeltaTime = Sys_Milliseconds() - Tracer->iStartTime;
 
-			if (Tracer->bW2SSuccess = WorldToScreen(&Tracer->vHitPos3D, &Tracer->vHitPos2D))
+			if (Tracer->bW2SSuccess = _mathematics.WorldToScreen(Tracer->vHitPos3D, Tracer->vHitPos2D))
 			{
-				WorldToScreen(&Tracer->vStartPos3D, &Tracer->vStartPos2D);
+				_mathematics.WorldToScreen(Tracer->vStartPos3D, Tracer->vStartPos2D);
 
 				Tracer->cColorShadow.w = (1.0f - ((float)iDeltaTime / 1000)) * Tracer->flAlphaShadow;
 				Tracer->cColorHitMarker.w = (1.0f - ((float)iDeltaTime / 1000)) * Tracer->flAlphaHitMarker;

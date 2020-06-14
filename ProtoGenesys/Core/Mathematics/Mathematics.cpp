@@ -261,28 +261,25 @@ namespace ProtoGenesys
 		sScreenPlacement* ScreenPlacement = GetScreenPlacement();
 
 		ImVec3 vDirection(world - CG->RefDef.vViewOrigin);
-
 		ImVec3 vProjection(DotProduct(vDirection, CG->RefDef.vViewAxis[0]), 
 			DotProduct(vDirection, CG->RefDef.vViewAxis[1]), 
 			DotProduct(vDirection, CG->RefDef.vViewAxis[2]));
 
 		if (vProjection.x >= 0.0f)
 		{
-			screen = ImVec2((1.0f - vProjection.y / CG->RefDef.flFovX / vProjection.x) * ScreenPlacement->vRealViewportSize.x / 2.0f,
-				(1.0f - vProjection.z / CG->RefDef.flFovY / vProjection.x) * ScreenPlacement->vRealViewportSize.y / 2.0f);
+			screen = ImVec2(((1.0f - ((vProjection.y / CG->RefDef.flFovX) * (1.0f / vProjection.x))) * (ScreenPlacement->vRealViewportSize.x / 2.0f)) + ScreenPlacement->vRealViewportBase.x,
+				((1.0f - ((vProjection.z / CG->RefDef.flFovY) * (1.0f / vProjection.x))) * (ScreenPlacement->vRealViewportSize.y / 2.0f)) + ScreenPlacement->vRealViewportBase.y);
 
 			return true;
 		}
 
 		else
 		{
-			vProjection *= -1.0f;
-
-			screen = ImVec2(vProjection.y, vProjection.z);
+			screen = ImVec2(-vProjection.y, -vProjection.z);
 			
-			if (abs(vProjection.y < 0.001f))
+			if (abs(screen.x) < 0.001f)
 			{
-				if (abs(vProjection.z) < 0.001f)
+				if (abs(screen.y) < 0.001f)
 				{
 					screen.y = ScreenPlacement->vRealViewportSize.y * 2.0f;
 
@@ -292,16 +289,25 @@ namespace ProtoGenesys
 				screen.x = 0.001f;
 			}
 
-			while (ScreenPlacement->vRealViewportSize.x > abs(screen.x))
+			if (abs(screen.y) < 0.001f)
+				screen.y = 0.001f;
+
+			if (ScreenPlacement->vRealViewportSize.x > abs(screen.x))
 			{
-				screen.x *= ScreenPlacement->vRealViewportSize.x;
-				screen.y *= ScreenPlacement->vRealViewportSize.x;
+				do 
+				{
+					screen.x *= ScreenPlacement->vRealViewportSize.x;
+					screen.y *= ScreenPlacement->vRealViewportSize.x;
+				} while (ScreenPlacement->vRealViewportSize.x > abs(screen.x));
 			}
 
-			while (ScreenPlacement->vRealViewportSize.y > abs(screen.y))
+			if (ScreenPlacement->vRealViewportSize.y > abs(screen.y))
 			{
-				screen.x *= ScreenPlacement->vRealViewportSize.y;
-				screen.y *= ScreenPlacement->vRealViewportSize.y;
+				do
+				{
+					screen.x *= ScreenPlacement->vRealViewportSize.y;
+					screen.y *= ScreenPlacement->vRealViewportSize.y;
+				} while (ScreenPlacement->vRealViewportSize.y > abs(screen.y));
 			}
 
 			return false;

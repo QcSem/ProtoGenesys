@@ -337,14 +337,14 @@ namespace ProtoGenesys
 	*/
 	typedef struct
 	{
-		char _0x0[0x8];
+		int iX;
+		int iY;
 		int iWidth;
 		int iHeight;
 		char _0x10[0x10];
 		float flFovX;
 		float flFovY;
-		float flFovZ;
-		char _0x2C[0x4];
+		char _0x28[0x8];
 		float flFov;
 		ImVec3 vViewOrigin;
 		char _0x40[0x4];
@@ -712,10 +712,8 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	static MODULEINFO hT6mp = GetModuleInfo(NULL);
-	static MODULEINFO hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
 	static HMODULE hSteamAPI = GetModuleHandle("steam_api.dll");
 
-	static bool bGameOverlayRenderer = (hGameOverlayRenderer.lpBaseOfDll && hGameOverlayRenderer.SizeOfImage);
 	static bool bIsSteamVersion = hT6mp.SizeOfImage == 0x400D000;
 
 	static DWORD_PTR dwConnectPathsDvar = 0x2366AA4;
@@ -839,16 +837,15 @@ namespace ProtoGenesys
 	static DWORD_PTR dwMemoryBase = bIsSteamVersion ? 0x24A0000 : 0x247F000;
 
 	static DWORD_PTR dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
+	static DWORD_PTR dwDevice = bIsSteamVersion ? 0x35CF484 : 0x35AE484;
+	static DWORD_PTR dwDeviceContext = bIsSteamVersion ? 0x35CF488 : 0x35AE488;
+
 	static DWORD_PTR dwMouseInput = 0x2B69969;
 
 	static DWORD_PTR dwTacSSCheck = 0x2B68838;
 	static DWORD_PTR dwTacSSPatch = 0x2B68824;
 	static DWORD_PTR dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
 	static DWORD_PTR dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
-
-	static DWORD_PTR dwPresent = (bIsSteamVersion && bGameOverlayRenderer) ?
-		ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2) :
-		*(DWORD_PTR*)dwSwapChain;
 	/*
 	//=====================================================================================
 	*/

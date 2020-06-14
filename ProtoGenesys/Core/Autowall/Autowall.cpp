@@ -232,6 +232,7 @@ namespace ProtoGenesys
 	bool cAutowall::BulletTrace(sBulletTraceResults* traceresults, sBulletFireParams* fireparams, sCEntity* attacker, int surfacetype)
 	{
 		bool bResult = false;
+
 		__declspec(align(16)) char szSave[512];
 		_fxsave(szSave);
 		__asm
@@ -247,6 +248,7 @@ namespace ProtoGenesys
 			add esp, 14h
 		}
 		_fxrstor(szSave);
+
 		return bResult;
 	}
 	/*
