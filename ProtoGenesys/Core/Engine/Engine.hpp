@@ -1056,9 +1056,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE WORD GetTraceHitType(sBulletTraceResults* traceresults)
+	FORCEINLINE WORD GetTraceHitType(sTrace* trace)
 	{
-		return VariadicCall<WORD>(dwGetTraceHitType, traceresults);
+		return VariadicCall<WORD>(dwGetTraceHitType, trace);
 	}
 	/*
 	//=====================================================================================

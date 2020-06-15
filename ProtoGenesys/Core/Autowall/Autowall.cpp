@@ -39,7 +39,6 @@ namespace ProtoGenesys
 		FP_Enter.vEnd = end;
 
 		FP_Enter.vDir = end - start;
-		float flLength = _mathematics.VectorLength(FP_Enter.vDir, FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
 		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
@@ -56,15 +55,11 @@ namespace ProtoGenesys
 				if (HitTeammate(&TR_Enter))
 					return 0.0f;
 
-			if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum)
-				return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
-
 			float flEnterDepth = 0.0f;
 			float flExitDepth = 0.0f;
 			float flSurfaceDepth = 0.0f;
 
 			ImVec3 vHitPos;
-			ImVec3 vTemp;
 
 			for (int iSurfaceCount = 0; bEnterHit && iSurfaceCount < FindVar("penetrationCount")->Current.iValue; ++iSurfaceCount)
 			{
@@ -77,11 +72,7 @@ namespace ProtoGenesys
 					return 0.0f;
 
 				vHitPos = TR_Enter.vHitPos;
-				vTemp = vHitPos - FP_Enter.vStart;
-
-				if (_mathematics.VectorLength(vTemp, vTemp) >= flLength)
-					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
-
+				
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
 					return 0.0f;
 
@@ -153,16 +144,10 @@ namespace ProtoGenesys
 							if (!bEnterHit)
 								return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 						}
-
-						if (GetTraceHitType(&TR_Exit) == entity->NextEntityState.iEntityNum)
-							return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 					}
 				}
 
 				else if (!bEnterHit)
-					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
-
-				if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum)
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 			}
 
@@ -204,7 +189,7 @@ namespace ProtoGenesys
 		if (HitRiotshield(&TR_Enter))
 			return 0.0f;
 
-		if (GetTraceHitType(&TR_Enter) == entity->NextEntityState.iEntityNum || TR_Enter.Trace.flFraction == 1.0f)
+		if (GetTraceHitType(&TR_Enter.Trace) == entity->NextEntityState.iEntityNum || TR_Enter.Trace.flFraction == 1.0f)
 			return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 
 		return 0.0f;
@@ -284,7 +269,7 @@ namespace ProtoGenesys
 		if (traceresults->Trace.wPartGroup == 20)
 			return true;
 
-		WORD wHitID = GetTraceHitType(traceresults);
+		WORD wHitID = GetTraceHitType(&traceresults->Trace);
 
 		if (wHitID != 1022)
 		{
@@ -301,7 +286,7 @@ namespace ProtoGenesys
 	*/
 	bool cAutowall::HitTeammate(sBulletTraceResults* traceresults)
 	{
-		WORD wHitID = GetTraceHitType(traceresults);
+		WORD wHitID = GetTraceHitType(&traceresults->Trace);
 
 		if (wHitID < MAX_CLIENTS)
 		{
