@@ -457,7 +457,7 @@ namespace ProtoGenesys
 		if (!szIpOverride.empty())
 		{
 			std::vector<std::string> vIpOverride = acut::SplitStringWithDelimiter(szIpOverride, ".");
-			PBYTE pIP = (PBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
+			LPBYTE pIP = (LPBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
 
 			pIP[0] = (BYTE)strtol(vIpOverride[0].c_str(), NULL, 10);
 			pIP[1] = (BYTE)strtol(vIpOverride[1].c_str(), NULL, 10);
@@ -572,9 +572,9 @@ namespace ProtoGenesys
 			std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_DMP, " ", ""), std::ios_base::out | std::ios_base::app);
 			file << std::hex << result << std::endl;
 
-			result = 0;
-
 			_console.AddLog("%s RCE_ATTEMPT_BLOCKED @ 0x%X", PREFIX_WARNING, result);
+
+			result = 0;
 		}
 
 		return result;
@@ -589,9 +589,9 @@ namespace ProtoGenesys
 			std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_DMP, " ", ""), std::ios_base::out | std::ios_base::app);
 			file << std::hex << (0x2E448C80 + 0x4 * result + 0x6885C) << std::endl;
 
-			result = 0;
-
 			_console.AddLog("%s RCE_ATTEMPT_BLOCKED @ 0x%X", PREFIX_WARNING, (0x2E448C80 + 0x4 * result + 0x6885C));
+
+			result = 0;
 		}
 
 		return result;

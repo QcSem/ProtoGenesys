@@ -52,7 +52,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE bool Match(const BYTE* data, const BYTE* signature, const char* mask)
+	FORCEINLINE bool Match(LPBYTE data, LPBYTE signature, LPCSTR mask)
 	{
 		for (; *mask; ++mask, ++data, ++signature)
 			if (*mask == 'x' && *data != *signature)
@@ -63,13 +63,13 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD_PTR FindPattern(const char* signature, const char* mask)
+	FORCEINLINE DWORD_PTR FindPattern(LPCSTR signature, LPCSTR mask)
 	{
-		DWORD_PTR dwAddress = (DWORD_PTR)GetModuleHandle(NULL);
+		DWORD_PTR dwAddress = (DWORD_PTR)GetModuleInfo(NULL).lpBaseOfDll;
 		DWORD_PTR dwLen = GetModuleInfo(NULL).SizeOfImage;
 
 		for (DWORD_PTR i = 0; i < dwLen; i++)
-			if (Match((BYTE*)(dwAddress + i), (BYTE*)signature, mask))
+			if (Match((LPBYTE)(dwAddress + i), (LPBYTE)signature, mask))
 				return (DWORD_PTR)(dwAddress + i);
 
 		return NULL;
@@ -77,10 +77,10 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD_PTR FindPattern(DWORD_PTR address, DWORD_PTR length, const char* signature, const char* mask)
+	FORCEINLINE DWORD_PTR FindPattern(DWORD_PTR address, DWORD_PTR length, LPCSTR signature, LPCSTR mask)
 	{
 		for (DWORD_PTR i = 0; i < length; i++)
-			if (Match((BYTE*)(address + i), (BYTE*)signature, mask))
+			if (Match((LPBYTE)(address + i), (LPBYTE)signature, mask))
 				return (DWORD_PTR)(address + i);
 
 		return NULL;
