@@ -39,6 +39,7 @@ namespace ProtoGenesys
 		FP_Enter.vEnd = end;
 
 		FP_Enter.vDir = end - start;
+		float flLength = _mathematics.VectorLength(FP_Enter.vDir, FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
 		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
@@ -52,14 +53,18 @@ namespace ProtoGenesys
 				return 0.0f;
 
 			if (_profiler.gAntiTeamKill->Current.iValue)
-				if (HitTeammate(&TR_Enter))
+				if (HitTeammate(&TR_Enter.Trace))
 					return 0.0f;
+
+			if (GetTraceHitType(&TR_Enter.Trace) == entity->NextEntityState.iEntityNum)
+				return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 
 			float flEnterDepth = 0.0f;
 			float flExitDepth = 0.0f;
 			float flSurfaceDepth = 0.0f;
 
 			ImVec3 vHitPos;
+			ImVec3 vTemp;
 
 			for (int iSurfaceCount = 0; bEnterHit && iSurfaceCount < FindVar("penetrationCount")->Current.iValue; ++iSurfaceCount)
 			{
@@ -72,6 +77,10 @@ namespace ProtoGenesys
 					return 0.0f;
 
 				vHitPos = TR_Enter.vHitPos;
+				vTemp = vHitPos - FP_Enter.vStart;
+
+				if (_mathematics.VectorLength(vTemp, vTemp) >= flLength)
+					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 				
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
 					return 0.0f;
@@ -82,7 +91,7 @@ namespace ProtoGenesys
 					return 0.0f;
 
 				if (_profiler.gAntiTeamKill->Current.iValue)
-					if (HitTeammate(&TR_Enter))
+					if (HitTeammate(&TR_Enter.Trace))
 						return 0.0f;
 
 				CopyMemory(&FP_Exit, &FP_Enter, sizeof(sBulletFireParams));
@@ -103,7 +112,7 @@ namespace ProtoGenesys
 					return 0.0f;
 
 				if (_profiler.gAntiTeamKill->Current.iValue)
-					if (HitTeammate(&TR_Exit))
+					if (HitTeammate(&TR_Exit.Trace))
 						return 0.0f;
 
 				if (bExitHit || bStaticModel)
@@ -144,10 +153,16 @@ namespace ProtoGenesys
 							if (!bEnterHit)
 								return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 						}
+
+						if (GetTraceHitType(&TR_Exit.Trace) == entity->NextEntityState.iEntityNum)
+							return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 					}
 				}
 
 				else if (!bEnterHit)
+					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
+
+				if (GetTraceHitType(&TR_Enter.Trace) == entity->NextEntityState.iEntityNum)
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 			}
 
@@ -284,9 +299,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cAutowall::HitTeammate(sBulletTraceResults* traceresults)
+	bool cAutowall::HitTeammate(sTrace* trace)
 	{
-		WORD wHitID = GetTraceHitType(&traceresults->Trace);
+		WORD wHitID = GetTraceHitType(trace);
 
 		if (wHitID < MAX_CLIENTS)
 		{
