@@ -654,7 +654,7 @@ namespace ProtoGenesys
 			{
 				bWriteLog = true;
 			} ImGui::SameLine(0.0f, 3.0f);
-			LPCSTR szSavePath = SaveDialog.saveFileDialog(bSaveButton, szLastDirectory.c_str(), NULL, ".xml", "Save Profile");
+			LPCSTR szSavePath = SaveDialog.saveFileDialog(bSaveButton, szLastDirectory.c_str(), NULL, ".xml", "SAVE PROFILE");
 
 			if (strlen(szSavePath))
 			{
@@ -667,7 +667,7 @@ namespace ProtoGenesys
 			{
 				bWriteLog = true;
 			}
-			LPCSTR szLoadPath = LoadDialog.chooseFileDialog(bLoadButton, szLastDirectory.c_str(), ".xml", "Load Profile");
+			LPCSTR szLoadPath = LoadDialog.chooseFileDialog(bLoadButton, szLastDirectory.c_str(), ".xml", "LOAD PROFILE");
 
 			if (strlen(szLoadPath))
 			{
