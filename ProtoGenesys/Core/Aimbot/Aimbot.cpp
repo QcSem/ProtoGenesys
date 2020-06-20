@@ -145,17 +145,17 @@ namespace ProtoGenesys
 	*/
 	void cAimbot::SetReloadState()
 	{
-		static DWORD iTick, iWait;
+		static DWORD dwTick, dwWait;
 
 		auto Ready = [&]()
 		{
-			return ((Sys_Milliseconds() - iTick) > iWait);
+			return ((Sys_Milliseconds() - dwTick) > dwWait);
 		};
 
 		auto Wait = [&](DWORD timeout)
 		{
-			iTick = Sys_Milliseconds();
-			iWait = timeout;
+			dwTick = Sys_Milliseconds();
+			dwWait = timeout;
 		};
 
 		if (_profiler.gReloadCancel->Current.iValue)
@@ -163,7 +163,7 @@ namespace ProtoGenesys
 			switch (ReloadState.iReloadState)
 			{
 			case RELOAD_DEFAULT:
-				if (CG->PlayerState.iWeaponState[0] == 11 || CG->PlayerState.iWeaponState[1] == 11)
+				if (IsPlayerReloading())
 					ReloadState.iReloadState = RELOAD;
 
 				break;
