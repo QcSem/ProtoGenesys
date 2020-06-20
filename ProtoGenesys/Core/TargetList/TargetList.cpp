@@ -106,13 +106,13 @@ namespace ProtoGenesys
 
 			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 			{
-				if ((_profiler.gBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
-					(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
+				if ((_profiler.gOnlyBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
+					(_profiler.gOnlyBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
 				{
 					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
 				}
 
-				else if (!_profiler.gBoneScanPriorities->Current.iValue && !_profiler.gBoneScanRiotShielders->Current.iValue)
+				else if (!_profiler.gOnlyBoneScanPriorities->Current.iValue && !_profiler.gOnlyBoneScanRiotShielders->Current.iValue)
 				{
 					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
 				}
@@ -126,13 +126,13 @@ namespace ProtoGenesys
 
 			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
 			{
-				if ((_profiler.gBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
-					(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
+				if ((_profiler.gOnlyBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
+					(_profiler.gOnlyBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
 				{
 					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
 				}
 
-				else if (!_profiler.gBoneScanPriorities->Current.iValue && !_profiler.gBoneScanRiotShielders->Current.iValue)
+				else if (!_profiler.gOnlyBoneScanPriorities->Current.iValue && !_profiler.gOnlyBoneScanRiotShielders->Current.iValue)
 				{
 					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
 				}

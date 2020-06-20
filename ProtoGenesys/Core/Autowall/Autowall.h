@@ -19,6 +19,7 @@ namespace ProtoGenesys
 		float GetRemainingDamage(sBulletFireParams* fireparams, sBulletTraceResults* traceresults, int weapon);
 		bool HitRiotshield(sBulletTraceResults* traceresults);
 		bool HitTeammate(sTrace* trace);
+		bool HitIgnored(sTrace* trace);
 	} extern _autoWall;
 }
 

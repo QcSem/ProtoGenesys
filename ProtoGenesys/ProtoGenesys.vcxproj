@@ -111,8 +111,12 @@
     <ClInclude Include="ImGui\Addons\TabWindow\imguitabwindow.h" />
     <ClInclude Include="ImGui\Addons\WICTextureLoader.h" />
     <ClInclude Include="ImGui\DX11\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\Fonts\Bank_Gothic_Pro_Bold.hpp" />
     <ClInclude Include="ImGui\Fonts\Bank_Gothic_Pro_Light.hpp" />
+    <ClInclude Include="ImGui\Fonts\Bank_Gothic_Pro_Medium.hpp" />
+    <ClInclude Include="ImGui\Fonts\Eurostile_Bold.hpp" />
     <ClInclude Include="ImGui\Fonts\Eurostile_Extended.hpp" />
+    <ClInclude Include="ImGui\Fonts\Eurostile_Regular.hpp" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_internal.h" />

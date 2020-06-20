@@ -52,8 +52,12 @@ namespace ProtoGenesys
 			if (HitRiotshield(&TR_Enter))
 				return 0.0f;
 
-			if (_profiler.gAntiTeamKill->Current.iValue)
+			if (_profiler.gAntiKillTeamMates->Current.iValue)
 				if (HitTeammate(&TR_Enter.Trace))
+					return 0.0f;
+
+			if (_profiler.gAntiKillIgnored->Current.iValue)
+				if (HitIgnored(&TR_Enter.Trace))
 					return 0.0f;
 
 			if (GetTraceHitType(&TR_Enter.Trace) == entity->NextEntityState.iEntityNum)
@@ -90,8 +94,12 @@ namespace ProtoGenesys
 				if (HitRiotshield(&TR_Enter))
 					return 0.0f;
 
-				if (_profiler.gAntiTeamKill->Current.iValue)
+				if (_profiler.gAntiKillTeamMates->Current.iValue)
 					if (HitTeammate(&TR_Enter.Trace))
+						return 0.0f;
+
+				if (_profiler.gAntiKillIgnored->Current.iValue)
+					if (HitIgnored(&TR_Enter.Trace))
 						return 0.0f;
 
 				CopyMemory(&FP_Exit, &FP_Enter, sizeof(sBulletFireParams));
@@ -111,8 +119,12 @@ namespace ProtoGenesys
 				if (HitRiotshield(&TR_Exit))
 					return 0.0f;
 
-				if (_profiler.gAntiTeamKill->Current.iValue)
+				if (_profiler.gAntiKillTeamMates->Current.iValue)
 					if (HitTeammate(&TR_Exit.Trace))
+						return 0.0f;
+
+				if (_profiler.gAntiKillIgnored->Current.iValue)
+					if (HitIgnored(&TR_Exit.Trace))
 						return 0.0f;
 
 				if (bExitHit || bStaticModel)
@@ -306,6 +318,23 @@ namespace ProtoGenesys
 		if (wHitID < MAX_CLIENTS)
 		{
 			if (EntityIsTeammate(&CG->CEntity[wHitID]))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cAutowall::HitIgnored(sTrace* trace)
+	{
+		WORD wHitID = GetTraceHitType(trace);
+
+		if (wHitID < MAX_CLIENTS)
+		{
+			if (_targetList.Priorities[wHitID].bIsIgnored)
 			{
 				return true;
 			}

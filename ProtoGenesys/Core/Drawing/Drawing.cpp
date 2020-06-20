@@ -313,46 +313,46 @@ namespace ProtoGenesys
 
 		bool bHasRiotShield = EntityHasRiotShield(entity);
 
-		if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER)
+		if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER)
 			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
-		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER)
+		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER)
 			DrawCorners(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), 3.0f, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
-		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER_FILLED)
+		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER_FILLED)
 		{
 			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, (bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
 			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 		}
 
-		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER_FILLED)
+		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER_FILLED)
 		{
 			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, (bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
 			DrawCorners(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), 3.0f, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 		}
 
-		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER_3D)
+		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER_3D)
 			DrawBorder3D(corners2d, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
-		else if (_profiler.gPlayerBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER_3D)
+		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER_3D)
 			DrawCorners3D(corners2d, 3.0f, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
-		if (_profiler.gPlayerBones->Current.iValue == cProfiler::PLAYER_BONES_DOTS)
+		if (_profiler.gBones->Current.iValue == cProfiler::PLAYER_BONES_DOTS)
 			DrawBones(bones2d, false, color);
 
-		else if (_profiler.gPlayerBones->Current.iValue == cProfiler::PLAYER_BONES_LINES)
+		else if (_profiler.gBones->Current.iValue == cProfiler::PLAYER_BONES_LINES)
 			DrawBones(bones2d, true, color);
 
-		if (_profiler.gPlayerSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_TOP)
+		if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_TOP)
 			DrawLine(ImVec2(center.x, center.y - flHeight / 2.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, 0.0f), color);
 
-		else if (_profiler.gPlayerSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_BOTTOM)
+		else if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_BOTTOM)
 			DrawLine(ImVec2(center.x, center.y + flHeight / 2.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y), color);
 
-		else if (_profiler.gPlayerSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_CROSSHAIR)
+		else if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_CROSSHAIR)
 			DrawLine(ImVec2(center.x, center.y), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f), color);
 
-		if (_profiler.gPlayerInfo->Current.iValue)
+		if (_profiler.gDistances->Current.bValue && _profiler.gNames->Current.bValue)
 		{
 			std::string szText(acut::StripColorCodes(VariadicText("[%im] %s", (int)(distance / M_METERS), name.c_str())));
 			ImVec2 vStringSize = _mainGui.Bank_Gothic_Pro_Light->CalcTextSizeA(_mainGui.flBank_Gothic_Pro_Light, FLT_MAX, 0.0f, szText.c_str());
@@ -360,7 +360,23 @@ namespace ProtoGenesys
 			DrawString(szText, ImVec2(center.x - vStringSize.x / 2.0f, center.y - flHeight / 2.0f - flPadding - vStringSize.y), false, _profiler.gColorText->Current.cValue);
 		}
 
-		if (_profiler.gPlayerWeapons->Current.iValue)
+		else if (_profiler.gDistances->Current.bValue)
+		{
+			std::string szText(acut::StripColorCodes(VariadicText("[%im]", (int)(distance / M_METERS))));
+			ImVec2 vStringSize = _mainGui.Bank_Gothic_Pro_Light->CalcTextSizeA(_mainGui.flBank_Gothic_Pro_Light, FLT_MAX, 0.0f, szText.c_str());
+
+			DrawString(szText, ImVec2(center.x - vStringSize.x / 2.0f, center.y - flHeight / 2.0f - flPadding - vStringSize.y), false, _profiler.gColorText->Current.cValue);
+		}
+
+		else if (_profiler.gNames->Current.bValue)
+		{
+			std::string szText(acut::StripColorCodes(name));
+			ImVec2 vStringSize = _mainGui.Bank_Gothic_Pro_Light->CalcTextSizeA(_mainGui.flBank_Gothic_Pro_Light, FLT_MAX, 0.0f, szText.c_str());
+
+			DrawString(szText, ImVec2(center.x - vStringSize.x / 2.0f, center.y - flHeight / 2.0f - flPadding - vStringSize.y), false, _profiler.gColorText->Current.cValue);
+		}
+
+		if (_profiler.gWeapons->Current.iValue)
 		{
 			std::string szText(acut::StripColorCodes(_targetList.EntityList[entity->NextEntityState.iEntityNum].szWeapon));
 			ImVec2 vStringSize = _mainGui.Bank_Gothic_Pro_Light->CalcTextSizeA(_mainGui.flBank_Gothic_Pro_Light, FLT_MAX, 0.0f, szText.c_str());
@@ -527,43 +543,43 @@ namespace ProtoGenesys
 
 					case ET_ITEM:
 					{
-						if (_profiler.gPlayerEntities->Current.iValue)
+						if (_profiler.gEntities->Current.iValue)
 							DrawEntity("Item", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_MISSILE:
 					{
-						if (_profiler.gPlayerEntities->Current.iValue)
+						if (_profiler.gEntities->Current.iValue)
 							DrawEntity("Missile", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_TURRET:
 					{
-						if (_profiler.gPlayerEntities->Current.iValue)
+						if (_profiler.gEntities->Current.iValue)
 							DrawEntity("Turret", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_HELICOPTER:
 					{
-						if (_profiler.gPlayerEntities->Current.iValue)
+						if (_profiler.gEntities->Current.iValue)
 							DrawEntity("Helicopter", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_PLANE:
 					{
-						if (_profiler.gPlayerEntities->Current.iValue)
+						if (_profiler.gEntities->Current.iValue)
 							DrawEntity("Plane", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_VEHICLE:
 					{
-						if (_profiler.gPlayerEntities->Current.iValue)
+						if (_profiler.gEntities->Current.iValue)
 							DrawEntity("Vehicle", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_ACTOR:
 					{
-						if (_profiler.gPlayerEntities->Current.iValue)
+						if (_profiler.gEntities->Current.iValue)
 							DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 					}
@@ -576,7 +592,7 @@ namespace ProtoGenesys
 	*/
 	void cDrawing::DrawCompass()
 	{
-		if (_profiler.gPlayerCompass->Current.iValue)
+		if (_profiler.gCompass->Current.iValue)
 		{
 			Compass.flArrowSize = ImGui::GetIO().DisplaySize.y / 40.0f;
 			Compass.flCompassSize = ImGui::GetIO().DisplaySize.y / 1.5f;
@@ -619,10 +635,10 @@ namespace ProtoGenesys
 	*/
 	void cDrawing::DrawRadar()
 	{
-		if (_profiler.gPlayerRadar->Current.iValue)
+		if (_profiler.gRadar->Current.iValue)
 		{
 			ImGui::SetNextWindowSize(ImVec2(Radar.flRadarSize, Radar.flRadarSize + ImGui::GetFrameHeight()));
-			ImGui::Begin("RADAR", (bool*)&_profiler.gPlayerRadar->Current.iValue, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
+			ImGui::Begin("RADAR", (bool*)&_profiler.gRadar->Current.iValue, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 			ImGui::GetWindowDrawList()->PushClipRectFullScreen();
 
 			Radar.vRadarPosition = ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2.0f,
@@ -666,7 +682,7 @@ namespace ProtoGenesys
 	*/
 	void cDrawing::DrawCrosshair()
 	{
-		if (_profiler.gPlayerCrossHair->Current.iValue)
+		if (_profiler.gCrossHair->Current.iValue)
 		{
 			if (!(CG->CEntity[CG->iClientNum].NextEntityState.LerpEntityState.eFlags1 & EF1_ZOOM))
 			{

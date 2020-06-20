@@ -158,7 +158,7 @@ namespace ProtoGenesys
 			dwWait = timeout;
 		};
 
-		if (_profiler.gReloadCancel->Current.iValue)
+		if (_profiler.gFasterReloading->Current.iValue)
 		{
 			switch (ReloadState.iReloadState)
 			{
