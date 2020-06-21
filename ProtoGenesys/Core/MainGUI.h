@@ -43,10 +43,8 @@ namespace ProtoGenesys
 		} VirtualKeys[MAX_VIRTUALKEYS];
 
 		HWND hWindow;
-
-		IDXGISwapChain* _swapChain = *(IDXGISwapChain**)dwSwapChain;
-		ID3D11Device* _device = *(ID3D11Device**)dwDevice;
-		ID3D11DeviceContext* _deviceContext = *(ID3D11DeviceContext**)dwDeviceContext;
+		ID3D11Device* _device;
+		ID3D11DeviceContext* _deviceContext;
 
 		void InitInterface();
 		void DrawMainGUI();

@@ -107,6 +107,8 @@ FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSett
 FurtiveHook fhAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
 FurtiveHook fhAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
 
+HotPatch hpGameOverlayPresent{ pPresent, &hPresent, true };
+
 //=====================================================================================
 
 HRESULT WINAPI hPresent(_In_ IDXGISwapChain* swapchain, _In_ UINT syncinterval, _In_ UINT flags)
@@ -299,10 +301,12 @@ void Initialize()
 
 	_hooks.dwNoDelta = *(DWORD_PTR*)dwNoDeltaDvar;
 	*(DWORD_PTR*)dwNoDeltaDvar = cHooks::VEH_INDEX_NODELTA;
+	
+	if (bGameOverlayRenderer)
+		oPresent = (tPresent)hpGameOverlayPresent.Patch();
 
-	oPresent = (tPresent)SwapVMT(_mainGui._swapChain, &hPresent, 8);
-	oDrawIndexed = (tDrawIndexed)SwapVMT(_mainGui._deviceContext, &hDrawIndexed, 12);
-	oClearRenderTargetView = (tClearRenderTargetView)SwapVMT(_mainGui._deviceContext, &hClearRenderTargetView, 50);
+	else
+		oPresent = (tPresent)SwapVMT(pPresent, &hPresent, 8);
 
 	AttachHook(oBulletHitEvent, hBulletHitEvent);
 	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
@@ -332,10 +336,12 @@ void Deallocate()
 
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 	SetUnhandledExceptionFilter(_hooks.pUnhandledExceptionFilter);
+	
+	if (bGameOverlayRenderer)
+		hpGameOverlayPresent.UnPatch();
 
-	SwapVMT(_mainGui._swapChain, oPresent, 8);
-	SwapVMT(_mainGui._deviceContext, oDrawIndexed, 12);
-	SwapVMT(_mainGui._deviceContext, oClearRenderTargetView , 50);
+	else
+		SwapVMT(pPresent, oPresent, 8);
 
 	DetachHook(oBulletHitEvent, hBulletHitEvent);
 	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);

@@ -712,9 +712,12 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	static MODULEINFO hT6mp = GetModuleInfo(NULL);
-	static HMODULE hSteamAPI = GetModuleHandle("steam_api.dll");
-
 	static bool bIsSteamVersion = hT6mp.SizeOfImage == 0x400D000;
+
+	static MODULEINFO hGameOverlayRenderer = bIsSteamVersion ? GetModuleInfo("GameOverlayRenderer.dll") : MODULEINFO{ NULL };
+	static bool bGameOverlayRenderer = (hGameOverlayRenderer.lpBaseOfDll && hGameOverlayRenderer.SizeOfImage);
+
+	static HMODULE hSteamAPI = GetModuleHandle("steam_api.dll");
 
 	static DWORD_PTR dwConnectPathsDvar = 0x2366AA4;
 	static DWORD_PTR dwMouseAccelerationDvar = 0x11C7834;
@@ -846,6 +849,10 @@ namespace ProtoGenesys
 	static DWORD_PTR dwTacSSPatch = 0x2B68824;
 	static DWORD_PTR dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
 	static DWORD_PTR dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
+
+	static LPVOID pPresent = bGameOverlayRenderer ?
+		*(LPVOID*)ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2) :
+		*(LPVOID*)dwSwapChain;
 	/*
 	//=====================================================================================
 	*/
