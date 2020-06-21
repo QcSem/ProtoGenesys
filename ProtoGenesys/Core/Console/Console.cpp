@@ -276,7 +276,7 @@ namespace ProtoGenesys
 		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashserver", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
-			AddReliableCommand(VariadicText("SL %i %i", 1337, *(DWORD_PTR*)dwServerID));
+			AddReliableCommand(VariadicText("sl %i %i", 1024, *(DWORD_PTR*)dwServerID));
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
