@@ -157,8 +157,9 @@ namespace ProtoGenesys
 
 		typedef enum
 		{
-			SORT_METHOD_FOV,
 			SORT_METHOD_DISTANCE,
+			SORT_METHOD_DAMAGE,
+			SORT_METHOD_FOV,
 			SORT_METHOD_MAX
 		} eSortMethod;
 
@@ -212,7 +213,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Up", "Down", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
 		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Spin", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
 		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On Timer", "Immediate" }), BONESCAN_OFF, BONESCAN_OFF, BONESCAN_MAX - 1);
-		std::shared_ptr<sCvar> gSortMethod = std::make_shared<sCvar>("Sort Method", std::vector<std::string>({ "Field of View", "Distance" }), SORT_METHOD_FOV, SORT_METHOD_FOV, SORT_METHOD_MAX - 1);
+		std::shared_ptr<sCvar> gSortMethod = std::make_shared<sCvar>("Sort Method", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_METHOD_DISTANCE, SORT_METHOD_DISTANCE, SORT_METHOD_MAX - 1);
 
 		std::shared_ptr<sCvar> gWallHackMode = std::make_shared<sCvar>("Mode", std::vector<std::string>({ "Axis", "Allies", "All" }), WALLHACK_MODE_AXIS, WALLHACK_MODE_AXIS, WALLHACK_MODE_MAX - 1);
 		std::shared_ptr<sCvar> gBoxes = std::make_shared<sCvar>("Boxes", std::vector<std::string>({ "Off", "Border", "Corner", "Border Filled", "Corner Filled", "Border 3D", "Corner 3D" }), PLAYER_BOXES_OFF, PLAYER_BOXES_OFF, PLAYER_BOXES_MAX - 1);

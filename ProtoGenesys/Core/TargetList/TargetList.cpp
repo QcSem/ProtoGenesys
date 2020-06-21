@@ -35,8 +35,9 @@ namespace ProtoGenesys
 				{
 					AntiAimTargetInfo.iIndex = i;
 
-					AntiAimTargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
 					AntiAimTargetInfo.flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
+					AntiAimTargetInfo.flDamage = EntityList[i].flDamage;
+					AntiAimTargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
 
 					vAntiAimTargetInfo.push_back(AntiAimTargetInfo);
 				}
@@ -91,11 +92,11 @@ namespace ProtoGenesys
 
 				if (EntityIsTeammate(&CG->CEntity[i]))
 				{
-					EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first) ? _profiler.gColorAlliesVisible->Current.cValue : _profiler.gColorAlliesInvisible->Current.cValue;
+					EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first, NULL) ? _profiler.gColorAlliesVisible->Current.cValue : _profiler.gColorAlliesInvisible->Current.cValue;
 					continue;
 				}
 
-				EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first) ? _profiler.gColorAxisVisible->Current.cValue : _profiler.gColorAxisInvisible->Current.cValue;
+				EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first, NULL) ? _profiler.gColorAxisVisible->Current.cValue : _profiler.gColorAxisInvisible->Current.cValue;
 			}
 
 			else
@@ -109,18 +110,18 @@ namespace ProtoGenesys
 				if ((_profiler.gOnlyBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
 					(_profiler.gOnlyBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
 				{
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 				}
 
 				else if (!_profiler.gOnlyBoneScanPriorities->Current.iValue && !_profiler.gOnlyBoneScanRiotShielders->Current.iValue)
 				{
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 				}
 
 				else
 				{
 					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 				}
 			}
 
@@ -129,25 +130,25 @@ namespace ProtoGenesys
 				if ((_profiler.gOnlyBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
 					(_profiler.gOnlyBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
 				{
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 				}
 
 				else if (!_profiler.gOnlyBoneScanPriorities->Current.iValue && !_profiler.gOnlyBoneScanRiotShielders->Current.iValue)
 				{
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 				}
 
 				else
 				{
 					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
+					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 				}
 			}
 
 			else
 			{
 				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex);
+				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 			}
 
 			EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex];
@@ -162,6 +163,7 @@ namespace ProtoGenesys
 				TargetInfo.iIndex = i;
 
 				TargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
+				TargetInfo.flDamage = EntityList[i].flDamage;
 				TargetInfo.flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
 
 				vTargetInfo.push_back(TargetInfo);
@@ -170,9 +172,9 @@ namespace ProtoGenesys
 
 		if (!vTargetInfo.empty())
 		{
-			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
 			{
-				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flFOV < b.flFOV; });
+				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDistance < b.flDistance; });
 
 				auto itTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
 
@@ -183,9 +185,22 @@ namespace ProtoGenesys
 					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
 
-			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
 			{
-				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDistance < b.flDistance; });
+				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDamage > b.flDamage; });
+
+				auto itTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
+
+				if (itTargetInfo != vTargetInfo.end())
+					_aimBot.AimState.iTargetNum = itTargetInfo->iIndex;
+
+				else
+					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
+			}
+			
+			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			{
+				std::sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flFOV < b.flFOV; });
 
 				auto itTargetInfo = std::find_if(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& targetinfo) { return targetinfo.bIsPriority; });
 
@@ -201,16 +216,23 @@ namespace ProtoGenesys
 
 		if (!vAntiAimTargetInfo.empty())
 		{
-			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
 			{
-				std::sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flFOV < b.flFOV; });
+				std::sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flDistance < b.flDistance; });
 
 				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
 			}
 
-			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
 			{
-				std::sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flDistance < b.flDistance; });
+				std::sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flDamage > b.flDamage; });
+
+				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
+			}
+
+			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			{
+				std::sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flFOV < b.flFOV; });
 
 				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
 			}
@@ -266,7 +288,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisible(sCEntity* entity, ImVec3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index)
+	bool cTargetList::IsVisible(sCEntity* entity, ImVec3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index, float* damage)
 	{
 		bool bReturn = false;
 
@@ -297,7 +319,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], autowall, nullptr).get();
+				return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], autowall, damage).get();
 			}
 		}
 
@@ -319,14 +341,19 @@ namespace ProtoGenesys
 
 			else
 			{
-				return IsVisibleInternal(entity, bones3d[index], autowall, NULL);
+				return IsVisibleInternal(entity, bones3d[index], autowall, damage);
 			}
 		}
 
 		if (!vDamageInfo.empty())
 		{
 			std::stable_sort(vDamageInfo.begin(), vDamageInfo.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
+
 			index = vDamageInfo.front().iBoneIndex;
+
+			if (damage)
+				*damage = vDamageInfo.front().flDamage;
+
 			vDamageInfo.clear();
 		}
 

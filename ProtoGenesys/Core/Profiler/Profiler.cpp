@@ -263,7 +263,7 @@ namespace ProtoGenesys
 		gAntiAimPitch->Current.iValue = ANTIAIM_PITCH_OFF;
 		gAntiAimYaw->Current.iValue = ANTIAIM_YAW_OFF;
 		gBoneScan->Current.iValue = BONESCAN_OFF;
-		gSortMethod->Current.iValue = SORT_METHOD_FOV;
+		gSortMethod->Current.iValue = SORT_METHOD_DISTANCE;
 
 		gWallHackMode->Current.iValue = WALLHACK_MODE_AXIS;
 		gBoxes->Current.iValue = PLAYER_BOXES_OFF;
