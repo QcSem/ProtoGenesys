@@ -162,9 +162,9 @@ namespace ProtoGenesys
 				TargetInfo.bIsPriority = _targetList.Priorities[i].bIsPrioritized;
 				TargetInfo.iIndex = i;
 
-				TargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-				TargetInfo.flDamage = EntityList[i].flDamage;
 				TargetInfo.flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
+				TargetInfo.flDamage = EntityList[i].flDamage;
+				TargetInfo.flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
 
 				vTargetInfo.push_back(TargetInfo);
 			}
