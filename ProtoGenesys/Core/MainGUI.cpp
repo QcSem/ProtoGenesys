@@ -10,7 +10,7 @@ namespace ProtoGenesys
 
 	void cMainGUI::InitInterface()
 	{
-		hWindow = *(HWND*)dwWindowHandle;
+		hWindow = Dereference((HWND)dwWindowHandle);
 
 		if (!hWindow || !_device || !_deviceContext)
 			return;
@@ -65,8 +65,8 @@ namespace ProtoGenesys
 		}
 
 		std::string szWatermark(VariadicText("%s - COD BO2 by: InUrFace | Frametime: %s, Ping: %s", acut::ToUpper(PROGRAM_NAME).c_str(),
-			LocalClientIsInGame() ? VariadicText("%i ms", CG->iFrameTime).c_str() : "N/A",
-			LocalClientIsInGame() ? VariadicText("%i ms", ClientActive->iPing).c_str() : "N/A"));
+			LocalClientIsInGame() ? VariadicText("%i ms", CG->iFrameTime) : "N/A",
+			LocalClientIsInGame() ? VariadicText("%i ms", ClientActive->iPing) : "N/A"));
 
 		ImVec2 vWatermark(Eurostile_Extended->CalcTextSizeA(flEurostile_Extended, FLT_MAX, 0.0f, szWatermark.c_str()));
 
@@ -547,9 +547,9 @@ namespace ProtoGenesys
 
 						if (ImGui::Selectable("Steal ID"))
 						{
-							_profiler.gNameOverRide->Current.szValue = _strdup(CG->ClientInfo[i].szName);
-							_profiler.gClanOverRide->Current.szValue = _strdup(CG->ClientInfo[i].szClan);
-							_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->ClientInfo[i].qwXuid).c_str());
+							_profiler.gNameOverRide->Current.szValue = VariadicText(CG->ClientInfo[i].szName);
+							_profiler.gClanOverRide->Current.szValue = VariadicText(CG->ClientInfo[i].szClan);
+							_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", CG->ClientInfo[i].qwXuid);
 
 							AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
 								CG->ClientInfo[i].szName,
@@ -591,7 +591,7 @@ namespace ProtoGenesys
 								(BYTE)ServerSession[i].iIPAddress[0],
 								(BYTE)ServerSession[i].iIPAddress[1],
 								(BYTE)ServerSession[i].iIPAddress[2],
-								(BYTE)ServerSession[i].iIPAddress[3]).c_str());
+								(BYTE)ServerSession[i].iIPAddress[3]));
 
 							ImGui::LogFinish();
 
@@ -614,7 +614,7 @@ namespace ProtoGenesys
 						(BYTE)ServerSession[i].iIPAddress[0],
 						(BYTE)ServerSession[i].iIPAddress[1],
 						(BYTE)ServerSession[i].iIPAddress[2],
-						(BYTE)ServerSession[i].iIPAddress[3]).c_str());
+						(BYTE)ServerSession[i].iIPAddress[3]));
 
 					if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
 					{
@@ -709,7 +709,7 @@ namespace ProtoGenesys
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-		if (hWindow != *(HWND*)dwWindowHandle)
+		if (hWindow != Dereference((HWND)dwWindowHandle))
 		{
 			_device->Release();
 			_deviceContext->Release();
@@ -734,7 +734,7 @@ namespace ProtoGenesys
 		ImGui::Text(label.c_str());
 		ImGui::SameLine(flSpacing - flWidth - ImGui::GetFrameHeight());
 
-		if (ImGui::ArrowButtonEx(_strdup(VariadicText("%s_left", label.c_str()).c_str()), ImGuiDir_Left, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
+		if (ImGui::ArrowButtonEx(VariadicText("%s_left", label.c_str()), ImGuiDir_Left, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
 		{
 			*value -= step;
 
@@ -747,7 +747,7 @@ namespace ProtoGenesys
 		ImGui::Text(option.c_str());
 		ImGui::SameLine(flSpacing);
 
-		if (ImGui::ArrowButtonEx(_strdup(VariadicText("%s_right", label.c_str()).c_str()), ImGuiDir_Right, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
+		if (ImGui::ArrowButtonEx(VariadicText("%s_right", label.c_str()), ImGuiDir_Right, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
 		{
 			*value += step;
 

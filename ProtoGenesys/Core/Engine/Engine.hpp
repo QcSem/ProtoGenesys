@@ -36,6 +36,7 @@
 #define ShortToAngle(a) ((float)((a)*(360.0f/65536)))
 #define AngleNormalize360(a) (ShortToAngle(AngleToShort((a))))
 #define AngleNormalize180(a) (((a)/360.0f-floorf((a)/360.0f+0.5f))*360.0f)
+#define Dereference(a) (*reinterpret_cast<decltype(a)*>(a))
 
 //=====================================================================================
 
@@ -711,6 +712,24 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	typedef struct 
+	{
+		int iWeapon;
+		int iOptions;
+		float flHeatPercent;
+		int iFuelTankTime;
+		int iAdsZoomSelect;
+		bool bOverHeating;
+		bool bNeedsRechamber;
+		bool bHeldBefore;
+		bool bQuickReload;
+		bool bLockWeaponPickup;
+		char szModel;
+		char _0x1A[0x2];
+	} sPlayerHeldWeapon;
+	/*
+	//=====================================================================================
+	*/
 	static MODULEINFO hT6mp = GetModuleInfo(NULL);
 	static bool bIsSteamVersion = hT6mp.SizeOfImage == 0x400D000;
 
@@ -787,6 +806,9 @@ namespace ProtoGenesys
 	static DWORD_PTR dwEvaluateTrajectory = bIsSteamVersion ? 0x47F7A0 : 0x44CE20;
 	static DWORD_PTR dwWeaponIsVehicle = bIsSteamVersion ? 0x5B8AD0 : 0x5AE8C0;
 	static DWORD_PTR dwWeaponAmmoAvailable = bIsSteamVersion ? 0x557C40 : 0x6DF580;
+	static DWORD_PTR dwGetAmmoNotInClip = bIsSteamVersion ? 0x63ADD0 : 0x471050;
+	static DWORD_PTR dwGetClipSize = bIsSteamVersion ? 0x699C30 : 0x5B4410;
+	static DWORD_PTR dwGetHeldWeapon = bIsSteamVersion ? 0x4420E0 : 0x4368E0;
 	static DWORD_PTR dwSetZoomState = bIsSteamVersion ? 0x42BD00 : 0x583950;
 	static DWORD_PTR dwWeaponIsAkimbo = bIsSteamVersion ? 0x6625B0 : 0x52E780;
 	static DWORD_PTR dwGetWeaponDef = bIsSteamVersion ? 0x5846F0 : 0x5225F0;
@@ -1017,6 +1039,27 @@ namespace ProtoGenesys
 	FORCEINLINE int WeaponAmmoAvailable()
 	{
 		return VariadicCall<int>(dwWeaponAmmoAvailable, &CG->PlayerState);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE int GetAmmoNotInClip(int weapon)
+	{
+		return VariadicCall<int>(dwGetAmmoNotInClip, &CG->PlayerState, weapon);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE int GetClipSize(int weapon)
+	{
+		return VariadicCall<int>(dwGetClipSize, weapon);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE sPlayerHeldWeapon* GetHeldWeapon(int weapon)
+	{
+		return VariadicCall<sPlayerHeldWeapon*>(dwGetHeldWeapon, &CG->PlayerState, weapon);
 	}
 	/*
 	//=====================================================================================

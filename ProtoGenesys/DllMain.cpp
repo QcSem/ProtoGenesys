@@ -287,20 +287,20 @@ void Initialize()
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
 	_hooks.pVectoredExceptionHandler = AddVectoredExceptionHandler(TRUE, _hooks._thunkVectoredExceptionHandler.GetThunk());
 
-	_hooks.dwConnectPaths = *(DWORD_PTR*)dwConnectPathsDvar;
-	*(DWORD_PTR*)dwConnectPathsDvar = cHooks::VEH_INDEX_CONNECTPATHS;
+	_hooks.dwConnectPaths = Dereference(dwConnectPathsDvar);
+	Dereference(dwConnectPathsDvar) = cHooks::VEH_INDEX_CONNECTPATHS;
 
-	_hooks.dwMouseAccel = *(DWORD_PTR*)dwMouseAccelerationDvar;
-	*(DWORD_PTR*)dwMouseAccelerationDvar = cHooks::VEH_INDEX_MOUSEACCEL;
+	_hooks.dwMouseAccel = Dereference(dwMouseAccelerationDvar);
+	Dereference(dwMouseAccelerationDvar) = cHooks::VEH_INDEX_MOUSEACCEL;
 
-	_hooks.dwDrawBigFPS = *(DWORD_PTR*)dwDrawBigFPSDvar;
-	*(DWORD_PTR*)dwDrawBigFPSDvar = cHooks::VEH_INDEX_DRAWBIGFPS;
+	_hooks.dwDrawBigFPS = Dereference(dwDrawBigFPSDvar);
+	Dereference(dwDrawBigFPSDvar) = cHooks::VEH_INDEX_DRAWBIGFPS;
 
-	_hooks.dwMaxClients = *(DWORD_PTR*)dwMaxClientsDvar;
-	*(DWORD_PTR*)dwMaxClientsDvar = cHooks::VEH_INDEX_MAXCLIENTS;
+	_hooks.dwMaxClients = Dereference(dwMaxClientsDvar);
+	Dereference(dwMaxClientsDvar) = cHooks::VEH_INDEX_MAXCLIENTS;
 
-	_hooks.dwNoDelta = *(DWORD_PTR*)dwNoDeltaDvar;
-	*(DWORD_PTR*)dwNoDeltaDvar = cHooks::VEH_INDEX_NODELTA;
+	_hooks.dwNoDelta = Dereference(dwNoDeltaDvar);
+	Dereference(dwNoDeltaDvar) = cHooks::VEH_INDEX_NODELTA;
 	
 	if (bGameOverlayRenderer)
 		oPresent = (tPresent)hpGameOverlayPresent.Patch();
@@ -328,11 +328,11 @@ void Initialize()
 
 void Deallocate()
 {
-	*(DWORD_PTR*)dwConnectPathsDvar = _hooks.dwConnectPaths;
-	*(DWORD_PTR*)dwMouseAccelerationDvar = _hooks.dwMouseAccel;
-	*(DWORD_PTR*)dwDrawBigFPSDvar = _hooks.dwDrawBigFPS;
-	*(DWORD_PTR*)dwMaxClientsDvar = _hooks.dwMaxClients;
-	*(DWORD_PTR*)dwNoDeltaDvar = _hooks.dwNoDelta;
+	Dereference(dwConnectPathsDvar) = _hooks.dwConnectPaths;
+	Dereference(dwMouseAccelerationDvar) = _hooks.dwMouseAccel;
+	Dereference(dwDrawBigFPSDvar) = _hooks.dwDrawBigFPS;
+	Dereference(dwMaxClientsDvar) = _hooks.dwMaxClients;
+	Dereference(dwNoDeltaDvar) = _hooks.dwNoDelta;
 
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 	SetUnhandledExceptionFilter(_hooks.pUnhandledExceptionFilter);

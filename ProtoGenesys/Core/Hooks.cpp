@@ -10,7 +10,7 @@ namespace ProtoGenesys
 
 	LONG cHooks::VectoredExceptionHandler(_In_ LPEXCEPTION_POINTERS ExceptionInfo)
 	{
-		*(DWORD_PTR*)dwTacSSHandle = 0x1;
+		Dereference(dwTacSSHandle) = 0x1;
 
 		if (_profiler.gOrbitalVsatAlwaysOn->Current.iValue && CG->PlayerState.iSatalliteTypeEnabled != 1)
 			CG->PlayerState.iSatalliteTypeEnabled = 1;
@@ -35,13 +35,13 @@ namespace ProtoGenesys
 
 			if (ExceptionInfo->ContextRecord->Eip == dwSetValueForKey)
 			{
-				std::string szKey(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0x8));
+				std::string szKey(Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0x8)));
 
 				if (szKey.find("name") != std::string::npos)
 				{
 					std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szNameOverride.empty() ? GetUsername() : _strdup(szNameOverride.c_str());
+					Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szNameOverride.empty() ? GetUsername() : VariadicText(szNameOverride);
 					PageGuardAddress(dwGetClantag);
 				}
 
@@ -49,7 +49,7 @@ namespace ProtoGenesys
 				{
 					std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
 
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szClanOverride.empty() ? GetClantag() : _strdup(szClanOverride.c_str());
+					Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szClanOverride.empty() ? GetClantag() : VariadicText(szClanOverride);
 					PageGuardAddress(dwGetXuidstring);
 				}
 
@@ -57,7 +57,7 @@ namespace ProtoGenesys
 				{
 					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = szXuidOverride.empty() ? GetXuidstring() : _strdup(szXuidOverride.c_str());
+					Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szXuidOverride.empty() ? GetXuidstring() : VariadicText(szXuidOverride);
 					PageGuardAddress(dwGetIntPlayerStatInternal);
 				}
 
@@ -72,10 +72,10 @@ namespace ProtoGenesys
 					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
 					Int64ToString(strtoll(szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str(), NULL, 0x10), szSteamID);
-					*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC) = std::string(szSteamID).c_str();
+					Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = VariadicText(szSteamID);
 				}
 
-				std::string szValue(*(LPCSTR*)(ExceptionInfo->ContextRecord->Esp + 0xC));
+				std::string szValue(Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)));
 				_console.AddLog("%s changed: %s to: %s", PREFIX_LOG, szKey.c_str(), szValue.c_str());
 			}
 
@@ -93,8 +93,8 @@ namespace ProtoGenesys
 
 				if (ExceptionInfo->ContextRecord->Eax && ExceptionInfo->ContextRecord->Esp)
 				{
-					if (*(DWORD_PTR*)(ExceptionInfo->ContextRecord->Esp) == dwConnectPathsException1 &&
-						*(DWORD_PTR*)(ExceptionInfo->ContextRecord->Esp + 0x8) == dwConnectPathsException2)
+					if (Dereference(ExceptionInfo->ContextRecord->Esp) == dwConnectPathsException1 &&
+						Dereference(ExceptionInfo->ContextRecord->Esp + 0x8) == dwConnectPathsException2)
 					{
 						PageGuardSVFK();
 					}
@@ -105,7 +105,7 @@ namespace ProtoGenesys
 			case VEH_INDEX_MOUSEACCEL:
 				ExceptionInfo->ContextRecord->Eax = dwMouseAccel;
 
-				VirtualProtect((LPVOID)dwPredictPlayerState, 0x1, dwProtection, &dwProtection);
+				VirtualProtect((LPVOID)dwPredictPlayerState, sizeof(BYTE), dwProtection, &dwProtection);
 
 				return EXCEPTION_CONTINUE_EXECUTION;
 
@@ -122,10 +122,10 @@ namespace ProtoGenesys
 			case VEH_INDEX_MAXCLIENTS:
 				ExceptionInfo->ContextRecord->Eax = dwMaxClients;
 
-				if (*(DWORD_PTR*)ExceptionInfo->ContextRecord->Esp == dwObituaryException)
+				if (Dereference(ExceptionInfo->ContextRecord->Esp) == dwObituaryException)
 				{
-					KillSpam(*(DWORD_PTR*)(ExceptionInfo->ContextRecord->Esp + 0x24),
-						*(DWORD_PTR*)(ExceptionInfo->ContextRecord->Esp + 0x28));
+					KillSpam(Dereference(ExceptionInfo->ContextRecord->Esp + 0x24),
+						Dereference(ExceptionInfo->ContextRecord->Esp + 0x28));
 				}
 
 				return EXCEPTION_CONTINUE_EXECUTION;
@@ -183,7 +183,7 @@ namespace ProtoGenesys
 	{
 		DWORD dwProtection = PAGE_EXECUTE | PAGE_GUARD;
 
-		return VirtualProtect((LPVOID)dwSetValueForKey, 0x4, dwProtection, &dwProtection);
+		return VirtualProtect((LPVOID)dwSetValueForKey, sizeof(DWORD), dwProtection, &dwProtection);
 	}
 	/*
 	//=====================================================================================
@@ -193,7 +193,7 @@ namespace ProtoGenesys
 		dwAddress = address;
 		DWORD dwProtection = PAGE_EXECUTE | PAGE_GUARD;
 
-		return VirtualProtect((LPVOID)dwAddress, 0x4, dwProtection, &dwProtection);
+		return VirtualProtect((LPVOID)dwAddress, sizeof(DWORD), dwProtection, &dwProtection);
 	}
 	/*
 	//=====================================================================================
@@ -205,15 +205,15 @@ namespace ProtoGenesys
 
 		char szPatchStub[7] = { -117, -1, 85, -117, -20, -117, -55 };
 
-		if (*(DWORD_PTR*)dwTacSSCheck)
+		if (Dereference(dwTacSSCheck))
 		{
-			VirtualProtect((LPVOID)dwTacSSPatch, 0x8, dwProtection, &dwProtection);
+			VirtualProtect((LPVOID)dwTacSSPatch, sizeof(QWORD), dwProtection, &dwProtection);
 
-			for (int i = 0; i < 7; ++i)
-				*((BYTE*)dwTacSSPatch + 0x4 * i) = szPatchStub[i];
+			for (int i = 0; i < sizeof(szPatchStub); ++i)
+				Dereference(dwTacSSPatch + sizeof(DWORD) * i) = szPatchStub[i];
 
-			bResult = VirtualProtect((LPVOID)dwTacSSPatch, 0x8, dwProtection, &dwProtection);
-			*(DWORD_PTR*)dwTacSSCheck = NULL;
+			bResult = VirtualProtect((LPVOID)dwTacSSPatch, sizeof(QWORD), dwProtection, &dwProtection);
+			Dereference(dwTacSSCheck) = NULL;
 		}
 
 		return bResult;
@@ -230,7 +230,6 @@ namespace ProtoGenesys
 			_targetList.GetInformation();
 			_drawing.CalculateTracers();
 			_aimBot.SetAimState();
-			_aimBot.SetReloadState();
 
 			if (WeaponIsVehicle() || (!IsPlayerReloading() && WeaponAmmoAvailable()))
 				_aimBot.StandardAim();
@@ -255,6 +254,8 @@ namespace ProtoGenesys
 	{
 		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
+			_aimBot.SetReloadState();
+
 			static int iBackupAngles[3];
 
 			sUserCmd* pOldCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd - 1);
@@ -317,9 +318,9 @@ namespace ProtoGenesys
 			{
 				if (_profiler.gNameClanXuidStealer->Current.iValue)
 				{
-					_profiler.gNameOverRide->Current.szValue = _strdup(CG->ClientInfo[victim].szName);
-					_profiler.gClanOverRide->Current.szValue = _strdup(CG->ClientInfo[victim].szClan);
-					_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->ClientInfo[victim].qwXuid).c_str());
+					_profiler.gNameOverRide->Current.szValue = VariadicText(CG->ClientInfo[victim].szName);
+					_profiler.gClanOverRide->Current.szValue = VariadicText(CG->ClientInfo[victim].szClan);
+					_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", CG->ClientInfo[victim].qwXuid);
 
 					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
 						CG->ClientInfo[victim].szName,
@@ -329,7 +330,7 @@ namespace ProtoGenesys
 
 				if (_profiler.gEndRoundOnNextKill->Current.iValue)
 				{
-					AddReliableCommand(VariadicText("mr %d -1 endround", *(DWORD_PTR*)dwServerID));
+					AddReliableCommand(VariadicText("mr %d -1 endround", Dereference(dwServerID)));
 					_profiler.gEndRoundOnNextKill->Current.iValue = false;
 				}
 
@@ -503,13 +504,13 @@ namespace ProtoGenesys
 		std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
 		if (_profiler.gNameExperiencePrestigeSpam->Current.iValue)
-			return _strdup(Randomize(name).c_str());
+			return VariadicText(Randomize(name));
 
 		else if (szNameOverride.empty())
-			return _strdup(GetUsername());
+			return VariadicText(GetUsername());
 
 		else
-			return _strdup(szNameOverride.c_str());
+			return VariadicText(szNameOverride);
 	}
 	/*
 	//=====================================================================================
@@ -603,7 +604,7 @@ namespace ProtoGenesys
 	{
 		static std::string szNameOverride(name);
 
-		if (!*(int*)dwConnectionState)
+		if (!Dereference(dwConnectionState))
 		{
 			static int iTimer = Sys_Milliseconds();
 
