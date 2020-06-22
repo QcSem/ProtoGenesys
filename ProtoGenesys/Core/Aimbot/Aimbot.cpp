@@ -145,57 +145,43 @@ namespace ProtoGenesys
 	*/
 	void cAimbot::SetReloadState()
 	{
-		static DWORD dwTick, dwWait;
+		static int iReloadedWeapon{ 0 };
 
-		auto Ready = [&]()
+		auto IsReloading = [&]()
 		{
-			return ((Sys_Milliseconds() - dwTick) > dwWait);
+			return IsPlayerReloading();
 		};
 
-		auto Wait = [&](DWORD timeout)
+		auto CurrentAmmoEqualToClipSize = [&](int cur_weapon)
 		{
-			dwTick = Sys_Milliseconds();
-			dwWait = timeout;
+			return (WeaponAmmoAvailable() == GetClipSize(cur_weapon) || !GetAmmoNotInClip(cur_weapon));
 		};
 
-		if (_profiler.gFasterReloading->Current.iValue)
+		if (iReloadedWeapon)
 		{
-			switch (ReloadState.iReloadState)
+			for (int i = 0; i < 15; i++)
 			{
-			case RELOAD_DEFAULT:
-				if (IsPlayerReloading())
-					ReloadState.iReloadState = RELOAD;
-
-				break;
-
-			case RELOAD:
-				ReloadState.iAmmo = WeaponAmmoAvailable();
-				ReloadState.iReloadState = RELOADING;
-
-				break;
-
-			case RELOADING:
-				if (WeaponAmmoAvailable() > ReloadState.iAmmo)
-					ReloadState.iReloadState = RELOADED;
-
-				break;
-
-			case RELOADED:
-				if (Ready())
+				if (GetHeldWeapon(iReloadedWeapon)[i].iWeapon == GetViewmodelWeaponIndex())
 				{
 					CycleWeapon(0);
-					ReloadState.iIncrement++;
-					Wait(35);
+					break;
 				}
+			}
 
-				if (ReloadState.iIncrement == 2)
+			iReloadedWeapon = 0;
+		}
+
+		if (int iCurrentWeapon{ GetViewmodelWeaponIndex() }; iCurrentWeapon && IsReloading() && CurrentAmmoEqualToClipSize(iCurrentWeapon))
+		{
+			iReloadedWeapon = iCurrentWeapon;
+
+			for (int i = 0; i < 15; i++)
+			{
+				if (int iWeapon{ GetHeldWeapon(iCurrentWeapon)[i].iWeapon }; iWeapon && iWeapon != iReloadedWeapon)
 				{
-					ReloadState.iAmmo = 0;
-					ReloadState.iIncrement = 0;
-					ReloadState.iReloadState = RELOAD_DEFAULT;
+					CycleWeapon(0);
+					break;
 				}
-
-				break;
 			}
 		}
 	}
