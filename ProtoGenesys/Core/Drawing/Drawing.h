@@ -12,7 +12,7 @@ namespace ProtoGenesys
 	{
 	public:
 
-		typedef struct
+		struct sTracer
 		{
 			bool bW2SSuccess;
 			int iStartTime;
@@ -20,7 +20,7 @@ namespace ProtoGenesys
 			ImVec3 vHitPos3D, vStartPos3D;
 			ImVec4 cColorShadow, cColorHitMarker, cColorTracer;
 			float flAlphaShadow, flAlphaHitMarker, flAlphaTracer;
-		} sTracer;
+		};
 
 		std::vector<sTracer> vTracers;
 

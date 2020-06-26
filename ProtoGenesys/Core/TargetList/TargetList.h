@@ -12,24 +12,24 @@ namespace ProtoGenesys
 	{
 	public:
 
-		typedef struct
+		struct sTargetInfo
 		{
 			bool bIsPriority;
 			int iIndex;
 			float flDistance = FLT_MAX, flDamage = FLT_MAX, flFOV = FLT_MAX;
-		} sTargetInfo;
+		};
 
-		typedef struct
+		struct sAntiAimTargetInfo
 		{
 			int iIndex;
 			float flDistance = FLT_MAX, flDamage = FLT_MAX, flFOV = FLT_MAX;
-		} sAntiAimTargetInfo;
+		};
 
-		typedef struct
+		struct sDamageInfo
 		{
 			float flDamage;
 			eBone iBoneIndex;
-		} sDamageInfo;
+		};
 
 		struct sEntityList
 		{

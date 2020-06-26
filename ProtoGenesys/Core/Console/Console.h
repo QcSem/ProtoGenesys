@@ -22,11 +22,11 @@ namespace ProtoGenesys
 		cConsole() : _thunkTextCallback(&cConsole::TextEditCallbackStub, this) {}
 		~cConsole();
 
-		typedef struct
+		struct sCmdLine
 		{
 			int iArgNum;
 			char szCmdName[256], szCmdArgs[256][256];
-		} sCmdLine;
+		};
 
 		char szInput[256];
 		bool bScrollToBottom;

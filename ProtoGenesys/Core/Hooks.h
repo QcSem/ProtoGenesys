@@ -14,14 +14,14 @@ namespace ProtoGenesys
 
 		cHooks() : _thunkVectoredExceptionHandler(&cHooks::VectoredExceptionHandler, this) {}
 
-		typedef enum
+		enum eVehIndex
 		{
 			VEH_INDEX_CONNECTPATHS = 2104,
 			VEH_INDEX_MOUSEACCEL = 22152,
 			VEH_INDEX_DRAWBIGFPS = 33553,
 			VEH_INDEX_MAXCLIENTS = 33558,
 			VEH_INDEX_NODELTA = 33833
-		} eVehIndex;
+		};
 
 		QWORD qwXuidOverride;
 

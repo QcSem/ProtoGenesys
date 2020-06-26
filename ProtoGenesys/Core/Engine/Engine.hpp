@@ -44,7 +44,7 @@ namespace ProtoGenesys
 {
 	typedef unsigned __int64 QWORD;
 
-	typedef enum
+	enum eBone
 	{
 		BONE_HELMET,
 		BONE_HEAD,
@@ -72,11 +72,11 @@ namespace ProtoGenesys
 		BONE_LEFT_BALL,
 		BONE_RIGHT_BALL,
 		BONE_MAX
-	}  eBone;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef enum
+	enum eEntityType
 	{
 		ET_GENERAL,
 		ET_PLAYER,
@@ -101,11 +101,11 @@ namespace ProtoGenesys
 		ET_ZBARRIER,
 		ET_EVENTS,
 		ET_MAX
-	} eEntityType;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef enum
+	enum eTraceHitType
 	{
 		TRACE_HITTYPE_NONE,
 		TRACE_HITTYPE_ENTITY,
@@ -113,22 +113,22 @@ namespace ProtoGenesys
 		TRACE_HITTYPE_DYNENT_BRUSH,
 		TRACE_HITTYPE_GLASS,
 		TRACE_HITTYPE_MAX
-	} eTraceHitType;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef enum
+	enum ePenetrateType
 	{
 		PENETRATE_TYPE_NONE,
 		PENETRATE_TYPE_SMALL,
 		PENETRATE_TYPE_MEDIUM,
 		PENETRATE_TYPE_LARGE,
 		PENETRATE_TYPE_MAX
-	} ePenetrateType;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef enum
+	enum eWeaponType
 	{
 		WEAPTYPE_BULLET,
 		WEAPTYPE_GRENADE,
@@ -140,11 +140,11 @@ namespace ProtoGenesys
 		WEAPTYPE_MELEE,
 		WEAPTYPE_RIOTSHIELD,
 		WEAPTYPE_MAX
-	} eWeaponType;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef enum
+	enum eTeam
 	{
 		TEAM_FREE,
 		TEAM_ALLIES,
@@ -157,11 +157,11 @@ namespace ProtoGenesys
 		TEAM_EIGHT,
 		TEAM_SPECTATOR,
 		TEAM_MAX
-	} eTeam;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef enum
+	enum eErrorParam
 	{
 		ERR_FATAL,
 		ERR_DROP,
@@ -172,7 +172,7 @@ namespace ProtoGenesys
 		ERR_SCRIPT_DROP,
 		ERR_LOCALIZATION,
 		ERR_MAX
-	} eErrorParam;
+	};
 	/*
 	//=====================================================================================
 	*/
@@ -238,7 +238,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sDvar
 	{
 		LPSTR szName;
 		char _0x4[0x14];
@@ -275,11 +275,11 @@ namespace ProtoGenesys
 		} Domain;
 
 		char _0x58[0x8];
-	} sDvar;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sPlayerState
 	{
 		int iServerTime;
 		char _0x4[0x14];
@@ -332,11 +332,11 @@ namespace ProtoGenesys
 		int iSatalliteTypeEnabled;
 		char _0x4B0[0xA0];
 		int iPerkFlags;
-	}  sPlayerState;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sRefDef
 	{
 		int iX;
 		int iY;
@@ -354,11 +354,11 @@ namespace ProtoGenesys
 		int iSplitScreenBlurEdges;
 		int iPlayerTeleported;
 		char _0x16D88[0x2D8];
-	} sRefDef;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sWeaponDef
 	{
 		char _0x0[0x1C];
 		eWeaponType iWeaponType;
@@ -368,20 +368,20 @@ namespace ProtoGenesys
 		bool bRifleBullet;
 		char _0x632[0x1AE];
 		float flADSSpread;
-	} sWeaponDef;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sModelMask
 	{
 		int iSlot;
 		sWeaponDef* WeaponDef;
 		char _0x8[0x8];
-	} sModelMask;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sClientInfo
 	{
 		int iInfoValid;
 		int iNextValid;
@@ -408,22 +408,22 @@ namespace ProtoGenesys
 		char _0x5C8[0x1BC];
 		sModelMask ModelMask[8];
 		int iOffHandWeaponID;
-	} sClientInfo;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sTrajectory
 	{
 		int iType;
 		int iTime;
 		int iDuration;
 		ImVec3 vBase;
 		ImVec3 vDelta;
-	} sTrajectory;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sLerpEntityState
 	{
 		int eFlags1;
 		int eFlags2;
@@ -433,11 +433,11 @@ namespace ProtoGenesys
 		int iWeaponID1;
 		int iWeaponID2;
 		char _0x64[0x18];
-	} sLerpEntityState;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sEntityState
 	{
 		int iEntityNum;
 		sLerpEntityState LerpEntityState;
@@ -450,11 +450,11 @@ namespace ProtoGenesys
 		char _0xE2[0x2];
 		int iWeaponID;
 		char _0xE8[0x10];
-	} sEntityState;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sCEntity
 	{
 		char _0x0[0x2];
 		short wValid;
@@ -468,21 +468,21 @@ namespace ProtoGenesys
 		char _0x2D4[0xA4];
 		int iAlive;
 		char _0x37C[0x4];
-	} sCEntity;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sSnapShot
 	{
 		char _0x0[0x8];
 		int iServerTime;
 		char _0xC[0xC];
 		int iPing;
-	} sSnapShot;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sCG
 	{
 		int iClientNum;
 		char _0x4[0x20];
@@ -551,11 +551,11 @@ namespace ProtoGenesys
 		char szGameType[4];
 		char _0x87734[0x1D90C];
 		sCEntity CEntity[MAX_ENTITIES];
-	} sCG;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sUserCmd
 	{
 		int iServerTime;
 		int iButtons[2];
@@ -563,11 +563,11 @@ namespace ProtoGenesys
 		char _0x18[0xC];
 		char szMove[3];
 		char _0x27[0x15];
-	} sUserCmd;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sClientActive
 	{
 		char _0x0[0x68];
 		int iPing;
@@ -580,53 +580,53 @@ namespace ProtoGenesys
 		{
 			return &UserCmd[number & 0x7F];
 		}
-	} sClientActive;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sWeaponName
 	{
 		char _0x0[0x18];
 		LPSTR szDisplayName;
 		char _0x1C[0x8];
-	} sWeaponName;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sViewAngles
 	{
 		ImVec3 vAngles;
-	} sViewAngles;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sRecoilAngles
 	{
 		ImVec3 vAngles;
-	} sRecoilAngles;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sServerSession
 	{
 		QWORD qwXuid;
 		char szName[32];
 		char _0x28[0x6E];
 		char iIPAddress[4];
 		char _0x9A[0xAE];
-	} sServerSession;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sWindow
 	{
 		int iWidth;
 		int iHeight;
-	} sWindow;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sTrace
 	{
 		ImVec3 vNormal;
 		char _0xC[0x4];
@@ -639,11 +639,11 @@ namespace ProtoGenesys
 		char bAllSolid;
 		char bStartSolid;
 		char _0x2C[0x14];
-	} sTrace;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sBulletTraceResults
 	{
 		sTrace Trace;
 		char _0x40[0x4];
@@ -652,11 +652,11 @@ namespace ProtoGenesys
 		char _0x51[0x3];
 		int iSurfaceType;
 		char _0x58[0x8];
-	} sBulletTraceResults;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sBulletFireParams
 	{
 		int iMaxEntNum;
 		int iEntityNum;
@@ -666,19 +666,19 @@ namespace ProtoGenesys
 		ImVec3 vStart;
 		ImVec3 vEnd;
 		ImVec3 vDir;
-	} sBulletFireParams;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sOrientation
 	{
 		ImVec3 vOrigin;
 		ImVec3 vAxis[3];
-	} sOrientation;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sNetAddr
 	{
 		char iIPAddress[4];
 		short iPort;
@@ -686,11 +686,11 @@ namespace ProtoGenesys
 		int iType;
 		int iLocalNetID;
 		int iServerID;
-	} sNetAddr;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct
+	struct sScreenPlacement
 	{
 		ImVec2 vScaleVirtualToReal;
 		ImVec2 vScaleVirtualToFull;
@@ -708,11 +708,11 @@ namespace ProtoGenesys
 		ImVec2 vRealTweakableMax;
 		ImVec2 vSubScreen;
 		float flHudSplitscreenScale;
-	} sScreenPlacement;
+	};
 	/*
 	//=====================================================================================
 	*/
-	typedef struct 
+	struct sPlayerHeldWeapon
 	{
 		int iWeapon;
 		int iOptions;
@@ -726,7 +726,7 @@ namespace ProtoGenesys
 		bool bLockWeaponPickup;
 		char szModel;
 		char _0x1A[0x2];
-	} sPlayerHeldWeapon;
+	};
 	/*
 	//=====================================================================================
 	*/

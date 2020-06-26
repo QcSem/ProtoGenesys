@@ -68,7 +68,7 @@ namespace ProtoGenesys
 			sCvar(std::string name, std::vector<std::string> items, LPSTR value) : szName(name), szItems(items), Current(value), Reset(value), Domain(NULL, NULL) {}
 		};
 
-		typedef enum
+		enum eMenuTab
 		{
 			MENU_TAB_AIMBOT,
 			MENU_TAB_WALLHACK,
@@ -78,9 +78,9 @@ namespace ProtoGenesys
 			MENU_TAB_PLAYERS,
 			MENU_TAB_CONSOLE,
 			MENU_TAB_MAX
-		} eMenuTab;
+		};
 
-		typedef enum
+		enum eMenuColor
 		{
 			MENU_COLOR_NEUTRAL,
 			MENU_COLOR_NEUTRAL_NEON,
@@ -99,32 +99,32 @@ namespace ProtoGenesys
 			MENU_COLOR_RAINBOW,
 			MENU_COLOR_RAINBOW_NEON,
 			MENU_COLOR_MAX
-		} eMenuColor;
+		};
 
-		typedef enum
+		enum eMenuCursor
 		{
 			MENU_CURSOR_BLACK,
 			MENU_CURSOR_WHITE,
 			MENU_CURSOR_MAX
-		} eMenuCursor;
+		};
 
-		typedef enum
+		enum eMenuFont
 		{
 			MENU_FONT_LIGHT,
 			MENU_FONT_MEDIUM,
 			MENU_FONT_BOLD,
 			MENU_FONT_MAX
-		} eMenuFont;
+		};
 
-		typedef enum
+		enum eAimBotMode
 		{
 			AIMBOT_MODE_OFF,
 			AIMBOT_MODE_MANUAL,
 			AIMBOT_MODE_AUTO,
 			AIMBOT_MODE_MAX
-		} eAimBotMode;
+		};
 
-		typedef enum
+		enum eAntiAimPitch
 		{
 			ANTIAIM_PITCH_OFF,
 			ANTIAIM_PITCH_UP,
@@ -134,9 +134,9 @@ namespace ProtoGenesys
 			ANTIAIM_PITCH_REVERSE,
 			ANTIAIM_PITCH_CUSTOM,
 			ANTIAIM_PITCH_MAX
-		} eAntiAimPitch;
+		};
 
-		typedef enum
+		enum eAntiAimYaw
 		{
 			ANTIAIM_YAW_OFF,
 			ANTIAIM_YAW_SPIN,
@@ -145,33 +145,33 @@ namespace ProtoGenesys
 			ANTIAIM_YAW_REVERSE,
 			ANTIAIM_YAW_CUSTOM,
 			ANTIAIM_YAW_MAX
-		} eAntiAimYaw;
+		};
 
-		typedef enum
+		enum eBoneScan
 		{
 			BONESCAN_OFF,
 			BONESCAN_ONTIMER,
 			BONESCAN_IMMEDIATE,
 			BONESCAN_MAX
-		} eBoneScan;
+		};
 
-		typedef enum
+		enum eSortMethod
 		{
 			SORT_METHOD_DISTANCE,
 			SORT_METHOD_DAMAGE,
 			SORT_METHOD_FOV,
 			SORT_METHOD_MAX
-		} eSortMethod;
+		};
 
-		typedef enum
+		enum eWallHackMode
 		{
 			WALLHACK_MODE_AXIS,
 			WALLHACK_MODE_ALLIES,
 			WALLHACK_MODE_ALL,
 			WALLHACK_MODE_MAX
-		} eWallHackMode;
+		};
 
-		typedef enum
+		enum ePlayerBoxes
 		{
 			PLAYER_BOXES_OFF,
 			PLAYER_BOXES_BORDER,
@@ -181,24 +181,24 @@ namespace ProtoGenesys
 			PLAYER_BOXES_BORDER_3D,
 			PLAYER_BOXES_CORNER_3D,
 			PLAYER_BOXES_MAX
-		} ePlayerBoxes;
+		};
 
-		typedef enum
+		enum ePlayerBones
 		{
 			PLAYER_BONES_OFF,
 			PLAYER_BONES_DOTS,
 			PLAYER_BONES_LINES,
 			PLAYER_BONES_MAX
-		} ePlayerBones;
+		};
 
-		typedef enum
+		enum ePlayerSnapLines
 		{
 			PLAYER_SNAPLINES_OFF,
 			PLAYER_SNAPLINES_TOP,
 			PLAYER_SNAPLINES_BOTTOM,
 			PLAYER_SNAPLINES_CROSSHAIR,
 			PLAYER_SNAPLINES_MAX
-		} ePlayerSnapLines;
+		};
 
 		std::shared_ptr<sCvar> gMenuTabs = std::make_shared<sCvar>("Menu Tab", std::vector<std::string>({ "Aimbot", "ESP", "Misc.", "Tweaks", "Styles", "Players", "Console" }), MENU_TAB_AIMBOT, MENU_TAB_AIMBOT, MENU_TAB_MAX);
 		
