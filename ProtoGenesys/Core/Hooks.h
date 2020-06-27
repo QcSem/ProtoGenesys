@@ -29,7 +29,6 @@ namespace ProtoGenesys
 		std::vector<std::pair<QWORD, std::string>> vFriends;
 
 		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwSysValue, dwShader, dwAddress;
-		DWORD_PTR dwSteamUser, dwSteamFriends;
 
 		ISteamUser* _steamUser;
 		ISteamFriends* _steamFriends;
@@ -72,6 +71,12 @@ namespace ProtoGenesys
 		std::string Randomize(std::string name);
 		void RefreshFriends();
 		void SetThirdPerson();
+
+		typedef ISteamUser*(*tSteamUser)();
+		typedef ISteamFriends*(*tSteamFriends)();
+
+		tSteamUser GetSteamUser;
+		tSteamFriends GetSteamFriends;
 
 		StdThunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;
 	} extern _hooks;

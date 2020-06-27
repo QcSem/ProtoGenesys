@@ -872,9 +872,9 @@ namespace ProtoGenesys
 	static DWORD_PTR dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
 	static DWORD_PTR dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
 
-	static LPVOID pPresent = bGameOverlayRenderer ?
-		*(LPVOID*)ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2) :
-		*(LPVOID*)dwSwapChain;
+	static DWORD_PTR dwPresent = bGameOverlayRenderer ?
+		*(DWORD_PTR*)ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2) :
+		*(DWORD_PTR*)dwSwapChain;
 	/*
 	//=====================================================================================
 	*/

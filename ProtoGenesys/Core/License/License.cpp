@@ -25,9 +25,9 @@ namespace ProtoGenesys
 			return "";
 		}
 
-		LPCSTR parrAcceptTypes[] = { VMProtectDecryptString("text/*"), NULL };
+		LPCSTR szAcceptTypes[] = { VMProtectDecryptString("text/*"), NULL };
 
-		HINTERNET hRequest = HttpOpenRequest(hConnect, VMProtectDecryptString("GET"), file.c_str(), VMProtectDecryptString("HTTP/1.0"), NULL, parrAcceptTypes,
+		HINTERNET hRequest = HttpOpenRequest(hConnect, VMProtectDecryptString("GET"), file.c_str(), VMProtectDecryptString("HTTP/1.0"), NULL, szAcceptTypes,
 			INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_RELOAD, 0);
 		if (hRequest == NULL)
 		{
@@ -45,24 +45,24 @@ namespace ProtoGenesys
 			return "";
 		}
 
-		char buff[nBuffSize];
+		char szBuff[BUFF_SIZE];
 
 		BOOL bKeepReading = true;
 		DWORD dwBytesRead = -1;
 
-		std::string data;
+		std::string szData;
 
 		while (bKeepReading && dwBytesRead != 0)
 		{
-			bKeepReading = InternetReadFile(hRequest, buff, nBuffSize, &dwBytesRead);
-			data.append(buff, dwBytesRead);
+			bKeepReading = InternetReadFile(hRequest, szBuff, BUFF_SIZE, &dwBytesRead);
+			szData.append(szBuff, dwBytesRead);
 		}
 
 		InternetCloseHandle(hRequest);
 		InternetCloseHandle(hConnect);
 		InternetCloseHandle(hInternet);
 
-		return data;
+		return szData;
 	}
 	/*
 	//=====================================================================================

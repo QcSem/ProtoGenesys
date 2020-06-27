@@ -107,7 +107,7 @@ FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSett
 FurtiveHook fhAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
 FurtiveHook fhAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
 
-HotPatch hpGameOverlayPresent{ pPresent, &hPresent, true };
+HotPatch hpGameOverlayPresent{ (LPVOID)dwPresent, &hPresent, true };
 
 //=====================================================================================
 
@@ -301,12 +301,12 @@ void Initialize()
 
 	_hooks.dwNoDelta = Dereference(dwNoDeltaDvar);
 	Dereference(dwNoDeltaDvar) = cHooks::VEH_INDEX_NODELTA;
-	
+
 	if (bGameOverlayRenderer)
 		oPresent = (tPresent)hpGameOverlayPresent.Patch();
 
 	else
-		oPresent = (tPresent)SwapVMT(pPresent, &hPresent, 8);
+		oPresent = (tPresent)SwapVMT(dwPresent, (DWORD_PTR)&hPresent, 8);
 
 	AttachHook(oBulletHitEvent, hBulletHitEvent);
 	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
@@ -336,12 +336,12 @@ void Deallocate()
 
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 	SetUnhandledExceptionFilter(_hooks.pUnhandledExceptionFilter);
-	
+
 	if (bGameOverlayRenderer)
 		hpGameOverlayPresent.UnPatch();
 
 	else
-		SwapVMT(pPresent, oPresent, 8);
+		SwapVMT(dwPresent, (DWORD_PTR)oPresent, 8);
 
 	DetachHook(oBulletHitEvent, hBulletHitEvent);
 	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
@@ -357,25 +357,25 @@ void Deallocate()
 	fhAtoiCall2.UnHook();
 
 	if (oGetSteamID)
-		SwapVMT(_hooks._steamUser, oGetSteamID, 2);
+		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
 
 	if (oGetPersonaName)
-		SwapVMT(_hooks._steamFriends, oGetPersonaName, 0);
+		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetPersonaName, 0);
 
 	if (oGetFriendCount)
-		SwapVMT(_hooks._steamFriends, oGetFriendCount, 3);
+		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendCount, 3);
 
 	if (oGetFriendByIndex)
-		SwapVMT(_hooks._steamFriends, oGetFriendByIndex, 4);
+		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendByIndex, 4);
 
 	if (oGetFriendPersonaState)
-		SwapVMT(_hooks._steamFriends, oGetFriendPersonaState, 6);
+		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendPersonaState, 6);
 
 	if (oGetFriendPersonaName)
-		SwapVMT(_hooks._steamFriends, oGetFriendPersonaName, 7);
+		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendPersonaName, 7);
 
 	if (oGetFriendGamePlayed)
-		SwapVMT(_hooks._steamFriends, oGetFriendGamePlayed, 8);
+		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendGamePlayed, 8);
 
 	_mainGui._device->Release();
 	_mainGui._deviceContext->Release();
@@ -396,22 +396,22 @@ void HookFriendApi()
 	if (!hSteamAPI)
 		return;
 
-	_hooks.dwSteamFriends = (DWORD_PTR)GetProcAddress(hSteamAPI, "SteamFriends");
+	_hooks.GetSteamFriends = (cHooks::tSteamFriends)GetProcAddress(hSteamAPI, "SteamFriends");
 
-	if (!_hooks.dwSteamFriends)
+	if (!_hooks.GetSteamFriends)
 		return;
 
-	_hooks._steamFriends = VariadicCall<ISteamFriends*>(_hooks.dwSteamFriends);
+	_hooks._steamFriends = _hooks.GetSteamFriends();
 
 	if (!_hooks._steamFriends)
 		return;
 
-	oGetPersonaName = (tGetPersonaName)SwapVMT(_hooks._steamFriends, &hGetPersonaName, 0);
-	oGetFriendCount = (tGetFriendCount)SwapVMT(_hooks._steamFriends, &hGetFriendCount, 3);
-	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT(_hooks._steamFriends, &hGetFriendByIndex, 4);
-	oGetFriendPersonaState = (tGetFriendPersonaState)SwapVMT(_hooks._steamFriends, &hGetFriendPersonaState, 6);
-	oGetFriendPersonaName = (tGetFriendPersonaName)SwapVMT(_hooks._steamFriends, &hGetFriendPersonaName, 7);
-	oGetFriendGamePlayed = (tGetFriendGamePlayed)SwapVMT(_hooks._steamFriends, &hGetFriendGamePlayed, 8);
+	oGetPersonaName = (tGetPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetPersonaName, 0);
+	oGetFriendCount = (tGetFriendCount)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendCount, 3);
+	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendByIndex, 4);
+	oGetFriendPersonaState = (tGetFriendPersonaState)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendPersonaState, 6);
+	oGetFriendPersonaName = (tGetFriendPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendPersonaName, 7);
+	oGetFriendGamePlayed = (tGetFriendGamePlayed)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendGamePlayed, 8);
 }
 
 //=====================================================================================
@@ -425,17 +425,17 @@ void WINAPI SteamID(LPWSTR xuid)
 	if (!hSteamAPI)
 		return;
 
-	_hooks.dwSteamUser = (DWORD_PTR)GetProcAddress(hSteamAPI, "SteamUser");
+	_hooks.GetSteamUser = (cHooks::tSteamUser)GetProcAddress(hSteamAPI, "SteamUser");
 
-	if (!_hooks.dwSteamUser)
+	if (!_hooks.GetSteamUser)
 		return;
 
-	_hooks._steamUser = VariadicCall<ISteamUser*>(_hooks.dwSteamUser);
+	_hooks._steamUser = _hooks.GetSteamUser();
 
 	if (!_hooks._steamUser)
 		return;
 
-	oGetSteamID = (tGetSteamID)SwapVMT(_hooks._steamUser, &hGetSteamID, 2);
+	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
 }
 
 //=====================================================================================

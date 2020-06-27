@@ -134,22 +134,22 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE LPVOID SwapVMT(LPVOID address, LPVOID hook, int index)
+	FORCEINLINE DWORD_PTR SwapVMT(DWORD_PTR address, DWORD_PTR hook, int index)
 	{
-		LPVOID* pVTable = *(LPVOID**)address;
-		LPVOID pBackup = NULL;
+		DWORD_PTR* dwVTable = *(DWORD_PTR**)address;
+		DWORD_PTR dwBackup = NULL;
 
 		MEMORY_BASIC_INFORMATION MBI;
 
-		VirtualQuery((LPCVOID)pVTable, &MBI, sizeof(MEMORY_BASIC_INFORMATION));
+		VirtualQuery((LPCVOID)dwVTable, &MBI, sizeof(MEMORY_BASIC_INFORMATION));
 		VirtualProtect(MBI.BaseAddress, MBI.RegionSize, PAGE_EXECUTE_READWRITE, &MBI.Protect);
 
-		pBackup = pVTable[index];
-		pVTable[index] = (LPVOID)hook;
+		dwBackup = dwVTable[index];
+		dwVTable[index] = hook;
 
 		VirtualProtect(MBI.BaseAddress, MBI.RegionSize, MBI.Protect, &MBI.Protect);
 
-		return pBackup;
+		return dwBackup;
 	}
 }
 

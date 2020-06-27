@@ -68,11 +68,11 @@
     <ClCompile Include="ImGui\Addons\WICTextureLoader.cpp">
       <Filter>ImGui\Addons</Filter>
     </ClCompile>
-    <ClCompile Include="Core\License\License.cpp">
-      <Filter>Core\License</Filter>
-    </ClCompile>
     <ClCompile Include="Core\VMTHook\VMTHook.cpp">
       <Filter>Core\VMTHook</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\License\License.cpp">
+      <Filter>Core\License</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -458,12 +458,12 @@ namespace ProtoGenesys
 		if (!szIpOverride.empty())
 		{
 			std::vector<std::string> vIpOverride = acut::SplitStringWithDelimiter(szIpOverride, ".");
-			LPBYTE pIP = (LPBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
+			LPBYTE lpIP = (LPBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
 
-			pIP[0] = (BYTE)strtol(vIpOverride[0].c_str(), NULL, 10);
-			pIP[1] = (BYTE)strtol(vIpOverride[1].c_str(), NULL, 10);
-			pIP[2] = (BYTE)strtol(vIpOverride[2].c_str(), NULL, 10);
-			pIP[3] = (BYTE)strtol(vIpOverride[3].c_str(), NULL, 10);
+			lpIP[0] = (BYTE)strtol(vIpOverride[0].c_str(), NULL, 10);
+			lpIP[1] = (BYTE)strtol(vIpOverride[1].c_str(), NULL, 10);
+			lpIP[2] = (BYTE)strtol(vIpOverride[2].c_str(), NULL, 10);
+			lpIP[3] = (BYTE)strtol(vIpOverride[3].c_str(), NULL, 10);
 		}
 	}
 	/*
