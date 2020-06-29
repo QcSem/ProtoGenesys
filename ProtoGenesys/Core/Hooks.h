@@ -62,6 +62,7 @@ namespace ProtoGenesys
 		int GetPlayerStatus(int localnum, QWORD xuid);
 		bool IsValidSteamID(CSteamID* steamid);
 
+		CSteamID* GetSteamID(CSteamID* steamid);
 		LPCSTR GetPersonaName(LPCSTR name);
 		int GetFriendCount(LPVOID ecx, LPVOID edx, EFriendFlags friendflags);
 		void GetFriendByIndex(LPVOID ecx, LPVOID edx, CSteamID* steamid, int index, EFriendFlags friendflags);
@@ -71,7 +72,6 @@ namespace ProtoGenesys
 
 		int Atoi1(int result);
 		int Atoi2(int result);
-		QWORD GetUserSteamIDAsXUID();
 
 		std::string Randomize(std::string name);
 		void RefreshFriends();

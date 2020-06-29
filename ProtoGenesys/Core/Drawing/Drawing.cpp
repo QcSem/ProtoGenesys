@@ -346,11 +346,11 @@ namespace ProtoGenesys
 		if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_TOP)
 			DrawLine(ImVec2(center.x, center.y - flHeight / 2.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, 0.0f), color);
 
+		else if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_CENTER)
+			DrawLine(ImVec2(center.x, center.y), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f), color);
+
 		else if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_BOTTOM)
 			DrawLine(ImVec2(center.x, center.y + flHeight / 2.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y), color);
-
-		else if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_CROSSHAIR)
-			DrawLine(ImVec2(center.x, center.y), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f), color);
 
 		if (_profiler.gDistances->Current.bValue && _profiler.gNames->Current.bValue)
 		{

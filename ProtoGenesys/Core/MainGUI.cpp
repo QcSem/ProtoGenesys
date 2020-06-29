@@ -15,9 +15,6 @@ namespace ProtoGenesys
 		if (!hWindow || !_device || !_deviceContext)
 			return;
 
-		if (!Window->iWidth || !Window->iHeight)
-			return;
-
 		oWindowProcess = (tWindowProcess)SetWindowLongPtr(hWindow, GWLP_WNDPROC, (LONG_PTR)_thunkWindowProcess.GetThunk());
 
 		ImGui::CreateContext();
@@ -948,8 +945,7 @@ namespace ProtoGenesys
 
 		else
 		{
-			if (CG)
-				DrawMainGUI();
+			DrawMainGUI();
 		}
 	}
 	/*

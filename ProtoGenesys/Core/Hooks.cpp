@@ -12,17 +12,14 @@ namespace ProtoGenesys
 	{
 		Dereference(dwTacSSHandle) = 0x1;
 
-		if (CG)
-		{
-			if (_profiler.gOrbitalVsatAlwaysOn->Current.iValue && CG->PlayerState.iSatalliteTypeEnabled != 1)
-				CG->PlayerState.iSatalliteTypeEnabled = 1;
+		if (_profiler.gOrbitalVsatAlwaysOn->Current.iValue && CG->PlayerState.iSatalliteTypeEnabled != 1)
+			CG->PlayerState.iSatalliteTypeEnabled = 1;
 
-			if (_profiler.gHardcoreHudOverlay->Current.iValue && CG->iMatchUIVisibilityFlags & 0x200)
-				CG->iMatchUIVisibilityFlags &= ~0x200;
+		if (_profiler.gHardcoreHudOverlay->Current.iValue && CG->iMatchUIVisibilityFlags & 0x200)
+			CG->iMatchUIVisibilityFlags &= ~0x200;
 
-			if (_profiler.gDisableEmpOverlay->Current.iValue && CG->PlayerState.iOtherFlags & 0x40)
-				CG->PlayerState.iOtherFlags &= ~0x40;
-		}
+		if (_profiler.gDisableEmpOverlay->Current.iValue && CG->PlayerState.iOtherFlags & 0x40)
+			CG->PlayerState.iOtherFlags &= ~0x40;
 
 		if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_GUARD_PAGE)
 		{
@@ -207,6 +204,8 @@ namespace ProtoGenesys
 
 		if (Dereference(dwTacSSCheck))
 		{
+			_console.AddLog("%s patching ac hook...", PREFIX_LOG);
+
 			VirtualProtect((LPVOID)dwTacSSPatch, sizeof(QWORD), dwProtection, &dwProtection);
 
 			for (int i = 0; i < sizeof(szPatchStub); ++i)
@@ -226,75 +225,69 @@ namespace ProtoGenesys
 		dwSysValue = Sys_GetValue(3);
 		dwShader = RegisterShader("white");
 
-		if (CG)
+		SetThirdPerson();
+
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			SetThirdPerson();
+			_targetList.GetInformation();
+			_drawing.CalculateTracers();
+			_aimBot.SetAimState();
 
-			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
-			{
-				_targetList.GetInformation();
-				_drawing.CalculateTracers();
-				_aimBot.SetAimState();
+			if (WeaponIsVehicle() || (!IsPlayerReloading() && WeaponAmmoAvailable()))
+				_aimBot.StandardAim();
 
-				if (WeaponIsVehicle() || (!IsPlayerReloading() && WeaponAmmoAvailable()))
-					_aimBot.StandardAim();
-
-				_removals.RecoilCompensation();
-			}
-
-			else
-			{
-				_drawing.vTracers.clear();
-				_mainGui.bIsAirStuck = false;
-			}
-
-			for (int i = 0; i < MAX_CLIENTS; i++)
-				if (!CG->ClientInfo[i].iInfoValid)
-					_targetList.Priorities[i].bIsPrioritized = _targetList.Priorities[i].bIsIgnored = false;
+			_removals.RecoilCompensation();
 		}
+
+		else
+		{
+			_drawing.vTracers.clear();
+			_mainGui.bIsAirStuck = false;
+		}
+
+		for (int i = 0; i < MAX_CLIENTS; i++)
+			if (!CG->ClientInfo[i].iInfoValid)
+				_targetList.Priorities[i].bIsPrioritized = _targetList.Priorities[i].bIsIgnored = false;
 	}
 	/*
 	//=====================================================================================
 	*/
 	void cHooks::PredictPlayerState()
 	{
-		if (CG)
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+			_aimBot.SetReloadState();
+
+			static int iBackupAngles[3];
+
+			sUserCmd* pOldCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd - 1);
+			sUserCmd* pCurrentCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
+			sUserCmd* pNewCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd + 1);
+
+			if (_mainGui.bIsAirStuck)
+				CopyMemory(pCurrentCmd, pOldCmd, sizeof(sUserCmd));
+
+			CopyMemory(pNewCmd, pCurrentCmd, sizeof(sUserCmd));
+			++ClientActive->iCurrentCmd;
+
+			pOldCmd->iViewAngles[0] = iBackupAngles[0];
+			pOldCmd->iViewAngles[1] = iBackupAngles[1];
+			pOldCmd->iViewAngles[2] = iBackupAngles[2];
+
+			iBackupAngles[0] = pCurrentCmd->iViewAngles[0];
+			iBackupAngles[1] = pCurrentCmd->iViewAngles[1];
+			iBackupAngles[2] = pCurrentCmd->iViewAngles[2];
+
+			++pOldCmd->iServerTime;
+			--pCurrentCmd->iServerTime;
+
+			if (!WeaponIsVehicle() && !IsPlayerReloading() && WeaponAmmoAvailable())
 			{
-				_aimBot.SetReloadState();
-
-				static int iBackupAngles[3];
-
-				sUserCmd* pOldCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd - 1);
-				sUserCmd* pCurrentCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
-				sUserCmd* pNewCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd + 1);
-
-				if (_mainGui.bIsAirStuck)
-					CopyMemory(pCurrentCmd, pOldCmd, sizeof(sUserCmd));
-
-				CopyMemory(pNewCmd, pCurrentCmd, sizeof(sUserCmd));
-				++ClientActive->iCurrentCmd;
-
-				pOldCmd->iViewAngles[0] = iBackupAngles[0];
-				pOldCmd->iViewAngles[1] = iBackupAngles[1];
-				pOldCmd->iViewAngles[2] = iBackupAngles[2];
-
-				iBackupAngles[0] = pCurrentCmd->iViewAngles[0];
-				iBackupAngles[1] = pCurrentCmd->iViewAngles[1];
-				iBackupAngles[2] = pCurrentCmd->iViewAngles[2];
-
-				++pOldCmd->iServerTime;
-				--pCurrentCmd->iServerTime;
-
-				if (!WeaponIsVehicle() && !IsPlayerReloading() && WeaponAmmoAvailable())
-				{
-					_aimBot.SilentAim(pOldCmd);
-					_aimBot.AutoFire(pCurrentCmd);
-				}
-
-				_removals.SpreadCompensation(pOldCmd, pCurrentCmd->iServerTime);
+				_aimBot.SilentAim(pOldCmd);
+				_aimBot.AutoFire(pCurrentCmd);
 			}
+
+			_removals.SpreadCompensation(pOldCmd, pCurrentCmd->iServerTime);
 		}
 	}
 	/*
@@ -302,21 +295,18 @@ namespace ProtoGenesys
 	*/
 	void cHooks::WritePacket()
 	{
-		if (CG)
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+			sUserCmd* pUserCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
+
+			if (WeaponIsVehicle())
 			{
-				sUserCmd* pUserCmd = ClientActive->GetUserCmd(ClientActive->iCurrentCmd);
-
-				if (WeaponIsVehicle())
-				{
-					_aimBot.SilentAim(pUserCmd);
-					_aimBot.AutoFire(pUserCmd);
-				}
-
-				_antiAim.AntiAimPitch(pUserCmd);
-				_antiAim.AntiAimYaw(pUserCmd);
+				_aimBot.SilentAim(pUserCmd);
+				_aimBot.AutoFire(pUserCmd);
 			}
+
+			_antiAim.AntiAimPitch(pUserCmd);
+			_antiAim.AntiAimYaw(pUserCmd);
 		}
 	}
 	/*
@@ -324,50 +314,47 @@ namespace ProtoGenesys
 	*/
 	void cHooks::Obituary(DWORD attacker, DWORD victim)
 	{
-		if (CG)
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+			if (attacker == CG->iClientNum && attacker != victim)
 			{
-				if (attacker == CG->iClientNum && attacker != victim)
+				if (_profiler.gNameClanXuidStealer->Current.iValue)
 				{
-					if (_profiler.gNameClanXuidStealer->Current.iValue)
-					{
-						_profiler.gNameOverRide->Current.szValue = VariadicText(CG->ClientInfo[victim].szName);
-						_profiler.gClanOverRide->Current.szValue = VariadicText(CG->ClientInfo[victim].szClan);
-						_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", CG->ClientInfo[victim].qwXuid);
+					_profiler.gNameOverRide->Current.szValue = VariadicText(CG->ClientInfo[victim].szName);
+					_profiler.gClanOverRide->Current.szValue = VariadicText(CG->ClientInfo[victim].szClan);
+					_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", CG->ClientInfo[victim].qwXuid);
 
-						AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
-							CG->ClientInfo[victim].szName,
-							CG->ClientInfo[victim].szClan,
-							CG->ClientInfo[victim].qwXuid));
-					}
-
-					if (_profiler.gEndRoundOnNextKill->Current.iValue)
-					{
-						AddReliableCommand(VariadicText("mr %d -1 endround", Dereference(dwServerID)));
-						_profiler.gEndRoundOnNextKill->Current.iValue = false;
-					}
-
-					std::string szKillspam(_profiler.gKillSpam->Current.szValue);
-
-					if (!szKillspam.empty())
-					{
-						szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", ServerSession[attacker].szName);
-						szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", ServerSession[victim].szName);
-						szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", VariadicText("%u.%u.%u.%u",
-							(BYTE)ServerSession[victim].iIPAddress[0],
-							(BYTE)ServerSession[victim].iIPAddress[1],
-							(BYTE)ServerSession[victim].iIPAddress[2],
-							(BYTE)ServerSession[victim].iIPAddress[3]));
-
-						AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
-					}
+					AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
+						CG->ClientInfo[victim].szName,
+						CG->ClientInfo[victim].szClan,
+						CG->ClientInfo[victim].qwXuid));
 				}
 
-				else if (victim == CG->iClientNum)
+				if (_profiler.gEndRoundOnNextKill->Current.iValue)
 				{
-					_mainGui.bIsAirStuck = false;
+					AddReliableCommand(VariadicText("mr %d -1 endround", Dereference(dwServerID)));
+					_profiler.gEndRoundOnNextKill->Current.iValue = false;
 				}
+
+				std::string szKillspam(_profiler.gKillSpam->Current.szValue);
+
+				if (!szKillspam.empty())
+				{
+					szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", ServerSession[attacker].szName);
+					szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", ServerSession[victim].szName);
+					szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", VariadicText("%u.%u.%u.%u",
+						(BYTE)ServerSession[victim].iIPAddress[0],
+						(BYTE)ServerSession[victim].iIPAddress[1],
+						(BYTE)ServerSession[victim].iIPAddress[2],
+						(BYTE)ServerSession[victim].iIPAddress[3]));
+
+					AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
+				}
+			}
+
+			else if (victim == CG->iClientNum)
+			{
+				_mainGui.bIsAirStuck = false;
 			}
 		}
 	}
@@ -376,40 +363,37 @@ namespace ProtoGenesys
 	*/
 	void cHooks::BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int eventnum, int eventparm, int contents, char bone)
 	{
-		if (CG)
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+			if (_profiler.gBulletTracers->Current.iValue)
 			{
-				if (_profiler.gBulletTracers->Current.iValue)
+				if (sourcenum == CG->iClientNum && !EntityIsTeammate(&CG->CEntity[targetnum]) && targetnum < MAX_CLIENTS && bone >= 0)
 				{
-					if (sourcenum == CG->iClientNum && !EntityIsTeammate(&CG->CEntity[targetnum]) && targetnum < MAX_CLIENTS && bone >= 0)
+					int iShots, iIgnoreNum;
+					float flRange, flSpread;
+					ImVec3 vTracerStart, vOrigin;
+					sOrientation Orientation;
+
+					sBulletFireParams FireParams;
+					ZeroMemory(&FireParams, sizeof(sBulletFireParams));
+
+					if (PrepFireParams(&CG->CEntity[CG->iClientNum], RegisterTag("tag_flash"), CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, &vTracerStart, &iShots, &flRange, &Orientation, &vOrigin, &flSpread, &iIgnoreNum))
 					{
-						int iShots, iIgnoreNum;
-						float flRange, flSpread;
-						ImVec3 vTracerStart, vOrigin;
-						sOrientation Orientation;
+						cDrawing::sTracer Tracer;
 
-						sBulletFireParams FireParams;
-						ZeroMemory(&FireParams, sizeof(sBulletFireParams));
+						Tracer.iStartTime = Sys_Milliseconds();
+						Tracer.vStartPos3D = vTracerStart;
+						Tracer.vHitPos3D = *position;
 
-						if (PrepFireParams(&CG->CEntity[CG->iClientNum], RegisterTag("tag_flash"), CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, &vTracerStart, &iShots, &flRange, &Orientation, &vOrigin, &flSpread, &iIgnoreNum))
-						{
-							cDrawing::sTracer Tracer;
+						Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
+						Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
+						Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
 
-							Tracer.iStartTime = Sys_Milliseconds();
-							Tracer.vStartPos3D = vTracerStart;
-							Tracer.vHitPos3D = *position;
+						Tracer.flAlphaShadow = _profiler.gColorShadow->Current.cValue.w;
+						Tracer.flAlphaHitMarker = _profiler.gColorText->Current.cValue.w;
+						Tracer.flAlphaTracer = _profiler.gColorAccents->Current.cValue.w;
 
-							Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
-							Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
-							Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
-
-							Tracer.flAlphaShadow = _profiler.gColorShadow->Current.cValue.w;
-							Tracer.flAlphaHitMarker = _profiler.gColorText->Current.cValue.w;
-							Tracer.flAlphaTracer = _profiler.gColorAccents->Current.cValue.w;
-
-							_drawing.vTracers.push_back(Tracer);
-						}
+						_drawing.vTracers.push_back(Tracer);
 					}
 				}
 			}
@@ -432,27 +416,24 @@ namespace ProtoGenesys
 	*/
 	void cHooks::CalcEntityLerpPositions(int localnum, sCEntity* entity)
 	{
-		if (CG)
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+			if (_profiler.gThirdPersonCamera->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
 			{
-				if (_profiler.gThirdPersonCamera->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
+				if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 				{
-					if (entity->NextEntityState.iEntityNum == CG->iClientNum)
-					{
-						if (_profiler.gAntiAimPitch->Current.iValue > cProfiler::ANTIAIM_PITCH_OFF)
-							CG->ClientInfo[entity->NextEntityState.iEntityNum].vViewAngles.x = _antiAim.vAntiAimAngles.x + CG->PlayerState.vDeltaAngles.x;
+					if (_profiler.gAntiAimPitch->Current.iValue > cProfiler::ANTIAIM_PITCH_OFF)
+						CG->ClientInfo[entity->NextEntityState.iEntityNum].vViewAngles.x = _antiAim.vAntiAimAngles.x + CG->PlayerState.vDeltaAngles.x;
 
-						if (_profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)
-							entity->vViewAngles.y = _antiAim.vAntiAimAngles.y + CG->PlayerState.vDeltaAngles.y;
-					}
+					if (_profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)
+						entity->vViewAngles.y = _antiAim.vAntiAimAngles.y + CG->PlayerState.vDeltaAngles.y;
 				}
+			}
 
-				if (_profiler.gApplyPrediction->Current.iValue)
-				{
-					_mathematics.ApplyPositionPrediction(entity);
-					_mathematics.ApplyAnglePrediction(entity);
-				}
+			if (_profiler.gApplyPrediction->Current.iValue)
+			{
+				_mathematics.ApplyPositionPrediction(entity);
+				_mathematics.ApplyAnglePrediction(entity);
 			}
 		}
 	}
@@ -461,14 +442,11 @@ namespace ProtoGenesys
 	*/
 	void cHooks::GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin)
 	{
-		if (CG)
+		if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 		{
-			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+			if (_profiler.gThirdPersonCamera->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
 			{
-				if (_profiler.gThirdPersonCamera->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
-				{
-					GetPlayerViewOrigin(origin);
-				}
+				GetPlayerViewOrigin(origin);
 			}
 		}
 	}
@@ -510,6 +488,15 @@ namespace ProtoGenesys
 	bool cHooks::IsValidSteamID(CSteamID* steamid)
 	{
 		return true;
+	}
+	/*
+	//=====================================================================================
+	*/
+	CSteamID* cHooks::GetSteamID(CSteamID* steamid)
+	{
+		steamid->SetFromUint64(qwXuidOverride);
+
+		return steamid;
 	}
 	/*
 	//=====================================================================================
@@ -611,13 +598,6 @@ namespace ProtoGenesys
 		}
 
 		return result;
-	}
-	/*
-	//=====================================================================================
-	*/
-	QWORD cHooks::GetUserSteamIDAsXUID()
-	{
-		return qwXuidOverride;
 	}
 	/*
 	//=====================================================================================
