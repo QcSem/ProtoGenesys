@@ -16,8 +16,8 @@ using namespace ProtoGenesys;
 
 //=====================================================================================
 
-void Initialize();
-void Deallocate();
+void Init();
+void Free();
 void HookFriendApi();
 void WINAPI SteamID(LPWSTR xuid);
 
@@ -63,17 +63,13 @@ int USERCALL hGetPlayerStatus(int localnum, QWORD xuid);
 typedef int(USERCALL* tGetPlayerStatus)(int localnum, QWORD xuid);
 tGetPlayerStatus oGetPlayerStatus = (tGetPlayerStatus)dwGetPlayerStatus;
 
-bool FASTCALL hSteamIDIsValid(CSteamID* steamid);
-typedef bool(FASTCALL* tSteamIDIsValid)(CSteamID* steamid);
-tSteamIDIsValid oSteamIDIsValid = (tSteamIDIsValid)dwSteamIDIsValid;
+bool FASTCALL hIsValidSteamID(CSteamID* steamid);
+typedef bool(FASTCALL* tIsValidSteamID)(CSteamID* steamid);
+tIsValidSteamID oIsValidSteamID = (tIsValidSteamID)dwIsValidSteamID;
 
 LPCSTR FASTCALL hGetPersonaName(LPVOID ecx, LPVOID edx);
 typedef LPCSTR(FASTCALL* tGetPersonaName)(LPVOID ecx, LPVOID edx);
 tGetPersonaName oGetPersonaName;
-
-CSteamID* FASTCALL hGetSteamID(LPVOID ecx, LPVOID edx, int unk);
-typedef CSteamID* (FASTCALL* tGetSteamID)(LPVOID ecx, LPVOID edx, int unk);
-tGetSteamID oGetSteamID;
 
 int FASTCALL hGetFriendCount(LPVOID ecx, LPVOID edx, EFriendFlags friendflags);
 typedef int(FASTCALL* tGetFriendCount)(LPVOID ecx, LPVOID edx, EFriendFlags friendflags);
@@ -98,6 +94,8 @@ tGetFriendGamePlayed oGetFriendGamePlayed;
 int USERCALL hAtoi1(LPCSTR string);
 int USERCALL hAtoi2(LPCSTR string);
 
+QWORD USERCALL hGetUserSteamIDAsXUID();
+
 //=====================================================================================
 
 FurtiveHook fhTransitionPlayerStateCall{ x86Instruction::CALL, (LPVOID)dwTransitionPlayerStateCall, &hTransitionPlayerState };
@@ -106,8 +104,7 @@ FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSett
 
 FurtiveHook fhAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
 FurtiveHook fhAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
-
-HotPatch hpGameOverlayPresent{ (LPVOID)dwPresent, &hPresent, true };
+FurtiveHook fhGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIDAsXUIDCall, &hGetUserSteamIDAsXUID };
 
 //=====================================================================================
 
@@ -199,16 +196,9 @@ int USERCALL hGetPlayerStatus(int localnum, QWORD xuid)
 
 //=====================================================================================
 
-bool FASTCALL hSteamIDIsValid(CSteamID* steamid)
+bool FASTCALL hIsValidSteamID(CSteamID* steamid)
 {
-	return _hooks.SteamIDIsValid(steamid);
-}
-
-//=====================================================================================
-
-CSteamID* FASTCALL hGetSteamID(LPVOID ecx, LPVOID edx, int unk)
-{
-	return _hooks.GetSteamID(oGetSteamID(ecx, edx, unk));
+	return _hooks.IsValidSteamID(steamid);
 }
 
 //=====================================================================================
@@ -280,8 +270,21 @@ int USERCALL hAtoi2(LPCSTR string)
 
 //=====================================================================================
 
-void Initialize()
+QWORD USERCALL hGetUserSteamIDAsXUID()
 {
+	return _hooks.GetUserSteamIDAsXUID();
+}
+
+//=====================================================================================
+
+void Init()
+{
+	while (!hGameOverlayRenderer.lpBaseOfDll || !hGameOverlayRenderer.EntryPoint || !hGameOverlayRenderer.SizeOfImage)
+		hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
+
+	while (!oPresent)
+		oPresent = *(tPresent*)ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2);
+
 	_hooks.PatchAntiCheat();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
@@ -302,17 +305,12 @@ void Initialize()
 	_hooks.dwNoDelta = Dereference(dwNoDeltaDvar);
 	Dereference(dwNoDeltaDvar) = cHooks::VEH_INDEX_NODELTA;
 
-	if (bGameOverlayRenderer)
-		oPresent = (tPresent)hpGameOverlayPresent.Patch();
-
-	else
-		oPresent = (tPresent)SwapVMT(dwPresent, (DWORD_PTR)&hPresent, 8);
-
+	AttachHook(oPresent, hPresent);
 	AttachHook(oBulletHitEvent, hBulletHitEvent);
 	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	AttachHook(oGetAddr, hGetAddr);
 	AttachHook(oGetPlayerStatus, hGetPlayerStatus);
-	AttachHook(oSteamIDIsValid, hSteamIDIsValid);
+	AttachHook(oIsValidSteamID, hIsValidSteamID);
 
 	fhTransitionPlayerStateCall.SetHook();
 	fhGetWorldTagMatrixCall.SetHook();
@@ -321,12 +319,15 @@ void Initialize()
 	fhAtoiCall1.SetHook();
 	fhAtoiCall2.SetHook();
 
+	while (Sys_Milliseconds() < 15000)
+		continue;
+
 	HookFriendApi();
 }
 
 //=====================================================================================
 
-void Deallocate()
+void Free()
 {
 	Dereference(dwConnectPathsDvar) = _hooks.dwConnectPaths;
 	Dereference(dwMouseAccelerationDvar) = _hooks.dwMouseAccel;
@@ -337,17 +338,12 @@ void Deallocate()
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 	SetUnhandledExceptionFilter(_hooks.pUnhandledExceptionFilter);
 
-	if (bGameOverlayRenderer)
-		hpGameOverlayPresent.UnPatch();
-
-	else
-		SwapVMT(dwPresent, (DWORD_PTR)oPresent, 8);
-
+	DetachHook(oPresent, hPresent);
 	DetachHook(oBulletHitEvent, hBulletHitEvent);
 	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	DetachHook(oGetAddr, hGetAddr);
 	DetachHook(oGetPlayerStatus, hGetPlayerStatus);
-	DetachHook(oSteamIDIsValid, hSteamIDIsValid);
+	DetachHook(oIsValidSteamID, hIsValidSteamID);
 
 	fhTransitionPlayerStateCall.UnHook();
 	fhGetWorldTagMatrixCall.UnHook();
@@ -356,8 +352,8 @@ void Deallocate()
 	fhAtoiCall1.UnHook();
 	fhAtoiCall2.UnHook();
 
-	if (oGetSteamID)
-		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
+	if (fhGetUserSteamIDAsXUIDCall.IsHooked())
+		fhGetUserSteamIDAsXUIDCall.UnHook();
 
 	if (oGetPersonaName)
 		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetPersonaName, 0);
@@ -393,18 +389,14 @@ void HookFriendApi()
 {
 	_hooks.RefreshFriends();
 
-	if (!hSteamAPI)
-		return;
+	while (!hSteamAPI.lpBaseOfDll || !hSteamAPI.EntryPoint || !hSteamAPI.SizeOfImage)
+		hSteamAPI = GetModuleInfo("steam_api.dll");
 
-	_hooks.GetSteamFriends = (cHooks::tSteamFriends)GetProcAddress(hSteamAPI, "SteamFriends");
+	while (!_hooks.GetSteamFriends)
+		_hooks.GetSteamFriends = (cHooks::tSteamFriends)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamFriends");
 
-	if (!_hooks.GetSteamFriends)
-		return;
-
-	_hooks._steamFriends = _hooks.GetSteamFriends();
-
-	if (!_hooks._steamFriends)
-		return;
+	while (!_hooks._steamFriends)
+		_hooks._steamFriends = _hooks.GetSteamFriends();
 
 	oGetPersonaName = (tGetPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetPersonaName, 0);
 	oGetFriendCount = (tGetFriendCount)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendCount, 3);
@@ -422,20 +414,16 @@ void WINAPI SteamID(LPWSTR xuid)
 
 	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
 
-	if (!hSteamAPI)
-		return;
+	while (!hSteamAPI.lpBaseOfDll || !hSteamAPI.EntryPoint || !hSteamAPI.SizeOfImage)
+		hSteamAPI = GetModuleInfo("steam_api.dll");
 
-	_hooks.GetSteamUser = (cHooks::tSteamUser)GetProcAddress(hSteamAPI, "SteamUser");
+	while (!_hooks.GetSteamUser)
+		_hooks.GetSteamUser = (cHooks::tSteamUser)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamUser");
 
-	if (!_hooks.GetSteamUser)
-		return;
+	while (!_hooks._steamUser)
+		_hooks._steamUser = _hooks.GetSteamUser();
 
-	_hooks._steamUser = _hooks.GetSteamUser();
-
-	if (!_hooks._steamUser)
-		return;
-
-	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
+	fhGetUserSteamIDAsXUIDCall.SetHook();
 }
 
 //=====================================================================================
@@ -447,11 +435,11 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Initialize();
+		std::thread(Init).detach();
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:
-		Deallocate();
+		std::thread(Free).detach();
 		return TRUE;
 
 	default:

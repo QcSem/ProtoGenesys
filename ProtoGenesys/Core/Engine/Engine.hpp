@@ -730,13 +730,11 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	static MODULEINFO hSteamAPI;
+	static MODULEINFO hGameOverlayRenderer;
 	static MODULEINFO hT6mp = GetModuleInfo(NULL);
+
 	static bool bIsSteamVersion = hT6mp.SizeOfImage == 0x400D000;
-
-	static MODULEINFO hGameOverlayRenderer = bIsSteamVersion ? GetModuleInfo("GameOverlayRenderer.dll") : MODULEINFO{ NULL };
-	static bool bGameOverlayRenderer = (hGameOverlayRenderer.lpBaseOfDll && hGameOverlayRenderer.SizeOfImage);
-
-	static HMODULE hSteamAPI = GetModuleHandle("steam_api.dll");
 
 	static DWORD_PTR dwConnectPathsDvar = 0x2366AA4;
 	static DWORD_PTR dwMouseAccelerationDvar = 0x11C7834;
@@ -747,9 +745,6 @@ namespace ProtoGenesys
 	static DWORD_PTR dwTransitionPlayerStateCall = bIsSteamVersion ? 0x55CF28 : 0x51DAE8;
 	static DWORD_PTR dwGetWorldTagMatrixCall = bIsSteamVersion ? 0x7D53BA : 0x7D5CAA;
 	static DWORD_PTR dwGameTypeSettingsCall = bIsSteamVersion ? 0x97CBC2 : 0x97CC42;
-	static DWORD_PTR dwPenetrationMinFxDist = bIsSteamVersion ? *(DWORD_PTR*)0x324D65C : *(DWORD_PTR*)0x322C65C;
-	static DWORD_PTR dwPenetrationMultiplier = bIsSteamVersion ? *(DWORD_PTR*)0x325FC04 : *(DWORD_PTR*)0x323EC04;
-	static DWORD_PTR dwPenetrationCount = *(DWORD_PTR*)0x28FB870;
 	static DWORD_PTR dwOrbitalVsat = 0x12A0CA4;
 
 	static DWORD_PTR dwSysGetValueException = bIsSteamVersion ? 0x635F09 : 0x5EFBB9;
@@ -780,15 +775,16 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGameTypeSettings = bIsSteamVersion ? 0x6C43C0 : 0x4F5F70;
 	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
-	static DWORD_PTR dwSteamIDIsValid = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
+	static DWORD_PTR dwIsValidSteamID = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
 	static DWORD_PTR dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
 	static DWORD_PTR dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
+	static DWORD_PTR dwGetUserSteamIDAsXUIDCall = bIsSteamVersion ? 0x924621 : 924471;
 
-	static DWORD_PTR dwCG = *(DWORD_PTR*)0x113F18C;
+	static DWORD_PTR dwCG = 0x113F18C;
 	static DWORD_PTR dwClientActive = 0x11C7D74;
-	static DWORD_PTR dwViewAngles = dwCG + 0xFE64393C;
-	static DWORD_PTR dwRecoilAngles = dwCG + 0xFE6438B0;
-	static DWORD_PTR dwWeaponNames = *(DWORD_PTR*)0x10A7E28;
+	static DWORD_PTR dwViewAngles = 0xFE64393C;
+	static DWORD_PTR dwRecoilAngles = 0xFE6438B0;
+	static DWORD_PTR dwWeaponNames = 0x10A7E28;
 	static DWORD_PTR dwWindowHandle = 0x2B6ED88;
 	static DWORD_PTR dwServerSession = 0x12A7240;
 	static DWORD_PTR dwServerID = 0x11D0ACC;
@@ -871,18 +867,14 @@ namespace ProtoGenesys
 	static DWORD_PTR dwTacSSPatch = 0x2B68824;
 	static DWORD_PTR dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
 	static DWORD_PTR dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
-
-	static DWORD_PTR dwPresent = bGameOverlayRenderer ?
-		*(DWORD_PTR*)ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2) :
-		*(DWORD_PTR*)dwSwapChain;
 	/*
 	//=====================================================================================
 	*/
-#define CG ((sCG*)dwCG)
-#define ClientActive (*(sClientActive**)dwClientActive)
-#define WeaponNames ((sWeaponName*)dwWeaponNames)
-#define ViewAngles ((sViewAngles*)dwViewAngles)
-#define RecoilAngles ((sRecoilAngles*)dwRecoilAngles)
+#define CG (Dereference((sCG*)dwCG))
+#define ClientActive (Dereference((sClientActive*)dwClientActive))
+#define WeaponNames (Dereference((sWeaponName*)dwWeaponNames))
+#define ViewAngles ((sViewAngles*)(Dereference(dwCG)+dwViewAngles))
+#define RecoilAngles ((sRecoilAngles*)(Dereference(dwCG)+dwRecoilAngles))
 #define ServerSession ((sServerSession*)dwServerSession)
 #define Window ((sWindow*)dwWindow)
 	/*

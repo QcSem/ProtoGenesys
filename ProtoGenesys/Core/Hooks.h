@@ -31,7 +31,12 @@ namespace ProtoGenesys
 		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwSysValue, dwShader, dwAddress;
 
 		ISteamUser* _steamUser;
+		typedef decltype(SteamUser)* tSteamUser;
+		tSteamUser GetSteamUser;
+
 		ISteamFriends* _steamFriends;
+		typedef decltype(SteamFriends)* tSteamFriends;
+		tSteamFriends GetSteamFriends;
 
 		LPTOP_LEVEL_EXCEPTION_FILTER pUnhandledExceptionFilter;
 		LPVOID pVectoredExceptionHandler;
@@ -46,7 +51,7 @@ namespace ProtoGenesys
 		void DrawBigFPS();
 		void PredictPlayerState();
 		void WritePacket();
-		void KillSpam(DWORD attacker, DWORD victim);
+		void Obituary(DWORD attacker, DWORD victim);
 		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int eventnum, int eventparm, int contents, char bone);
 		void TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
 		void CalcEntityLerpPositions(int localnum, sCEntity* entity);
@@ -55,9 +60,8 @@ namespace ProtoGenesys
 		
 		int GameTypeSettings(int settings);
 		int GetPlayerStatus(int localnum, QWORD xuid);
-		bool SteamIDIsValid(CSteamID* steamid);
+		bool IsValidSteamID(CSteamID* steamid);
 
-		CSteamID* GetSteamID(CSteamID* steamid);
 		LPCSTR GetPersonaName(LPCSTR name);
 		int GetFriendCount(LPVOID ecx, LPVOID edx, EFriendFlags friendflags);
 		void GetFriendByIndex(LPVOID ecx, LPVOID edx, CSteamID* steamid, int index, EFriendFlags friendflags);
@@ -67,16 +71,11 @@ namespace ProtoGenesys
 
 		int Atoi1(int result);
 		int Atoi2(int result);
+		QWORD GetUserSteamIDAsXUID();
 
 		std::string Randomize(std::string name);
 		void RefreshFriends();
 		void SetThirdPerson();
-
-		typedef ISteamUser*(*tSteamUser)();
-		typedef ISteamFriends*(*tSteamFriends)();
-
-		tSteamUser GetSteamUser;
-		tSteamFriends GetSteamFriends;
 
 		StdThunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;
 	} extern _hooks;

@@ -15,6 +15,9 @@ namespace ProtoGenesys
 		if (!hWindow || !_device || !_deviceContext)
 			return;
 
+		if (!Window->iWidth || !Window->iHeight)
+			return;
+
 		oWindowProcess = (tWindowProcess)SetWindowLongPtr(hWindow, GWLP_WNDPROC, (LONG_PTR)_thunkWindowProcess.GetThunk());
 
 		ImGui::CreateContext();
@@ -920,6 +923,10 @@ namespace ProtoGenesys
 		else
 			bIsAirStuck = GetKeyPress(VK_DELETE, true);
 
+		if (GetActiveWindow() == hWindow)
+			if (GetAsyncKeyState(VK_MENU) & 0x8000 && GetAsyncKeyState(VK_F4) & 0x8000)
+				exit(EXIT_SUCCESS);
+
 		*(bool*)dwMouseInput = !bShowWindow;
 
 		if (bInitialized && bShowWindow && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
@@ -941,7 +948,8 @@ namespace ProtoGenesys
 
 		else
 		{
-			DrawMainGUI();
+			if (CG)
+				DrawMainGUI();
 		}
 	}
 	/*
