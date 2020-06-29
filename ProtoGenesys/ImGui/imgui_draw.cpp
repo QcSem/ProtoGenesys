@@ -188,12 +188,12 @@ void ImGui::StyleTabLabels(ImVec4* colors)
     style.colors[TabLabelStyle::Col_TabLabelHovered]            = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderHovered]);
     style.colors[TabLabelStyle::Col_TabLabelActive]             = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderActive]);
     style.colors[TabLabelStyle::Col_TabLabelBorder]             = ColorConvertFloat4ToU32(colors[ImGuiCol_Header]);
-    style.colors[TabLabelStyle::Col_TabLabelText]               = ColorConvertFloat4ToU32(ImVec4(0.00f, 0.00f, 0.00f, 1.00f));
+    style.colors[TabLabelStyle::Col_TabLabelText]               = ColorConvertFloat4ToU32(colors[ImGuiCol_TextDisabled]);
     style.colors[TabLabelStyle::Col_TabLabelSelected]           = ColorConvertFloat4ToU32(colors[ImGuiCol_Button]);
     style.colors[TabLabelStyle::Col_TabLabelSelectedHovered]    = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonHovered]);
     style.colors[TabLabelStyle::Col_TabLabelSelectedActive]     = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonActive]);
     style.colors[TabLabelStyle::Col_TabLabelSelectedBorder]     = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
-    style.colors[TabLabelStyle::Col_TabLabelSelectedText]       = ColorConvertFloat4ToU32(ImVec4(1.00f, 1.00f, 1.00f, 1.00f));
+    style.colors[TabLabelStyle::Col_TabLabelSelectedText]       = ColorConvertFloat4ToU32(colors[ImGuiCol_Text]);
 }
 
 void ImGui::StyleColorsFurtive(ImGuiStyle* dst)
@@ -202,7 +202,7 @@ void ImGui::StyleColorsFurtive(ImGuiStyle* dst)
     ImVec4* colors = style->Colors;
 
     colors[ImGuiCol_Text]                   = ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
-    colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
     colors[ImGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
     colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
     colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
@@ -225,10 +225,10 @@ void ImGui::StyleColorsFurtive(ImGuiStyle* dst)
     colors[ImGuiCol_Button]                 = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
     colors[ImGuiCol_ButtonHovered]          = ImVec4(1.00f, 0.00f, 0.23f, 1.00f);
     colors[ImGuiCol_ButtonActive]           = ImVec4(1.00f, 0.00f, 0.23f, 1.00f);
-    colors[ImGuiCol_Header]                 = ImVec4(1.00f, 0.00f, 0.30f, 1.00f);
-    colors[ImGuiCol_HeaderHovered]          = ImVec4(1.00f, 0.00f, 0.30f, 0.80f);
-    colors[ImGuiCol_HeaderActive]           = ImVec4(1.00f, 0.00f, 0.33f, 1.00f);
-    colors[ImGuiCol_Separator]              = ImVec4(0.10f, 0.10f, 0.10f, 0.90f);
+    colors[ImGuiCol_Header]                 = ImVec4(1.00f, 0.00f, 0.23f, 1.00f);
+    colors[ImGuiCol_HeaderHovered]          = ImVec4(1.00f, 0.00f, 0.23f, 1.00f);
+    colors[ImGuiCol_HeaderActive]           = ImVec4(1.00f, 0.00f, 0.23f, 1.00f);
+    colors[ImGuiCol_Separator]              = colors[ImGuiCol_Border];
     colors[ImGuiCol_SeparatorHovered]       = ImVec4(1.00f, 0.00f, 0.33f, 0.78f);
     colors[ImGuiCol_SeparatorActive]        = ImVec4(1.00f, 0.00f, 0.36f, 1.00f);
     colors[ImGuiCol_ResizeGrip]             = colors[ImGuiCol_ScrollbarGrab];
@@ -244,7 +244,7 @@ void ImGui::StyleColorsFurtive(ImGuiStyle* dst)
     colors[ImGuiCol_PlotHistogram]          = ImVec4(1.00f, 0.00f, 0.30f, 1.00f);
     colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.00f, 0.30f, 1.00f);
     colors[ImGuiCol_TextSelectedBg]         = ImVec4(1.00f, 0.00f, 0.30f, 0.35f);
-    colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 0.00f, 0.30f, 0.90f);
     colors[ImGuiCol_NavHighlight]           = colors[ImGuiCol_HeaderHovered];
     colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);

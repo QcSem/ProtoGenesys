@@ -530,7 +530,7 @@ namespace ProtoGenesys
 						if (ImGui::Selectable("Add To Friend List"))
 						{
 							std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::out | std::ios_base::app);
-							file << (std::to_string(ServerSession[i].qwXuid) + " " + ServerSession[i].szName).c_str() << std::endl;
+							file << ServerSession[i].qwXuid << " " << ServerSession[i].szName << std::endl;
 
 							_hooks.RefreshFriends();
 
