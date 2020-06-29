@@ -202,10 +202,10 @@ namespace ProtoGenesys
 
 		char szPatchStub[7] = { -117, -1, 85, -117, -20, -117, -55 };
 
+		_console.AddLog("%s patching ac hook...", PREFIX_LOG);
+
 		if (Dereference(dwTacSSCheck))
 		{
-			_console.AddLog("%s patching ac hook...", PREFIX_LOG);
-
 			VirtualProtect((LPVOID)dwTacSSPatch, sizeof(QWORD), dwProtection, &dwProtection);
 
 			for (int i = 0; i < sizeof(szPatchStub); ++i)
