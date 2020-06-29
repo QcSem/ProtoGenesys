@@ -778,7 +778,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwIsValidSteamID = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
 	static DWORD_PTR dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
 	static DWORD_PTR dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
-	static DWORD_PTR dwGetUserSteamIDAsXUIDCall = bIsSteamVersion ? 0x924621 : 924471;
+	static DWORD_PTR dwGetUserSteamIDAsXUIDCall = bIsSteamVersion ? 0x924621 : 0x924471;
 
 	static DWORD_PTR dwCG = 0x113F18C;
 	static DWORD_PTR dwClientActive = 0x11C7D74;
