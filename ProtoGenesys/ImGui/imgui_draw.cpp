@@ -182,12 +182,13 @@ void ImGui::StyleTabLabels(ImVec4* colors)
     TabLabelStyle& style = TabLabelStyle::Get();
 
     style.rounding = 0.0f;
+    style.borderWidth = 1.0f;
     style.fillColorGradientDeltaIn0_05 = 0.0f;
 
     style.colors[TabLabelStyle::Col_TabLabel]                   = ColorConvertFloat4ToU32(colors[ImGuiCol_Header]);
     style.colors[TabLabelStyle::Col_TabLabelHovered]            = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderHovered]);
     style.colors[TabLabelStyle::Col_TabLabelActive]             = ColorConvertFloat4ToU32(colors[ImGuiCol_HeaderActive]);
-    style.colors[TabLabelStyle::Col_TabLabelBorder]             = ColorConvertFloat4ToU32(colors[ImGuiCol_Header]);
+    style.colors[TabLabelStyle::Col_TabLabelBorder]             = ColorConvertFloat4ToU32(colors[ImGuiCol_Border]);
     style.colors[TabLabelStyle::Col_TabLabelText]               = ColorConvertFloat4ToU32(colors[ImGuiCol_TextDisabled]);
     style.colors[TabLabelStyle::Col_TabLabelSelected]           = ColorConvertFloat4ToU32(colors[ImGuiCol_Button]);
     style.colors[TabLabelStyle::Col_TabLabelSelectedHovered]    = ColorConvertFloat4ToU32(colors[ImGuiCol_ButtonHovered]);

@@ -23,6 +23,7 @@ namespace ProtoGenesys
 			VEH_INDEX_NODELTA = 33833
 		};
 
+		bool bXuidOverride;
 		QWORD qwXuidOverride;
 
 		int iFriendCount;
@@ -72,6 +73,8 @@ namespace ProtoGenesys
 
 		int Atoi1(int result);
 		int Atoi2(int result);
+
+		QWORD GetUserSteamIDAsXUID();
 
 		std::string Randomize(std::string name);
 		void RefreshFriends();

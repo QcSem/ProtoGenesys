@@ -18,7 +18,7 @@ using namespace ProtoGenesys;
 
 void Init();
 void Free();
-void HookFriendApi();
+void HookSteamAPI();
 void WINAPI SteamID(LPWSTR xuid);
 
 //=====================================================================================
@@ -98,6 +98,8 @@ tGetFriendGamePlayed oGetFriendGamePlayed;
 int USERCALL hAtoi1(LPCSTR string);
 int USERCALL hAtoi2(LPCSTR string);
 
+QWORD USERCALL hGetUserSteamIDAsXUID();
+
 //=====================================================================================
 
 FurtiveHook fhTransitionPlayerStateCall{ x86Instruction::CALL, (LPVOID)dwTransitionPlayerStateCall, &hTransitionPlayerState };
@@ -107,7 +109,7 @@ FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSett
 FurtiveHook fhAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
 FurtiveHook fhAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
 
-HotPatch hpGameOverlayPresent{ (LPVOID)dwPresent, &hPresent, true };
+FurtiveHook fhGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIDAsXUIDCall, &hGetUserSteamIDAsXUID };
 
 //=====================================================================================
 
@@ -280,8 +282,21 @@ int USERCALL hAtoi2(LPCSTR string)
 
 //=====================================================================================
 
+QWORD USERCALL hGetUserSteamIDAsXUID()
+{
+	return _hooks.GetUserSteamIDAsXUID();
+}
+
+//=====================================================================================
+
 void Init()
 {
+	while (!hGameOverlayRenderer.lpBaseOfDll || !hGameOverlayRenderer.EntryPoint || !hGameOverlayRenderer.SizeOfImage)
+		hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
+
+	while (!oPresent)
+		oPresent = (tPresent)Dereference(ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2));
+
 	_hooks.PatchAntiCheat();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
@@ -302,6 +317,7 @@ void Init()
 	_hooks.dwNoDelta = Dereference(dwNoDeltaDvar);
 	Dereference(dwNoDeltaDvar) = cHooks::VEH_INDEX_NODELTA;
 
+	AttachHook(oPresent, hPresent);
 	AttachHook(oBulletHitEvent, hBulletHitEvent);
 	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	AttachHook(oGetAddr, hGetAddr);
@@ -315,9 +331,9 @@ void Init()
 	fhAtoiCall1.SetHook();
 	fhAtoiCall2.SetHook();
 
-	oPresent = (tPresent)hpGameOverlayPresent.Patch();
+	while (Sys_Milliseconds() < 15000);
 
-	HookFriendApi();
+	HookSteamAPI();
 
 	_console.AddLog("%s hooked all", PREFIX_LOG);
 }
@@ -335,6 +351,7 @@ void Free()
 	RemoveVectoredExceptionHandler(_hooks.pVectoredExceptionHandler);
 	SetUnhandledExceptionFilter(_hooks.pUnhandledExceptionFilter);
 
+	DetachHook(oPresent, hPresent);
 	DetachHook(oBulletHitEvent, hBulletHitEvent);
 	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
 	DetachHook(oGetAddr, hGetAddr);
@@ -348,7 +365,8 @@ void Free()
 	fhAtoiCall1.UnHook();
 	fhAtoiCall2.UnHook();
 
-	hpGameOverlayPresent.UnPatch();
+	if (fhGetUserSteamIDAsXUIDCall.IsHooked())
+		fhGetUserSteamIDAsXUIDCall.UnHook();
 
 	if (oGetSteamID)
 		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
@@ -383,23 +401,26 @@ void Free()
 
 //=====================================================================================
 
-void HookFriendApi()
+void HookSteamAPI()
 {
 	_hooks.RefreshFriends();
 
-	if (!hSteamAPI.lpBaseOfDll || !hSteamAPI.EntryPoint || !hSteamAPI.SizeOfImage)
-		return;
+	while (!hSteamAPI.lpBaseOfDll || !hSteamAPI.EntryPoint || !hSteamAPI.SizeOfImage)
+		hSteamAPI = GetModuleInfo("steam_api.dll");
 
-	_hooks.GetSteamFriends = (cHooks::tSteamFriends)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamFriends");
+	while (!_hooks.GetSteamUser)
+		_hooks.GetSteamUser = (cHooks::tSteamUser)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamUser");
 
-	if (!_hooks.GetSteamFriends)
-		return;
+	while (!_hooks.GetSteamFriends)
+		_hooks.GetSteamFriends = (cHooks::tSteamFriends)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamFriends");
 
-	_hooks._steamFriends = _hooks.GetSteamFriends();
+	while (!_hooks._steamUser)
+		_hooks._steamUser = _hooks.GetSteamUser();
 
-	if (!_hooks._steamFriends)
-		return;
+	while (!_hooks._steamFriends)
+		_hooks._steamFriends = _hooks.GetSteamFriends();
 
+	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
 	oGetPersonaName = (tGetPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetPersonaName, 0);
 	oGetFriendCount = (tGetFriendCount)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendCount, 3);
 	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendByIndex, 4);
@@ -414,22 +435,10 @@ void WINAPI SteamID(LPWSTR xuid)
 {
 #pragma DLLEXPORT
 
+	_hooks.bXuidOverride = true;
 	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
 
-	if (!hSteamAPI.lpBaseOfDll || !hSteamAPI.EntryPoint || !hSteamAPI.SizeOfImage)
-		return;
-
-	_hooks.GetSteamUser = (cHooks::tSteamUser)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamUser");
-
-	if (!_hooks.GetSteamUser)
-		return;
-
-	_hooks._steamUser = _hooks.GetSteamUser();
-
-	if (!_hooks._steamUser)
-		return;
-
-	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
+	fhGetUserSteamIDAsXUIDCall.SetHook();
 }
 
 //=====================================================================================
@@ -441,11 +450,11 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Init();
+		std::thread(Init).detach();
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:
-		Free();
+		std::thread(Free).detach();
 		return TRUE;
 
 	default:
