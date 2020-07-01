@@ -21,13 +21,9 @@ namespace ProtoGenesys
 		MakeVector(CG->vRefDefViewAngles, vAngles);
 		MakeVector(vAimAngles, vAimAngles);
 
-		ImVec2 vLengthDot
-		(
-			VectorLength(vAngles, vAngles),
-			DotProduct(vAngles, vAimAngles)
-		);
-			
-		float flReturn = RadiansToDegrees(acosf(vLengthDot.y / powf(vLengthDot.x, 2.0f)));
+		float flMag = VectorLength(vAngles, vAngles),
+			flDot = DotProduct(vAngles, vAimAngles),
+			flReturn = RadiansToDegrees(acosf(flDot / powf(flMag, 2.0f)));
 
 		if (isnan(flReturn))
 			flReturn = 0.0f;
@@ -238,15 +234,12 @@ namespace ProtoGenesys
 	*/
 	void cMathematics::MakeVector(ImVec3 angles, ImVec3& out)
 	{
-		ImVec2 vAngles
-		(
-			DegreesToRadians(angles.x),
-			DegreesToRadians(angles.y)
-		);
+		float flPitch = DegreesToRadians(angles.x), 
+			flYaw = DegreesToRadians(angles.y);
 
-		out.x = -cosf(vAngles.x) * -cosf(vAngles.y);
-		out.y = sinf(vAngles.y) * cosf(vAngles.x);
-		out.z = -sinf(vAngles.x);
+		out.x = -cosf(flPitch) * -cosf(flYaw);
+		out.y = sinf(flYaw) * cosf(flPitch);
+		out.z = -sinf(flPitch);
 	}
 	/*
 	//=====================================================================================
@@ -268,20 +261,14 @@ namespace ProtoGenesys
 		sScreenPlacement* ScreenPlacement = GetScreenPlacement();
 
 		ImVec3 vDirection(world - CG->RefDef.vViewOrigin);
-		ImVec3 vProjection
-		(
-			DotProduct(vDirection, CG->RefDef.vViewAxis[0]),
-			DotProduct(vDirection, CG->RefDef.vViewAxis[1]),
-			DotProduct(vDirection, CG->RefDef.vViewAxis[2])
-		);
+		ImVec3 vProjection(DotProduct(vDirection, CG->RefDef.vViewAxis[0]), 
+			DotProduct(vDirection, CG->RefDef.vViewAxis[1]), 
+			DotProduct(vDirection, CG->RefDef.vViewAxis[2]));
 
 		if (vProjection.x >= 0.0f)
 		{
-			screen = ImVec2
-			(
-				((1.0f - ((vProjection.y / CG->RefDef.flFovX) * (1.0f / vProjection.x))) * (ScreenPlacement->vRealViewportSize.x / 2.0f)) + ScreenPlacement->vRealViewportBase.x,
-				((1.0f - ((vProjection.z / CG->RefDef.flFovY) * (1.0f / vProjection.x))) * (ScreenPlacement->vRealViewportSize.y / 2.0f)) + ScreenPlacement->vRealViewportBase.y
-			);
+			screen = ImVec2(((1.0f - ((vProjection.y / CG->RefDef.flFovX) * (1.0f / vProjection.x))) * (ScreenPlacement->vRealViewportSize.x / 2.0f)) + ScreenPlacement->vRealViewportBase.x,
+				((1.0f - ((vProjection.z / CG->RefDef.flFovY) * (1.0f / vProjection.x))) * (ScreenPlacement->vRealViewportSize.y / 2.0f)) + ScreenPlacement->vRealViewportBase.y);
 
 			return true;
 		}
@@ -289,7 +276,7 @@ namespace ProtoGenesys
 		else
 		{
 			screen = ImVec2(-vProjection.y, -vProjection.z);
-
+			
 			if (abs(screen.x) < 0.001f)
 			{
 				if (abs(screen.y) < 0.001f)
@@ -305,16 +292,30 @@ namespace ProtoGenesys
 			if (abs(screen.y) < 0.001f)
 				screen.y = 0.001f;
 
+<<<<<<< HEAD
 			while (ScreenPlacement->vRealViewportSize.x > abs(screen.x))
+=======
+			if (ScreenPlacement->vRealViewportSize.x > abs(screen.x))
+>>>>>>> parent of 665d135... Update Mathematics.cpp
 			{
-				screen.x *= ScreenPlacement->vRealViewportSize.x;
-				screen.y *= ScreenPlacement->vRealViewportSize.x;
+				do 
+				{
+					screen.x *= ScreenPlacement->vRealViewportSize.x;
+					screen.y *= ScreenPlacement->vRealViewportSize.x;
+				} while (ScreenPlacement->vRealViewportSize.x > abs(screen.x));
 			}
 
+<<<<<<< HEAD
 			while (ScreenPlacement->vRealViewportSize.y > abs(screen.y))
+=======
+			if (ScreenPlacement->vRealViewportSize.y > abs(screen.y))
+>>>>>>> parent of 665d135... Update Mathematics.cpp
 			{
-				screen.x *= ScreenPlacement->vRealViewportSize.y;
-				screen.y *= ScreenPlacement->vRealViewportSize.y;
+				do
+				{
+					screen.x *= ScreenPlacement->vRealViewportSize.y;
+					screen.y *= ScreenPlacement->vRealViewportSize.y;
+				} while (ScreenPlacement->vRealViewportSize.y > abs(screen.y));
 			}
 
 			return false;
@@ -351,19 +352,17 @@ namespace ProtoGenesys
 	{
 		ImVec3 vViewOrigin;
 		ImVec2 vDelta, vLocation;
-		ImVec2 vCosSin
-		(
-			cosf(DegreesToRadians(CG->vRefDefViewAngles.y)),
-			sinf(DegreesToRadians(CG->vRefDefViewAngles.y))
-		);
 
 		GetPlayerViewOrigin(&vViewOrigin);
+
+		float flCosYaw = cosf(DegreesToRadians(CG->vRefDefViewAngles.y)),
+			flSinYaw = sinf(DegreesToRadians(CG->vRefDefViewAngles.y));
 
 		vDelta.x = world.x - vViewOrigin.x;
 		vDelta.y = world.y - vViewOrigin.y;
 
-		vLocation.x = (vDelta.y * vCosSin.x - vDelta.x * vCosSin.y) / scale;
-		vLocation.y = (vDelta.x * vCosSin.x + vDelta.y * vCosSin.y) / scale;
+		vLocation.x = (vDelta.y * flCosYaw - vDelta.x * flSinYaw) / scale;
+		vLocation.y = (vDelta.x * flCosYaw + vDelta.y * flSinYaw) / scale;
 
 		if (vLocation.x < -(radarsize / 2.0f - blipsize / 2.0f - 1.0f))
 			vLocation.x = -(radarsize / 2.0f - blipsize / 2.0f - 1.0f);
@@ -384,18 +383,16 @@ namespace ProtoGenesys
 	*/
 	void cMathematics::RotatePoint(ImVec3 point, ImVec3 center, float yaw, ImVec3& out)
 	{
-		ImVec2 vDelta;
-		ImVec2 vCosSin
-		(
-			cosf(((-yaw + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE),
-			sinf(((-yaw + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE)
-		);
+		ImVec2 vDifference;
 
-		vDelta.x = point.x - center.x;
-		vDelta.y = point.y - center.y;
+		float flAngleCos = cosf(((-yaw + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE),
+			flAngleSin = sinf(((-yaw + 180.0f) / 360.0f - 0.25f) * M_PI_DOUBLE);
 
-		out.x = center.x + vCosSin.y * vDelta.x - vCosSin.x * vDelta.y;
-		out.y = center.y + vCosSin.x * vDelta.x + vCosSin.y * vDelta.y;
+		vDifference.x = point.x - center.x;
+		vDifference.y = point.y - center.y;
+
+		out.x = center.x + flAngleSin * vDifference.x - flAngleCos * vDifference.y;
+		out.y = center.y + flAngleCos * vDifference.x + flAngleSin * vDifference.y;
 		out.z = point.z;
 	}
 	/*
