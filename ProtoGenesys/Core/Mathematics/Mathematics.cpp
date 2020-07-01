@@ -305,13 +305,13 @@ namespace ProtoGenesys
 			if (abs(screen.y) < 0.001f)
 				screen.y = 0.001f;
 
-			while (ScreenPlacement->vRealViewportSize.x > abs(screen.x))
+			while (ScreenPlacement->vRealViewportSize.x > abs(screen.x));
 			{
 				screen.x *= ScreenPlacement->vRealViewportSize.x;
 				screen.y *= ScreenPlacement->vRealViewportSize.x;
 			}
 
-			while (ScreenPlacement->vRealViewportSize.y > abs(screen.y))
+			while (ScreenPlacement->vRealViewportSize.y > abs(screen.y));
 			{
 				screen.x *= ScreenPlacement->vRealViewportSize.y;
 				screen.y *= ScreenPlacement->vRealViewportSize.y;
