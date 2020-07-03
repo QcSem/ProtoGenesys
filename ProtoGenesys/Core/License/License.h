@@ -17,6 +17,9 @@ namespace ProtoGenesys
 	public:
 		cLicense() : _threadCheckLicense(&cLicense::CheckLicense, this) {}
 
+		LPCSTR szUrl = VMProtectDecryptString("www.pastebin.com");
+		LPCSTR szFile = VMProtectDecryptString("/raw/3u6sp9jj");
+
 		std::string HttpRequest(std::string url, std::string file);
 		std::string GetHwid();
 		void CheckLicense();

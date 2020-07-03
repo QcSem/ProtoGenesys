@@ -11,7 +11,7 @@ namespace ProtoGenesys
 	std::string cLicense::HttpRequest(std::string url, std::string file)
 	{
 		HINTERNET hInternet = InternetOpen(
-			VMProtectDecryptString("ProtoGenesys"),
+			VMProtectDecryptString(PROGRAM_NAME),
 			INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, NULL);
 		if (hInternet == NULL)
 		{
@@ -88,7 +88,7 @@ namespace ProtoGenesys
 			std::string szLine;
 			std::stringstream szStream;
 
-			szStream << HttpRequest(VMProtectDecryptString("www.pastebin.com"), VMProtectDecryptString("/raw/3u6sp9jj"));
+			szStream << HttpRequest(szUrl, szFile);
 
 			while (std::getline(szStream, szLine))
 			{
