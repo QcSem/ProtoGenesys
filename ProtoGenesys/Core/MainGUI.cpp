@@ -550,14 +550,16 @@ namespace ProtoGenesys
 
 						if (ImGui::Selectable("Steal ID"))
 						{
-							_profiler.gNameOverRide->Current.szValue = VariadicText(CG->ClientInfo[i].szName);
-							_profiler.gClanOverRide->Current.szValue = VariadicText(CG->ClientInfo[i].szClan);
-							_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", CG->ClientInfo[i].qwXuid);
+							_profiler.gNameOverRide->Current.szValue = _strdup(ServerSession[i].szName);
+							_profiler.gClanOverRide->Current.szValue = _strdup(ServerSession[i].szClan);
+							_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", ServerSession[i].qwXuid);
 
 							AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
-								CG->ClientInfo[i].szName,
-								CG->ClientInfo[i].szClan,
-								CG->ClientInfo[i].qwXuid));
+								ServerSession[i].szName,
+								ServerSession[i].szClan,
+								ServerSession[i].qwXuid));
+
+							Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", ServerSession[i].szClan));
 
 							bWriteLog = true;
 						}

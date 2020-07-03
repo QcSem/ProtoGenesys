@@ -143,44 +143,47 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cAimbot::SetReloadState()
+	void cAimbot::FasterReload()
 	{
-		static int iReloadedWeapon{ 0 };
-
-		auto IsReloading = [&]()
+		if (_profiler.gFasterReloading->Current.iValue)
 		{
-			return IsPlayerReloading();
-		};
+			static int iReloadedWeapon{ 0 };
 
-		auto CurrentAmmoEqualToClipSize = [&](int cur_weapon)
-		{
-			return (WeaponAmmoAvailable() == GetClipSize(cur_weapon) || !GetAmmoNotInClip(cur_weapon));
-		};
-
-		if (iReloadedWeapon)
-		{
-			for (int i = 0; i < 15; i++)
+			auto IsReloading = [&]()
 			{
-				if (GetHeldWeapon(iReloadedWeapon)[i].iWeapon == GetViewmodelWeaponIndex())
+				return IsPlayerReloading();
+			};
+
+			auto CurrentAmmoEqualToClipSize = [&](int weapon)
+			{
+				return (WeaponAmmoAvailable() == GetClipSize(weapon) || !GetAmmoNotInClip(weapon));
+			};
+
+			if (iReloadedWeapon)
+			{
+				for (int i = 0; i < 15; i++)
 				{
-					CycleWeapon(0);
-					break;
+					if (GetHeldWeapon(iReloadedWeapon)[i].iWeapon == GetViewmodelWeaponIndex())
+					{
+						CycleWeapon(0);
+						break;
+					}
 				}
+
+				iReloadedWeapon = 0;
 			}
 
-			iReloadedWeapon = 0;
-		}
-
-		if (int iCurrentWeapon{ GetViewmodelWeaponIndex() }; iCurrentWeapon && IsReloading() && CurrentAmmoEqualToClipSize(iCurrentWeapon))
-		{
-			iReloadedWeapon = iCurrentWeapon;
-
-			for (int i = 0; i < 15; i++)
+			if (int iCurrentWeapon{ GetViewmodelWeaponIndex() }; iCurrentWeapon && IsReloading() && CurrentAmmoEqualToClipSize(iCurrentWeapon))
 			{
-				if (int iWeapon{ GetHeldWeapon(iCurrentWeapon)[i].iWeapon }; iWeapon && iWeapon != iReloadedWeapon)
+				iReloadedWeapon = iCurrentWeapon;
+
+				for (int i = 0; i < 15; i++)
 				{
-					CycleWeapon(0);
-					break;
+					if (int iWeapon{ GetHeldWeapon(iCurrentWeapon)[i].iWeapon }; iWeapon && iWeapon != iReloadedWeapon)
+					{
+						CycleWeapon(0);
+						break;
+					}
 				}
 			}
 		}

@@ -29,7 +29,7 @@ namespace ProtoGenesys
 			if (!EntityIsValid(&CG->CEntity[i]))
 				continue;
 
-			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
+			if (i < MAX_CLIENTS)
 			{
 				if (_targetList.Priorities[i].bIsPrioritized && !_targetList.Priorities[i].bIsIgnored)
 				{
@@ -41,7 +41,10 @@ namespace ProtoGenesys
 
 					vAntiAimTargetInfo.push_back(AntiAimTargetInfo);
 				}
+			}
 
+			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER || CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
+			{
 				ImVec3 vMinTemp = { FLT_MAX, FLT_MAX, FLT_MAX }, vMaxTemp = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 				for (auto& Bone : vBones)
@@ -99,23 +102,60 @@ namespace ProtoGenesys
 				EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first, NULL) ? _profiler.gColorAxisVisible->Current.cValue : _profiler.gColorAxisInvisible->Current.cValue;
 			}
 
+			else if (CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
+			{
+				EntityList[i].bW2SSuccess = _mathematics.WorldToScreen(EntityList[i].vBones3D[vBones[BONE_HEAD].first], EntityList[i].vCenter2D);
+
+				if (EntityIsTeammate(&CG->CEntity[i]))
+					continue;
+			}
+
 			else
 			{
 				EntityList[i].bW2SSuccess = _mathematics.WorldToScreen(CG->CEntity[i].vOrigin, EntityList[i].vCenter2D);
 				continue;
 			}
 
-			if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
+			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
-				if ((_profiler.gOnlyBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
-					(_profiler.gOnlyBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
+				if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 				{
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					if ((_profiler.gOnlyBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
+						(_profiler.gOnlyBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
+					{
+						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					}
+
+					else if (!_profiler.gOnlyBoneScanPriorities->Current.iValue && !_profiler.gOnlyBoneScanRiotShielders->Current.iValue)
+					{
+						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					}
+
+					else
+					{
+						EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
+						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					}
 				}
 
-				else if (!_profiler.gOnlyBoneScanPriorities->Current.iValue && !_profiler.gOnlyBoneScanRiotShielders->Current.iValue)
+				else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
 				{
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					if ((_profiler.gOnlyBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
+						(_profiler.gOnlyBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
+					{
+						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					}
+
+					else if (!_profiler.gOnlyBoneScanPriorities->Current.iValue && !_profiler.gOnlyBoneScanRiotShielders->Current.iValue)
+					{
+						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					}
+
+					else
+					{
+						EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
+						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					}
 				}
 
 				else
@@ -125,29 +165,9 @@ namespace ProtoGenesys
 				}
 			}
 
-			else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
+			else if (CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
 			{
-				if ((_profiler.gOnlyBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
-					(_profiler.gOnlyBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
-				{
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
-				}
-
-				else if (!_profiler.gOnlyBoneScanPriorities->Current.iValue && !_profiler.gOnlyBoneScanRiotShielders->Current.iValue)
-				{
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
-				}
-
-				else
-				{
-					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
-				}
-			}
-
-			else
-			{
-				EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
+				EntityList[i].iBoneIndex = vBones[BONE_HEAD].first;
 				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 			}
 

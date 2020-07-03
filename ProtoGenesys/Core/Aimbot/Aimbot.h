@@ -23,7 +23,7 @@ namespace ProtoGenesys
 		void SilentAim(sUserCmd* usercmd);
 		void AutoFire(sUserCmd* usercmd);
 		void SetAimState();
-		void SetReloadState();
+		void FasterReload();
 
 	} extern _aimBot;
 }

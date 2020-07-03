@@ -36,7 +36,7 @@
 #define ShortToAngle(a) ((float)((a)*(360.0f/65536)))
 #define AngleNormalize360(a) (ShortToAngle(AngleToShort((a))))
 #define AngleNormalize180(a) (((a)/360.0f-floorf((a)/360.0f+0.5f))*360.0f)
-#define Dereference(a) (*reinterpret_cast<decltype(a)*>(a))
+#define Dereference(a) (*(decltype(a)*)(a))
 
 //=====================================================================================
 
@@ -611,7 +611,9 @@ namespace ProtoGenesys
 	{
 		QWORD qwXuid;
 		char szName[32];
-		char _0x28[0x6E];
+		char _0x28[0x2C];
+		char szClan[8];
+		char _0x5C[0x3A];
 		char iIPAddress[4];
 		char _0x9A[0xAE];
 	};

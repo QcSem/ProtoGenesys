@@ -44,7 +44,7 @@ namespace ProtoGenesys
 				{
 					std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
-					Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szNameOverride.empty() ? GetUsername() : VariadicText(szNameOverride);
+					Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szNameOverride.empty() ? GetUsername() : szNameOverride.c_str();
 					PageGuardAddress(dwGetClantag);
 				}
 
@@ -52,7 +52,7 @@ namespace ProtoGenesys
 				{
 					std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
 
-					Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szClanOverride.empty() ? GetClantag() : VariadicText(szClanOverride);
+					Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szClanOverride.empty() ? GetClantag() : szClanOverride.c_str();
 					PageGuardAddress(dwGetXuidstring);
 				}
 
@@ -60,7 +60,7 @@ namespace ProtoGenesys
 				{
 					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
-					Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szXuidOverride.empty() ? GetXuidstring() : VariadicText(szXuidOverride);
+					Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str();
 					PageGuardAddress(dwGetIntPlayerStatInternal);
 				}
 
@@ -75,7 +75,7 @@ namespace ProtoGenesys
 					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
 					Int64ToString(strtoll(szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str(), NULL, 0x10), szSteamID);
-					Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = VariadicText(szSteamID);
+					Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szSteamID;
 				}
 
 				std::string szValue(Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)));
@@ -264,7 +264,7 @@ namespace ProtoGenesys
 		{
 			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 			{
-				_aimBot.SetReloadState();
+				_aimBot.FasterReload();
 
 				static int iBackupAngles[3];
 
@@ -334,14 +334,16 @@ namespace ProtoGenesys
 				{
 					if (_profiler.gNameClanXuidStealer->Current.iValue)
 					{
-						_profiler.gNameOverRide->Current.szValue = VariadicText(CG->ClientInfo[victim].szName);
-						_profiler.gClanOverRide->Current.szValue = VariadicText(CG->ClientInfo[victim].szClan);
-						_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", CG->ClientInfo[victim].qwXuid);
+						_profiler.gNameOverRide->Current.szValue = _strdup(ServerSession[victim].szName);
+						_profiler.gClanOverRide->Current.szValue = _strdup(ServerSession[victim].szClan);
+						_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", ServerSession[victim].qwXuid);
 
 						AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
-							CG->ClientInfo[victim].szName,
-							CG->ClientInfo[victim].szClan,
-							CG->ClientInfo[victim].qwXuid));
+							ServerSession[victim].szName,
+							ServerSession[victim].szClan,
+							ServerSession[victim].qwXuid));
+
+						Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", ServerSession[victim].szClan));
 					}
 
 					if (_profiler.gEndRoundOnNextKill->Current.iValue)
@@ -384,7 +386,7 @@ namespace ProtoGenesys
 			{
 				if (_profiler.gBulletTracers->Current.iValue)
 				{
-					if (sourcenum == CG->iClientNum && !EntityIsTeammate(&CG->CEntity[targetnum]) && targetnum < MAX_CLIENTS && bone >= 0)
+					if (sourcenum == CG->iClientNum && targetnum < MAX_CLIENTS)
 					{
 						int iShots, iIgnoreNum;
 						float flRange, flSpread;
@@ -484,12 +486,12 @@ namespace ProtoGenesys
 		if (!szIpOverride.empty())
 		{
 			std::vector<std::string> vIpOverride = acut::SplitStringWithDelimiter(szIpOverride, ".");
-			LPBYTE lpIP = (LPBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
+			LPBYTE lpIPAddress = (LPBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
 
-			lpIP[0] = (BYTE)strtol(vIpOverride[0].c_str(), NULL, 10);
-			lpIP[1] = (BYTE)strtol(vIpOverride[1].c_str(), NULL, 10);
-			lpIP[2] = (BYTE)strtol(vIpOverride[2].c_str(), NULL, 10);
-			lpIP[3] = (BYTE)strtol(vIpOverride[3].c_str(), NULL, 10);
+			lpIPAddress[0] = (BYTE)strtol(vIpOverride[0].c_str(), NULL, 10);
+			lpIPAddress[1] = (BYTE)strtol(vIpOverride[1].c_str(), NULL, 10);
+			lpIPAddress[2] = (BYTE)strtol(vIpOverride[2].c_str(), NULL, 10);
+			lpIPAddress[3] = (BYTE)strtol(vIpOverride[3].c_str(), NULL, 10);
 		}
 	}
 	/*
@@ -530,13 +532,13 @@ namespace ProtoGenesys
 		std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
 		if (_profiler.gNameExperiencePrestigeSpam->Current.iValue)
-			return VariadicText(Randomize(name));
+			return Randomize(name).c_str();
 
 		else if (szNameOverride.empty())
-			return VariadicText(GetUsername());
+			return GetUsername();
 
 		else
-			return VariadicText(szNameOverride);
+			return szNameOverride.c_str();
 	}
 	/*
 	//=====================================================================================
