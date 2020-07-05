@@ -219,8 +219,8 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gBoxes = std::make_shared<sCvar>("Boxes", std::vector<std::string>({ "Off", "Border", "Corner", "Border Filled", "Corner Filled", "Border 3D", "Corner 3D" }), PLAYER_BOXES_OFF, PLAYER_BOXES_OFF, PLAYER_BOXES_MAX - 1);
 		std::shared_ptr<sCvar> gBones = std::make_shared<sCvar>("Bones", std::vector<std::string>({ "Off", "Dots", "Lines" }), PLAYER_BONES_OFF, PLAYER_BONES_OFF, PLAYER_BONES_MAX - 1);
 		std::shared_ptr<sCvar> gSnapLines = std::make_shared<sCvar>("Snaplines", std::vector<std::string>({ "Off", "Top", "Center", "Bottom" }), PLAYER_SNAPLINES_OFF, PLAYER_SNAPLINES_OFF, PLAYER_SNAPLINES_MAX - 1);
-		std::shared_ptr<sCvar> gDistances = std::make_shared<sCvar>("Information", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gNames = std::make_shared<sCvar>("Shadow", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gDistances = std::make_shared<sCvar>("Distances", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gNames = std::make_shared<sCvar>("Names", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gWeapons = std::make_shared<sCvar>("Weapons", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gEntities = std::make_shared<sCvar>("Entities", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
