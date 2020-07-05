@@ -47,18 +47,18 @@ namespace ProtoGenesys
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Radar", gRadar->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.BulletTracers", gBulletTracers->Current.iValue);
 
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ThirdPersonCamera", gThirdPersonCamera->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OrbitalVsatAlwaysOn", gOrbitalVsatAlwaysOn->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.HardcoreHudOverlay", gHardcoreHudOverlay->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.DisableEmpOverlay", gDisableEmpOverlay->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NameClanXuidStealer", gNameClanXuidStealer->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.AirStuckOnToggle", gAirStuckOnToggle->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.FasterReloading", gFasterReloading->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.HardcoreHud", gHardcoreHud->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.DisableEmp", gDisableEmp->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.IdStealer", gIdStealer->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OnlyBoneScanPriorities", gOnlyBoneScanPriorities->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OnlyBoneScanRiotShielders", gOnlyBoneScanRiotShielders->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NameExperiencePrestigeSpam", gNameExperiencePrestigeSpam->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.EndRoundOnNextKill", gEndRoundOnNextKill->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanRiotShielders", gBoneScanRiotShielders->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.IdSpam", gIdSpam->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.Trickshot", gTrickShot->Current.iValue);
 
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimBone", gAimBone->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimAngle", gAimAngle->Current.iValue);
@@ -171,18 +171,18 @@ namespace ProtoGenesys
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Radar", gRadar->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.BulletTracers", gBulletTracers->Current.iValue);
 
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ThirdPersonCamera", gThirdPersonCamera->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OrbitalVsatAlwaysOn", gOrbitalVsatAlwaysOn->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.HardcoreHudOverlay", gHardcoreHudOverlay->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.DisableEmpOverlay", gDisableEmpOverlay->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NameClanXuidStealer", gNameClanXuidStealer->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.AirStuckOnToggle", gAirStuckOnToggle->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.FasterReloading", gFasterReloading->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.HardcoreHud", gHardcoreHud->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.DisableEmp", gDisableEmp->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.IdStealer", gIdStealer->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.AirStuckToggle", gAirStuckToggle->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ReloadCancel", gReloadCancel->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NoFlinch", gNoFlinch->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OnlyBoneScanPriorities", gOnlyBoneScanPriorities->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OnlyBoneScanRiotShielders", gOnlyBoneScanRiotShielders->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.NameExperiencePrestigeSpam", gNameExperiencePrestigeSpam->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.EndRoundOnNextKill", gEndRoundOnNextKill->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanPriorities", gBoneScanPriorities->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.BoneScanRiotShielders", gBoneScanRiotShielders->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.IdSpam", gIdSpam->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.Trickshot", gTrickShot->Current.iValue);
 
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimBone", gAimBone->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.AimAngle", gAimAngle->Current.iValue);
@@ -278,18 +278,18 @@ namespace ProtoGenesys
 		gRadar->Current.iValue = FALSE;
 		gBulletTracers->Current.iValue = FALSE;
 
-		gThirdPersonCamera->Current.iValue = FALSE;
-		gOrbitalVsatAlwaysOn->Current.iValue = FALSE;
-		gHardcoreHudOverlay->Current.iValue = FALSE;
-		gDisableEmpOverlay->Current.iValue = FALSE;
-		gNameClanXuidStealer->Current.iValue = FALSE;
-		gAirStuckOnToggle->Current.iValue = FALSE;
-		gFasterReloading->Current.iValue = FALSE;
+		gThirdPerson->Current.iValue = FALSE;
+		gOrbitalVsat->Current.iValue = FALSE;
+		gHardcoreHud->Current.iValue = FALSE;
+		gDisableEmp->Current.iValue = FALSE;
+		gIdStealer->Current.iValue = FALSE;
+		gAirStuckToggle->Current.iValue = FALSE;
+		gReloadCancel->Current.iValue = FALSE;
 		gNoFlinch->Current.iValue = FALSE;
-		gOnlyBoneScanPriorities->Current.iValue = FALSE;
-		gOnlyBoneScanRiotShielders->Current.iValue = FALSE;
-		gNameExperiencePrestigeSpam->Current.iValue = FALSE;
-		gEndRoundOnNextKill->Current.iValue = FALSE;
+		gBoneScanPriorities->Current.iValue = FALSE;
+		gBoneScanRiotShielders->Current.iValue = FALSE;
+		gIdSpam->Current.iValue = FALSE;
+		gTrickShot->Current.iValue = FALSE;
 	}
 }
 

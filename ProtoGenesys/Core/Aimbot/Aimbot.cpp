@@ -143,9 +143,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cAimbot::FasterReload()
+	void cAimbot::CancelReloadAnimation()
 	{
-		if (_profiler.gFasterReloading->Current.iValue)
+		if (_profiler.gReloadCancel->Current.iValue)
 		{
 			static int iReloadedWeapon{ 0 };
 

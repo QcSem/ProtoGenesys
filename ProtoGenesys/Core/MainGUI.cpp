@@ -283,37 +283,37 @@ namespace ProtoGenesys
 			case cProfiler::MENU_TAB_MISCELLANEOUS:
 			{
 				ImGui::NewLine();
-				if (DrawOption(_profiler.gThirdPersonCamera->szName, _profiler.gThirdPersonCamera->szItems[_profiler.gThirdPersonCamera->Current.iValue], &_profiler.gThirdPersonCamera->Current.iValue, _profiler.gThirdPersonCamera->Domain.iMin, _profiler.gThirdPersonCamera->Domain.iMax, 1))
+				if (DrawOption(_profiler.gThirdPerson->szName, _profiler.gThirdPerson->szItems[_profiler.gThirdPerson->Current.iValue], &_profiler.gThirdPerson->Current.iValue, _profiler.gThirdPerson->Domain.iMin, _profiler.gThirdPerson->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gOrbitalVsatAlwaysOn->szName, _profiler.gOrbitalVsatAlwaysOn->szItems[_profiler.gOrbitalVsatAlwaysOn->Current.iValue], &_profiler.gOrbitalVsatAlwaysOn->Current.iValue, _profiler.gOrbitalVsatAlwaysOn->Domain.iMin, _profiler.gOrbitalVsatAlwaysOn->Domain.iMax, 1))
+				if (DrawOption(_profiler.gOrbitalVsat->szName, _profiler.gOrbitalVsat->szItems[_profiler.gOrbitalVsat->Current.iValue], &_profiler.gOrbitalVsat->Current.iValue, _profiler.gOrbitalVsat->Domain.iMin, _profiler.gOrbitalVsat->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gHardcoreHudOverlay->szName, _profiler.gHardcoreHudOverlay->szItems[_profiler.gHardcoreHudOverlay->Current.iValue], &_profiler.gHardcoreHudOverlay->Current.iValue, _profiler.gHardcoreHudOverlay->Domain.iMin, _profiler.gHardcoreHudOverlay->Domain.iMax, 1))
+				if (DrawOption(_profiler.gHardcoreHud->szName, _profiler.gHardcoreHud->szItems[_profiler.gHardcoreHud->Current.iValue], &_profiler.gHardcoreHud->Current.iValue, _profiler.gHardcoreHud->Domain.iMin, _profiler.gHardcoreHud->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gDisableEmpOverlay->szName, _profiler.gDisableEmpOverlay->szItems[_profiler.gDisableEmpOverlay->Current.iValue], &_profiler.gDisableEmpOverlay->Current.iValue, _profiler.gDisableEmpOverlay->Domain.iMin, _profiler.gDisableEmpOverlay->Domain.iMax, 1))
+				if (DrawOption(_profiler.gDisableEmp->szName, _profiler.gDisableEmp->szItems[_profiler.gDisableEmp->Current.iValue], &_profiler.gDisableEmp->Current.iValue, _profiler.gDisableEmp->Domain.iMin, _profiler.gDisableEmp->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gNameClanXuidStealer->szName, _profiler.gNameClanXuidStealer->szItems[_profiler.gNameClanXuidStealer->Current.iValue], &_profiler.gNameClanXuidStealer->Current.iValue, _profiler.gNameClanXuidStealer->Domain.iMin, _profiler.gNameClanXuidStealer->Domain.iMax, 1))
+				if (DrawOption(_profiler.gIdStealer->szName, _profiler.gIdStealer->szItems[_profiler.gIdStealer->Current.iValue], &_profiler.gIdStealer->Current.iValue, _profiler.gIdStealer->Domain.iMin, _profiler.gIdStealer->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gAirStuckOnToggle->szName, _profiler.gAirStuckOnToggle->szItems[_profiler.gAirStuckOnToggle->Current.iValue], &_profiler.gAirStuckOnToggle->Current.iValue, _profiler.gAirStuckOnToggle->Domain.iMin, _profiler.gAirStuckOnToggle->Domain.iMax, 1))
+				if (DrawOption(_profiler.gAirStuckToggle->szName, _profiler.gAirStuckToggle->szItems[_profiler.gAirStuckToggle->Current.iValue], &_profiler.gAirStuckToggle->Current.iValue, _profiler.gAirStuckToggle->Domain.iMin, _profiler.gAirStuckToggle->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gFasterReloading->szName, _profiler.gFasterReloading->szItems[_profiler.gFasterReloading->Current.iValue], &_profiler.gFasterReloading->Current.iValue, _profiler.gFasterReloading->Domain.iMin, _profiler.gFasterReloading->Domain.iMax, 1))
+				if (DrawOption(_profiler.gReloadCancel->szName, _profiler.gReloadCancel->szItems[_profiler.gReloadCancel->Current.iValue], &_profiler.gReloadCancel->Current.iValue, _profiler.gReloadCancel->Domain.iMin, _profiler.gReloadCancel->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -323,22 +323,22 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gOnlyBoneScanPriorities->szName, _profiler.gOnlyBoneScanPriorities->szItems[_profiler.gOnlyBoneScanPriorities->Current.iValue], &_profiler.gOnlyBoneScanPriorities->Current.iValue, _profiler.gOnlyBoneScanPriorities->Domain.iMin, _profiler.gOnlyBoneScanPriorities->Domain.iMax, 1))
+				if (DrawOption(_profiler.gBoneScanPriorities->szName, _profiler.gBoneScanPriorities->szItems[_profiler.gBoneScanPriorities->Current.iValue], &_profiler.gBoneScanPriorities->Current.iValue, _profiler.gBoneScanPriorities->Domain.iMin, _profiler.gBoneScanPriorities->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gOnlyBoneScanRiotShielders->szName, _profiler.gOnlyBoneScanRiotShielders->szItems[_profiler.gOnlyBoneScanRiotShielders->Current.iValue], &_profiler.gOnlyBoneScanRiotShielders->Current.iValue, _profiler.gOnlyBoneScanRiotShielders->Domain.iMin, _profiler.gOnlyBoneScanRiotShielders->Domain.iMax, 1))
+				if (DrawOption(_profiler.gBoneScanRiotShielders->szName, _profiler.gBoneScanRiotShielders->szItems[_profiler.gBoneScanRiotShielders->Current.iValue], &_profiler.gBoneScanRiotShielders->Current.iValue, _profiler.gBoneScanRiotShielders->Domain.iMin, _profiler.gBoneScanRiotShielders->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gNameExperiencePrestigeSpam->szName, _profiler.gNameExperiencePrestigeSpam->szItems[_profiler.gNameExperiencePrestigeSpam->Current.iValue], &_profiler.gNameExperiencePrestigeSpam->Current.iValue, _profiler.gNameExperiencePrestigeSpam->Domain.iMin, _profiler.gNameExperiencePrestigeSpam->Domain.iMax, 1))
+				if (DrawOption(_profiler.gIdSpam->szName, _profiler.gIdSpam->szItems[_profiler.gIdSpam->Current.iValue], &_profiler.gIdSpam->Current.iValue, _profiler.gIdSpam->Domain.iMin, _profiler.gIdSpam->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gEndRoundOnNextKill->szName, _profiler.gEndRoundOnNextKill->szItems[_profiler.gEndRoundOnNextKill->Current.iValue], &_profiler.gEndRoundOnNextKill->Current.iValue, _profiler.gEndRoundOnNextKill->Domain.iMin, _profiler.gEndRoundOnNextKill->Domain.iMax, 1))
+				if (DrawOption(_profiler.gTrickShot->szName, _profiler.gTrickShot->szItems[_profiler.gTrickShot->Current.iValue], &_profiler.gTrickShot->Current.iValue, _profiler.gTrickShot->Domain.iMin, _profiler.gTrickShot->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -346,18 +346,18 @@ namespace ProtoGenesys
 				ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
 				if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 				{
-					_profiler.gThirdPersonCamera->Current.iValue = _profiler.gThirdPersonCamera->Reset.iValue;
-					_profiler.gOrbitalVsatAlwaysOn->Current.iValue = _profiler.gOrbitalVsatAlwaysOn->Reset.iValue;
-					_profiler.gHardcoreHudOverlay->Current.iValue = _profiler.gHardcoreHudOverlay->Reset.iValue;
-					_profiler.gDisableEmpOverlay->Current.iValue = _profiler.gDisableEmpOverlay->Reset.iValue;
-					_profiler.gNameClanXuidStealer->Current.iValue = _profiler.gNameClanXuidStealer->Reset.iValue;
-					_profiler.gAirStuckOnToggle->Current.iValue = _profiler.gAirStuckOnToggle->Reset.iValue;
-					_profiler.gFasterReloading->Current.iValue = _profiler.gFasterReloading->Reset.iValue;
+					_profiler.gThirdPerson->Current.iValue = _profiler.gThirdPerson->Reset.iValue;
+					_profiler.gOrbitalVsat->Current.iValue = _profiler.gOrbitalVsat->Reset.iValue;
+					_profiler.gHardcoreHud->Current.iValue = _profiler.gHardcoreHud->Reset.iValue;
+					_profiler.gDisableEmp->Current.iValue = _profiler.gDisableEmp->Reset.iValue;
+					_profiler.gIdStealer->Current.iValue = _profiler.gIdStealer->Reset.iValue;
+					_profiler.gAirStuckToggle->Current.iValue = _profiler.gAirStuckToggle->Reset.iValue;
+					_profiler.gReloadCancel->Current.iValue = _profiler.gReloadCancel->Reset.iValue;
 					_profiler.gNoFlinch->Current.iValue = _profiler.gNoFlinch->Reset.iValue;
-					_profiler.gOnlyBoneScanPriorities->Current.iValue = _profiler.gOnlyBoneScanPriorities->Reset.iValue;
-					_profiler.gOnlyBoneScanRiotShielders->Current.iValue = _profiler.gOnlyBoneScanRiotShielders->Reset.iValue;
-					_profiler.gNameExperiencePrestigeSpam->Current.iValue = _profiler.gNameExperiencePrestigeSpam->Reset.iValue;
-					_profiler.gEndRoundOnNextKill->Current.iValue = _profiler.gEndRoundOnNextKill->Reset.iValue;
+					_profiler.gBoneScanPriorities->Current.iValue = _profiler.gBoneScanPriorities->Reset.iValue;
+					_profiler.gBoneScanRiotShielders->Current.iValue = _profiler.gBoneScanRiotShielders->Reset.iValue;
+					_profiler.gIdSpam->Current.iValue = _profiler.gIdSpam->Reset.iValue;
+					_profiler.gTrickShot->Current.iValue = _profiler.gTrickShot->Reset.iValue;
 
 					bWriteLog = true;
 				}
@@ -916,7 +916,7 @@ namespace ProtoGenesys
 		if (GetKeyPress(VK_END, false))
 			_profiler.DisableAll();
 
-		if (_profiler.gAirStuckOnToggle->Current.iValue)
+		if (_profiler.gAirStuckToggle->Current.iValue)
 		{
 			if (GetKeyPress(VK_DELETE, false))
 				bIsAirStuck = !bIsAirStuck;

@@ -8,11 +8,22 @@ namespace ProtoGenesys
 {
 	cDrawing _drawing;
 
-	void cDrawing::DrawBorder(ImVec2 position, ImVec2 dimentions, bool border, ImVec4 color)
+	void cDrawing::DrawBorder(ImVec2 position, ImVec2 dimentions, bool border, bool shadow, ImVec4 color)
 	{
-		if (border) ImGui::GetWindowDrawList()->AddRect(position, position + dimentions, ImGui::GetColorU32(color));
+		if (border)
+		{
+			if (shadow)
+			{
+				ImGui::GetWindowDrawList()->AddRect(position, position + dimentions, ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue), 0.0f, ImDrawCornerFlags_All, 3.0f);
+			}
 
-		else ImGui::GetWindowDrawList()->AddRectFilled(position, position + dimentions, ImGui::GetColorU32(color));
+			ImGui::GetWindowDrawList()->AddRect(position, position + dimentions, ImGui::GetColorU32(color));
+		}
+
+		else
+		{
+			ImGui::GetWindowDrawList()->AddRectFilled(position, position + dimentions, ImGui::GetColorU32(color));
+		}
 	}
 	/*
 	//=====================================================================================
@@ -49,25 +60,25 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cDrawing::DrawBorder3D(ImVec2 corners2d[8], ImVec4 color)
+	void cDrawing::DrawBorder3D(ImVec2 corners2d[8], bool shadow, ImVec4 color)
 	{
-		DrawLine(corners2d[0], corners2d[1], color);
-		DrawLine(corners2d[0], corners2d[2], color);
-		DrawLine(corners2d[0], corners2d[4], color);
-		DrawLine(corners2d[1], corners2d[3], color);
-		DrawLine(corners2d[1], corners2d[5], color);
-		DrawLine(corners2d[2], corners2d[3], color);
-		DrawLine(corners2d[2], corners2d[6], color);
-		DrawLine(corners2d[3], corners2d[7], color);
-		DrawLine(corners2d[4], corners2d[5], color);
-		DrawLine(corners2d[4], corners2d[6], color);
-		DrawLine(corners2d[6], corners2d[7], color);
-		DrawLine(corners2d[5], corners2d[7], color);
+		DrawLine(corners2d[0], corners2d[1], shadow, color);
+		DrawLine(corners2d[0], corners2d[2], shadow, color);
+		DrawLine(corners2d[0], corners2d[4], shadow, color);
+		DrawLine(corners2d[1], corners2d[3], shadow, color);
+		DrawLine(corners2d[1], corners2d[5], shadow, color);
+		DrawLine(corners2d[2], corners2d[3], shadow, color);
+		DrawLine(corners2d[2], corners2d[6], shadow, color);
+		DrawLine(corners2d[3], corners2d[7], shadow, color);
+		DrawLine(corners2d[4], corners2d[5], shadow, color);
+		DrawLine(corners2d[4], corners2d[6], shadow, color);
+		DrawLine(corners2d[6], corners2d[7], shadow, color);
+		DrawLine(corners2d[5], corners2d[7], shadow, color);
 	}
 	/*
 	//=====================================================================================
 	*/
-	void cDrawing::DrawCorners3D(ImVec2 corners2d[8], float length, ImVec4 color)
+	void cDrawing::DrawCorners3D(ImVec2 corners2d[8], float length, bool shadow, ImVec4 color)
 	{
 		ImVec2 vMidPoints[12][2];
 
@@ -93,109 +104,181 @@ namespace ProtoGenesys
 		CalculateMidPoints(corners2d[6], corners2d[7], vMidPoints[10][0], vMidPoints[10][1], length);
 		CalculateMidPoints(corners2d[5], corners2d[7], vMidPoints[11][0], vMidPoints[11][1], length);
 
-		DrawLine(corners2d[0], vMidPoints[0][0], color);
-		DrawLine(corners2d[0], vMidPoints[1][0], color);
-		DrawLine(corners2d[0], vMidPoints[2][0], color);
-		DrawLine(corners2d[1], vMidPoints[3][0], color);
-		DrawLine(corners2d[1], vMidPoints[4][0], color);
-		DrawLine(corners2d[2], vMidPoints[5][0], color);
-		DrawLine(corners2d[2], vMidPoints[6][0], color);
-		DrawLine(corners2d[3], vMidPoints[7][0], color);
-		DrawLine(corners2d[4], vMidPoints[8][0], color);
-		DrawLine(corners2d[4], vMidPoints[9][0], color);
-		DrawLine(corners2d[6], vMidPoints[10][0], color);
-		DrawLine(corners2d[5], vMidPoints[11][0], color);
+		DrawLine(corners2d[0], vMidPoints[0][0], shadow, color);
+		DrawLine(corners2d[0], vMidPoints[1][0], shadow, color);
+		DrawLine(corners2d[0], vMidPoints[2][0], shadow, color);
+		DrawLine(corners2d[1], vMidPoints[3][0], shadow, color);
+		DrawLine(corners2d[1], vMidPoints[4][0], shadow, color);
+		DrawLine(corners2d[2], vMidPoints[5][0], shadow, color);
+		DrawLine(corners2d[2], vMidPoints[6][0], shadow, color);
+		DrawLine(corners2d[3], vMidPoints[7][0], shadow, color);
+		DrawLine(corners2d[4], vMidPoints[8][0], shadow, color);
+		DrawLine(corners2d[4], vMidPoints[9][0], shadow, color);
+		DrawLine(corners2d[6], vMidPoints[10][0], shadow, color);
+		DrawLine(corners2d[5], vMidPoints[11][0], shadow, color);
 
-		DrawLine(corners2d[1], vMidPoints[0][1], color);
-		DrawLine(corners2d[2], vMidPoints[1][1], color);
-		DrawLine(corners2d[4], vMidPoints[2][1], color);
-		DrawLine(corners2d[3], vMidPoints[3][1], color);
-		DrawLine(corners2d[5], vMidPoints[4][1], color);
-		DrawLine(corners2d[3], vMidPoints[5][1], color);
-		DrawLine(corners2d[6], vMidPoints[6][1], color);
-		DrawLine(corners2d[7], vMidPoints[7][1], color);
-		DrawLine(corners2d[5], vMidPoints[8][1], color);
-		DrawLine(corners2d[6], vMidPoints[9][1], color);
-		DrawLine(corners2d[7], vMidPoints[10][1], color);
-		DrawLine(corners2d[7], vMidPoints[11][1], color);
+		DrawLine(corners2d[1], vMidPoints[0][1], shadow, color);
+		DrawLine(corners2d[2], vMidPoints[1][1], shadow, color);
+		DrawLine(corners2d[4], vMidPoints[2][1], shadow, color);
+		DrawLine(corners2d[3], vMidPoints[3][1], shadow, color);
+		DrawLine(corners2d[5], vMidPoints[4][1], shadow, color);
+		DrawLine(corners2d[3], vMidPoints[5][1], shadow, color);
+		DrawLine(corners2d[6], vMidPoints[6][1], shadow, color);
+		DrawLine(corners2d[7], vMidPoints[7][1], shadow, color);
+		DrawLine(corners2d[5], vMidPoints[8][1], shadow, color);
+		DrawLine(corners2d[6], vMidPoints[9][1], shadow, color);
+		DrawLine(corners2d[7], vMidPoints[10][1], shadow, color);
+		DrawLine(corners2d[7], vMidPoints[11][1], shadow, color);
 	}
 	/*
 	//=====================================================================================
 	*/
-	void cDrawing::DrawLine(ImVec2 point1, ImVec2 point2, ImVec4 color)
+	void cDrawing::DrawLine(ImVec2 point1, ImVec2 point2, bool shadow, ImVec4 color)
 	{
+		if (shadow)
+		{
+			ImGui::GetWindowDrawList()->AddLine(point1, point2, ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue), 3.0f);
+		}
+
 		ImGui::GetWindowDrawList()->AddLine(point1, point2, ImGui::GetColorU32(color));
 	}
 	/*
 	//=====================================================================================
 	*/
-	void cDrawing::DrawBones(ImVec2 bones2d[BONE_MAX], bool skeleton, ImVec4 color)
+	void cDrawing::DrawBones(ImVec2 bones2d[BONE_MAX], bool skeleton, bool shadow, ImVec4 color)
 	{
 		if (skeleton)
 		{
 			DrawLine(bones2d[vBones[BONE_NECK].first],
 				bones2d[vBones[BONE_LEFT_SHOULDER].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_LEFT_SHOULDER].first],
 				bones2d[vBones[BONE_LEFT_ELBOW].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_LEFT_ELBOW].first],
 				bones2d[vBones[BONE_LEFT_WRIST].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_NECK].first],
 				bones2d[vBones[BONE_RIGHT_SHOULDER].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_RIGHT_SHOULDER].first],
 				bones2d[vBones[BONE_RIGHT_ELBOW].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_RIGHT_ELBOW].first],
 				bones2d[vBones[BONE_RIGHT_WRIST].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_NECK].first],
 				bones2d[vBones[BONE_SPINE_4].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_SPINE_4].first],
 				bones2d[vBones[BONE_UPPER_SPINE].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_UPPER_SPINE].first],
 				bones2d[vBones[BONE_LOWER_SPINE].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_LOWER_SPINE].first],
 				bones2d[vBones[BONE_LEFT_HIP].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_LEFT_HIP].first],
 				bones2d[vBones[BONE_LEFT_KNEE].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_LEFT_KNEE].first],
 				bones2d[vBones[BONE_LEFT_ANKLE].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_LOWER_SPINE].first],
 				bones2d[vBones[BONE_RIGHT_HIP].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_RIGHT_HIP].first],
 				bones2d[vBones[BONE_RIGHT_KNEE].first],
-				color);
+				shadow, color);
 
 			DrawLine(bones2d[vBones[BONE_RIGHT_KNEE].first],
 				bones2d[vBones[BONE_RIGHT_ANKLE].first],
-				color);
+				shadow, color);
 		}
 
 		else
 		{
+			if (shadow)
+			{
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_NECK].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_NECK].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_SPINE_4].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_SPINE_4].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_UPPER_SPINE].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_UPPER_SPINE].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LOWER_SPINE].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_LOWER_SPINE].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_SHOULDER].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_LEFT_SHOULDER].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_SHOULDER].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_RIGHT_SHOULDER].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_HIP].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_LEFT_HIP].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_HIP].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_RIGHT_HIP].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_ELBOW].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_LEFT_ELBOW].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_ELBOW].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_RIGHT_ELBOW].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_KNEE].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_LEFT_KNEE].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_KNEE].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_RIGHT_KNEE].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_WRIST].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_LEFT_WRIST].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_WRIST].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_RIGHT_WRIST].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_LEFT_ANKLE].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_LEFT_ANKLE].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_RIGHT_ANKLE].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_RIGHT_ANKLE].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+			}
+
 			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_NECK].first],
 				bones2d[vBones[BONE_NECK].first] + ImVec2(1.0f, 1.0f),
 				ImGui::GetColorU32(color));
@@ -314,43 +397,43 @@ namespace ProtoGenesys
 		bool bHasRiotShield = EntityHasRiotShield(entity);
 
 		if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER)
-			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
+			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
 		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER)
 			DrawCorners(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), 3.0f, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
 		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER_FILLED)
 		{
-			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, (bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
-			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
+			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, false, (bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
+			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), true, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 		}
 
 		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER_FILLED)
 		{
-			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, (bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
+			DrawBorder(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), false, false, (bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color) * ImVec4(1.0f, 1.0f, 1.0f, 0.25f));
 			DrawCorners(ImVec2(center.x - flWidth / 2.0f, center.y - flHeight / 2.0f), ImVec2(flWidth, flHeight), 3.0f, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 		}
 
 		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_BORDER_3D)
-			DrawBorder3D(corners2d, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
+			DrawBorder3D(corners2d, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
 		else if (_profiler.gBoxes->Current.iValue == cProfiler::PLAYER_BOXES_CORNER_3D)
-			DrawCorners3D(corners2d, 3.0f, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
+			DrawCorners3D(corners2d, 3.0f, false, bHasRiotShield ? _profiler.gColorAccents->Current.cValue : color);
 
 		if (_profiler.gBones->Current.iValue == cProfiler::PLAYER_BONES_DOTS)
-			DrawBones(bones2d, false, color);
+			DrawBones(bones2d, false, false, color);
 
 		else if (_profiler.gBones->Current.iValue == cProfiler::PLAYER_BONES_LINES)
-			DrawBones(bones2d, true, color);
+			DrawBones(bones2d, true, false, color);
 
 		if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_TOP)
-			DrawLine(ImVec2(center.x, center.y - flHeight / 2.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, 0.0f), color);
+			DrawLine(ImVec2(center.x, center.y - flHeight / 2.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, 0.0f), false, color);
 
 		else if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_CENTER)
-			DrawLine(ImVec2(center.x, center.y), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f), color);
+			DrawLine(ImVec2(center.x, center.y), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f), false, color);
 
 		else if (_profiler.gSnapLines->Current.iValue == cProfiler::PLAYER_SNAPLINES_BOTTOM)
-			DrawLine(ImVec2(center.x, center.y + flHeight / 2.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y), color);
+			DrawLine(ImVec2(center.x, center.y + flHeight / 2.0f), ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y), false, color);
 
 		if (_profiler.gDistances->Current.iValue && _profiler.gNames->Current.iValue)
 		{

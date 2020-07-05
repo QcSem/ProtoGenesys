@@ -14,13 +14,13 @@ namespace ProtoGenesys
 
 		if (CG)
 		{
-			if (_profiler.gOrbitalVsatAlwaysOn->Current.iValue && CG->PlayerState.iSatalliteTypeEnabled != 1)
+			if (_profiler.gOrbitalVsat->Current.iValue && CG->PlayerState.iSatalliteTypeEnabled != 1)
 				CG->PlayerState.iSatalliteTypeEnabled = 1;
 
-			if (_profiler.gHardcoreHudOverlay->Current.iValue && CG->iMatchUIVisibilityFlags & 0x200)
+			if (_profiler.gHardcoreHud->Current.iValue && CG->iMatchUIVisibilityFlags & 0x200)
 				CG->iMatchUIVisibilityFlags &= ~0x200;
 
-			if (_profiler.gDisableEmpOverlay->Current.iValue && CG->PlayerState.iOtherFlags & 0x40)
+			if (_profiler.gDisableEmp->Current.iValue && CG->PlayerState.iOtherFlags & 0x40)
 				CG->PlayerState.iOtherFlags &= ~0x40;
 		}
 
@@ -264,7 +264,7 @@ namespace ProtoGenesys
 		{
 			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 			{
-				_aimBot.FasterReload();
+				_aimBot.CancelReloadAnimation();
 
 				static int iBackupAngles[3];
 
@@ -332,7 +332,7 @@ namespace ProtoGenesys
 			{
 				if (attacker == CG->iClientNum && attacker != victim)
 				{
-					if (_profiler.gNameClanXuidStealer->Current.iValue)
+					if (_profiler.gIdStealer->Current.iValue)
 					{
 						_profiler.gNameOverRide->Current.szValue = _strdup(ServerSession[victim].szName);
 						_profiler.gClanOverRide->Current.szValue = _strdup(ServerSession[victim].szClan);
@@ -346,10 +346,10 @@ namespace ProtoGenesys
 						Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", ServerSession[victim].szClan));
 					}
 
-					if (_profiler.gEndRoundOnNextKill->Current.iValue)
+					if (_profiler.gTrickShot->Current.iValue)
 					{
 						AddReliableCommand(VariadicText("mr %d -1 endround", Dereference(dwServerID)));
-						_profiler.gEndRoundOnNextKill->Current.iValue = false;
+						_profiler.gTrickShot->Current.iValue = false;
 					}
 
 					std::string szKillspam(_profiler.gKillSpam->Current.szValue);
@@ -386,7 +386,7 @@ namespace ProtoGenesys
 			{
 				if (_profiler.gBulletTracers->Current.iValue)
 				{
-					if (sourcenum == CG->iClientNum && targetnum < MAX_CLIENTS)
+					if (sourcenum == CG->iClientNum && (CG->CEntity[targetnum].NextEntityState.wEntityType == ET_PLAYER || CG->CEntity[targetnum].NextEntityState.wEntityType == ET_ACTOR))
 					{
 						int iShots, iIgnoreNum;
 						float flRange, flSpread;
@@ -440,7 +440,7 @@ namespace ProtoGenesys
 		{
 			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 			{
-				if (_profiler.gThirdPersonCamera->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
+				if (_profiler.gThirdPerson->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
 				{
 					if (entity->NextEntityState.iEntityNum == CG->iClientNum)
 					{
@@ -469,7 +469,7 @@ namespace ProtoGenesys
 		{
 			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 			{
-				if (_profiler.gThirdPersonCamera->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
+				if (_profiler.gThirdPerson->Current.iValue && _antiAim.ReadyForAntiAim() && !_mainGui.bIsAirStuck)
 				{
 					GetPlayerViewOrigin(origin);
 				}
@@ -531,7 +531,7 @@ namespace ProtoGenesys
 	{
 		std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
-		if (_profiler.gNameExperiencePrestigeSpam->Current.iValue)
+		if (_profiler.gIdSpam->Current.iValue)
 			return Randomize(name).c_str();
 
 		else if (szNameOverride.empty())
@@ -686,7 +686,7 @@ namespace ProtoGenesys
 	{
 		std::string szDvarName = IsThirdPerson() ? "cg_fov_default_thirdperson" : "cg_fov";
 		FindVar(szDvarName)->Current.flValue = _profiler.gFieldOfView->Current.flValue;
-		CG->iThirdPerson = _profiler.gThirdPersonCamera->Current.iValue;
+		CG->iThirdPerson = _profiler.gThirdPerson->Current.iValue;
 	}
 }
 
