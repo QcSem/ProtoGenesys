@@ -43,6 +43,7 @@ namespace ProtoGenesys
 		void DrawLine(ImVec2 point1, ImVec2 point2, bool shadow, ImVec4 color);
 		void DrawBones(ImVec2 bones2d[BONE_MAX], bool skeleton, bool shadow, ImVec4 color);
 		void DrawString(std::string text, ImVec2 position, bool shadow, ImVec4 color);
+		void DrawMultiPoints(std::vector<ImVec2> multipoints);
 		void DrawClient(sCEntity* entity, ImVec2 bones2d[BONE_MAX], ImVec2 corners2d[8], ImVec2 center, float scale, float distance, std::string name, ImVec4 color);
 		void DrawEntity(std::string name, ImVec2 center, float distance, ImVec4 color);
 		bool Calculate2D(ImVec3 bones3d[BONE_MAX], ImVec2 bones2d[BONE_MAX], ImVec2& position, ImVec2& dimentions);

@@ -252,7 +252,7 @@ namespace ProtoGenesys
 
 			for (int i = 0; i < MAX_CLIENTS; i++)
 				if (!CG->ClientInfo[i].iInfoValid)
-					_targetList.Priorities[i].bIsPrioritized = _targetList.Priorities[i].bIsIgnored = false;
+					_targetList.Priorities[i].bIsPrioritized = _targetList.Priorities[i].bIsIgnored = _targetList.Priorities[i].bDoMultiPoint = false;
 		}
 	}
 	/*

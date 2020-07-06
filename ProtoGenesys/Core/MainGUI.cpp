@@ -102,7 +102,7 @@ namespace ProtoGenesys
 				bWriteLog = false;
 			}
 
-			ImGui::SetNextWindowSize(ImVec2(589.0f, 661.0f));
+			ImGui::SetNextWindowSize(ImVec2(589.0f, 672.0f));
 			ImGui::Begin(acut::ToUpper(PROGRAM_NAME).c_str(), &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 			ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
 
@@ -111,7 +111,7 @@ namespace ProtoGenesys
 				bWriteLog = true;
 			}
 
-			ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 551.0f), true);
+			ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 562.0f), true);
 
 			switch (_profiler.gMenuTabs->Current.iValue)
 			{
@@ -426,6 +426,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gMultiPoint->szName, VariadicText("%d", _profiler.gMultiPoint->Current.iValue), &_profiler.gMultiPoint->Current.iValue, _profiler.gMultiPoint->Domain.iMin, _profiler.gMultiPoint->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
 				if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 				{
@@ -441,6 +446,7 @@ namespace ProtoGenesys
 					_profiler.gAntiAimCustomPitch->Current.flValue = _profiler.gAntiAimCustomPitch->Reset.flValue;
 					_profiler.gAntiAimCustomYaw->Current.flValue = _profiler.gAntiAimCustomYaw->Reset.flValue;
 					_profiler.gFieldOfView->Current.flValue = _profiler.gFieldOfView->Reset.flValue;
+					_profiler.gMultiPoint->Current.iValue = _profiler.gMultiPoint->Reset.iValue;
 
 					bWriteLog = true;
 				}
@@ -562,6 +568,22 @@ namespace ProtoGenesys
 							Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", ServerSession[i].szClan));
 
 							bWriteLog = true;
+						}
+
+						ImGui::Separator();
+
+						if (ImGui::Selectable("Multipoint"))
+						{
+							_targetList.Priorities[i].bDoMultiPoint = !_targetList.Priorities[i].bDoMultiPoint;
+
+							bWriteLog = true;
+						}
+
+						if (_targetList.Priorities[i].bDoMultiPoint)
+						{
+							ImGui::SameLine();
+							ImGui::RenderCheckMark(ImGui::GetCurrentWindow()->DrawList, ImGui::GetCurrentWindow()->DC.CursorPos, ImGui::GetColorU32(ImGuiCol_CheckMark), ImGui::GetCurrentContext()->FontSize);
+							ImGui::NewLine();
 						}
 
 						if (ImGui::Selectable("Ignore"))

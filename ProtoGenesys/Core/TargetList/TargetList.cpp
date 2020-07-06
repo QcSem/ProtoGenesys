@@ -70,7 +70,23 @@ namespace ProtoGenesys
 						vMaxTemp.z = EntityList[i].vBones3D[Bone.first].z;
 				}
 
-				EntityList[i].vCenter3D = (vMinTemp + vMaxTemp) / 2.0f;
+				if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
+				{
+					EntityList[i].vMultiPoints2D.clear();
+					EntityList[i].vMultiPoints3D.clear();
+
+					EntityList[i].vMultiPoints3D = CalculateMultiPoints(&CG->CEntity[i], EntityList[i].vBones3D, _profiler.gMultiPoint->Current.iValue);
+
+					for (auto& vMultiPoint3D : EntityList[i].vMultiPoints3D)
+					{
+						ImVec2 vMultiPoint2D;
+
+						_mathematics.WorldToScreen(vMultiPoint3D, vMultiPoint2D);
+						EntityList[i].vMultiPoints2D.push_back(vMultiPoint2D);
+					}
+
+					EntityList[i].vCenter3D = (vMinTemp + vMaxTemp) / 2.0f;
+				}
 			}
 
 			if (WeaponNames[(BYTE)CG->CEntity[i].NextEntityState.iWeaponID].szDisplayName)
@@ -81,6 +97,7 @@ namespace ProtoGenesys
 			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 			{
 				ImVec3 vViewOrigin;
+
 				vViewOrigin = CG->CEntity[i].vOrigin;
 				vViewOrigin.z += M_METERS;
 
@@ -95,11 +112,11 @@ namespace ProtoGenesys
 
 				if (EntityIsTeammate(&CG->CEntity[i]))
 				{
-					EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first, NULL) ? _profiler.gColorAlliesVisible->Current.cValue : _profiler.gColorAlliesInvisible->Current.cValue;
+					EntityList[i].cColor = ScanPosition(&CG->CEntity[i], EntityList[i].vBones3D[vBones[BONE_HEAD].first], false, NULL) ? _profiler.gColorAlliesVisible->Current.cValue : _profiler.gColorAlliesInvisible->Current.cValue;
 					continue;
 				}
 
-				EntityList[i].cColor = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, false, vBones[BONE_HEAD].first, NULL) ? _profiler.gColorAxisVisible->Current.cValue : _profiler.gColorAxisInvisible->Current.cValue;
+				EntityList[i].cColor = ScanPosition(&CG->CEntity[i], EntityList[i].vBones3D[vBones[BONE_HEAD].first], false, NULL) ? _profiler.gColorAxisVisible->Current.cValue : _profiler.gColorAxisInvisible->Current.cValue;
 			}
 
 			else if (CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
@@ -120,21 +137,23 @@ namespace ProtoGenesys
 			{
 				if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
 				{
-					if ((_profiler.gBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
-						(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
+					if (iBonescanNum == i)
 					{
-						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
-					}
+						if ((_profiler.gBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
+							(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
+						{
+							EntityList[i].bIsVisible = ScanBones(&CG->CEntity[i], EntityList[i].vBones3D, EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+						}
 
-					else if (!_profiler.gBoneScanPriorities->Current.iValue && !_profiler.gBoneScanRiotShielders->Current.iValue)
-					{
-						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, iBonescanNum == i, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+						else if (!_profiler.gBoneScanPriorities->Current.iValue && !_profiler.gBoneScanRiotShielders->Current.iValue)
+						{
+							EntityList[i].bIsVisible = ScanBones(&CG->CEntity[i], EntityList[i].vBones3D, EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+						}
 					}
 
 					else
 					{
-						EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+						EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
 					}
 				}
 
@@ -143,35 +162,35 @@ namespace ProtoGenesys
 					if ((_profiler.gBoneScanPriorities->Current.iValue && _targetList.Priorities[i].bIsPrioritized) ||
 						(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
 					{
-						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+						EntityList[i].bIsVisible = ScanBones(&CG->CEntity[i], EntityList[i].vBones3D, EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 					}
 
 					else if (!_profiler.gBoneScanPriorities->Current.iValue && !_profiler.gBoneScanRiotShielders->Current.iValue)
 					{
-						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, true, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+						EntityList[i].bIsVisible = ScanBones(&CG->CEntity[i], EntityList[i].vBones3D, EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
 					}
 
 					else
 					{
-						EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-						EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+						EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
 					}
 				}
 
 				else
 				{
-					EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue;
-					EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+					EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
+				}
+
+				if (!EntityList[i].bIsVisible && _targetList.Priorities[i].bDoMultiPoint)
+				{
+					EntityList[i].bIsVisible = ScanMultiPoints(&CG->CEntity[i], EntityList[i].vMultiPoints3D, EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
 				}
 			}
 
 			else if (CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
 			{
-				EntityList[i].iBoneIndex = vBones[BONE_HEAD].first;
-				EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vBones3D, false, _profiler.gAutoWall->Current.iValue, EntityList[i].iBoneIndex, &EntityList[i].flDamage);
+				EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = vBones[BONE_HEAD].first], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
 			}
-
-			EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex];
 
 			if (i < MAX_CLIENTS)
 				if (Priorities[i].bIsIgnored)
@@ -308,76 +327,237 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisible(sCEntity* entity, ImVec3 bones3d[BONE_MAX], bool bonescan, bool autowall, eBone& index, float* damage)
+	bool cTargetList::ScanPosition(sCEntity* entity, ImVec3 position, bool autowall, float* damage)
+	{
+		if (bIsSteamVersion)
+		{
+			return std::async(&cTargetList::IsVisibleInternal, this, entity, position, autowall, damage).get();
+		}
+
+		else
+		{
+			return IsVisibleInternal(entity, position, autowall, damage);
+		}
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cTargetList::ScanBones(sCEntity* entity, ImVec3 bones3d[BONE_MAX], ImVec3& position, bool autowall, eBone& index, float* damage)
 	{
 		bool bReturn = false;
 
 		sDamageInfo DamageInfo;
 		std::vector<sDamageInfo> vDamageInfo;
+		std::vector<sDamageInfo> vDamageInfoFinal;
 		std::vector<std::future<bool>> vIsVisible(BONE_MAX);
 
 		if (bIsSteamVersion)
 		{
-			if (bonescan)
+			for (auto& Bone : vBones)
 			{
-				for (auto& Bone : vBones)
-				{
-					vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage);
-				}
+				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage);
 
-				for (auto& Bone : vBones)
-				{
-					if (vIsVisible[Bone.first].get())
-					{
-						DamageInfo.iBoneIndex = Bone.first;
-						vDamageInfo.push_back(DamageInfo);
+				DamageInfo.vPosition = bones3d[Bone.first];
+				DamageInfo.iBoneIndex = Bone.first;
 
-						bReturn = true;
-					}
-				}
+				vDamageInfo.push_back(DamageInfo);
 			}
 
-			else
+			for (auto& Bone : vBones)
 			{
-				return std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[index], autowall, damage).get();
+				if (vIsVisible[Bone.first].get())
+				{
+					vDamageInfoFinal.push_back(vDamageInfo[Bone.first]);
+
+					bReturn = true;
+				}
 			}
 		}
 
 		else
 		{
-			if (bonescan)
+			for (auto& Bone : vBones)
 			{
-				for (auto& Bone : vBones)
+				if (IsVisibleInternal(entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage))
 				{
-					if (IsVisibleInternal(entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage))
-					{
-						DamageInfo.iBoneIndex = Bone.first;
-						vDamageInfo.push_back(DamageInfo);
+					DamageInfo.vPosition = bones3d[Bone.first];
+					DamageInfo.iBoneIndex = Bone.first;
 
-						bReturn = true;
-					}
+					vDamageInfoFinal.push_back(DamageInfo);
+
+					bReturn = true;
 				}
-			}
-
-			else
-			{
-				return IsVisibleInternal(entity, bones3d[index], autowall, damage);
 			}
 		}
 
-		if (!vDamageInfo.empty())
+		if (!vDamageInfoFinal.empty())
 		{
-			std::stable_sort(vDamageInfo.begin(), vDamageInfo.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
+			std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
 
-			index = vDamageInfo.front().iBoneIndex;
+			position = vDamageInfoFinal.front().vPosition;
+			index = vDamageInfoFinal.front().iBoneIndex;
 
 			if (damage)
-				*damage = vDamageInfo.front().flDamage;
+				*damage = vDamageInfoFinal.front().flDamage;
 
-			vDamageInfo.clear();
+			vDamageInfoFinal.clear();
 		}
 
 		return bReturn;
+	}
+	/*
+	//=====================================================================================
+	*/
+	bool cTargetList::ScanMultiPoints(sCEntity* entity, std::vector<ImVec3> multipoints, ImVec3& position, bool autowall, float* damage)
+	{
+		bool bReturn = false;
+
+		sDamageInfo DamageInfo;
+		std::vector<sDamageInfo> vDamageInfo;
+		std::vector<sDamageInfo> vDamageInfoFinal;
+		std::vector<std::future<bool>> vIsVisible;
+
+		if (bIsSteamVersion)
+		{
+			for (size_t i = 0; i < multipoints.size(); i++)
+			{
+				vIsVisible.push_back(std::async(&cTargetList::IsVisibleInternal, this, entity, multipoints[i], autowall, &DamageInfo.flDamage));
+
+				DamageInfo.vPosition = multipoints[i];
+
+				vDamageInfo.push_back(DamageInfo);
+			}
+
+			for (size_t i = 0; i < multipoints.size(); i++)
+			{
+				if (vIsVisible[i].get())
+				{
+					vDamageInfoFinal.push_back(vDamageInfo[i]);
+
+					bReturn = true;
+				}
+			}
+		}
+
+		else
+		{
+			for (size_t i = 0; i < multipoints.size(); i++)
+			{
+				if (IsVisibleInternal(entity, multipoints[i], autowall, &DamageInfo.flDamage))
+				{
+					DamageInfo.vPosition = multipoints[i];
+					vDamageInfoFinal.push_back(DamageInfo);
+
+					bReturn = true;
+				}
+			}
+		}
+
+		if (!vDamageInfoFinal.empty())
+		{
+			std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
+
+			position = vDamageInfoFinal.front().vPosition;
+
+			if (damage)
+				*damage = vDamageInfoFinal.front().flDamage;
+
+			vDamageInfoFinal.clear();
+		}
+
+		return bReturn;
+	}
+	/*
+	//=====================================================================================
+	*/
+	std::vector<ImVec3> cTargetList::CalculateMultiPoints(sCEntity* entity, ImVec3 bones3d[BONE_MAX], int divisor)
+	{
+		std::vector<ImVec3> vMultiPoints;
+
+		vMultiPoints.clear();
+
+		auto CalculateInnerPoints = [&](const ImVec3 a, const ImVec3 b, const int c)
+		{
+			std::vector<ImVec3> vPoints;
+
+			vPoints.clear();
+
+			for (int i = 0; i <= c; i++)
+			{
+				ImVec3 vPoint = b + ((a - b) / (float)c * (float)i);
+				vPoints.push_back(vPoint);
+			}
+
+			return vPoints;
+		};
+
+		auto CalculateOuterPoints = [&](const std::vector<ImVec3> a)
+		{
+			std::vector<ImVec3> vPoints;
+
+			vPoints.clear();
+
+			for (auto& vPoint : a)
+			{
+				ImVec3 vFront = vPoint + ImVec3(2.0f, 0.0f, 0.0f);
+				ImVec3 vBack = vPoint + ImVec3(-2.0f, 0.0f, 0.0f);
+
+				ImVec3 vLeft = vPoint + ImVec3(0.0f, 2.0f, 0.0f);
+				ImVec3 vRight = vPoint + ImVec3(0.0f, -2.0f, 0.0f);
+
+				_mathematics.RotatePoint(vFront, vPoint, entity->vViewAngles.y, vFront);
+				_mathematics.RotatePoint(vBack, vPoint, entity->vViewAngles.y, vBack);
+
+				_mathematics.RotatePoint(vLeft, vPoint, entity->vViewAngles.y, vLeft);
+				_mathematics.RotatePoint(vRight, vPoint, entity->vViewAngles.y, vRight);
+
+				vPoints.push_back(vFront);
+				vPoints.push_back(vBack);
+
+				vPoints.push_back(vLeft);
+				vPoints.push_back(vRight);
+			}
+
+			return vPoints;
+		};
+
+		std::vector<ImVec3> vUpperLeftLegInner = CalculateInnerPoints(bones3d[vBones[BONE_LEFT_HIP].first], bones3d[vBones[BONE_LEFT_KNEE].first], divisor);
+		std::vector<ImVec3> vUpperRightLegInner = CalculateInnerPoints(bones3d[vBones[BONE_RIGHT_HIP].first], bones3d[vBones[BONE_RIGHT_KNEE].first], divisor);
+
+		std::vector<ImVec3> vLowerLeftLegInner = CalculateInnerPoints(bones3d[vBones[BONE_LEFT_KNEE].first], bones3d[vBones[BONE_LEFT_ANKLE].first], divisor);
+		std::vector<ImVec3> vLowerRightLegInner = CalculateInnerPoints(bones3d[vBones[BONE_RIGHT_KNEE].first], bones3d[vBones[BONE_RIGHT_ANKLE].first], divisor);
+
+		std::vector<ImVec3> vLeftFootInner = CalculateInnerPoints(bones3d[vBones[BONE_LEFT_ANKLE].first], bones3d[vBones[BONE_LEFT_BALL].first], divisor);
+		std::vector<ImVec3> vRightFootInner = CalculateInnerPoints(bones3d[vBones[BONE_RIGHT_ANKLE].first], bones3d[vBones[BONE_RIGHT_BALL].first], divisor);
+
+		std::vector<ImVec3> vUpperLeftLegOuter = CalculateOuterPoints(vUpperLeftLegInner);
+		std::vector<ImVec3> vUpperRightLegOuter = CalculateOuterPoints(vUpperRightLegInner);
+
+		std::vector<ImVec3> vLowerLeftLegOuter = CalculateOuterPoints(vLowerLeftLegInner);
+		std::vector<ImVec3> vLowerRightLegOuter = CalculateOuterPoints(vLowerRightLegInner);
+
+		std::vector<ImVec3> vLeftFootOuter = CalculateOuterPoints(vLeftFootInner);
+		std::vector<ImVec3> vRightFootOuter = CalculateOuterPoints(vRightFootInner);
+
+		vMultiPoints.insert(vMultiPoints.end(), vUpperLeftLegInner.begin(), vUpperLeftLegInner.end());
+		vMultiPoints.insert(vMultiPoints.end(), vUpperRightLegInner.begin(), vUpperRightLegInner.end());
+
+		vMultiPoints.insert(vMultiPoints.end(), vLowerLeftLegInner.begin(), vLowerLeftLegInner.end());
+		vMultiPoints.insert(vMultiPoints.end(), vLowerRightLegInner.begin(), vLowerRightLegInner.end());
+
+		vMultiPoints.insert(vMultiPoints.end(), vLeftFootInner.begin(), vLeftFootInner.end());
+		vMultiPoints.insert(vMultiPoints.end(), vRightFootInner.begin(), vRightFootInner.end());
+
+		vMultiPoints.insert(vMultiPoints.end(), vUpperLeftLegOuter.begin(), vUpperLeftLegOuter.end());
+		vMultiPoints.insert(vMultiPoints.end(), vUpperRightLegOuter.begin(), vUpperRightLegOuter.end());
+
+		vMultiPoints.insert(vMultiPoints.end(), vLowerLeftLegOuter.begin(), vLowerLeftLegOuter.end());
+		vMultiPoints.insert(vMultiPoints.end(), vLowerRightLegOuter.begin(), vLowerRightLegOuter.end());
+
+		vMultiPoints.insert(vMultiPoints.end(), vLeftFootOuter.begin(), vLeftFootOuter.end());
+		vMultiPoints.insert(vMultiPoints.end(), vRightFootOuter.begin(), vRightFootOuter.end());
+
+		return vMultiPoints;
 	}
 }
 
