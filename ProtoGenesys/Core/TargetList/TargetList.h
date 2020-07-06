@@ -14,9 +14,9 @@ namespace ProtoGenesys
 
 		struct sTargetInfo
 		{
-			bool bIsPriority;
 			int iIndex;
 			float flDistance = FLT_MAX, flDamage = FLT_MAX, flFOV = FLT_MAX;
+			bool bIsPriority;
 		};
 
 		struct sAntiAimTargetInfo
