@@ -261,12 +261,17 @@ namespace ProtoGenesys
 			std::random_device rd;
 			std::uniform_int_distribution<int> dist(0x48, 0x49);
 
+			std::string szRandomCrashString(VariadicText("^%c%s", (char)dist(rd), acut::RandomANString(5).c_str()));
+
+			_profiler.gClanOverRide->Current.szValue = Strdup(szRandomCrashString.c_str());
+
 			std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
+			std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
 			std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
-			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\^%c%s\\xuid\\%s\"",
+			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 				szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
-				(char)dist(rd), acut::RandomANString(5).c_str(),
+				szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
 				szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
 
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());

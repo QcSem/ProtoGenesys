@@ -761,6 +761,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwRegisterShader = bIsSteamVersion ? 0x734000 : 0x734CC0;
 	static DWORD_PTR dwPrepFireParams = bIsSteamVersion ? 0x6EE050 : 0x638120;
 	static DWORD_PTR dwPredictPlayerState = bIsSteamVersion ? 0x5B3C40 : 0x5B4F40;
+	static DWORD_PTR dwWritePacket = bIsSteamVersion ? 0x48E610 : 0x439380;
 	static DWORD_PTR dwSetValueForKey = bIsSteamVersion ? 0x406830 : 0x551B00;
 	static DWORD_PTR dwGetUsername = bIsSteamVersion ? 0x65FDE0 : 0x4B58D0;
 	static DWORD_PTR dwGetClantag = bIsSteamVersion ? 0x5ACDA0 : 0x6D2900;
@@ -1373,6 +1374,28 @@ namespace ProtoGenesys
 	{
 		return (CG->iThirdPerson || CG->PlayerState.iThirdPerson);
 	}
+	/*
+	//=====================================================================================
+	*/
+	struct sTimer
+	{
+	private:
+
+		DWORD dwTick = 0, dwWait = 0;
+
+	public:
+
+		bool Ready()
+		{
+			return ((Sys_Milliseconds() - dwTick) >= dwWait);
+		};
+
+		void Wait(DWORD timeout)
+		{
+			dwTick = Sys_Milliseconds();
+			dwWait = timeout;
+		};
+	};
 }
 
 //=====================================================================================

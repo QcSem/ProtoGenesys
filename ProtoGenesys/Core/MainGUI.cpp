@@ -102,7 +102,7 @@ namespace ProtoGenesys
 				bWriteLog = false;
 			}
 
-			ImGui::SetNextWindowSize(ImVec2(589.0f, 672.0f));
+			ImGui::SetNextWindowSize(ImVec2(589.0f, 661.0f));
 			ImGui::Begin(acut::ToUpper(PROGRAM_NAME).c_str(), &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 			ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
 
@@ -111,7 +111,7 @@ namespace ProtoGenesys
 				bWriteLog = true;
 			}
 
-			ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 562.0f), true);
+			ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 551.0f), true);
 
 			switch (_profiler.gMenuTabs->Current.iValue)
 			{
@@ -371,6 +371,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gMultiPoint->szName, VariadicText("%d", _profiler.gMultiPoint->Current.iValue), &_profiler.gMultiPoint->Current.iValue, _profiler.gMultiPoint->Domain.iMin, _profiler.gMultiPoint->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				if (DrawOption(_profiler.gAimAngle->szName, VariadicText("%d degrees", _profiler.gAimAngle->Current.iValue), &_profiler.gAimAngle->Current.iValue, _profiler.gAimAngle->Domain.iMin, _profiler.gAimAngle->Domain.iMax, 1))
 				{
 					bWriteLog = true;
@@ -401,6 +406,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gFakeLag->szName, VariadicText("%d ms", _profiler.gFakeLag->Current.iValue), &_profiler.gFakeLag->Current.iValue, _profiler.gFakeLag->Domain.iMin, _profiler.gFakeLag->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				if (DrawOption(_profiler.gRecoilFactor->szName, VariadicText("%.1f", _profiler.gRecoilFactor->Current.flValue), &_profiler.gRecoilFactor->Current.flValue, _profiler.gRecoilFactor->Domain.flMin, _profiler.gRecoilFactor->Domain.flMax, 0.1f))
 				{
 					bWriteLog = true;
@@ -411,22 +421,7 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gAntiAimCustomPitch->szName, VariadicText("%.0f", _profiler.gAntiAimCustomPitch->Current.flValue), &_profiler.gAntiAimCustomPitch->Current.flValue, _profiler.gAntiAimCustomPitch->Domain.flMin, _profiler.gAntiAimCustomPitch->Domain.flMax, 1.0f))
-				{
-					bWriteLog = true;
-				} ImGui::NewLine();
-
-				if (DrawOption(_profiler.gAntiAimCustomYaw->szName, VariadicText("%.0f", _profiler.gAntiAimCustomYaw->Current.flValue), &_profiler.gAntiAimCustomYaw->Current.flValue, _profiler.gAntiAimCustomYaw->Domain.flMin, _profiler.gAntiAimCustomYaw->Domain.flMax, 1.0f))
-				{
-					bWriteLog = true;
-				} ImGui::NewLine();
-
 				if (DrawOption(_profiler.gFieldOfView->szName, VariadicText("%.0f", _profiler.gFieldOfView->Current.flValue), &_profiler.gFieldOfView->Current.flValue, _profiler.gFieldOfView->Domain.flMin, _profiler.gFieldOfView->Domain.flMax, 1.0f))
-				{
-					bWriteLog = true;
-				} ImGui::NewLine();
-
-				if (DrawOption(_profiler.gMultiPoint->szName, VariadicText("%d", _profiler.gMultiPoint->Current.iValue), &_profiler.gMultiPoint->Current.iValue, _profiler.gMultiPoint->Domain.iMin, _profiler.gMultiPoint->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -435,18 +430,17 @@ namespace ProtoGenesys
 				if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 				{
 					_profiler.gAimBone->Current.iValue = _profiler.gAimBone->Reset.iValue;
+					_profiler.gMultiPoint->Current.iValue = _profiler.gMultiPoint->Reset.iValue;
 					_profiler.gAimAngle->Current.iValue = _profiler.gAimAngle->Reset.iValue;
 					_profiler.gAimPower->Current.iValue = _profiler.gAimPower->Reset.iValue;
 					_profiler.gAutoAimTime->Current.iValue = _profiler.gAutoAimTime->Reset.iValue;
 					_profiler.gAutoAimDelay->Current.iValue = _profiler.gAutoAimDelay->Reset.iValue;
 					_profiler.gAutoZoomDelay->Current.iValue = _profiler.gAutoZoomDelay->Reset.iValue;
 					_profiler.gAutoFireDelay->Current.iValue = _profiler.gAutoFireDelay->Reset.iValue;
+					_profiler.gFakeLag->Current.iValue = _profiler.gFakeLag->Reset.iValue;
 					_profiler.gRecoilFactor->Current.flValue = _profiler.gRecoilFactor->Reset.flValue;
 					_profiler.gSpreadFactor->Current.flValue = _profiler.gSpreadFactor->Reset.flValue;
-					_profiler.gAntiAimCustomPitch->Current.flValue = _profiler.gAntiAimCustomPitch->Reset.flValue;
-					_profiler.gAntiAimCustomYaw->Current.flValue = _profiler.gAntiAimCustomYaw->Reset.flValue;
 					_profiler.gFieldOfView->Current.flValue = _profiler.gFieldOfView->Reset.flValue;
-					_profiler.gMultiPoint->Current.iValue = _profiler.gMultiPoint->Reset.iValue;
 
 					bWriteLog = true;
 				}

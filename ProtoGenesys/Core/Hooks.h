@@ -23,6 +23,17 @@ namespace ProtoGenesys
 			VEH_INDEX_NODELTA = 33833
 		};
 
+		enum eFakeLagState
+		{
+			FAKELAG_ON_READY,
+			FAKELAG_OFF_WAIT,
+			FAKELAG_OFF_READY,
+			FAKELAG_ON_WAIT
+		} iFakeLagState = FAKELAG_ON_READY;
+
+		sTimer FakeLagOn;
+		sTimer FakeLagOff;
+
 		bool bXuidOverride;
 		QWORD qwXuidOverride;
 
@@ -79,6 +90,7 @@ namespace ProtoGenesys
 		std::string Randomize(std::string name);
 		void RefreshFriends();
 		void SetThirdPerson();
+		void FakeLag();
 
 		StdThunk<tVectoredExceptionHandler, cHooks> _thunkVectoredExceptionHandler;
 	} extern _hooks;

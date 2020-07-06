@@ -12,6 +12,8 @@ namespace ProtoGenesys
 	{
 		Dereference(dwTacSSHandle) = 0x1;
 
+		FakeLag();
+
 		if (CG)
 		{
 			if (_profiler.gOrbitalVsat->Current.iValue && CG->PlayerState.iSatalliteTypeEnabled != 1)
@@ -687,6 +689,41 @@ namespace ProtoGenesys
 		std::string szDvarName = IsThirdPerson() ? "cg_fov_default_thirdperson" : "cg_fov";
 		FindVar(szDvarName)->Current.flValue = _profiler.gFieldOfView->Current.flValue;
 		CG->iThirdPerson = _profiler.gThirdPerson->Current.iValue;
+	}
+	/*
+	//=====================================================================================
+	*/
+	void cHooks::FakeLag()
+	{
+		if (iFakeLagState == FAKELAG_ON_READY)
+		{
+			if (FakeLagOn.Ready())
+			{
+				WriteMemoryProtected((LPVOID)dwWritePacket, (BYTE)0xC3);
+				iFakeLagState = FAKELAG_OFF_WAIT;
+			}
+		}
+
+		if (iFakeLagState == FAKELAG_OFF_WAIT)
+		{
+			FakeLagOff.Wait(_profiler.gFakeLag->Current.iValue);
+			iFakeLagState = FAKELAG_OFF_READY;
+		}
+
+		if (iFakeLagState == FAKELAG_OFF_READY)
+		{
+			if (FakeLagOff.Ready())
+			{
+				WriteMemoryProtected((LPVOID)dwWritePacket, (BYTE)0x81);
+				iFakeLagState = FAKELAG_ON_WAIT;
+			}
+		}
+
+		if (iFakeLagState == FAKELAG_ON_WAIT)
+		{
+			FakeLagOn.Wait(50);
+			iFakeLagState = FAKELAG_ON_READY;
+		}
 	}
 }
 
