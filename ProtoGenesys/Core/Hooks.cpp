@@ -12,8 +12,6 @@ namespace ProtoGenesys
 	{
 		Dereference(dwTacSSHandle) = 0x1;
 
-		FakeLag();
-
 		if (CG)
 		{
 			if (_profiler.gOrbitalVsat->Current.iValue && CG->PlayerState.iSatalliteTypeEnabled != 1)
@@ -206,8 +204,6 @@ namespace ProtoGenesys
 		DWORD dwProtection = PAGE_EXECUTE_READWRITE;
 
 		char szPatchStub[7] = { -117, -1, 85, -117, -20, -117, -55 };
-
-		_console.AddLog("%s patching ac hook...", PREFIX_LOG);
 
 		if (Dereference(dwTacSSCheck))
 		{

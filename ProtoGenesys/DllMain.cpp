@@ -297,6 +297,7 @@ void Init()
 	while (!oPresent)
 		oPresent = (tPresent)Dereference(ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2));
 
+	_console.AddLog("%s patching ac hook...", PREFIX_LOG);
 	_hooks.PatchAntiCheat();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
@@ -331,11 +332,8 @@ void Init()
 	fhAtoiCall1.SetHook();
 	fhAtoiCall2.SetHook();
 
-	while (Sys_Milliseconds() < 15000);
-
-	HookSteamAPI();
-
 	_console.AddLog("%s hooked all", PREFIX_LOG);
+	_console.Init();
 }
 
 //=====================================================================================
@@ -364,9 +362,6 @@ void Free()
 
 	fhAtoiCall1.UnHook();
 	fhAtoiCall2.UnHook();
-
-	if (fhGetUserSteamIDAsXUIDCall.IsHooked())
-		fhGetUserSteamIDAsXUIDCall.UnHook();
 
 	if (oGetSteamID)
 		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
@@ -438,7 +433,7 @@ void WINAPI SteamID(LPWSTR xuid)
 	_hooks.bXuidOverride = true;
 	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
 
-	fhGetUserSteamIDAsXUIDCall.SetHook();
+	HookSteamAPI();
 }
 
 //=====================================================================================

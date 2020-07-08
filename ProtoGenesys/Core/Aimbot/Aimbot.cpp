@@ -12,7 +12,7 @@ namespace ProtoGenesys
 	{
 		if (!_profiler.gSilentAim->Current.iValue && AimState.bTargetAcquired)
 		{
-			AimState.vAimAngles *= _profiler.gAimPower->Current.iValue / 100.0f;
+			AimState.vAimAngles *= _profiler.gAimPower->Current.flValue / 100.0f;
 
 			if (_profiler.gAutoAimTime->Current.iValue)
 			{
@@ -133,11 +133,6 @@ namespace ProtoGenesys
 
 			_mathematics.CalculateAimAngles(AimState.vAimPosition, vViewOrigin, AimState.vAimAngles);
 			_mathematics.CalculateAntiAimAngles(CG->CEntity[AimState.iTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
-		}
-
-		if (AimState.bAntiAimTargetAcquired)
-		{
-			_mathematics.CalculateAntiAimAngles(CG->CEntity[AimState.iAntiAimTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
 		}
 	}
 	/*

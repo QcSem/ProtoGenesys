@@ -53,14 +53,14 @@ namespace ProtoGenesys
 
 		else if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_REVERSE)
 		{
-			if (_aimBot.AimState.bAntiAimTargetAcquired || _aimBot.AimState.bIsAutoAiming)
+			if (_aimBot.AimState.bTargetAcquired || _aimBot.AimState.bAntiAimTargetAcquired)
 			{
 				vAntiAimAngles.x = _aimBot.AimState.vAntiAimAngles.x;
 			}
 
 			else
 			{
-				vAntiAimAngles.x = -40.0f - CG->vRefDefViewAngles.x;
+				vAntiAimAngles.x = _profiler.gShieldPitchShift->Current.flValue - CG->vRefDefViewAngles.x;
 
 				if (vAntiAimAngles.x > 85.0f) vAntiAimAngles.x = 85.0f;
 				if (vAntiAimAngles.x < -85.0f) vAntiAimAngles.x = -85.0f;
@@ -134,14 +134,14 @@ namespace ProtoGenesys
 
 		else if (_profiler.gAntiAimYaw->Current.iValue == cProfiler::ANTIAIM_YAW_REVERSE)
 		{
-			if (_aimBot.AimState.bAntiAimTargetAcquired || _aimBot.AimState.bIsAutoAiming)
+			if (_aimBot.AimState.bTargetAcquired || _aimBot.AimState.bAntiAimTargetAcquired)
 			{
 				vAntiAimAngles.y = _aimBot.AimState.vAntiAimAngles.y;
 			}
 
 			else
 			{
-				vAntiAimAngles.y = CG->vRefDefViewAngles.y - 170.0f;
+				vAntiAimAngles.y = CG->vRefDefViewAngles.y - 165.0f;
 
 				while (vAntiAimAngles.y > 180.0f) vAntiAimAngles.y -= 360.0f;
 				while (vAntiAimAngles.y < -180.0f) vAntiAimAngles.y += 360.0f;
