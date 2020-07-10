@@ -117,7 +117,9 @@ namespace ProtoGenesys
 			else if (CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
 			{
 				EntityList[i].bW2SSuccess = _mathematics.WorldToScreen(EntityList[i].vBones3D[vBones[BONE_HEAD].first], EntityList[i].vCenter2D);
-				continue;
+
+				if (EntityIsTeammate(&CG->CEntity[i]))
+					continue;
 			}
 
 			else
@@ -210,23 +212,21 @@ namespace ProtoGenesys
 				EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
 			}
 
-			if (i < MAX_CLIENTS)
+			if (Priorities[i].bIsIgnored)
+				continue;
+
+			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.flValue)
 			{
-				if (Priorities[i].bIsIgnored)
-					continue;
-
-				if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.flValue)
-				{
-					TargetInfo.iIndex = i;
-
-					TargetInfo.flDistance = EntityList[i].flDistance;
-					TargetInfo.flDamage = EntityList[i].flDamage;
-					TargetInfo.flFOV = EntityList[i].flFOV;
-
+				if (i < MAX_CLIENTS)
 					TargetInfo.bIsPriority = Priorities[i].bIsPrioritized;
 
-					vTargetInfo.push_back(TargetInfo);
-				}
+				TargetInfo.iIndex = i;
+
+				TargetInfo.flDistance = EntityList[i].flDistance;
+				TargetInfo.flDamage = EntityList[i].flDamage;
+				TargetInfo.flFOV = EntityList[i].flFOV;
+
+				vTargetInfo.push_back(TargetInfo);
 			}
 		}
 
@@ -352,8 +352,8 @@ namespace ProtoGenesys
 			{
 				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage);
 
-				DamageInfo.vPosition = bones3d[Bone.first];
 				DamageInfo.iBoneIndex = Bone.first;
+				DamageInfo.vPosition = bones3d[Bone.first];
 
 				vDamageInfo.push_back(DamageInfo);
 			}
@@ -375,8 +375,8 @@ namespace ProtoGenesys
 			{
 				if (IsVisibleInternal(entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage))
 				{
-					DamageInfo.vPosition = bones3d[Bone.first];
 					DamageInfo.iBoneIndex = Bone.first;
+					DamageInfo.vPosition = bones3d[Bone.first];
 
 					vDamageInfoFinal.push_back(DamageInfo);
 
@@ -389,10 +389,10 @@ namespace ProtoGenesys
 		{
 			std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
 
-			position = vDamageInfoFinal.front().vPosition;
-			index = vDamageInfoFinal.front().iBoneIndex;
-
 			if (damage) *damage = vDamageInfoFinal.front().flDamage;
+
+			index = vDamageInfoFinal.front().iBoneIndex;
+			position = vDamageInfoFinal.front().vPosition;
 
 			vDamageInfoFinal.clear();
 		}
@@ -440,6 +440,7 @@ namespace ProtoGenesys
 				if (IsVisibleInternal(entity, multipoints[i], autowall, &DamageInfo.flDamage))
 				{
 					DamageInfo.vPosition = multipoints[i];
+
 					vDamageInfoFinal.push_back(DamageInfo);
 
 					bReturn = true;
@@ -451,9 +452,9 @@ namespace ProtoGenesys
 		{
 			std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
 
-			position = vDamageInfoFinal.front().vPosition;
-
 			if (damage) *damage = vDamageInfoFinal.front().flDamage;
+
+			position = vDamageInfoFinal.front().vPosition;
 
 			vDamageInfoFinal.clear();
 		}
