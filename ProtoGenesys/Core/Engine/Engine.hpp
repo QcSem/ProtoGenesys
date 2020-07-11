@@ -561,8 +561,9 @@ namespace ProtoGenesys
 		int iButtons[2];
 		int iViewAngles[3];
 		char _0x18[0xC];
-		char szMove[3];
-		char _0x27[0x15];
+		char szForwardMove;
+		char szRightMove;
+		char _0x26[0x16];
 	};
 	/*
 	//=====================================================================================

@@ -179,22 +179,15 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cMathematics::ClampMove(char value[])
+	char cMathematics::ClampMove(char value)
 	{
-		while (value[0] > 127)
-			value[0] = 127;
+		if (value < -128)
+			return -128;
 
-		while (value[0] < -128)
-			value[0] = -128;
+		if (value > 127)
+			return 127;
 
-		while (value[1] > 127)
-			value[1] = 127;
-
-		while (value[1] < -128)
-			value[1] = -128;
-
-		if (value[2] != 0)
-			value[2] = 0;
+		return value;
 	}
 	/*
 	//=====================================================================================
@@ -255,10 +248,8 @@ namespace ProtoGenesys
 	{
 		float flDelta = DegreesToRadians(yaw - oldyaw);
 
-		usercmd->szMove[0] = (char)(cosf(flDelta) * forward - sinf(flDelta) * right);
-		usercmd->szMove[1] = (char)(sinf(flDelta) * forward + cosf(flDelta) * right);
-
-		ClampMove(usercmd->szMove);
+		usercmd->szForwardMove = ClampMove((char)(cosf(flDelta) * forward - sinf(flDelta) * right));
+		usercmd->szRightMove = ClampMove((char)(sinf(flDelta) * forward + cosf(flDelta) * right));
 	}
 	/*
 	//=====================================================================================
