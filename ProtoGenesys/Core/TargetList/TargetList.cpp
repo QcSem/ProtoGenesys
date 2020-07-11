@@ -212,8 +212,9 @@ namespace ProtoGenesys
 				EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
 			}
 
-			if (Priorities[i].bIsIgnored)
-				continue;
+			if (i < MAX_CLIENTS)
+				if (Priorities[i].bIsIgnored)
+					continue;
 
 			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.flValue)
 			{
