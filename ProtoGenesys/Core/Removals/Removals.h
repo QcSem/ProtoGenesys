@@ -14,6 +14,7 @@ namespace ProtoGenesys
 
 		void RecoilCompensation();
 		void SpreadCompensation(sUserCmd* usercmd, int servertime);
+		void FlinchCompensation(sPlayerState* playerstate);
 		void FirstBulletFix();
 	} extern _removals;
 }

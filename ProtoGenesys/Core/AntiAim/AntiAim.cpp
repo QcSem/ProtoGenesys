@@ -60,7 +60,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				vAntiAimAngles.x = _profiler.gShieldPitchShift->Current.flValue - CG->vRefDefViewAngles.x;
+				vAntiAimAngles.x = -40.0f - CG->vRefDefViewAngles.x;
 
 				if (vAntiAimAngles.x > 85.0f) vAntiAimAngles.x = 85.0f;
 				if (vAntiAimAngles.x < -85.0f) vAntiAimAngles.x = -85.0f;

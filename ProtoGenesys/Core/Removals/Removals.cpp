@@ -50,6 +50,13 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cRemovals::FlinchCompensation(sPlayerState* playerstate)
+	{
+		playerstate->iDamageCount = (int)(playerstate->iDamageCount * _profiler.gFlinchFactor->Current.flValue);
+	}
+	/*
+	//=====================================================================================
+	*/
 	void cRemovals::FirstBulletFix()
 	{
 		ImVec3 vAngles;

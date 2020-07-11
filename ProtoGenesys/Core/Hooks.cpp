@@ -422,11 +422,12 @@ namespace ProtoGenesys
 	*/
 	void cHooks::TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate)
 	{
-		if (_profiler.gNoFlinch->Current.iValue)
+		if (CG)
 		{
-			playerstate->iDamageYaw = 0xFF;
-			playerstate->iDamagePitch = 0xFF;
-			playerstate->iDamageCount = 0x0;
+			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
+			{
+				_removals.FlinchCompensation(playerstate);
+			}
 		}
 	}
 	/*

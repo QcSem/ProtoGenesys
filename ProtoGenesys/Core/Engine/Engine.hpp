@@ -28,6 +28,7 @@
 #define M_PI_DOUBLE ((float)M_PI*2.0f)
 
 #define ByteToFloat(a) ((float)(a)/255.0f)
+#define FloatToByte(a) ((BYTE)(a)*255.0f)
 #define DwordFromBytes(a) (((BYTE)(a)[0])|((BYTE)(a)[1]<<8)|((BYTE)(a)[2]<<16)|((BYTE)(a)[3]<<24))
 #define GetSign(a) ((a)?((*(int*)&(a)>>31)|1):0)
 #define DegreesToRadians(a) ((a)*((float)M_PI/180.0f))

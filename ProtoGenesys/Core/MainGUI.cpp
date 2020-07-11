@@ -318,11 +318,6 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gNoFlinch->szName, _profiler.gNoFlinch->szItems[_profiler.gNoFlinch->Current.iValue], &_profiler.gNoFlinch->Current.iValue, _profiler.gNoFlinch->Domain.iMin, _profiler.gNoFlinch->Domain.iMax, 1))
-				{
-					bWriteLog = true;
-				} ImGui::NewLine();
-
 				if (DrawOption(_profiler.gBoneScanPriorities->szName, _profiler.gBoneScanPriorities->szItems[_profiler.gBoneScanPriorities->Current.iValue], &_profiler.gBoneScanPriorities->Current.iValue, _profiler.gBoneScanPriorities->Domain.iMin, _profiler.gBoneScanPriorities->Domain.iMax, 1))
 				{
 					bWriteLog = true;
@@ -353,7 +348,6 @@ namespace ProtoGenesys
 					_profiler.gIdStealer->Current.iValue = _profiler.gIdStealer->Reset.iValue;
 					_profiler.gAirStuckToggle->Current.iValue = _profiler.gAirStuckToggle->Reset.iValue;
 					_profiler.gReloadCancel->Current.iValue = _profiler.gReloadCancel->Reset.iValue;
-					_profiler.gNoFlinch->Current.iValue = _profiler.gNoFlinch->Reset.iValue;
 					_profiler.gBoneScanPriorities->Current.iValue = _profiler.gBoneScanPriorities->Reset.iValue;
 					_profiler.gBoneScanRiotShielders->Current.iValue = _profiler.gBoneScanRiotShielders->Reset.iValue;
 					_profiler.gIdSpam->Current.iValue = _profiler.gIdSpam->Reset.iValue;
@@ -372,11 +366,6 @@ namespace ProtoGenesys
 				} ImGui::NewLine();
 
 				if (DrawOption(_profiler.gAimAngle->szName, VariadicText("%.0f degrees", _profiler.gAimAngle->Current.flValue), &_profiler.gAimAngle->Current.flValue, _profiler.gAimAngle->Domain.flMin, _profiler.gAimAngle->Domain.flMax, 1.0f))
-				{
-					bWriteLog = true;
-				} ImGui::NewLine();
-
-				if (DrawOption(_profiler.gShieldPitchShift->szName, VariadicText("%.0f degrees", _profiler.gShieldPitchShift->Current.flValue), &_profiler.gShieldPitchShift->Current.flValue, _profiler.gShieldPitchShift->Domain.flMin, _profiler.gShieldPitchShift->Domain.flMax, 1.0f))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -416,6 +405,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gFlinchFactor->szName, VariadicText("%.1f", _profiler.gFlinchFactor->Current.flValue), &_profiler.gFlinchFactor->Current.flValue, _profiler.gFlinchFactor->Domain.flMin, _profiler.gFlinchFactor->Domain.flMax, 0.1f))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				if (DrawOption(_profiler.gFieldOfView->szName, VariadicText("%.0f", _profiler.gFieldOfView->Current.flValue), &_profiler.gFieldOfView->Current.flValue, _profiler.gFieldOfView->Domain.flMin, _profiler.gFieldOfView->Domain.flMax, 1.0f))
 				{
 					bWriteLog = true;
@@ -431,7 +425,6 @@ namespace ProtoGenesys
 				{
 					_profiler.gAimBone->Current.iValue = _profiler.gAimBone->Reset.iValue;
 					_profiler.gAimAngle->Current.flValue = _profiler.gAimAngle->Reset.flValue;
-					_profiler.gShieldPitchShift->Current.flValue = _profiler.gShieldPitchShift->Reset.flValue;
 					_profiler.gAimPower->Current.flValue = _profiler.gAimPower->Reset.flValue;
 					_profiler.gAutoAimTime->Current.iValue = _profiler.gAutoAimTime->Reset.iValue;
 					_profiler.gAutoAimDelay->Current.iValue = _profiler.gAutoAimDelay->Reset.iValue;
@@ -439,6 +432,7 @@ namespace ProtoGenesys
 					_profiler.gAutoFireDelay->Current.iValue = _profiler.gAutoFireDelay->Reset.iValue;
 					_profiler.gRecoilFactor->Current.flValue = _profiler.gRecoilFactor->Reset.flValue;
 					_profiler.gSpreadFactor->Current.flValue = _profiler.gSpreadFactor->Reset.flValue;
+					_profiler.gFlinchFactor->Current.flValue = _profiler.gFlinchFactor->Reset.flValue;
 					_profiler.gFieldOfView->Current.flValue = _profiler.gFieldOfView->Reset.flValue;
 					_profiler.gMultiPoint->Current.iValue = _profiler.gMultiPoint->Reset.iValue;
 
