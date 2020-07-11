@@ -46,7 +46,7 @@ namespace ProtoGenesys
 				usercmd->iViewAngles[0] += AngleToShort(AimState.vAimAngles.x);
 				usercmd->iViewAngles[1] += AngleToShort(AimState.vAimAngles.y);
 
-				_mathematics.MovementFix(usercmd, ShortToAngle(usercmd->iViewAngles[1]), flOldYaw, usercmd->szMove[0], usercmd->szMove[1]);
+				_mathematics.MovementFix(usercmd, ShortToAngle(usercmd->iViewAngles[1]), flOldYaw, usercmd->szForwardMove, usercmd->szRightMove);
 			}
 
 			if (AimState.iCurrentZoomDelay == _profiler.gAutoZoomDelay->Current.iValue)
