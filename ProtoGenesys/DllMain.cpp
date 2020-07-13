@@ -18,7 +18,8 @@ using namespace ProtoGenesys;
 
 void Init();
 void Free();
-void HookSteamAPI();
+void HookSteamUserAPI();
+void HookSteamFriendsAPI();
 void WINAPI SteamID(LPWSTR xuid);
 
 //=====================================================================================
@@ -365,7 +366,7 @@ void Free()
 
 	if (oGetSteamID)
 		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
-
+	
 	if (oGetPersonaName)
 		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetPersonaName, 0);
 
@@ -383,7 +384,7 @@ void Free()
 
 	if (oGetFriendGamePlayed)
 		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendGamePlayed, 8);
-
+	
 	_mainGui._device->Release();
 	_mainGui._deviceContext->Release();
 
@@ -396,7 +397,7 @@ void Free()
 
 //=====================================================================================
 
-void HookSteamAPI()
+void HookSteamUserAPI()
 {
 	_hooks.RefreshFriends();
 
@@ -405,17 +406,28 @@ void HookSteamAPI()
 
 	while (!_hooks.GetSteamUser)
 		_hooks.GetSteamUser = (cHooks::tSteamUser)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamUser");
+	
+	while (!_hooks._steamUser)
+		_hooks._steamUser = _hooks.GetSteamUser();
+	
+	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
+}
+
+//=====================================================================================
+
+void HookSteamFriendsAPI()
+{
+	_hooks.RefreshFriends();
+
+	while (!hSteamAPI.lpBaseOfDll || !hSteamAPI.EntryPoint || !hSteamAPI.SizeOfImage)
+		hSteamAPI = GetModuleInfo("steam_api.dll");
 
 	while (!_hooks.GetSteamFriends)
 		_hooks.GetSteamFriends = (cHooks::tSteamFriends)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamFriends");
-
-	while (!_hooks._steamUser)
-		_hooks._steamUser = _hooks.GetSteamUser();
-
+	
 	while (!_hooks._steamFriends)
 		_hooks._steamFriends = _hooks.GetSteamFriends();
-
-	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
+	
 	oGetPersonaName = (tGetPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetPersonaName, 0);
 	oGetFriendCount = (tGetFriendCount)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendCount, 3);
 	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendByIndex, 4);
@@ -433,7 +445,8 @@ void WINAPI SteamID(LPWSTR xuid)
 	_hooks.bXuidOverride = true;
 	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
 
-	HookSteamAPI();
+	HookSteamUserAPI();
+	HookSteamFriendsAPI();
 }
 
 //=====================================================================================

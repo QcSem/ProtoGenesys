@@ -170,6 +170,18 @@ namespace acut
 	/*
 	//=====================================================================================
 	*/
+	static std::string FindAndEraseString(std::string text, std::string find)
+	{
+		size_t iPosition;
+
+		while ((iPosition = ToLower(text).find(ToLower(find))) != std::string::npos)
+			text.erase(iPosition, find.length());
+
+		return text;
+	}
+	/*
+	//=====================================================================================
+	*/
 	static std::vector<std::string> SplitStringWithDelimiter(std::string text, std::string delimiter)
 	{
 		std::vector<std::string> vStringParts;

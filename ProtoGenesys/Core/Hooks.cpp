@@ -39,6 +39,7 @@ namespace ProtoGenesys
 			if (ExceptionInfo->ContextRecord->Eip == dwSetValueForKey)
 			{
 				std::string szKey(Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0x8)));
+				std::string szValue(Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)));
 
 				if (szKey.find("name") != std::string::npos)
 				{
@@ -58,9 +59,6 @@ namespace ProtoGenesys
 
 				if (szKey.find("xuid") != std::string::npos)
 				{
-					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
-
-					Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str();
 					PageGuardAddress(dwGetIntPlayerStatInternal);
 				}
 
@@ -71,15 +69,8 @@ namespace ProtoGenesys
 
 				if (szKey.find("steamid") != std::string::npos)
 				{
-					char szSteamID[0x11] = { NULL };
-					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
-					Int64ToString(strtoll(szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str(), NULL, 0x10), szSteamID);
-					Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szSteamID;
 				}
-
-				std::string szValue(Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)));
-				_console.AddLog("%s changed: %s to: %s", PREFIX_LOG, szKey.c_str(), szValue.c_str());
 			}
 
 			return EXCEPTION_CONTINUE_EXECUTION;
@@ -640,9 +631,7 @@ namespace ProtoGenesys
 
 		if (!Dereference(dwConnectionState))
 		{
-			static int iTimer = Sys_Milliseconds();
-
-			if (Sys_Milliseconds() - iTimer > 500)
+			if (RandomizeTimer.Ready())
 			{
 				std::random_device Device;
 				std::uniform_int_distribution<int> RandomExperience(0, 1249100), RandomPrestige(0, 15), RandomColor(0, 9);
@@ -652,7 +641,7 @@ namespace ProtoGenesys
 				Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName ^%i", RandomColor(Device)));
 				szNameOverride = acut::RandomANString(0);
 
-				iTimer = Sys_Milliseconds();
+				RandomizeTimer.Wait(500);
 			}
 		}
 
@@ -694,7 +683,7 @@ namespace ProtoGenesys
 	{
 		if (iFakeLagState == FAKELAG_ON_READY)
 		{
-			if (FakeLagOn.Ready())
+			if (FakeLagOnTimer.Ready())
 			{
 				WriteMemoryProtected((LPVOID)dwWritePacket, (BYTE)0xC3);
 				iFakeLagState = FAKELAG_OFF_WAIT;
@@ -703,13 +692,13 @@ namespace ProtoGenesys
 
 		if (iFakeLagState == FAKELAG_OFF_WAIT)
 		{
-			FakeLagOff.Wait(_profiler.gFakeLag->Current.iValue);
+			FakeLagOffTimer.Wait(_profiler.gFakeLag->Current.iValue);
 			iFakeLagState = FAKELAG_OFF_READY;
 		}
 
 		if (iFakeLagState == FAKELAG_OFF_READY)
 		{
-			if (FakeLagOff.Ready())
+			if (FakeLagOffTimer.Ready())
 			{
 				WriteMemoryProtected((LPVOID)dwWritePacket, (BYTE)0x81);
 				iFakeLagState = FAKELAG_ON_WAIT;
@@ -718,7 +707,7 @@ namespace ProtoGenesys
 
 		if (iFakeLagState == FAKELAG_ON_WAIT)
 		{
-			FakeLagOn.Wait(50);
+			FakeLagOnTimer.Wait(50);
 			iFakeLagState = FAKELAG_ON_READY;
 		}
 	}

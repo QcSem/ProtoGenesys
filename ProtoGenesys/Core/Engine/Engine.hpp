@@ -825,6 +825,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwHasPerk = bIsSteamVersion ? 0x42BD20 : 0x530C10;
 	static DWORD_PTR dwGetSurfacePenetrationDepth = bIsSteamVersion ? 0x572480 : 0x622CE0;
 	static DWORD_PTR dwAdvanceTrace = bIsSteamVersion ? 0x5B0F60 : 0x703090;
+	static DWORD_PTR dwPenetrationCheck = bIsSteamVersion ? 0x7E0370 : 0x7E0C00;
 	static DWORD_PTR dwLocationalTrace = bIsSteamVersion ? 0x6C6C00 : 0x50B870;
 	static DWORD_PTR dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
 	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
@@ -903,9 +904,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD Sys_Milliseconds()
+	FORCEINLINE int Sys_Milliseconds()
 	{
-		return VariadicCall<DWORD>(dwSysMilliseconds);
+		return VariadicCall<int>(dwSysMilliseconds);
 	}
 	/*
 	//=====================================================================================
@@ -1137,6 +1138,13 @@ namespace ProtoGenesys
 	FORCEINLINE bool AdvanceTrace(sBulletFireParams* fireparams, sBulletTraceResults* traceresults, float distance)
 	{
 		return VariadicCall<bool>(dwAdvanceTrace, fireparams, traceresults, distance);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE bool PenetrationCheck(sBulletFireParams* fireparams)
+	{
+		return VariadicCall<bool>(dwPenetrationCheck, 0, fireparams);
 	}
 	/*
 	//=====================================================================================
@@ -1383,19 +1391,19 @@ namespace ProtoGenesys
 	{
 	private:
 
-		DWORD dwTick = 0, dwWait = 0;
+		int iTick = 0, iWait = 0;
 
 	public:
 
 		bool Ready()
 		{
-			return ((Sys_Milliseconds() - dwTick) >= dwWait);
+			return ((Sys_Milliseconds() - iTick) >= iWait);
 		};
 
-		void Wait(DWORD timeout)
+		void Wait(int timeout)
 		{
-			dwTick = Sys_Milliseconds();
-			dwWait = timeout;
+			iTick = Sys_Milliseconds();
+			iWait = timeout;
 		};
 	};
 }

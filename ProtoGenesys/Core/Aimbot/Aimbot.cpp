@@ -149,7 +149,7 @@ namespace ProtoGenesys
 				return IsPlayerReloading();
 			};
 
-			auto CurrentAmmoEqualToClipSize = [&](int weapon)
+			auto AmmoAdded = [&](int weapon)
 			{
 				return (WeaponAmmoAvailable() == GetClipSize(weapon) || !GetAmmoNotInClip(weapon));
 			};
@@ -168,7 +168,7 @@ namespace ProtoGenesys
 				iReloadedWeapon = 0;
 			}
 
-			if (int iCurrentWeapon{ GetViewmodelWeaponIndex() }; iCurrentWeapon && IsReloading() && CurrentAmmoEqualToClipSize(iCurrentWeapon))
+			if (int iCurrentWeapon{ GetViewmodelWeaponIndex() }; iCurrentWeapon && IsReloading() && AmmoAdded(iCurrentWeapon))
 			{
 				iReloadedWeapon = iCurrentWeapon;
 

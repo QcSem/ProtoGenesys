@@ -31,8 +31,7 @@ namespace ProtoGenesys
 			FAKELAG_ON_WAIT
 		} iFakeLagState = FAKELAG_ON_READY;
 
-		sTimer FakeLagOn;
-		sTimer FakeLagOff;
+		sTimer RandomizeTimer, FakeLagOnTimer, FakeLagOffTimer;
 
 		bool bXuidOverride;
 		QWORD qwXuidOverride;

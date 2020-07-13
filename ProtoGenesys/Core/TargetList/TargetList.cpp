@@ -27,7 +27,7 @@ namespace ProtoGenesys
 			EntityList[i].bIsValid = false;
 
 			EntityList[i].flDistance = FLT_MAX;
-			EntityList[i].flDamage = 0.0f;
+			EntityList[i].flDamage = -FLT_MAX;
 			EntityList[i].flFOV = FLT_MAX;
 
 			if (!EntityIsValid(&CG->CEntity[i]))

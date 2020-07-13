@@ -89,6 +89,9 @@ namespace ProtoGenesys
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
 					return 0.0f;
 
+				if (!PenetrationCheck(&FP_Enter))
+					return 0.0f;
+
 				bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TR_Enter.iSurfaceType);
 
 				if (HitRiotshield(&TR_Enter))
