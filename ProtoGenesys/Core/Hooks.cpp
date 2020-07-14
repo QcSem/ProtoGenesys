@@ -38,8 +38,7 @@ namespace ProtoGenesys
 
 			if (ExceptionInfo->ContextRecord->Eip == dwSetValueForKey)
 			{
-				std::string szKey(Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0x8)));
-				std::string szValue(Dereference((LPSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)));
+				std::string szKey(Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0x8)));
 
 				if (szKey.find("name") != std::string::npos)
 				{
@@ -59,6 +58,9 @@ namespace ProtoGenesys
 
 				if (szKey.find("xuid") != std::string::npos)
 				{
+					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
+
+					Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str();
 					PageGuardAddress(dwGetIntPlayerStatInternal);
 				}
 
@@ -69,8 +71,15 @@ namespace ProtoGenesys
 
 				if (szKey.find("steamid") != std::string::npos)
 				{
+					char szSteamID[0x11] = { NULL };
+					std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
 
+					Int64ToString(strtoll(szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str(), NULL, 0x10), szSteamID);
+					Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)) = szSteamID;
 				}
+
+				std::string szValue(Dereference((LPCSTR)(ExceptionInfo->ContextRecord->Esp + 0xC)));
+				_console.AddLog("%s changed: %s to: %s", PREFIX_LOG, szKey.c_str(), szValue.c_str());
 			}
 
 			return EXCEPTION_CONTINUE_EXECUTION;
