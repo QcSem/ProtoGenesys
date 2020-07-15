@@ -47,18 +47,18 @@ namespace ProtoGenesys
 		if (bEnterHit)
 		{
 			if (iPenetrateType <= PENETRATE_TYPE_NONE)
-				return 0.0f;
+				return -FLT_MAX;
 
 			if (HitRiotshield(&TR_Enter))
-				return 0.0f;
+				return -FLT_MAX;
 
 			if (_profiler.gAntiKillTeamMates->Current.iValue)
 				if (HitTeammate(&TR_Enter.Trace))
-					return 0.0f;
+					return -FLT_MAX;
 
 			if (_profiler.gAntiKillIgnored->Current.iValue)
 				if (HitIgnored(&TR_Enter.Trace))
-					return 0.0f;
+					return -FLT_MAX;
 
 			if (GetTraceHitType(&TR_Enter.Trace) == entity->NextEntityState.iEntityNum)
 				return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
@@ -78,7 +78,7 @@ namespace ProtoGenesys
 					flEnterDepth *= FindVar("perk_bulletPenetrationMultiplier")->Current.flValue;
 
 				if (flEnterDepth <= 0.0)
-					return 0.0f;
+					return -FLT_MAX;
 
 				vHitPos = TR_Enter.vHitPos;
 				vTemp = vHitPos - FP_Enter.vStart;
@@ -87,23 +87,23 @@ namespace ProtoGenesys
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 				
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
-					return 0.0f;
+					return -FLT_MAX;
 
 				bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TR_Enter.iSurfaceType);
 
 				if (!PenetrationCheck(&FP_Enter))
-					return 0.0f;
+					return -FLT_MAX;
 
 				if (HitRiotshield(&TR_Enter))
-					return 0.0f;
+					return -FLT_MAX;
 
 				if (_profiler.gAntiKillTeamMates->Current.iValue)
 					if (HitTeammate(&TR_Enter.Trace))
-						return 0.0f;
+						return -FLT_MAX;
 
 				if (_profiler.gAntiKillIgnored->Current.iValue)
 					if (HitIgnored(&TR_Enter.Trace))
-						return 0.0f;
+						return -FLT_MAX;
 
 				CopyMemory(&FP_Exit, &FP_Enter, sizeof(sBulletFireParams));
 				CopyMemory(&TR_Exit, &TR_Enter, sizeof(sBulletTraceResults));
@@ -120,15 +120,15 @@ namespace ProtoGenesys
 				bool bStaticModel = bExitHit && TR_Exit.Trace.bAllSolid || TR_Enter.Trace.bStartSolid && TR_Exit.Trace.bStartSolid;
 
 				if (HitRiotshield(&TR_Exit))
-					return 0.0f;
+					return -FLT_MAX;
 
 				if (_profiler.gAntiKillTeamMates->Current.iValue)
 					if (HitTeammate(&TR_Exit.Trace))
-						return 0.0f;
+						return -FLT_MAX;
 
 				if (_profiler.gAntiKillIgnored->Current.iValue)
 					if (HitIgnored(&TR_Exit.Trace))
-						return 0.0f;
+						return -FLT_MAX;
 
 				if (bExitHit || bStaticModel)
 				{
@@ -149,13 +149,13 @@ namespace ProtoGenesys
 						flEnterDepth = min(flEnterDepth, flExitDepth);
 
 						if (flEnterDepth <= 0.0f)
-							return 0.0f;
+							return -FLT_MAX;
 					}
 
 					FP_Enter.flPower -= flSurfaceDepth / flEnterDepth;
 
 					if (FP_Enter.flPower <= 0.0f)
-						return 0.0f;
+						return -FLT_MAX;
 
 					if (!bStaticModel && iWeaponType == WEAPTYPE_BULLET)
 					{
@@ -181,7 +181,7 @@ namespace ProtoGenesys
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 			}
 
-			return 0.0f;
+			return -FLT_MAX;
 		}
 
 		return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
@@ -217,12 +217,12 @@ namespace ProtoGenesys
 		BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
 
 		if (HitRiotshield(&TR_Enter))
-			return 0.0f;
+			return -FLT_MAX;
 
 		if (GetTraceHitType(&TR_Enter.Trace) == entity->NextEntityState.iEntityNum || TR_Enter.Trace.flFraction == 1.0f)
 			return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 
-		return 0.0f;
+		return -FLT_MAX;
 	}
 	/*
 	//=====================================================================================

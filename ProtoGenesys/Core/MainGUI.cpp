@@ -102,7 +102,7 @@ namespace ProtoGenesys
 				bWriteLog = false;
 			}
 
-			ImGui::SetNextWindowSize(ImVec2(589.0f, 661.0f));
+			ImGui::SetNextWindowSize(ImVec2(589.0f, 672.0f));
 			ImGui::Begin(acut::ToUpper(PROGRAM_NAME).c_str(), &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 			ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
 
@@ -111,7 +111,7 @@ namespace ProtoGenesys
 				bWriteLog = true;
 			}
 
-			ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 551.0f), true);
+			ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 562.0f), true);
 
 			switch (_profiler.gMenuTabs->Current.iValue)
 			{
@@ -328,7 +328,7 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gIdSpam->szName, _profiler.gIdSpam->szItems[_profiler.gIdSpam->Current.iValue], &_profiler.gIdSpam->Current.iValue, _profiler.gIdSpam->Domain.iMin, _profiler.gIdSpam->Domain.iMax, 1))
+				if (DrawOption(_profiler.gNameSpam->szName, _profiler.gNameSpam->szItems[_profiler.gNameSpam->Current.iValue], &_profiler.gNameSpam->Current.iValue, _profiler.gNameSpam->Domain.iMin, _profiler.gNameSpam->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -350,7 +350,7 @@ namespace ProtoGenesys
 					_profiler.gReloadCancel->Current.iValue = _profiler.gReloadCancel->Reset.iValue;
 					_profiler.gBoneScanPriorities->Current.iValue = _profiler.gBoneScanPriorities->Reset.iValue;
 					_profiler.gBoneScanRiotShielders->Current.iValue = _profiler.gBoneScanRiotShielders->Reset.iValue;
-					_profiler.gIdSpam->Current.iValue = _profiler.gIdSpam->Reset.iValue;
+					_profiler.gNameSpam->Current.iValue = _profiler.gNameSpam->Reset.iValue;
 					_profiler.gTrickShot->Current.iValue = _profiler.gTrickShot->Reset.iValue;
 
 					bWriteLog = true;
@@ -395,6 +395,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gFakeLag->szName, VariadicText("%d ms", _profiler.gFakeLag->Current.iValue), &_profiler.gFakeLag->Current.iValue, _profiler.gFakeLag->Domain.iMin, _profiler.gFakeLag->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				if (DrawOption(_profiler.gRecoilFactor->szName, VariadicText("%.1f", _profiler.gRecoilFactor->Current.flValue), &_profiler.gRecoilFactor->Current.flValue, _profiler.gRecoilFactor->Domain.flMin, _profiler.gRecoilFactor->Domain.flMax, 0.1f))
 				{
 					bWriteLog = true;
@@ -430,6 +435,7 @@ namespace ProtoGenesys
 					_profiler.gAutoAimDelay->Current.iValue = _profiler.gAutoAimDelay->Reset.iValue;
 					_profiler.gAutoZoomDelay->Current.iValue = _profiler.gAutoZoomDelay->Reset.iValue;
 					_profiler.gAutoFireDelay->Current.iValue = _profiler.gAutoFireDelay->Reset.iValue;
+					_profiler.gFakeLag->Current.iValue = _profiler.gFakeLag->Reset.iValue;
 					_profiler.gRecoilFactor->Current.flValue = _profiler.gRecoilFactor->Reset.flValue;
 					_profiler.gSpreadFactor->Current.flValue = _profiler.gSpreadFactor->Reset.flValue;
 					_profiler.gFlinchFactor->Current.flValue = _profiler.gFlinchFactor->Reset.flValue;

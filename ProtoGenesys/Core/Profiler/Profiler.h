@@ -237,7 +237,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gReloadCancel = std::make_shared<sCvar>("Reload Cancel", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gBoneScanPriorities = std::make_shared<sCvar>("Bonescan Priorities", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gBoneScanRiotShielders = std::make_shared<sCvar>("Bonescan Riotshielders", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gIdSpam = std::make_shared<sCvar>("ID Spam", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gNameSpam = std::make_shared<sCvar>("Name Spam", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 
 		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HELMET, BONE_HELMET, BONE_MAX - 1);
@@ -247,12 +247,12 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gAutoAimDelay = std::make_shared<sCvar>("Autoaim Delay", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoZoomDelay = std::make_shared<sCvar>("Autozoom Delay", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoFireDelay = std::make_shared<sCvar>("Autofire Delay", std::vector<std::string>(), 0, 0, 1000);
+		std::shared_ptr<sCvar> gFakeLag = std::make_shared<sCvar>("Fake Lag", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gRecoilFactor = std::make_shared<sCvar>("Recoil Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gSpreadFactor = std::make_shared<sCvar>("Spread Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gFlinchFactor = std::make_shared<sCvar>("Flinch Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gFieldOfView = std::make_shared<sCvar>("Field Of View", std::vector<std::string>(), 65.0f, 65.0f, 120.0f);
 		std::shared_ptr<sCvar> gMultiPoint = std::make_shared<sCvar>("Multipoint", std::vector<std::string>(), 1, 1, 10);
-		std::shared_ptr<sCvar> gFakeLag = std::make_shared<sCvar>("Fake Lag", std::vector<std::string>(), 0, 0, 1000);
 
 		std::shared_ptr<sCvar> gColorAxisVisible = std::make_shared<sCvar>("Axis Visible", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorAxisInvisible = std::make_shared<sCvar>("Axis Invisible", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));

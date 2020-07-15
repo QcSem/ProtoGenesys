@@ -134,6 +134,11 @@ namespace ProtoGenesys
 			_mathematics.CalculateAimAngles(AimState.vAimPosition, vViewOrigin, AimState.vAimAngles);
 			_mathematics.CalculateAntiAimAngles(CG->CEntity[AimState.iTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
 		}
+
+		if (AimState.bAntiAimTargetAcquired)
+		{
+			_mathematics.CalculateAntiAimAngles(CG->CEntity[AimState.iAntiAimTargetNum].vOrigin, CG->vOrigin, AimState.vAntiAimAngles);
+		}
 	}
 	/*
 	//=====================================================================================

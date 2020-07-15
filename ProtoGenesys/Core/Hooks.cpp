@@ -229,6 +229,7 @@ namespace ProtoGenesys
 		if (CG)
 		{
 			SetThirdPerson();
+			FakeLag();
 
 			if (LocalClientIsInGame() && CG->PlayerState.iOtherFlags & 0x4)
 			{
@@ -530,7 +531,7 @@ namespace ProtoGenesys
 	{
 		std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 
-		if (_profiler.gIdSpam->Current.iValue)
+		if (_profiler.gNameSpam->Current.iValue)
 			return Randomize(name).c_str();
 
 		else if (szNameOverride.empty())
@@ -640,15 +641,61 @@ namespace ProtoGenesys
 
 		if (!Dereference(dwConnectionState))
 		{
+			static int iMode = 1;
+
 			if (RandomizeTimer.Ready())
 			{
-				std::random_device Device;
-				std::uniform_int_distribution<int> RandomExperience(0, 1249100), RandomPrestige(0, 15), RandomColor(0, 9);
-
-				_stats.SetRankXP(RandomExperience(Device));
-				_stats.SetPLevel(RandomPrestige(Device));
-				Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName ^%i", RandomColor(Device)));
-				szNameOverride = acut::RandomANString(0);
+				switch (iMode)
+				{
+				case 1:
+					szNameOverride = "8======mD~~~   ";
+					iMode = 2;
+					break;
+				case 2:
+					szNameOverride = "8=====m=D ~~~  ";
+					iMode = 3;
+					break;
+				case 3:
+					szNameOverride = "8====m==D  ~~~ ";
+					iMode = 4;
+					break;
+				case 4:
+					szNameOverride = "8===m===D   ~~~";
+					iMode = 5;
+					break;
+				case 5:
+					szNameOverride = "8==m====D~   ~~";
+					iMode = 6;
+					break;
+				case 6:
+					szNameOverride = "8=m=====D~~   ~";
+					iMode = 7;
+					break;
+				case 7:
+					szNameOverride = "8m======D~~~   ";
+					iMode = 8;
+					break;
+				case 8:
+					szNameOverride = "8=m=====D ~~~  ";
+					iMode = 9;
+					break;
+				case 9:
+					szNameOverride = "8==m====D  ~~~ ";
+					iMode = 10;
+					break;
+				case 10:
+					szNameOverride = "8===m===D   ~~~";
+					iMode = 11;
+					break;
+				case 11:
+					szNameOverride = "8====m==D~   ~~";
+					iMode = 12;
+					break;
+				case 12:
+					szNameOverride = "8=====m=D~~   ~";
+					iMode = 1;
+					break;
+				}
 
 				RandomizeTimer.Wait(500);
 			}
