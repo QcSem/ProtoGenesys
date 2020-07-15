@@ -18,8 +18,10 @@ using namespace ProtoGenesys;
 
 void Init();
 void Free();
+
 void HookSteamUserAPI();
 void HookSteamFriendsAPI();
+
 void WINAPI SteamID(LPWSTR xuid);
 
 //=====================================================================================
@@ -333,6 +335,8 @@ void Init()
 	fhAtoiCall1.SetHook();
 	fhAtoiCall2.SetHook();
 
+	HookSteamFriendsAPI();
+
 	_console.AddLog("%s hooked all", PREFIX_LOG);
 	_console.Init();
 }
@@ -446,7 +450,6 @@ void WINAPI SteamID(LPWSTR xuid)
 	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
 
 	HookSteamUserAPI();
-	HookSteamFriendsAPI();
 }
 
 //=====================================================================================
