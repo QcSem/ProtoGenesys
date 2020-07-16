@@ -21,11 +21,11 @@ union Ptr
 
 //=====================================================================================
 
-class FurtiveHook
+class Hook
 {
 public:
-	FurtiveHook(x86Instruction instruction, void* address, void* target_function, unsigned int nops = 0, bool unhook_in_dtor = false);
-	~FurtiveHook();
+	Hook(x86Instruction instruction, void* address, void* target_function, unsigned int nops = 0, bool unhook_in_dtor = false);
+	~Hook();
 
 	void SetHook();
 	void UnHook();
@@ -41,12 +41,12 @@ private:
 	bool			  hooked;
 	std::vector<BYTE> old_bytes;
 
-	FurtiveHook() = delete;
-	FurtiveHook(const FurtiveHook& other) = delete;
-	FurtiveHook(FurtiveHook&& other) = delete;
+	Hook() = delete;
+	Hook(const Hook& other) = delete;
+	Hook(Hook&& other) = delete;
 
-	FurtiveHook& operator=(const FurtiveHook& other) = delete;
-	FurtiveHook& operator=(FurtiveHook&& other) = delete;
+	Hook& operator=(const Hook& other) = delete;
+	Hook& operator=(Hook&& other) = delete;
 };
 
 //=====================================================================================

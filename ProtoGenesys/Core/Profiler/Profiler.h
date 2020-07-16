@@ -252,7 +252,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gSpreadFactor = std::make_shared<sCvar>("Spread Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gFlinchFactor = std::make_shared<sCvar>("Flinch Factor", std::vector<std::string>(), 1.0f, 0.0f, 1.0f);
 		std::shared_ptr<sCvar> gFieldOfView = std::make_shared<sCvar>("Field Of View", std::vector<std::string>(), 65.0f, 65.0f, 120.0f);
-		std::shared_ptr<sCvar> gMultiPoint = std::make_shared<sCvar>("Multipoint", std::vector<std::string>(), 1, 1, 10);
+		std::shared_ptr<sCvar> gPointScale = std::make_shared<sCvar>("Point Scale", std::vector<std::string>(), 1, 1, 10);
 
 		std::shared_ptr<sCvar> gColorAxisVisible = std::make_shared<sCvar>("Axis Visible", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorAxisInvisible = std::make_shared<sCvar>("Axis Invisible", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(255), ByteToFloat(0), ByteToFloat(255)));

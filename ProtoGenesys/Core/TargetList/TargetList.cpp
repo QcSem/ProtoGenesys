@@ -70,7 +70,7 @@ namespace ProtoGenesys
 					EntityList[i].vMultiPoints2D.clear();
 					EntityList[i].vMultiPoints3D.clear();
 
-					EntityList[i].vMultiPoints3D = CalculateMultiPoints(&CG->CEntity[i], EntityList[i].vBones3D, _profiler.gMultiPoint->Current.iValue, 2.0f);
+					EntityList[i].vMultiPoints3D = CalculateMultiPoints(&CG->CEntity[i], EntityList[i].vBones3D, _profiler.gPointScale->Current.iValue, 2.0f);
 
 					for (auto& vMultiPoint3D : EntityList[i].vMultiPoints3D)
 					{

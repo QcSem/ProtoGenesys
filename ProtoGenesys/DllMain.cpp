@@ -105,14 +105,14 @@ QWORD USERCALL hGetUserSteamIDAsXUID();
 
 //=====================================================================================
 
-FurtiveHook fhTransitionPlayerStateCall{ x86Instruction::CALL, (LPVOID)dwTransitionPlayerStateCall, &hTransitionPlayerState };
-FurtiveHook fhGetWorldTagMatrixCall{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
-FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSettingsCall, &hGameTypeSettings };
+Hook hTransitionPlayerStateCall{ x86Instruction::CALL, (LPVOID)dwTransitionPlayerStateCall, &hTransitionPlayerState };
+Hook hGetWorldTagMatrixCall{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
+Hook hGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSettingsCall, &hGameTypeSettings };
 
-FurtiveHook fhAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
-FurtiveHook fhAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
+Hook hAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
+Hook hAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
 
-FurtiveHook fhGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIDAsXUIDCall, &hGetUserSteamIDAsXUID };
+Hook hGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIDAsXUIDCall, &hGetUserSteamIDAsXUID };
 
 //=====================================================================================
 
@@ -294,6 +294,8 @@ QWORD USERCALL hGetUserSteamIDAsXUID()
 
 void Init()
 {
+	while (Sys_Milliseconds() < 15000);
+
 	while (!hGameOverlayRenderer.lpBaseOfDll || !hGameOverlayRenderer.EntryPoint || !hGameOverlayRenderer.SizeOfImage)
 		hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
 
@@ -328,13 +330,14 @@ void Init()
 	AttachHook(oGetPlayerStatus, hGetPlayerStatus);
 	AttachHook(oIsValidSteamID, hIsValidSteamID);
 
-	fhTransitionPlayerStateCall.SetHook();
-	fhGetWorldTagMatrixCall.SetHook();
-	fhGameTypeSettingsCall.SetHook();
+	hTransitionPlayerStateCall.SetHook();
+	hGetWorldTagMatrixCall.SetHook();
+	hGameTypeSettingsCall.SetHook();
 
-	fhAtoiCall1.SetHook();
-	fhAtoiCall2.SetHook();
+	hAtoiCall1.SetHook();
+	hAtoiCall2.SetHook();
 
+	HookSteamUserAPI();
 	HookSteamFriendsAPI();
 
 	_console.AddLog("%s hooked all", PREFIX_LOG);
@@ -361,12 +364,15 @@ void Free()
 	DetachHook(oGetPlayerStatus, hGetPlayerStatus);
 	DetachHook(oIsValidSteamID, hIsValidSteamID);
 
-	fhTransitionPlayerStateCall.UnHook();
-	fhGetWorldTagMatrixCall.UnHook();
-	fhGameTypeSettingsCall.UnHook();
+	hTransitionPlayerStateCall.UnHook();
+	hGetWorldTagMatrixCall.UnHook();
+	hGameTypeSettingsCall.UnHook();
 
-	fhAtoiCall1.UnHook();
-	fhAtoiCall2.UnHook();
+	hAtoiCall1.UnHook();
+	hAtoiCall2.UnHook();
+
+	if (hGetUserSteamIDAsXUIDCall.IsHooked())
+		hGetUserSteamIDAsXUIDCall.UnHook();
 
 	if (oGetSteamID)
 		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
@@ -449,7 +455,7 @@ void WINAPI SteamID(LPWSTR xuid)
 	_hooks.bXuidOverride = true;
 	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
 
-	HookSteamUserAPI();
+	hGetUserSteamIDAsXUIDCall.SetHook();
 }
 
 //=====================================================================================
@@ -465,7 +471,7 @@ BOOL APIENTRY DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD fdwReason, _In_ LPVOID
 		return TRUE;
 
 	case DLL_PROCESS_DETACH:
-		std::thread(Free).detach();
+		exit(EXIT_SUCCESS);
 		return TRUE;
 
 	default:

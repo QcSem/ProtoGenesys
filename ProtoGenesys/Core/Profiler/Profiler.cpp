@@ -71,7 +71,7 @@ namespace ProtoGenesys
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.FlinchFactor", gFlinchFactor->Current.flValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.FieldOfView", gFieldOfView->Current.flValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.MultiPoint", gMultiPoint->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.PointScale", gPointScale->Current.iValue);
 
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue.x);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue.y);
@@ -195,7 +195,7 @@ namespace ProtoGenesys
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.SpreadFactor", gSpreadFactor->Current.flValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.FlinchFactor", gFlinchFactor->Current.flValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.FieldOfView", gFieldOfView->Current.flValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.MultiPoint", gMultiPoint->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Tweaks.PointScale", gPointScale->Current.iValue);
 
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Red", gColorAxisVisible->Current.cValue.x);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.AxisVisible.Green", gColorAxisVisible->Current.cValue.y);

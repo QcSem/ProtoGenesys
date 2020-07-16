@@ -420,7 +420,7 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gMultiPoint->szName, VariadicText("%d", _profiler.gMultiPoint->Current.iValue), &_profiler.gMultiPoint->Current.iValue, _profiler.gMultiPoint->Domain.iMin, _profiler.gMultiPoint->Domain.iMax, 1))
+				if (DrawOption(_profiler.gPointScale->szName, VariadicText("%d", _profiler.gPointScale->Current.iValue), &_profiler.gPointScale->Current.iValue, _profiler.gPointScale->Domain.iMin, _profiler.gPointScale->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -440,7 +440,7 @@ namespace ProtoGenesys
 					_profiler.gSpreadFactor->Current.flValue = _profiler.gSpreadFactor->Reset.flValue;
 					_profiler.gFlinchFactor->Current.flValue = _profiler.gFlinchFactor->Reset.flValue;
 					_profiler.gFieldOfView->Current.flValue = _profiler.gFieldOfView->Reset.flValue;
-					_profiler.gMultiPoint->Current.iValue = _profiler.gMultiPoint->Reset.iValue;
+					_profiler.gPointScale->Current.iValue = _profiler.gPointScale->Reset.iValue;
 
 					bWriteLog = true;
 				}
@@ -942,7 +942,7 @@ namespace ProtoGenesys
 			bIsAirStuck = GetKeyPress(VK_DELETE, true);
 
 		if (GetActiveWindow() == hWindow)
-			if (GetAsyncKeyState(VK_MENU) & 0x8000 && GetAsyncKeyState(VK_F4) & 0x8000)
+			if ((GetAsyncKeyState(VK_MENU) & 0x8000) && (GetAsyncKeyState(VK_F4) & 0x8000))
 				exit(EXIT_SUCCESS);
 
 		*(bool*)dwMouseInput = !bShowWindow;

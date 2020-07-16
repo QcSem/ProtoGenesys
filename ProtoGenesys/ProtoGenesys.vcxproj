@@ -45,7 +45,6 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
@@ -53,7 +52,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;WinInet.lib;detours.lib;steam_api.lib;VMProtectSDK32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -63,7 +61,7 @@
     <ClCompile Include="Core\Console\Console.cpp" />
     <ClCompile Include="Core\Drawing\Drawing.cpp" />
     <ClCompile Include="Core\Hooks.cpp" />
-    <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp" />
+    <ClCompile Include="Core\Hook\Hook.cpp" />
     <ClCompile Include="Core\License\License.cpp" />
     <ClCompile Include="Core\MainGUI.cpp" />
     <ClCompile Include="Core\Mathematics\Mathematics.cpp" />
@@ -93,7 +91,7 @@
     <ClInclude Include="Core\Engine\Helpers.hpp" />
     <ClInclude Include="Core\Engine\Thunk.hpp" />
     <ClInclude Include="Core\Hooks.h" />
-    <ClInclude Include="Core\FurtiveHook\FurtiveHook.h" />
+    <ClInclude Include="Core\Hook\Hook.h" />
     <ClInclude Include="Core\License\License.h" />
     <ClInclude Include="Core\MainGUI.h" />
     <ClInclude Include="Core\Mathematics\Mathematics.h" />

@@ -59,9 +59,6 @@
     <ClCompile Include="Core\Hooks.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp">
-      <Filter>Core\FurtiveHook</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Stats\Stats.cpp">
       <Filter>Core\Stats</Filter>
     </ClCompile>
@@ -73,6 +70,9 @@
     </ClCompile>
     <ClCompile Include="Core\License\License.cpp">
       <Filter>Core\License</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Hook\Hook.cpp">
+      <Filter>Core\Hook</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +176,6 @@
     <ClInclude Include="Core\Hooks.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\FurtiveHook\FurtiveHook.h">
-      <Filter>Core\FurtiveHook</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Stats\Stats.h">
       <Filter>Core\Stats</Filter>
     </ClInclude>
@@ -208,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="Core\VMTHook\VMTHook.h">
       <Filter>Core\VMTHook</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Hook\Hook.h">
+      <Filter>Core\Hook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -274,9 +274,6 @@
     <Filter Include="ImGui\Fonts">
       <UniqueIdentifier>{f7fbee61-f00c-4a21-bbc9-85ca42013c53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\FurtiveHook">
-      <UniqueIdentifier>{611ea579-668a-4727-9ad3-d7ccef837d98}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Stats">
       <UniqueIdentifier>{e070b263-6b7b-474e-9105-53bed263333f}</UniqueIdentifier>
     </Filter>
@@ -285,6 +282,9 @@
     </Filter>
     <Filter Include="Core\VMTHook">
       <UniqueIdentifier>{73c8ab63-b3a0-4dd6-9e8a-2e91600386b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Hook">
+      <UniqueIdentifier>{611ea579-668a-4727-9ad3-d7ccef837d98}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@
 
 //=====================================================================================
 
-FurtiveHook::~FurtiveHook()
+Hook::~Hook()
 {
 	if (unhook_in_dtor && hooked)
 	{
@@ -21,7 +21,7 @@ FurtiveHook::~FurtiveHook()
 
 //=====================================================================================
 
-void FurtiveHook::SetHook()
+void Hook::SetHook()
 {
 	DWORD old_protection{ 0 };
 
@@ -50,7 +50,7 @@ void FurtiveHook::SetHook()
 
 //=====================================================================================
 
-void FurtiveHook::UnHook()
+void Hook::UnHook()
 {
 	DWORD old_protection{ 0 };
 
@@ -68,14 +68,14 @@ void FurtiveHook::UnHook()
 
 //=====================================================================================
 
-bool FurtiveHook::IsHooked() const
+bool Hook::IsHooked() const
 {
 	return hooked;
 }
 
 //=====================================================================================
 
-FurtiveHook::FurtiveHook(x86Instruction instruction, void* address, void* target_function, unsigned int nops, bool unhook_in_dtor) :
+Hook::Hook(x86Instruction instruction, void* address, void* target_function, unsigned int nops, bool unhook_in_dtor) :
 	instruction{ instruction },
 	address{ address },
 	target_function{ target_function },
