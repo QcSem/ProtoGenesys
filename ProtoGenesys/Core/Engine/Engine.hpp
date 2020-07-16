@@ -241,8 +241,11 @@ namespace ProtoGenesys
 	*/
 	struct sDvar
 	{
+	public:
 		LPSTR szName;
+	private:
 		char _0x4[0x14];
+	public:
 
 		union uDvarValue
 		{
@@ -275,6 +278,7 @@ namespace ProtoGenesys
 			};
 		} Domain;
 
+	private:
 		char _0x58[0x8];
 	};
 	/*
@@ -282,56 +286,95 @@ namespace ProtoGenesys
 	*/
 	struct sPlayerState
 	{
+	public:
 		int iServerTime;
+	private:
 		char _0x4[0x14];
+	public:
 		int iOtherFlags;
+	private:
 		char _0x1C[0xC];
+	public:
 		ImVec3 vOrigin;
 		ImVec3 vVelocity;
+	private:
 		char _0x40[0xC];
+	public:
 		float flWeaponTime;
 		int iWeaponDelay;
+	private:
 		char _0x54[0x30];
+	public:
 		int iThirdPerson;
+	private:
 		char _0x88[0x4];
+	public:
 		int iGravity;
+	private:
 		char _0x90[0x4];
+	public:
 		int iSpeed;
 		ImVec3 vDeltaAngles;
+	private:
 		char _0xA4[0x12C];
+	public:
 		int iWeaponState[2];
+	private:
 		char _0x1D8[0x8];
+	public:
 		float flZoomProgress;
+	private:
 		char _0x1E4[0x4];
+	public:
 		float flSpreadOverride;
 		int iSpreadOverrideState;
+	private:
 		char _0x1F0[0x8];
+	public:
 		ImVec3 vViewAngles;
 		int iPlayerHeight;
 		ImVec3 vPlayerHeight;
+	private:
 		char _0x214[0x18];
+	public:
 		int iDamageYaw;
 		int iDamagePitch;
 		int iDamageCount;
+	private:
 		char _0x238[0x8];
+	public:
 		int iHealth;
+	private:
 		char _0x244[0x4];
+	public:
 		int iMaxHealth;
+	private:
 		char _0x24C[0x74];
+	public:
 		int iSecondaryWeaponID;
+	private:
 		char _0x2C4[0x18];
+	public:
 		int iPrimaryWeaponID;
+	private:
 		char _0x2E0[0x124];
+	public:
 		int iSecondaryAmmoStock;
 		int iPrimaryAmmoStock;
+	private:
 		char _0x40C[0x34];
+	public:
 		int iSecondaryAmmoClip;
 		int iPrimaryAmmoClip;
 		int iLethalAmmo;
 		int iTacticalAmmo;
+	private:
 		char _0x450[0x5C];
+	public:
 		int iSatalliteTypeEnabled;
+	private:
 		char _0x4B0[0xA0];
+	public:
 		int iPerkFlags;
 	};
 	/*
@@ -339,21 +382,31 @@ namespace ProtoGenesys
 	*/
 	struct sRefDef
 	{
+	public:
 		int iX;
 		int iY;
 		int iWidth;
 		int iHeight;
+	private:
 		char _0x10[0x10];
+	public:
 		float flFovX;
 		float flFovY;
+	private:
 		char _0x28[0x8];
+	public:
 		float flFov;
 		ImVec3 vViewOrigin;
+	private:
 		char _0x40[0x4];
+	public:
 		ImVec3 vViewAxis[3];
+	private:
 		char _0x68[0x16D18];
+	public:
 		int iSplitScreenBlurEdges;
 		int iPlayerTeleported;
+	private:
 		char _0x16D88[0x2D8];
 	};
 	/*
@@ -361,13 +414,21 @@ namespace ProtoGenesys
 	*/
 	struct sWeaponDef
 	{
+	private:
 		char _0x0[0x1C];
+	public:
 		eWeaponType iWeaponType;
+	private:
 		char _0x20[0x4];
+	public:
 		ePenetrateType iPenetrateType;
+	private:
 		char _0x28[0x609];
+	public:
 		bool bRifleBullet;
+	private:
 		char _0x632[0x1AE];
+	public:
 		float flADSSpread;
 	};
 	/*
@@ -375,8 +436,10 @@ namespace ProtoGenesys
 	*/
 	struct sModelMask
 	{
+	public:
 		int iSlot;
 		sWeaponDef* WeaponDef;
+	private:
 		char _0x8[0x8];
 	};
 	/*
@@ -384,6 +447,7 @@ namespace ProtoGenesys
 	*/
 	struct sClientInfo
 	{
+	public:
 		int iInfoValid;
 		int iNextValid;
 		int iClientNum;
@@ -391,22 +455,38 @@ namespace ProtoGenesys
 		eTeam iTeam1;
 		eTeam iTeam2;
 		int iFFATeam;
+	private:
 		char _0x38[0x28];
+	public:
 		int iRank;
+	private:
 		char _0x64[0x14];
+	public:
 		QWORD qwXuid;
 		char szClan[8];
+	private:
 		char _0x88[0x7];
+	public:
 		bool bDead;
+	private:
 		char _0x90[0x4];
+	public:
 		int iScore;
+	private:
 		char _0x98[0x58];
+	public:
 		char szPlayerModel[32];
+	private:
 		char _0x110[0x3B4];
+	public:
 		ImVec3 vViewAngles;
+	private:
 		char _0x4D0[0xF4];
+	public:
 		int iWeaponID;
+	private:
 		char _0x5C8[0x1BC];
+	public:
 		sModelMask ModelMask[8];
 		int iOffHandWeaponID;
 	};
@@ -415,6 +495,7 @@ namespace ProtoGenesys
 	*/
 	struct sTrajectory
 	{
+	public:
 		int iType;
 		int iTime;
 		int iDuration;
@@ -426,13 +507,17 @@ namespace ProtoGenesys
 	*/
 	struct sLerpEntityState
 	{
+	public:
 		int eFlags1;
 		int eFlags2;
 		sTrajectory PositionTrajectory;
 		sTrajectory AngleTrajectory;
+	private:
 		char _0x50[0xC];
+	public:
 		int iWeaponID1;
 		int iWeaponID2;
+	private:
 		char _0x64[0x18];
 	};
 	/*
@@ -440,16 +525,24 @@ namespace ProtoGenesys
 	*/
 	struct sEntityState
 	{
+	public:
 		int iEntityNum;
 		sLerpEntityState LerpEntityState;
+	private:
 		char _0x80[0x58];
+	public:
 		short wEntityType;
 		short wGroundEntityNum;
+	private:
 		char _0xDA[0x2];
+	public:
 		short wOtherEntityNum;
 		short wAttackerEntityNum;
+	private:
 		char _0xE2[0x2];
+	public:
 		int iWeaponID;
+	private:
 		char _0xE8[0x10];
 	};
 	/*
@@ -457,17 +550,26 @@ namespace ProtoGenesys
 	*/
 	struct sCEntity
 	{
+	private:
 		char _0x0[0x2];
+	public:
 		short wValid;
 		short wUsedForPlayerMesh;
+	private:
 		char _0x6[0x26];
+	public:
 		ImVec3 vOrigin;
 		ImVec3 vViewAngles;
+	private:
 		char _0x44[0x11C];
+	public:
 		sLerpEntityState CurrentEntityState;
 		sEntityState NextEntityState;
+	private:
 		char _0x2D4[0xA4];
+	public:
 		int iAlive;
+	private:
 		char _0x37C[0x4];
 	};
 	/*
@@ -475,9 +577,13 @@ namespace ProtoGenesys
 	*/
 	struct sSnapShot
 	{
+	private:
 		char _0x0[0x8];
+	public:
 		int iServerTime;
+	private:
 		char _0xC[0xC];
+	public:
 		int iPing;
 	};
 	/*
@@ -485,72 +591,127 @@ namespace ProtoGenesys
 	*/
 	struct sCG
 	{
+	public:
 		int iClientNum;
+	private:
 		char _0x4[0x20];
+	public:
 		sSnapShot* OldSnapShot;
 		sSnapShot* NewSnapShot;
+	private:
 		char _0x2C[0x58];
+	public:
 		int iPing;
 		int iServerTime;
 		int iPhysicsTime;
 		int iCommandTime;
+	private:
 		char _0x94[0x24];
+	public:
 		ImVec3 vOrigin;
 		ImVec3 vVelocity;
+	private:
 		char _0xD0[0x10];
+	public:
 		int iWeaponDelay;
+	private:
 		char _0xE4[0x78];
+	public:
 		int iMoveType;
+	private:
 		char _0x160[0x2C];
+	public:
 		int iMoveFlag;
+	private:
 		char _0x190[0xB8];
+	public:
 		int iWeaponID;
+	private:
 		char _0x24C[0x14];
+	public:
 		int iWeaponState[2];
+	private:
 		char _0x268[0x8];
+	public:
 		float flZoomProgress;
+	private:
 		char _0x274[0x54];
+	public:
 		int iHealth;
+	private:
 		char _0x2CC[0x47DB8];
+	public:
 		float flFrameInterpolation;
 		int iFrameTime;
 		int iTime;
 		int iOldTime;
+	private:
 		char _0x48094[0x8];
+	public:
 		int iThirdPerson;
+	private:
 		char _0x480A0[0x8];
+	public:
 		sPlayerState PlayerState;
+	private:
 		char _0x485FC[0x5294];
+	public:
 		sRefDef RefDef;
 		ImVec3 vRefDefViewAngles;
+	private:
 		char _0x648FC[0x130];
+	public:
 		ImVec3 vWeaponAngles;
+	private:
 		char _0x64A38[0x3890];
+	public:
 		float flZoomSensitivity;
+	private:
 		char _0x682CC[0x68C];
+	public:
 		int iMatchUIVisibilityFlags;
+	private:
 		char _0x6895C[0xD18];
+	public:
 		int iWeaponSelect;
+	private:
 		char _0x69678[0x54];
+	public:
 		int iEquippedOffhand;
+	private:
 		char _0x696D0[0xF8];
+	public:
 		ImVec3 vKickAngles;
 		ImVec3 vOffsetAngles;
 		float flGunPitch;
 		float flGunYaw;
+	private:
 		char _0x697E8[0xB4];
+	public:
 		float flShockSensitivity;
+	private:
 		char _0x698A0[0x1C0];
+	public:
 		sClientInfo ClientInfo[MAX_CLIENTS];
+	private:
 		char _0x72AF0[0xE04C];
+	public:
 		int iExtraButtonBits[2];
+	private:
 		char _0x80B44[0x8];
+	public:
 		int iPlayerTeleported;
+	private:
 		char _0x80B50[0xC];
+	public:
 		float flSpread;
+	private:
 		char _0x80B60[0x6BD0];
+	public:
 		char szGameType[4];
+	private:
 		char _0x87734[0x1D90C];
+	public:
 		sCEntity CEntity[MAX_ENTITIES];
 	};
 	/*
@@ -558,12 +719,16 @@ namespace ProtoGenesys
 	*/
 	struct sUserCmd
 	{
+	public:
 		int iServerTime;
 		int iButtons[2];
 		int iViewAngles[3];
+	private:
 		char _0x18[0xC];
+	public:
 		char szForwardMove;
 		char szRightMove;
+	private:
 		char _0x26[0x16];
 	};
 	/*
@@ -571,10 +736,14 @@ namespace ProtoGenesys
 	*/
 	struct sClientActive
 	{
+	private:
 		char _0x0[0x68];
+	public:
 		int iPing;
+	private:
 		char _0x6C[0x42C3C];
 
+	public:
 		sUserCmd UserCmd[128];
 		int iCurrentCmd;
 
@@ -588,8 +757,11 @@ namespace ProtoGenesys
 	*/
 	struct sWeaponName
 	{
+	private:
 		char _0x0[0x18];
+	public:
 		LPSTR szDisplayName;
+	private:
 		char _0x1C[0x8];
 	};
 	/*
@@ -597,6 +769,7 @@ namespace ProtoGenesys
 	*/
 	struct sViewAngles
 	{
+	public:
 		ImVec3 vAngles;
 	};
 	/*
@@ -604,6 +777,7 @@ namespace ProtoGenesys
 	*/
 	struct sRecoilAngles
 	{
+	public:
 		ImVec3 vAngles;
 	};
 	/*
@@ -611,12 +785,18 @@ namespace ProtoGenesys
 	*/
 	struct sServerSession
 	{
+	public:
 		QWORD qwXuid;
 		char szName[32];
+	private:
 		char _0x28[0x2C];
+	public:
 		char szClan[8];
+	private:
 		char _0x5C[0x3A];
+	public:
 		char iIPAddress[4];
+	private:
 		char _0x9A[0xAE];
 	};
 	/*
@@ -624,6 +804,7 @@ namespace ProtoGenesys
 	*/
 	struct sWindow
 	{
+	public:
 		int iWidth;
 		int iHeight;
 	};
@@ -632,16 +813,24 @@ namespace ProtoGenesys
 	*/
 	struct sTrace
 	{
+	public:
 		ImVec3 vNormal;
+	private:
 		char _0xC[0x4];
+	public:
 		float flFraction;
 		int iSurfaceFlags;
+	private:
 		char _0x18[0x8];
+	public:
 		short wHitID;
+	private:
 		char _0x22[0x6];
+	public:
 		short wPartGroup;
 		char bAllSolid;
 		char bStartSolid;
+	private:
 		char _0x2C[0x14];
 	};
 	/*
@@ -649,12 +838,18 @@ namespace ProtoGenesys
 	*/
 	struct sBulletTraceResults
 	{
+	public:
 		sTrace Trace;
+	private:
 		char _0x40[0x4];
+	public:
 		ImVec3 vHitPos;
 		char iIgnoreHitEnt;
+	private:
 		char _0x51[0x3];
+	public:
 		int iSurfaceType;
+	private:
 		char _0x58[0x8];
 	};
 	/*
@@ -662,6 +857,7 @@ namespace ProtoGenesys
 	*/
 	struct sBulletFireParams
 	{
+	public:
 		int iMaxEntNum;
 		int iEntityNum;
 		float flPower;
@@ -676,6 +872,7 @@ namespace ProtoGenesys
 	*/
 	struct sOrientation
 	{
+	public:
 		ImVec3 vOrigin;
 		ImVec3 vAxis[3];
 	};
@@ -684,9 +881,12 @@ namespace ProtoGenesys
 	*/
 	struct sNetAddr
 	{
+	public:
 		char iIPAddress[4];
 		short iPort;
+	private:
 		char _0x6[0x2];
+	public:
 		int iType;
 		int iLocalNetID;
 		int iServerID;
@@ -696,6 +896,7 @@ namespace ProtoGenesys
 	*/
 	struct sScreenPlacement
 	{
+	public:
 		ImVec2 vScaleVirtualToReal;
 		ImVec2 vScaleVirtualToFull;
 		ImVec2 vScaleRealToVirtual;
@@ -718,6 +919,7 @@ namespace ProtoGenesys
 	*/
 	struct sPlayerHeldWeapon
 	{
+	public:
 		int iWeapon;
 		int iOptions;
 		float flHeatPercent;
@@ -729,6 +931,7 @@ namespace ProtoGenesys
 		bool bQuickReload;
 		bool bLockWeaponPickup;
 		char szModel;
+	private:
 		char _0x1A[0x2];
 	};
 	/*
@@ -781,8 +984,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 	static DWORD_PTR dwIsValidSteamID = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
-	static DWORD_PTR dwInitSteam = bIsSteamVersion ? 0x924610 : 0x924460;
-	static DWORD_PTR dwAtoi = bIsSteamVersion ? 0xA7300A : 0xA7301A;
+	static DWORD_PTR dwCreateScreenShot = bIsSteamVersion ? 0x75BF00 : 0x75CBB0;
 	static DWORD_PTR dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
 	static DWORD_PTR dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
 	static DWORD_PTR dwGetUserSteamIDAsXUID = bIsSteamVersion ? 0x44A8F0 : 0x5C2CD0;
@@ -804,7 +1006,6 @@ namespace ProtoGenesys
 	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
 	static DWORD_PTR dwGetTagPosition = bIsSteamVersion ? 0x664930 : 0x4A1210;
 	static DWORD_PTR dwGetScreenPlacement = bIsSteamVersion ? 0x4C7EF0 : 0x6F6AF0;
-	static DWORD_PTR dwWorldToScreen = bIsSteamVersion ? 0x595690 : 0x429A80;
 	static DWORD_PTR dwEntityIsTeammate = bIsSteamVersion ? 0x50EC80 : 0x4309A0;
 	static DWORD_PTR dwGetPlayerViewOrigin = bIsSteamVersion ? 0x580890 : 0x640E80;
 	static DWORD_PTR dwEvaluateTrajectory = bIsSteamVersion ? 0x47F7A0 : 0x44CE20;
@@ -998,13 +1199,6 @@ namespace ProtoGenesys
 	FORCEINLINE sScreenPlacement* GetScreenPlacement()
 	{
 		return VariadicCall<sScreenPlacement*>(dwGetScreenPlacement, 0);
-	}
-	/*
-	//=====================================================================================
-	*/
-	FORCEINLINE bool WorldToScreen(ImVec3* world, ImVec2* screen)
-	{
-		return VariadicCall<bool>(dwWorldToScreen, 0, world, screen);
 	}
 	/*
 	//=====================================================================================

@@ -70,6 +70,10 @@ bool FASTCALL hIsValidSteamID(CSteamID* steamid);
 typedef bool(FASTCALL* tIsValidSteamID)(CSteamID* steamid);
 tIsValidSteamID oIsValidSteamID = (tIsValidSteamID)dwIsValidSteamID;
 
+void USERCALL hCreateScreenShot(int unk1, int unk2, int unk3, int unk4);
+typedef void(USERCALL* tCreateScreenShot)(int unk1, int unk2, int unk3, int unk4);
+tCreateScreenShot oCreateScreenShot = (tCreateScreenShot)dwCreateScreenShot;
+
 CSteamID* FASTCALL hGetSteamID(LPVOID ecx, LPVOID edx, int unk);
 typedef CSteamID* (FASTCALL* tGetSteamID)(LPVOID ecx, LPVOID edx, int unk);
 tGetSteamID oGetSteamID;
@@ -211,6 +215,15 @@ bool FASTCALL hIsValidSteamID(CSteamID* steamid)
 
 //=====================================================================================
 
+void USERCALL hCreateScreenShot(int unk1, int unk2, int unk3, int unk4)
+{
+	_hooks.CreateScreenShot(unk1, unk2, unk3, unk4);
+
+	return oCreateScreenShot(unk1, unk2, unk3, unk4);
+}
+
+//=====================================================================================
+
 CSteamID* FASTCALL hGetSteamID(LPVOID ecx, LPVOID edx, int unk)
 {
 	return _hooks.GetSteamID(oGetSteamID(ecx, edx, unk));
@@ -329,6 +342,7 @@ void Init()
 	AttachHook(oGetAddr, hGetAddr);
 	AttachHook(oGetPlayerStatus, hGetPlayerStatus);
 	AttachHook(oIsValidSteamID, hIsValidSteamID);
+	AttachHook(oCreateScreenShot, hCreateScreenShot);
 
 	hTransitionPlayerStateCall.SetHook();
 	hGetWorldTagMatrixCall.SetHook();
@@ -363,6 +377,7 @@ void Free()
 	DetachHook(oGetAddr, hGetAddr);
 	DetachHook(oGetPlayerStatus, hGetPlayerStatus);
 	DetachHook(oIsValidSteamID, hIsValidSteamID);
+	DetachHook(oCreateScreenShot, hCreateScreenShot);
 
 	hTransitionPlayerStateCall.UnHook();
 	hGetWorldTagMatrixCall.UnHook();
@@ -409,17 +424,15 @@ void Free()
 
 void HookSteamUserAPI()
 {
-	_hooks.RefreshFriends();
-
 	while (!hSteamAPI.lpBaseOfDll || !hSteamAPI.EntryPoint || !hSteamAPI.SizeOfImage)
 		hSteamAPI = GetModuleInfo("steam_api.dll");
 
 	while (!_hooks.GetSteamUser)
 		_hooks.GetSteamUser = (cHooks::tSteamUser)GetProcAddress((HMODULE)hSteamAPI.lpBaseOfDll, "SteamUser");
-	
+
 	while (!_hooks._steamUser)
 		_hooks._steamUser = _hooks.GetSteamUser();
-	
+
 	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
 }
 

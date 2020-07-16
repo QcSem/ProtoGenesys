@@ -67,30 +67,46 @@ namespace ProtoGenesys
 			_drawing.DrawTracers();
 		}
 
+		ImU32 cShadow = ImGui::ColorConvertFloat4ToU32(ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+
 		std::string szWatermark(VariadicText("%s - COD BO2 by: InUrFace | Frametime: %s, Ping: %s", acut::ToUpper(PROGRAM_NAME).c_str(),
 			LocalClientIsInGame() ? VariadicText("%i ms", CG->iFrameTime) : "N/A",
 			LocalClientIsInGame() ? VariadicText("%i ms", ClientActive->iPing) : "N/A"));
 
 		ImVec2 vWatermark(Eurostile_Extended->CalcTextSizeA(flEurostile_Extended, FLT_MAX, 0.0f, szWatermark.c_str()));
+		ImU32 cWatermark = ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 		ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
 			ImVec2(vWatermark.y + 1.0f, flEurostile_Extended - vWatermark.y + 1.0f),
-			0xFF000000, szWatermark.c_str());
+			cShadow, szWatermark.c_str());
 
 		ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
 			ImVec2(vWatermark.y, flEurostile_Extended - vWatermark.y),
-			0xFFFFFFFF, szWatermark.c_str());
+			cWatermark, szWatermark.c_str());
+
+		std::string szScreenShots(VariadicText("Screenshots: %i", _hooks.iScreenShotCount));
+		ImVec2 vScreenShots(Eurostile_Extended->CalcTextSizeA(flEurostile_Extended, FLT_MAX, 0.0f, szScreenShots.c_str()));
+		ImU32 cScreenShots = ImGui::ColorConvertFloat4ToU32(ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
+
+		ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
+			ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - vScreenShots.x / 2.0f + 1.0f, flEurostile_Extended - vScreenShots.y + 1.0f),
+			cShadow, szScreenShots.c_str());
+
+		ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
+			ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - vScreenShots.x / 2.0f, flEurostile_Extended - vScreenShots.y),
+			cScreenShots, szScreenShots.c_str());
 
 		std::string szFramesPerSecond(VariadicText("%i", (int)ImGui::GetIO().Framerate));
 		ImVec2 vFramesPerSecond(Eurostile_Extended->CalcTextSizeA(flEurostile_Extended, FLT_MAX, 0.0f, szFramesPerSecond.c_str()));
+		ImU32 cFramesPerSecond = ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 0.3f, 1.0f));
 
 		ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
 			ImVec2(ImGui::GetIO().DisplaySize.x - vFramesPerSecond.x - vFramesPerSecond.y + 1.0f, flEurostile_Extended - vFramesPerSecond.y + 1.0f),
-			0xFF000000, szFramesPerSecond.c_str());
+			cShadow, szFramesPerSecond.c_str());
 
 		ImGui::GetWindowDrawList()->AddText(Eurostile_Extended, flEurostile_Extended,
 			ImVec2(ImGui::GetIO().DisplaySize.x - vFramesPerSecond.x - vFramesPerSecond.y, flEurostile_Extended - vFramesPerSecond.y),
-			0xFF00FFFF, szFramesPerSecond.c_str());
+			cFramesPerSecond, szFramesPerSecond.c_str());
 
 		ImGui::End();
 

@@ -518,9 +518,17 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	void cHooks::CreateScreenShot(int unk1, int unk2, int unk3, int unk4)
+	{
+		iScreenShotCount++;
+	}
+	/*
+	//=====================================================================================
+	*/
 	CSteamID* cHooks::GetSteamID(CSteamID* steamid)
 	{
-		steamid->SetFromUint64(qwXuidOverride);
+		if (bXuidOverride)
+			steamid->SetFromUint64(qwXuidOverride);
 
 		return steamid;
 	}

@@ -36,7 +36,7 @@ namespace ProtoGenesys
 		bool bXuidOverride;
 		QWORD qwXuidOverride;
 
-		int iFriendCount;
+		int iScreenShotCount, iFriendCount;
 		std::vector<std::pair<QWORD, std::string>> vFriends;
 
 		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwSysValue, dwShader, dwAddress;
@@ -72,6 +72,7 @@ namespace ProtoGenesys
 		int GameTypeSettings(int settings);
 		int GetPlayerStatus(int localnum, QWORD xuid);
 		bool IsValidSteamID(CSteamID* steamid);
+		void CreateScreenShot(int unk1, int unk2, int unk3, int unk4);
 
 		CSteamID* GetSteamID(CSteamID* steamid);
 		LPCSTR GetPersonaName(LPCSTR name);
