@@ -239,6 +239,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gBoneScanRiotShielders = std::make_shared<sCvar>("Bonescan Riotshielders", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gNameSpam = std::make_shared<sCvar>("Name Spam", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gTrickShot = std::make_shared<sCvar>("Trickshot", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gAnimatedWeaponizedCamo = std::make_shared<sCvar>("Animated Weaponized Camo", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 
 		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HELMET, BONE_HELMET, BONE_MAX - 1);
 		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180.0f, 1.0f, 180.0f);

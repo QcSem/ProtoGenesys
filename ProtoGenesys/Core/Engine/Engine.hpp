@@ -177,6 +177,15 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	enum eWeaponDobjInfoSlot
+	{
+		HELD,
+		STOWED,
+		MELEE,
+	};
+	/*
+	//=====================================================================================
+	*/
 	static std::vector<std::pair<std::string, std::string>> szBones =
 	{
 		std::make_pair("Helmet", "j_helmet"),
@@ -937,6 +946,36 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	struct sWeaponized
+	{
+	public:
+		float flReflection;
+	private:
+		char _0x4[0x1C];
+	public:
+		float flLayer3Scroll;
+	private:
+		char _0x24[0x1C];
+	public:
+		float flEmissiveAmount;
+	private:
+		char _0x44[0xFC];
+	public:
+		float flLayer1Scroll;
+	private:
+		char _0x144[0x7C];
+	public:
+		float flLayer2Scroll;
+	private:
+		char _0x1C4[0x11C];
+	public:
+		float flGlossAmount;
+	private:
+		char _0x2E4[0xEC];
+	};
+	/*
+	//=====================================================================================
+	*/
 	static MODULEINFO hSteamAPI;
 	static MODULEINFO hGameOverlayRenderer;
 	static MODULEINFO hT6mp = GetModuleInfo(NULL);
@@ -979,6 +1018,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwInterpolateEntityPosition = bIsSteamVersion ? 0x7A0000 : 0x7A0C90;
 	static DWORD_PTR dwInterpolateEntityAngles = bIsSteamVersion ? 0x6B4100 : 0x4B1D40;
 	static DWORD_PTR dwTransitionPlayerState = bIsSteamVersion ? 0x666DD0 : 0x6AB990;
+	static DWORD_PTR dwSetupWeaponCamoRender = bIsSteamVersion ? 0x69C560 : 0x4B5B20;
 	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
 	static DWORD_PTR dwGameTypeSettings = bIsSteamVersion ? 0x6C43C0 : 0x4F5F70;
 	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
@@ -1078,6 +1118,18 @@ namespace ProtoGenesys
 	static DWORD_PTR dwTacSSPatch = 0x2B68824;
 	static DWORD_PTR dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
 	static DWORD_PTR dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
+
+	static std::vector<std::pair<DWORD_PTR, DWORD_PTR>> vWeaponized =
+	{
+		std::make_pair(0x164FAB8, 0x14E),
+		std::make_pair(0x164FB28, 0xBC),
+		std::make_pair(0x164FB98, 0xBC),
+		std::make_pair(0x164FC08, 0xBC),
+		std::make_pair(0x164FC78, 0xBC),
+		std::make_pair(0x164FCE8, 0xCC),
+		std::make_pair(0x164FD58, 0xCC),
+		std::make_pair(0x164FDC8, 0xCC)
+	};
 	/*
 	//=====================================================================================
 	*/

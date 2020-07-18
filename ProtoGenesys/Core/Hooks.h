@@ -66,6 +66,7 @@ namespace ProtoGenesys
 		void BulletHitEvent(int localnum, int sourcenum, int targetnum, int weapon, ImVec3* start, ImVec3* position, ImVec3* normal, ImVec3* alphanormal, int surface, int eventnum, int eventparm, int contents, char bone);
 		void TransitionPlayerState(int localnum, sPlayerState* playerstate, LPVOID transplayerstate);
 		void CalcEntityLerpPositions(int localnum, sCEntity* entity);
+		void SetupWeaponCamoRender(int localnum, ImVec3* origin, eWeaponDobjInfoSlot weaponslot, int camo, LPVOID weapon, int* texture);
 		void GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin);
 		void GetAddr(bool renew);
 		

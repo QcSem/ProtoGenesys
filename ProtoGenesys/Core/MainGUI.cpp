@@ -354,6 +354,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gAnimatedWeaponizedCamo->szName, _profiler.gAnimatedWeaponizedCamo->szItems[_profiler.gAnimatedWeaponizedCamo->Current.iValue], &_profiler.gAnimatedWeaponizedCamo->Current.iValue, _profiler.gAnimatedWeaponizedCamo->Domain.iMin, _profiler.gAnimatedWeaponizedCamo->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
 				if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 				{
@@ -368,6 +373,7 @@ namespace ProtoGenesys
 					_profiler.gBoneScanRiotShielders->Current.iValue = _profiler.gBoneScanRiotShielders->Reset.iValue;
 					_profiler.gNameSpam->Current.iValue = _profiler.gNameSpam->Reset.iValue;
 					_profiler.gTrickShot->Current.iValue = _profiler.gTrickShot->Reset.iValue;
+					_profiler.gAnimatedWeaponizedCamo->Current.iValue = _profiler.gAnimatedWeaponizedCamo->Reset.iValue;
 
 					bWriteLog = true;
 				}
