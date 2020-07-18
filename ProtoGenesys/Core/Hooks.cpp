@@ -10,6 +10,7 @@ namespace ProtoGenesys
 
 	LONG cHooks::VectoredExceptionHandler(_In_ LPEXCEPTION_POINTERS ExceptionInfo)
 	{
+		Dereference(dwTacSSCount) = 0x0;
 		Dereference(dwTacSSHandle) = 0x1;
 
 		if (CG)
@@ -341,8 +342,6 @@ namespace ProtoGenesys
 							ServerSession[victim].szName,
 							ServerSession[victim].szClan,
 							ServerSession[victim].qwXuid));
-
-						Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", ServerSession[victim].szClan));
 					}
 
 					if (_profiler.gTrickShot->Current.iValue)

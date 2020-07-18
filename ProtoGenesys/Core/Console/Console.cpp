@@ -38,6 +38,7 @@ namespace ProtoGenesys
 			vCommands.push_back(VariadicText("%s_xuid", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_ip", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_killspam", PROGRAM_CMD_PREFIX));
+			vCommands.push_back(VariadicText("%s_votespam", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_experience", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_prestige", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_unlockall", PROGRAM_CMD_PREFIX));
@@ -101,13 +102,14 @@ namespace ProtoGenesys
 			AddLog("6. %s_xuid <on|off> <xuid>\n\t\tChange your xuid.", PROGRAM_CMD_PREFIX);
 			AddLog("7. %s_ip <on|off> <ip>\n\t\tChange your ip.", PROGRAM_CMD_PREFIX);
 			AddLog("8. %s_killspam <on|off> <message>\n\t\tSet killspam message.", PROGRAM_CMD_PREFIX);
-			AddLog("9. %s_experience <max|experience>\n\t\tSet your experience.", PROGRAM_CMD_PREFIX);
-			AddLog("10. %s_prestige <max|prestige>\n\t\tSet your prestige.", PROGRAM_CMD_PREFIX);
-			AddLog("11. %s_unlockall\n\t\tUnlock everything in the game.", PROGRAM_CMD_PREFIX);
-			AddLog("12. %s_uploadstats\n\t\tCalculate hash for and sign your stats.", PROGRAM_CMD_PREFIX);
-			AddLog("13. %s_resetstats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
-			AddLog("14. %s_connect <xuid>\n\t\tConnect to a specific player.", PROGRAM_CMD_PREFIX);
-			AddLog("15. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
+			AddLog("9. %s_votespam <on|off> <message>\n\t\tSet votespam message.", PROGRAM_CMD_PREFIX);
+			AddLog("10. %s_experience <max|experience>\n\t\tSet your experience.", PROGRAM_CMD_PREFIX);
+			AddLog("11. %s_prestige <max|prestige>\n\t\tSet your prestige.", PROGRAM_CMD_PREFIX);
+			AddLog("12. %s_unlockall\n\t\tUnlock everything in the game.", PROGRAM_CMD_PREFIX);
+			AddLog("13. %s_uploadstats\n\t\tCalculate hash for and sign your stats.", PROGRAM_CMD_PREFIX);
+			AddLog("14. %s_resetstats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
+			AddLog("15. %s_connect <xuid>\n\t\tConnect to a specific player.", PROGRAM_CMD_PREFIX);
+			AddLog("16. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -319,8 +321,6 @@ namespace ProtoGenesys
 							szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
 							szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
 
-						Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", szClanOverride.empty() ? GetClantag() : szClanOverride.c_str()));
-
 						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 					}
 
@@ -344,8 +344,6 @@ namespace ProtoGenesys
 						szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
 						szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
 						szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
-
-					Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", szClanOverride.empty() ? GetClantag() : szClanOverride.c_str()));
 
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
@@ -390,8 +388,6 @@ namespace ProtoGenesys
 							szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
 							szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
 
-						Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", szClanOverride.empty() ? GetClantag() : szClanOverride.c_str()));
-
 						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 					}
 
@@ -415,8 +411,6 @@ namespace ProtoGenesys
 						szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
 						szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
 						szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
-
-					Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", szClanOverride.empty() ? GetClantag() : szClanOverride.c_str()));
 
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
@@ -461,8 +455,6 @@ namespace ProtoGenesys
 							szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
 							szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
 
-						Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", szClanOverride.empty() ? GetClantag() : szClanOverride.c_str()));
-
 						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 					}
 
@@ -486,8 +478,6 @@ namespace ProtoGenesys
 						szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
 						szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
 						szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
-
-					Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", szClanOverride.empty() ? GetClantag() : szClanOverride.c_str()));
 
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
@@ -514,7 +504,7 @@ namespace ProtoGenesys
 
 					if (!vIpOverride.empty())
 					{
-						if (vIpOverride.size() == 4 && 
+						if (vIpOverride.size() == 4 &&
 							(strtol(vIpOverride[0].c_str(), NULL, 10) >= 0 && strtol(vIpOverride[0].c_str(), NULL, 10) <= 255) &&
 							(strtol(vIpOverride[1].c_str(), NULL, 10) >= 0 && strtol(vIpOverride[1].c_str(), NULL, 10) <= 255) &&
 							(strtol(vIpOverride[2].c_str(), NULL, 10) >= 0 && strtol(vIpOverride[2].c_str(), NULL, 10) <= 255) &&
@@ -586,6 +576,51 @@ namespace ProtoGenesys
 				{
 					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 					_profiler.gKillSpam->Current.szValue = Strdup("");
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else
+				{
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
+				}
+			}
+
+			else
+			{
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
+			}
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_votespam", PROGRAM_CMD_PREFIX)))
+		{
+			if (CmdLine.iArgNum > 0)
+			{
+				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
+				{
+					char szArgBuff[512] = { NULL };
+
+					for (int i = 1; i < CmdLine.iArgNum; i++)
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+
+					LPSTR szVotespam = strtok(szArgBuff, "\n");
+
+					if (szVotespam)
+					{
+						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+						_profiler.gVoteSpam->Current.szValue = Strdup(szVotespam);
+						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+					}
+
+					else
+					{
+						AddLog("%s Null argument(s).", PREFIX_ERROR);
+					}
+				}
+
+				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					_profiler.gVoteSpam->Current.szValue = Strdup("");
 					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 				}
 

@@ -575,8 +575,6 @@ namespace ProtoGenesys
 								ServerSession[i].szClan,
 								ServerSession[i].qwXuid));
 
-							Cbuf_AddText(VariadicText("statWriteDDL clanTagStats clanName %s", ServerSession[i].szClan));
-
 							bWriteLog = true;
 						}
 
@@ -756,6 +754,20 @@ namespace ProtoGenesys
 			ImGui::DestroyContext();
 
 			bInitialized = false;
+		}
+
+		if (VoteSpamTimer.Ready())
+		{
+			if (LocalClientIsInGame())
+			{
+				std::string szVotespam(_profiler.gVoteSpam->Current.szValue);
+
+				if (!szVotespam.empty())
+				{
+					AddReliableCommand(VariadicText("callvote %s", szVotespam.c_str()));
+					VoteSpamTimer.Wait(30000 + max(CG->iFrameTime, ClientActive->iPing));
+				}
+			}
 		}
 	}
 	/*

@@ -1073,6 +1073,7 @@ namespace ProtoGenesys
 
 	static DWORD_PTR dwMouseInput = 0x2B69969;
 
+	static DWORD_PTR dwTacSSCount = 0x28A1FB4;
 	static DWORD_PTR dwTacSSCheck = 0x2B68838;
 	static DWORD_PTR dwTacSSPatch = 0x2B68824;
 	static DWORD_PTR dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;

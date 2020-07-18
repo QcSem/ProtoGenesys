@@ -37,6 +37,8 @@ namespace ProtoGenesys
 		ImFont* Bank_Gothic_Pro_Light, * Eurostile_Extended;
 		float flBank_Gothic_Pro_Light, flEurostile_Extended;
 
+		sTimer VoteSpamTimer;
+
 		struct sVirtualKeys
 		{
 			bool bKey, bDown, bUp;

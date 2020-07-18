@@ -268,6 +268,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gXuidOverRide = std::make_shared<sCvar>("XUID Override", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gIpOverRide = std::make_shared<sCvar>("IP Override", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gKillSpam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gVoteSpam = std::make_shared<sCvar>("Votespam", std::vector<std::string>(), _strdup(""));
 
 		acut::XmlDoc<char> XML;
 
