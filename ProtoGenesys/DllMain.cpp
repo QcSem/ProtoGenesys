@@ -108,8 +108,10 @@ tGetFriendGamePlayed oGetFriendGamePlayed;
 
 int USERCALL hAtoi1(LPCSTR string);
 int USERCALL hAtoi2(LPCSTR string);
+LPVOID USERCALL hMemcpy(LPVOID dst, LPCVOID src, SIZE_T size);
 
 QWORD USERCALL hGetUserSteamIDAsXUID();
+LPSTR USERCALL hFilterPersonaName(LPSTR name, bool ascii);
 
 //=====================================================================================
 
@@ -119,8 +121,10 @@ Hook hGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSettingsCall
 
 Hook hAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
 Hook hAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
+Hook hMemcpyCall{ x86Instruction::CALL, (LPVOID)dwMemcpyCall, &hMemcpy };
 
 Hook hGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIDAsXUIDCall, &hGetUserSteamIDAsXUID };
+Hook hFilterPersonaNameCall{ x86Instruction::CALL, (LPVOID)dwFilterPersonaNameCall, &hFilterPersonaName };
 
 //=====================================================================================
 
@@ -321,9 +325,23 @@ int USERCALL hAtoi2(LPCSTR string)
 
 //=====================================================================================
 
+LPVOID USERCALL hMemcpy(LPVOID dst, LPCVOID src, SIZE_T size)
+{
+	return _hooks.Memcpy(dst, src, size);
+}
+
+//=====================================================================================
+
 QWORD USERCALL hGetUserSteamIDAsXUID()
 {
 	return _hooks.GetUserSteamIDAsXUID();
+}
+
+//=====================================================================================
+
+LPSTR USERCALL hFilterPersonaName(LPSTR name, bool ascii)
+{
+	return _hooks.FilterPersonaName(name, ascii);
 }
 
 //=====================================================================================
@@ -371,9 +389,11 @@ void Init()
 	hTransitionPlayerStateCall.SetHook();
 	hGetWorldTagMatrixCall.SetHook();
 	hGameTypeSettingsCall.SetHook();
+	hFilterPersonaNameCall.SetHook();
 
 	hAtoiCall1.SetHook();
 	hAtoiCall2.SetHook();
+	hMemcpyCall.SetHook();
 
 	HookSteamUserAPI();
 	HookSteamFriendsAPI();
@@ -407,9 +427,11 @@ void Free()
 	hTransitionPlayerStateCall.UnHook();
 	hGetWorldTagMatrixCall.UnHook();
 	hGameTypeSettingsCall.UnHook();
+	hFilterPersonaNameCall.UnHook();
 
 	hAtoiCall1.UnHook();
 	hAtoiCall2.UnHook();
+	hMemcpyCall.UnHook();
 
 	if (hGetUserSteamIDAsXUIDCall.IsHooked())
 		hGetUserSteamIDAsXUIDCall.UnHook();

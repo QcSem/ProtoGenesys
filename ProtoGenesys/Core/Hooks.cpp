@@ -664,9 +664,23 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	LPVOID cHooks::Memcpy(LPVOID dst, LPCVOID src, SIZE_T size)
+	{
+		return memcpy(dst, src, strlen((LPCSTR)src));
+	}
+	/*
+	//=====================================================================================
+	*/
 	QWORD cHooks::GetUserSteamIDAsXUID()
 	{
 		return qwXuidOverride;
+	}
+	/*
+	//=====================================================================================
+	*/
+	LPSTR cHooks::FilterPersonaName(LPSTR name, bool ascii)
+	{
+		return name;
 	}
 	/*
 	//=====================================================================================

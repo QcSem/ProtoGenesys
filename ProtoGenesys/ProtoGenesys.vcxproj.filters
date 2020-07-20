@@ -122,9 +122,6 @@
     <ClInclude Include="Core\Profiler\RapidXML\Utilities\StringUtility.hpp">
       <Filter>Core\Profiler\RapidXML\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Core\AntiAim\AntiAim.h">
-      <Filter>Core\AntiAim</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Removals\Removals.h">
       <Filter>Core\Removals</Filter>
     </ClInclude>
@@ -208,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="Core\Hook\Hook.h">
       <Filter>Core\Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\AntiAim\AntiAim.h">
+      <Filter>Core\AntiAim</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
