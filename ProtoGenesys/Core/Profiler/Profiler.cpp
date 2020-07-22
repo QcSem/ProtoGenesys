@@ -29,9 +29,9 @@ namespace ProtoGenesys
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiKillTeamMates", gAntiKillTeamMates->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiKillIgnored", gAntiKillIgnored->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SilentAim", gSilentAim->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.BoneScan", gBoneScan->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.BoneScan", gBoneScan->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SortMethod", gSortMethod->Current.iValue);
 
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Mode", gWallHackMode->Current.iValue);
@@ -154,9 +154,9 @@ namespace ProtoGenesys
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiKillTeamMates", gAntiKillTeamMates->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiKillIgnored", gAntiKillIgnored->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SilentAim", gSilentAim->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.BoneScan", gBoneScan->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.BoneScan", gBoneScan->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SortMethod", gSortMethod->Current.iValue);
 
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Mode", gWallHackMode->Current.iValue);
@@ -262,9 +262,9 @@ namespace ProtoGenesys
 		gAntiKillTeamMates->Current.iValue = FALSE;
 		gAntiKillIgnored->Current.iValue = FALSE;
 		gSilentAim->Current.iValue = FALSE;
+		gBoneScan->Current.iValue = FALSE;
 		gAntiAimPitch->Current.iValue = ANTIAIM_PITCH_OFF;
 		gAntiAimYaw->Current.iValue = ANTIAIM_YAW_OFF;
-		gBoneScan->Current.iValue = BONESCAN_OFF;
 		gSortMethod->Current.iValue = SORT_METHOD_DISTANCE;
 
 		gWallHackMode->Current.iValue = WALLHACK_MODE_AXIS;

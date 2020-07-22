@@ -371,10 +371,10 @@ namespace ProtoGenesys
 	*/
 	void cDrawing::DrawMultiPoints(std::vector<ImVec2> multipoints)
 	{
-		for (auto& vMultiPoint : multipoints)
+		for (auto& MultiPoint : multipoints)
 		{
-			ImGui::GetWindowDrawList()->AddRectFilled(vMultiPoint - ImVec2(1.0f, 1.0f), vMultiPoint + ImVec2(2.0f, 2.0f), ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
-			ImGui::GetWindowDrawList()->AddRectFilled(vMultiPoint, vMultiPoint + ImVec2(1.0f, 1.0f), ImGui::GetColorU32(_profiler.gColorText->Current.cValue));
+			ImGui::GetWindowDrawList()->AddRectFilled(MultiPoint - ImVec2(1.0f, 1.0f), MultiPoint + ImVec2(2.0f, 2.0f), ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+			ImGui::GetWindowDrawList()->AddRectFilled(MultiPoint, MultiPoint + ImVec2(1.0f, 1.0f), ImGui::GetColorU32(_profiler.gColorText->Current.cValue));
 		}
 	}
 	/*
@@ -631,7 +631,7 @@ namespace ProtoGenesys
 					{
 					case ET_PLAYER:
 					{
-						if (_targetList.Priorities[i].bDoMultiPoint)
+						if (_targetList.Priorities[i].bIsMultiPoint)
 							DrawMultiPoints(_targetList.EntityList[i].vMultiPoints2D);
 					
 						DrawClient(&CG->CEntity[i], _targetList.EntityList[i].vBones2D, _targetList.EntityList[i].vCorners2D, _targetList.EntityList[i].vCenter2D, _targetList.EntityList[i].vLower.y - _targetList.EntityList[i].vUpper.y, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin), CG->ClientInfo[i].szName, _targetList.EntityList[i].cColor);

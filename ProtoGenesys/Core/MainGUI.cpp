@@ -174,17 +174,17 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gBoneScan->szName, _profiler.gBoneScan->szItems[_profiler.gBoneScan->Current.iValue], &_profiler.gBoneScan->Current.iValue, _profiler.gBoneScan->Domain.iMin, _profiler.gBoneScan->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				if (DrawOption(_profiler.gAntiAimPitch->szName, _profiler.gAntiAimPitch->szItems[_profiler.gAntiAimPitch->Current.iValue], &_profiler.gAntiAimPitch->Current.iValue, _profiler.gAntiAimPitch->Domain.iMin, _profiler.gAntiAimPitch->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
 				if (DrawOption(_profiler.gAntiAimYaw->szName, _profiler.gAntiAimYaw->szItems[_profiler.gAntiAimYaw->Current.iValue], &_profiler.gAntiAimYaw->Current.iValue, _profiler.gAntiAimYaw->Domain.iMin, _profiler.gAntiAimYaw->Domain.iMax, 1))
-				{
-					bWriteLog = true;
-				} ImGui::NewLine();
-
-				if (DrawOption(_profiler.gBoneScan->szName, _profiler.gBoneScan->szItems[_profiler.gBoneScan->Current.iValue], &_profiler.gBoneScan->Current.iValue, _profiler.gBoneScan->Domain.iMin, _profiler.gBoneScan->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -204,9 +204,9 @@ namespace ProtoGenesys
 					_profiler.gApplyPrediction->Current.iValue = _profiler.gApplyPrediction->Reset.iValue;
 					_profiler.gAntiKillTeamMates->Current.iValue = _profiler.gAntiKillTeamMates->Reset.iValue;
 					_profiler.gSilentAim->Current.iValue = _profiler.gSilentAim->Reset.iValue;
+					_profiler.gBoneScan->Current.iValue = _profiler.gBoneScan->Reset.iValue;
 					_profiler.gAntiAimPitch->Current.iValue = _profiler.gAntiAimPitch->Reset.iValue;
 					_profiler.gAntiAimYaw->Current.iValue = _profiler.gAntiAimYaw->Reset.iValue;
-					_profiler.gBoneScan->Current.iValue = _profiler.gBoneScan->Reset.iValue;
 					_profiler.gSortMethod->Current.iValue = _profiler.gSortMethod->Reset.iValue;
 
 					bWriteLog = true;
@@ -588,12 +588,12 @@ namespace ProtoGenesys
 
 						if (ImGui::Selectable("Multipoint"))
 						{
-							_targetList.Priorities[i].bDoMultiPoint = !_targetList.Priorities[i].bDoMultiPoint;
+							_targetList.Priorities[i].bIsMultiPoint = !_targetList.Priorities[i].bIsMultiPoint;
 
 							bWriteLog = true;
 						}
 
-						if (_targetList.Priorities[i].bDoMultiPoint)
+						if (_targetList.Priorities[i].bIsMultiPoint)
 						{
 							ImGui::SameLine();
 							ImGui::RenderCheckMark(ImGui::GetCurrentWindow()->DrawList, ImGui::GetCurrentWindow()->DC.CursorPos, ImGui::GetColorU32(ImGuiCol_CheckMark), ImGui::GetCurrentContext()->FontSize);

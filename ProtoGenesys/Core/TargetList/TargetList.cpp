@@ -35,6 +35,8 @@ namespace ProtoGenesys
 
 			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER || CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
 			{
+				EntityList[i].vScanPoints.clear();
+
 				LPVOID lpDObj = GetDObj(&CG->CEntity[i]);
 
 				if (!lpDObj)
@@ -67,21 +69,46 @@ namespace ProtoGenesys
 
 				if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
 				{
-					EntityList[i].vMultiPoints2D.clear();
-					EntityList[i].vMultiPoints3D.clear();
-
-					EntityList[i].vMultiPoints3D = CalculateMultiPoints(&CG->CEntity[i], EntityList[i].vBones3D, _profiler.gPointScale->Current.iValue, 2.0f);
-
-					for (auto& vMultiPoint3D : EntityList[i].vMultiPoints3D)
+					if (_profiler.gBoneScan->Current.iValue &&
+						(((_profiler.gBoneScanPriorities->Current.iValue && Priorities[i].bIsPrioritized) ||
+						(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i]))) ||
+						(!_profiler.gBoneScanPriorities->Current.iValue && !_profiler.gBoneScanRiotShielders->Current.iValue)))
 					{
-						ImVec2 vMultiPoint2D;
-
-						_mathematics.WorldToScreen(vMultiPoint3D, vMultiPoint2D);
-						EntityList[i].vMultiPoints2D.push_back(vMultiPoint2D);
+						for (auto& Bone : vBones)
+						{
+							EntityList[i].vScanPoints.push_back(EntityList[i].vBones3D[Bone.first]);
+						}
 					}
 
-					EntityList[i].vCenter3D = (vMinTemp + vMaxTemp) / 2.0f;
+					else
+					{
+						EntityList[i].vScanPoints.push_back(EntityList[i].vBones3D[_profiler.gAimBone->Current.iValue]);
+					}
+
+					if (Priorities[i].bIsMultiPoint)
+					{
+						EntityList[i].vMultiPoints2D.clear();
+						EntityList[i].vMultiPoints3D.clear();
+
+						EntityList[i].vMultiPoints3D = CalculateMultiPoints(&CG->CEntity[i], EntityList[i].vBones3D, _profiler.gPointScale->Current.iValue, 2.0f);
+
+						for (auto& MultiPoint3D : EntityList[i].vMultiPoints3D)
+						{
+							ImVec2 vMultiPoint2D;
+
+							_mathematics.WorldToScreen(MultiPoint3D, vMultiPoint2D);
+							EntityList[i].vMultiPoints2D.push_back(vMultiPoint2D);
+							EntityList[i].vScanPoints.push_back(MultiPoint3D);
+						}
+					}
 				}
+
+				else if (CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
+				{
+					EntityList[i].vScanPoints.push_back(EntityList[i].vBones3D[vBones[BONE_HEAD].first]);
+				}
+
+				EntityList[i].vCenter3D = (vMinTemp + vMaxTemp) / 2.0f;
 			}
 
 			if (WeaponNames[(BYTE)CG->CEntity[i].NextEntityState.iWeaponID].szDisplayName)
@@ -105,13 +132,15 @@ namespace ProtoGenesys
 				_mathematics.WorldToCompass(CG->CEntity[i].vOrigin, _drawing.Compass.vCompassPosition, _drawing.Compass.flCompassSize, _drawing.Compass.vArrowPosition[i]);
 				_mathematics.WorldToRadar(CG->CEntity[i].vOrigin, _drawing.Radar.vRadarPosition, _drawing.Radar.flScale, _drawing.Radar.flRadarSize, _drawing.Radar.flBlipSize, _drawing.Radar.vBlipPosition[i]);
 
+				bool bIsVisible = IsVisible(&CG->CEntity[i], std::vector<ImVec3>({ EntityList[i].vBones3D[vBones[BONE_HEAD].first] }), NULL, false, NULL);
+
 				if (EntityIsTeammate(&CG->CEntity[i]))
 				{
-					EntityList[i].cColor = ScanPosition(&CG->CEntity[i], EntityList[i].vBones3D[vBones[BONE_HEAD].first], false, NULL) ? _profiler.gColorAlliesVisible->Current.cValue : _profiler.gColorAlliesInvisible->Current.cValue;
+					EntityList[i].cColor = bIsVisible ? _profiler.gColorAlliesVisible->Current.cValue : _profiler.gColorAlliesInvisible->Current.cValue;
 					continue;
 				}
 
-				EntityList[i].cColor = ScanPosition(&CG->CEntity[i], EntityList[i].vBones3D[vBones[BONE_HEAD].first], false, NULL) ? _profiler.gColorAxisVisible->Current.cValue : _profiler.gColorAxisInvisible->Current.cValue;
+				EntityList[i].cColor = bIsVisible ? _profiler.gColorAxisVisible->Current.cValue : _profiler.gColorAxisInvisible->Current.cValue;
 			}
 
 			else if (CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
@@ -128,89 +157,9 @@ namespace ProtoGenesys
 				continue;
 			}
 
-			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER)
-			{
-				if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_ONTIMER)
-				{
-					if (iBonescanNum == i)
-					{
-						if ((_profiler.gBoneScanPriorities->Current.iValue && Priorities[i].bIsPrioritized) ||
-							(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
-						{
-							EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-							EntityList[i].bIsVisible = ScanBones(&CG->CEntity[i], EntityList[i].vBones3D, EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].iBoneIndex, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-							EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-						}
-
-						else if (!_profiler.gBoneScanPriorities->Current.iValue && !_profiler.gBoneScanRiotShielders->Current.iValue)
-						{
-							EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-							EntityList[i].bIsVisible = ScanBones(&CG->CEntity[i], EntityList[i].vBones3D, EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].iBoneIndex, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-							EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-						}
-
-						else
-						{
-							EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-							EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-							EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-						}
-					}
-
-					else
-					{
-						EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-						EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-						EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-					}
-				}
-
-				else if (_profiler.gBoneScan->Current.iValue == cProfiler::BONESCAN_IMMEDIATE)
-				{
-					if ((_profiler.gBoneScanPriorities->Current.iValue && Priorities[i].bIsPrioritized) ||
-						(_profiler.gBoneScanRiotShielders->Current.iValue && EntityHasRiotShield(&CG->CEntity[i])))
-					{
-						EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-						EntityList[i].bIsVisible = ScanBones(&CG->CEntity[i], EntityList[i].vBones3D, EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].iBoneIndex, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-						EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-					}
-
-					else if (!_profiler.gBoneScanPriorities->Current.iValue && !_profiler.gBoneScanRiotShielders->Current.iValue)
-					{
-						EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-						EntityList[i].bIsVisible = ScanBones(&CG->CEntity[i], EntityList[i].vBones3D, EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex], EntityList[i].iBoneIndex, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-						EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-					}
-
-					else
-					{
-						EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-						EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-						EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-					}
-				}
-
-				else
-				{
-					EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-					EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = (eBone)_profiler.gAimBone->Current.iValue], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-					EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-				}
-
-				if (!EntityList[i].bIsVisible && Priorities[i].bDoMultiPoint)
-				{
-					EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-					EntityList[i].bIsVisible = ScanMultiPoints(&CG->CEntity[i], EntityList[i].vMultiPoints3D, EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-					EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-				}
-			}
-
-			else if (CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
-			{
-				EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
-				EntityList[i].bIsVisible = ScanPosition(&CG->CEntity[i], EntityList[i].vHitLocation = EntityList[i].vBones3D[EntityList[i].iBoneIndex = vBones[BONE_HEAD].first], _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-				EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
-			}
+			EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
+			EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vScanPoints, &EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
+			EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
 
 			if (i < MAX_CLIENTS)
 				if (Priorities[i].bIsIgnored)
@@ -363,87 +312,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::ScanPosition(sCEntity* entity, ImVec3& position, bool autowall, float* damage)
-	{
-		if (bIsSteamVersion)
-		{
-			return std::async(&cTargetList::IsVisibleInternal, this, entity, position, autowall, damage).get();
-		}
-
-		else
-		{
-			return IsVisibleInternal(entity, position, autowall, damage);
-		}
-	}
-	/*
-	//=====================================================================================
-	*/
-	bool cTargetList::ScanBones(sCEntity* entity, ImVec3 bones3d[BONE_MAX], ImVec3& position, eBone& index, bool autowall, float* damage)
-	{
-		bool bReturn = false;
-
-		sDamageInfo DamageInfo;
-		std::vector<sDamageInfo> vDamageInfo;
-		std::vector<sDamageInfo> vDamageInfoFinal;
-		std::vector<std::future<bool>> vIsVisible(BONE_MAX);
-
-		if (bIsSteamVersion)
-		{
-			for (auto& Bone : vBones)
-			{
-				vIsVisible[Bone.first] = std::async(&cTargetList::IsVisibleInternal, this, entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage);
-
-				DamageInfo.iBoneIndex = Bone.first;
-				DamageInfo.vPosition = bones3d[Bone.first];
-
-				vDamageInfo.push_back(DamageInfo);
-			}
-
-			for (auto& Bone : vBones)
-			{
-				if (vIsVisible[Bone.first].get())
-				{
-					vDamageInfoFinal.push_back(vDamageInfo[Bone.first]);
-
-					bReturn = true;
-				}
-			}
-		}
-
-		else
-		{
-			for (auto& Bone : vBones)
-			{
-				if (IsVisibleInternal(entity, bones3d[Bone.first], autowall, &DamageInfo.flDamage))
-				{
-					DamageInfo.iBoneIndex = Bone.first;
-					DamageInfo.vPosition = bones3d[Bone.first];
-
-					vDamageInfoFinal.push_back(DamageInfo);
-
-					bReturn = true;
-				}
-			}
-		}
-
-		if (!vDamageInfoFinal.empty())
-		{
-			std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
-
-			if (damage) *damage = vDamageInfoFinal.front().flDamage;
-
-			index = vDamageInfoFinal.front().iBoneIndex;
-			position = vDamageInfoFinal.front().vPosition;
-
-			vDamageInfoFinal.clear();
-		}
-
-		return bReturn;
-	}
-	/*
-	//=====================================================================================
-	*/
-	bool cTargetList::ScanMultiPoints(sCEntity* entity, std::vector<ImVec3> multipoints, ImVec3& position, bool autowall, float* damage)
+	bool cTargetList::IsVisible(sCEntity* entity, std::vector<ImVec3> scanpoints, ImVec3* position, bool autowall, float* damage)
 	{
 		bool bReturn = false;
 
@@ -454,16 +323,16 @@ namespace ProtoGenesys
 
 		if (bIsSteamVersion)
 		{
-			for (size_t i = 0; i < multipoints.size(); i++)
+			for (size_t i = 0; i < scanpoints.size(); i++)
 			{
-				vIsVisible.push_back(std::async(&cTargetList::IsVisibleInternal, this, entity, multipoints[i], autowall, &DamageInfo.flDamage));
+				vIsVisible.push_back(std::async(&cTargetList::IsVisibleInternal, this, entity, scanpoints[i], autowall, &DamageInfo.flDamage));
 
-				DamageInfo.vPosition = multipoints[i];
+				DamageInfo.vPosition = scanpoints[i];
 
 				vDamageInfo.push_back(DamageInfo);
 			}
 
-			for (size_t i = 0; i < multipoints.size(); i++)
+			for (size_t i = 0; i < scanpoints.size(); i++)
 			{
 				if (vIsVisible[i].get())
 				{
@@ -476,11 +345,11 @@ namespace ProtoGenesys
 
 		else
 		{
-			for (size_t i = 0; i < multipoints.size(); i++)
+			for (size_t i = 0; i < scanpoints.size(); i++)
 			{
-				if (IsVisibleInternal(entity, multipoints[i], autowall, &DamageInfo.flDamage))
+				if (IsVisibleInternal(entity, scanpoints[i], autowall, &DamageInfo.flDamage))
 				{
-					DamageInfo.vPosition = multipoints[i];
+					DamageInfo.vPosition = scanpoints[i];
 
 					vDamageInfoFinal.push_back(DamageInfo);
 
@@ -493,9 +362,11 @@ namespace ProtoGenesys
 		{
 			std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
 
-			if (damage) *damage = vDamageInfoFinal.front().flDamage;
+			if (damage)
+				*damage = vDamageInfoFinal.front().flDamage;
 
-			position = vDamageInfoFinal.front().vPosition;
+			if (position)
+				*position = vDamageInfoFinal.front().vPosition;
 
 			vDamageInfoFinal.clear();
 		}

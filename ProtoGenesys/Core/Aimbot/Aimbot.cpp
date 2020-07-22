@@ -103,12 +103,6 @@ namespace ProtoGenesys
 			AimState.iCurrentAimTime = 0;
 		}
 
-		if (_targetList.EntityList[AimState.iTargetNum].iLastBone != _targetList.EntityList[AimState.iTargetNum].iBoneIndex)
-		{
-			_targetList.EntityList[AimState.iTargetNum].iLastBone = _targetList.EntityList[AimState.iTargetNum].iBoneIndex;
-			AimState.iCurrentAimTime = 0;
-		}
-
 		if (!AimState.bTargetAcquired || _mainGui.bIsAirStuck)
 			AimState.iCurrentAimDelay = AimState.iCurrentZoomDelay = AimState.iCurrentFireDelay = 0;
 

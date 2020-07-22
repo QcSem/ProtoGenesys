@@ -147,14 +147,6 @@ namespace ProtoGenesys
 			ANTIAIM_YAW_MAX
 		};
 
-		enum eBoneScan
-		{
-			BONESCAN_OFF,
-			BONESCAN_ONTIMER,
-			BONESCAN_IMMEDIATE,
-			BONESCAN_MAX
-		};
-
 		enum eSortMethod
 		{
 			SORT_METHOD_DISTANCE,
@@ -210,9 +202,9 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gAntiKillTeamMates = std::make_shared<sCvar>("Anti-Kill Teammates", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAntiKillIgnored = std::make_shared<sCvar>("Anti-Kill Ignored", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gSilentAim = std::make_shared<sCvar>("Silent-Aim", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Zero", "Up", "Down", "Jitter", "Random", "Reverse" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
 		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Zero", "Spin", "Jitter", "Random", "Reverse" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
-		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On Timer", "Immediate" }), BONESCAN_OFF, BONESCAN_OFF, BONESCAN_MAX - 1);
 		std::shared_ptr<sCvar> gSortMethod = std::make_shared<sCvar>("Sort Method", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_METHOD_DISTANCE, SORT_METHOD_DISTANCE, SORT_METHOD_MAX - 1);
 
 		std::shared_ptr<sCvar> gWallHackMode = std::make_shared<sCvar>("Mode", std::vector<std::string>({ "Axis", "Allies", "All" }), WALLHACK_MODE_AXIS, WALLHACK_MODE_AXIS, WALLHACK_MODE_MAX - 1);

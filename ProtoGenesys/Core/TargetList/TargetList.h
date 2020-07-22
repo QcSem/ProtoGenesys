@@ -28,17 +28,15 @@ namespace ProtoGenesys
 		struct sDamageInfo
 		{
 			float flDamage = -FLT_MAX;
-			eBone iBoneIndex;
 			ImVec3 vPosition;
 		};
 
 		struct sEntityList
 		{
 			bool bIsValid, bW2SSuccess, bIsVisible;
-			eBone iBoneIndex, iLastBone;
 			std::string szWeapon;
 			std::vector<ImVec2> vMultiPoints2D;
-			std::vector<ImVec3> vMultiPoints3D;
+			std::vector<ImVec3> vMultiPoints3D, vScanPoints;
 			float flDistance, flDamage, flFOV;
 			ImVec2 vBones2D[BONE_MAX], vCorners2D[8], vCenter2D, vPosition, vDimentions, vLower, vUpper;
 			ImVec3 vBones3D[BONE_MAX], vCorners3D[8], vCenter3D, vHitLocation;
@@ -47,14 +45,12 @@ namespace ProtoGenesys
 
 		struct sPriorities
 		{
-			bool bIsPrioritized, bIsIgnored, bDoMultiPoint;
+			bool bIsPrioritized, bIsIgnored, bIsMultiPoint;
 		} Priorities[MAX_CLIENTS];
 
 		void GetInformation();
 		bool IsVisibleInternal(sCEntity* entity, ImVec3 position, bool autowall, float* damage);
-		bool ScanPosition(sCEntity* entity, ImVec3& position, bool autowall, float* damage);
-		bool ScanBones(sCEntity* entity, ImVec3 bones3d[BONE_MAX], ImVec3& position, eBone& index, bool autowall, float* damage);
-		bool ScanMultiPoints(sCEntity* entity, std::vector<ImVec3> multipoints, ImVec3& position, bool autowall, float* damage);
+		bool IsVisible(sCEntity* entity, std::vector<ImVec3> scanpoints, ImVec3* position, bool autowall, float* damage);
 		std::vector<ImVec3> CalculateMultiPoints(sCEntity* entity, ImVec3 bones3d[BONE_MAX], int divisor, float radius);
 	} extern _targetList;
 }
