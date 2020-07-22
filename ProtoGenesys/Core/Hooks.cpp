@@ -167,8 +167,8 @@ namespace ProtoGenesys
 
 				if (ExceptionInfo->ContextRecord->Eip != 0x9B389B && ExceptionInfo->ContextRecord->Eip != 0x9B389C)
 				{
-					_console.AddLog("%s STATUS_ACCESS_VIOLATION @ 0x%X", PREFIX_WARNING, ExceptionInfo->ExceptionRecord->ExceptionAddress);
-					Com_Error(ERR_DROP, "STATUS_ACCESS_VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
+					_console.AddLog("%s STATUS ACCESS VIOLATION @ 0x%X", PREFIX_WARNING, ExceptionInfo->ExceptionRecord->ExceptionAddress);
+					Com_Error(ERR_DROP, "STATUS ACCESS VIOLATION @ 0x%X", ExceptionInfo->ExceptionRecord->ExceptionAddress);
 
 					return EXCEPTION_CONTINUE_EXECUTION;
 				}
