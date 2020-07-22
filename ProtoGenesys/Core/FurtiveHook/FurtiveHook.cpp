@@ -4,7 +4,7 @@
 
 //=====================================================================================
 
-Hook::~Hook()
+FurtiveHook::~FurtiveHook()
 {
 	if (unhook_in_dtor && hooked)
 	{
@@ -21,7 +21,7 @@ Hook::~Hook()
 
 //=====================================================================================
 
-void Hook::SetHook()
+void FurtiveHook::SetHook()
 {
 	DWORD old_protection{ 0 };
 
@@ -50,7 +50,7 @@ void Hook::SetHook()
 
 //=====================================================================================
 
-void Hook::UnHook()
+void FurtiveHook::UnHook()
 {
 	DWORD old_protection{ 0 };
 
@@ -68,14 +68,14 @@ void Hook::UnHook()
 
 //=====================================================================================
 
-bool Hook::IsHooked() const
+bool FurtiveHook::IsHooked() const
 {
 	return hooked;
 }
 
 //=====================================================================================
 
-Hook::Hook(x86Instruction instruction, void* address, void* target_function, unsigned int nops, bool unhook_in_dtor) :
+FurtiveHook::FurtiveHook(x86Instruction instruction, void* address, void* target_function, unsigned int nops, bool unhook_in_dtor) :
 	instruction{ instruction },
 	address{ address },
 	target_function{ target_function },
@@ -88,7 +88,7 @@ Hook::Hook(x86Instruction instruction, void* address, void* target_function, uns
 
 //=====================================================================================
 
-HotPatch::HotPatch(void* function, void* new_function, bool unpatch_in_dtor) :
+FurtivePatch::FurtivePatch(void* function, void* new_function, bool unpatch_in_dtor) :
 	function{ function },
 	new_function{ new_function },
 	unpatch_in_dtor{ unpatch_in_dtor },
@@ -99,7 +99,7 @@ HotPatch::HotPatch(void* function, void* new_function, bool unpatch_in_dtor) :
 
 //=====================================================================================
 
-HotPatch::~HotPatch()
+FurtivePatch::~FurtivePatch()
 {
 	if (unpatch_in_dtor && patched)
 	{
@@ -116,48 +116,48 @@ HotPatch::~HotPatch()
 
 //=====================================================================================
 
-void* HotPatch::Patch()
+void* FurtivePatch::Patch()
 {
 	void* original_function = nullptr;
 
 	DWORD protection{ 0 };
 
-	hotpatch = reinterpret_cast<HotPatchData*>(function.byte_ptr - 5);
+	furtivepatch = reinterpret_cast<FurtivePatchData*>(function.byte_ptr - 5);
 
-	VirtualProtect(hotpatch, 7, PAGE_EXECUTE_READWRITE, &protection);
+	VirtualProtect(furtivepatch, 7, PAGE_EXECUTE_READWRITE, &protection);
 
 	original_function = function.byte_ptr + 2;
-	hotpatch->JMP = 0xE9;
-	hotpatch->function = reinterpret_cast<void*>(new_function.byte_ptr - function.byte_ptr);
-	hotpatch->JMP_back = 0xF9EB;
+	furtivepatch->JMP = 0xE9;
+	furtivepatch->function = reinterpret_cast<void*>(new_function.byte_ptr - function.byte_ptr);
+	furtivepatch->JMP_back = 0xF9EB;
 
 	patched = true;
 
-	VirtualProtect(hotpatch, 7, protection, &protection);
+	VirtualProtect(furtivepatch, 7, protection, &protection);
 
 	return original_function;
 }
 
 //=====================================================================================
 
-void HotPatch::UnPatch()
+void FurtivePatch::UnPatch()
 {
 	DWORD protection{ 0 };
 
-	VirtualProtect(hotpatch, 7, PAGE_EXECUTE_READWRITE, &protection);
+	VirtualProtect(furtivepatch, 7, PAGE_EXECUTE_READWRITE, &protection);
 
-	hotpatch->JMP_back = 0xFF8B;
-	hotpatch->JMP = 0x90;
-	hotpatch->function = reinterpret_cast<void*>(0x90909090);
+	furtivepatch->JMP_back = 0xFF8B;
+	furtivepatch->JMP = 0x90;
+	furtivepatch->function = reinterpret_cast<void*>(0x90909090);
 
 	patched = false;
 
-	VirtualProtect(hotpatch, 7, protection, &protection);
+	VirtualProtect(furtivepatch, 7, protection, &protection);
 }
 
 //=====================================================================================
 
-bool HotPatch::IsPatched() const
+bool FurtivePatch::IsPatched() const
 {
 	return patched;
 }

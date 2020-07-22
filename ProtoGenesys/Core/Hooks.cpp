@@ -548,6 +548,8 @@ namespace ProtoGenesys
 	*/
 	void cHooks::CreateScreenShot(int unk1, int unk2, int unk3, int unk4)
 	{
+		_console.AddLog("%s SCREENSHOT ATTEMPT BLOCKED", PREFIX_WARNING);
+
 		iScreenShotCount++;
 	}
 	/*
@@ -637,7 +639,7 @@ namespace ProtoGenesys
 			std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_DMP, " ", ""), std::ios_base::out | std::ios_base::app);
 			file << std::hex << result << std::endl;
 
-			_console.AddLog("%s RCE_ATTEMPT_BLOCKED @ 0x%X", PREFIX_WARNING, result);
+			_console.AddLog("%s RCE ATTEMPT BLOCKED @ 0x%X", PREFIX_WARNING, result);
 
 			result = 0;
 		}
@@ -654,7 +656,7 @@ namespace ProtoGenesys
 			std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_DMP, " ", ""), std::ios_base::out | std::ios_base::app);
 			file << std::hex << (0x2E448C80 + 0x4 * result + 0x6885C) << std::endl;
 
-			_console.AddLog("%s RCE_ATTEMPT_BLOCKED @ 0x%X", PREFIX_WARNING, (0x2E448C80 + 0x4 * result + 0x6885C));
+			_console.AddLog("%s RCE ATTEMPT BLOCKED @ 0x%X", PREFIX_WARNING, (0x2E448C80 + 0x4 * result + 0x6885C));
 
 			result = 0;
 		}

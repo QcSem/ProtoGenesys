@@ -115,16 +115,16 @@ LPSTR USERCALL hFilterPersonaName(LPSTR name, bool ascii);
 
 //=====================================================================================
 
-Hook hTransitionPlayerStateCall{ x86Instruction::CALL, (LPVOID)dwTransitionPlayerStateCall, &hTransitionPlayerState };
-Hook hGetWorldTagMatrixCall{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
-Hook hGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSettingsCall, &hGameTypeSettings };
+FurtiveHook fhTransitionPlayerStateCall{ x86Instruction::CALL, (LPVOID)dwTransitionPlayerStateCall, &hTransitionPlayerState };
+FurtiveHook fhGetWorldTagMatrixCall{ x86Instruction::CALL, (LPVOID)dwGetWorldTagMatrixCall, &hGetWorldTagMatrix };
+FurtiveHook fhGameTypeSettingsCall{ x86Instruction::CALL, (LPVOID)dwGameTypeSettingsCall, &hGameTypeSettings };
 
-Hook hAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
-Hook hAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
-Hook hMemcpyCall{ x86Instruction::CALL, (LPVOID)dwMemcpyCall, &hMemcpy };
+FurtiveHook fhAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
+FurtiveHook fhAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
+FurtiveHook fhMemcpyCall{ x86Instruction::CALL, (LPVOID)dwMemcpyCall, &hMemcpy };
 
-Hook hGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIDAsXUIDCall, &hGetUserSteamIDAsXUID };
-Hook hFilterPersonaNameCall{ x86Instruction::CALL, (LPVOID)dwFilterPersonaNameCall, &hFilterPersonaName };
+FurtiveHook fhGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIDAsXUIDCall, &hGetUserSteamIDAsXUID };
+FurtiveHook fhFilterPersonaNameCall{ x86Instruction::CALL, (LPVOID)dwFilterPersonaNameCall, &hFilterPersonaName };
 
 //=====================================================================================
 
@@ -386,14 +386,14 @@ void Init()
 	AttachHook(oIsValidSteamID, hIsValidSteamID);
 	AttachHook(oCreateScreenShot, hCreateScreenShot);
 
-	hTransitionPlayerStateCall.SetHook();
-	hGetWorldTagMatrixCall.SetHook();
-	hGameTypeSettingsCall.SetHook();
-	hFilterPersonaNameCall.SetHook();
+	fhTransitionPlayerStateCall.SetHook();
+	fhGetWorldTagMatrixCall.SetHook();
+	fhGameTypeSettingsCall.SetHook();
+	fhFilterPersonaNameCall.SetHook();
 
-	hAtoiCall1.SetHook();
-	hAtoiCall2.SetHook();
-	hMemcpyCall.SetHook();
+	fhAtoiCall1.SetHook();
+	fhAtoiCall2.SetHook();
+	fhMemcpyCall.SetHook();
 
 	HookSteamUserAPI();
 	HookSteamFriendsAPI();
@@ -424,17 +424,17 @@ void Free()
 	DetachHook(oIsValidSteamID, hIsValidSteamID);
 	DetachHook(oCreateScreenShot, hCreateScreenShot);
 
-	hTransitionPlayerStateCall.UnHook();
-	hGetWorldTagMatrixCall.UnHook();
-	hGameTypeSettingsCall.UnHook();
-	hFilterPersonaNameCall.UnHook();
+	fhTransitionPlayerStateCall.UnHook();
+	fhGetWorldTagMatrixCall.UnHook();
+	fhGameTypeSettingsCall.UnHook();
+	fhFilterPersonaNameCall.UnHook();
 
-	hAtoiCall1.UnHook();
-	hAtoiCall2.UnHook();
-	hMemcpyCall.UnHook();
+	fhAtoiCall1.UnHook();
+	fhAtoiCall2.UnHook();
+	fhMemcpyCall.UnHook();
 
-	if (hGetUserSteamIDAsXUIDCall.IsHooked())
-		hGetUserSteamIDAsXUIDCall.UnHook();
+	if (fhGetUserSteamIDAsXUIDCall.IsHooked())
+		fhGetUserSteamIDAsXUIDCall.UnHook();
 
 	if (oGetSteamID)
 		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
@@ -515,7 +515,7 @@ void WINAPI SteamID(LPWSTR xuid)
 	_hooks.bXuidOverride = true;
 	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
 
-	hGetUserSteamIDAsXUIDCall.SetHook();
+	fhGetUserSteamIDAsXUIDCall.SetHook();
 }
 
 //=====================================================================================

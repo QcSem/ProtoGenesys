@@ -21,11 +21,11 @@ union Ptr
 
 //=====================================================================================
 
-class Hook
+class FurtiveHook
 {
 public:
-	Hook(x86Instruction instruction, void* address, void* target_function, unsigned int nops = 0, bool unhook_in_dtor = false);
-	~Hook();
+	FurtiveHook(x86Instruction instruction, void* address, void* target_function, unsigned int nops = 0, bool unhook_in_dtor = false);
+	~FurtiveHook();
 
 	void SetHook();
 	void UnHook();
@@ -41,21 +41,21 @@ private:
 	bool			  hooked;
 	std::vector<BYTE> old_bytes;
 
-	Hook() = delete;
-	Hook(const Hook& other) = delete;
-	Hook(Hook&& other) = delete;
+	FurtiveHook() = delete;
+	FurtiveHook(const FurtiveHook& other) = delete;
+	FurtiveHook(FurtiveHook&& other) = delete;
 
-	Hook& operator=(const Hook& other) = delete;
-	Hook& operator=(Hook&& other) = delete;
+	FurtiveHook& operator=(const FurtiveHook& other) = delete;
+	FurtiveHook& operator=(FurtiveHook&& other) = delete;
 };
 
 //=====================================================================================
 
-class HotPatch
+class FurtivePatch
 {
 public:
-	HotPatch(void* function, void* new_function, bool unpatch_in_dtor = false);
-	~HotPatch();
+	FurtivePatch(void* function, void* new_function, bool unpatch_in_dtor = false);
+	~FurtivePatch();
 
 	void* Patch();
 	void UnPatch();
@@ -68,20 +68,20 @@ private:
 	bool unpatch_in_dtor;
 	bool patched;
 #pragma pack(push, 1)
-	struct HotPatchData
+	struct FurtivePatchData
 	{
 		BYTE  JMP;
 		void* function;
 		WORD  JMP_back;
-	} *hotpatch;
+	} *furtivepatch;
 #pragma pack(pop)
 
-	HotPatch() = delete;
-	HotPatch(const HotPatch& other) = delete;
-	HotPatch(HotPatch&& other) = delete;
+	FurtivePatch() = delete;
+	FurtivePatch(const FurtivePatch& other) = delete;
+	FurtivePatch(FurtivePatch&& other) = delete;
 
-	HotPatch& operator=(const HotPatch& other) = delete;
-	HotPatch& operator=(HotPatch&& other) = delete;
+	FurtivePatch& operator=(const FurtivePatch& other) = delete;
+	FurtivePatch& operator=(FurtivePatch&& other) = delete;
 };
 
 //=====================================================================================

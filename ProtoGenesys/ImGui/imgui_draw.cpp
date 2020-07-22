@@ -197,7 +197,7 @@ void ImGui::StyleTabLabels(ImVec4* colors)
     style.colors[TabLabelStyle::Col_TabLabelSelectedText]       = ColorConvertFloat4ToU32(ImVec4(1.00f, 1.00f, 1.00f, 1.00f));
 }
 
-void ImGui::StyleColorsDefault(ImGuiStyle* dst)
+void ImGui::StyleColorsFurtive(ImGuiStyle* dst)
 {
     ImGuiStyle* style = dst ? dst : &ImGui::GetStyle();
     ImVec4* colors = style->Colors;

@@ -71,8 +71,8 @@
     <ClCompile Include="Core\License\License.cpp">
       <Filter>Core\License</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Hook\Hook.cpp">
-      <Filter>Core\Hook</Filter>
+    <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp">
+      <Filter>Core\FurtiveHook</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,11 +203,11 @@
     <ClInclude Include="Core\VMTHook\VMTHook.h">
       <Filter>Core\VMTHook</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Hook\Hook.h">
-      <Filter>Core\Hook</Filter>
-    </ClInclude>
     <ClInclude Include="Core\AntiAim\AntiAim.h">
       <Filter>Core\AntiAim</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\FurtiveHook\FurtiveHook.h">
+      <Filter>Core\FurtiveHook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -283,8 +283,8 @@
     <Filter Include="Core\VMTHook">
       <UniqueIdentifier>{73c8ab63-b3a0-4dd6-9e8a-2e91600386b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Hook">
-      <UniqueIdentifier>{611ea579-668a-4727-9ad3-d7ccef837d98}</UniqueIdentifier>
+    <Filter Include="Core\FurtiveHook">
+      <UniqueIdentifier>{a9bc08bf-cb88-4725-8f45-5991b1fa7e2c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
