@@ -178,20 +178,6 @@ namespace ProtoGenesys
 
 				vTargetInfo.push_back(TargetInfo);
 			}
-
-			if (i < MAX_CLIENTS)
-			{
-				if (Priorities[i].bIsPrioritized)
-				{
-					AntiAimTargetInfo.iIndex = i;
-
-					AntiAimTargetInfo.flDistance = EntityList[i].flDistance;
-					AntiAimTargetInfo.flDamage = EntityList[i].flDamage;
-					AntiAimTargetInfo.flFOV = EntityList[i].flFOV;
-
-					vAntiAimTargetInfo.push_back(AntiAimTargetInfo);
-				}
-			}
 		}
 
 		if (!vTargetInfo.empty())
@@ -236,32 +222,6 @@ namespace ProtoGenesys
 			}
 
 			vTargetInfo.clear();
-		}
-
-		if (!vAntiAimTargetInfo.empty())
-		{
-			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
-			{
-				std::stable_sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flDistance < b.flDistance; });
-
-				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
-			}
-
-			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
-			{
-				std::stable_sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flDamage > b.flDamage; });
-
-				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
-			}
-
-			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
-			{
-				std::stable_sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flFOV < b.flFOV; });
-
-				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
-			}
-
-			vAntiAimTargetInfo.clear();
 		}
 
 		iCounter++;
