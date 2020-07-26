@@ -76,44 +76,9 @@ namespace ProtoGenesys
 			MENU_TAB_TWEAKS,
 			MENU_TAB_STYLES,
 			MENU_TAB_PLAYERS,
+			MENU_TAB_FRIENDS,
 			MENU_TAB_CONSOLE,
 			MENU_TAB_MAX
-		};
-
-		enum eMenuColor
-		{
-			MENU_COLOR_NEUTRAL,
-			MENU_COLOR_NEUTRAL_NEON,
-			MENU_COLOR_RED,
-			MENU_COLOR_RED_NEON,
-			MENU_COLOR_ORANGE,
-			MENU_COLOR_ORANGE_NEON,
-			MENU_COLOR_YELLOW,
-			MENU_COLOR_YELLOW_NEON,
-			MENU_COLOR_GREEN,
-			MENU_COLOR_GREEN_NEON,
-			MENU_COLOR_BLUE,
-			MENU_COLOR_BLUE_NEON,
-			MENU_COLOR_PURPLE,
-			MENU_COLOR_PURPLE_NEON,
-			MENU_COLOR_RAINBOW,
-			MENU_COLOR_RAINBOW_NEON,
-			MENU_COLOR_MAX
-		};
-
-		enum eMenuCursor
-		{
-			MENU_CURSOR_BLACK,
-			MENU_CURSOR_WHITE,
-			MENU_CURSOR_MAX
-		};
-
-		enum eMenuFont
-		{
-			MENU_FONT_LIGHT,
-			MENU_FONT_MEDIUM,
-			MENU_FONT_BOLD,
-			MENU_FONT_MAX
 		};
 
 		enum eAimBotMode
@@ -133,6 +98,7 @@ namespace ProtoGenesys
 			ANTIAIM_PITCH_JITTER,
 			ANTIAIM_PITCH_RANDOM,
 			ANTIAIM_PITCH_REVERSE,
+			ANTIAIM_PITCH_CUSTOM,
 			ANTIAIM_PITCH_MAX
 		};
 
@@ -144,6 +110,7 @@ namespace ProtoGenesys
 			ANTIAIM_YAW_JITTER,
 			ANTIAIM_YAW_RANDOM,
 			ANTIAIM_YAW_REVERSE,
+			ANTIAIM_YAW_CUSTOM,
 			ANTIAIM_YAW_MAX
 		};
 
@@ -192,7 +159,7 @@ namespace ProtoGenesys
 			PLAYER_SNAPLINES_MAX
 		};
 
-		std::shared_ptr<sCvar> gMenuTabs = std::make_shared<sCvar>("Menu Tab", std::vector<std::string>({ "Aimbot", "ESP", "Misc.", "Tweaks", "Styles", "Players", "Console" }), MENU_TAB_AIMBOT, MENU_TAB_AIMBOT, MENU_TAB_MAX);
+		std::shared_ptr<sCvar> gMenuTabs = std::make_shared<sCvar>("Menu Tab", std::vector<std::string>({ "Aimbot", "ESP", "Misc.", "Tweaks", "Styles", "Players", "Friends", "Console" }), MENU_TAB_AIMBOT, MENU_TAB_AIMBOT, MENU_TAB_MAX);
 		
 		std::shared_ptr<sCvar> gAimBotMode = std::make_shared<sCvar>("Mode", std::vector<std::string>({ "Off", "Manual", "Auto" }), AIMBOT_MODE_OFF, AIMBOT_MODE_OFF, AIMBOT_MODE_MAX - 1);
 		std::shared_ptr<sCvar> gAutoZoom = std::make_shared<sCvar>("Autozoom", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
@@ -203,8 +170,9 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gAntiKillIgnored = std::make_shared<sCvar>("Anti-Kill Ignored", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gSilentAim = std::make_shared<sCvar>("Silent-Aim", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Zero", "Up", "Down", "Jitter", "Random", "Reverse" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
-		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Zero", "Spin", "Jitter", "Random", "Reverse" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
+		std::shared_ptr<sCvar> gTargetActors = std::make_shared<sCvar>("Target Actors", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Zero", "Up", "Down", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
+		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Zero", "Spin", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
 		std::shared_ptr<sCvar> gSortMethod = std::make_shared<sCvar>("Sort Method", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_METHOD_DISTANCE, SORT_METHOD_DISTANCE, SORT_METHOD_MAX - 1);
 
 		std::shared_ptr<sCvar> gWallHackMode = std::make_shared<sCvar>("Mode", std::vector<std::string>({ "Axis", "Allies", "All" }), WALLHACK_MODE_AXIS, WALLHACK_MODE_AXIS, WALLHACK_MODE_MAX - 1);
@@ -235,6 +203,9 @@ namespace ProtoGenesys
 
 		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HELMET, BONE_HELMET, BONE_MAX - 1);
 		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180.0f, 1.0f, 180.0f);
+		std::shared_ptr<sCvar> gShieldPitchShift = std::make_shared<sCvar>("Shield Pitch Shift", std::vector<std::string>(), 0.0f, -85.0f, 85.0f);
+		std::shared_ptr<sCvar> gAntiAimCustomPitch = std::make_shared<sCvar>("Anti-Aim Custom Pitch", std::vector<std::string>(), 0.0f, -85.0f, 85.0f);
+		std::shared_ptr<sCvar> gAntiAimCustomYaw = std::make_shared<sCvar>("Anti-Aim Custom Yaw", std::vector<std::string>(), 0.0f, -180.0f, 180.0f);
 		std::shared_ptr<sCvar> gAimPower = std::make_shared<sCvar>("Aimpower", std::vector<std::string>(), 100.0f, 1.0f, 100.0f);
 		std::shared_ptr<sCvar> gAutoAimTime = std::make_shared<sCvar>("Autoaim Time", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoAimDelay = std::make_shared<sCvar>("Autoaim Delay", std::vector<std::string>(), 0, 0, 1000);

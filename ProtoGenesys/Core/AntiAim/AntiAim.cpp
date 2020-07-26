@@ -60,13 +60,18 @@ namespace ProtoGenesys
 
 			else
 			{
-				vAntiAimAngles.x = -40.0f - CG->vRefDefViewAngles.x;
+				vAntiAimAngles.x = _profiler.gShieldPitchShift->Current.flValue - CG->vRefDefViewAngles.x;
 
 				if (vAntiAimAngles.x > 85.0f) vAntiAimAngles.x = 85.0f;
 				if (vAntiAimAngles.x < -85.0f) vAntiAimAngles.x = -85.0f;
 
 				vAntiAimAngles.x -= CG->PlayerState.vDeltaAngles.x;
 			}
+		}
+
+		else if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_CUSTOM)
+		{
+			vAntiAimAngles.x = _profiler.gAntiAimCustomPitch->Current.flValue - CG->PlayerState.vDeltaAngles.x;
 		}
 
 		if (ReadyForAntiAim() && _profiler.gAntiAimPitch->Current.iValue > cProfiler::ANTIAIM_PITCH_OFF)
@@ -148,6 +153,11 @@ namespace ProtoGenesys
 
 				vAntiAimAngles.y -= CG->PlayerState.vDeltaAngles.y;
 			}
+		}
+
+		else if (_profiler.gAntiAimYaw->Current.iValue == cProfiler::ANTIAIM_YAW_CUSTOM)
+		{
+			vAntiAimAngles.y = _profiler.gAntiAimCustomYaw->Current.flValue - CG->PlayerState.vDeltaAngles.y;
 		}
 
 		if (ReadyForAntiAim() && _profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)

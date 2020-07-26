@@ -147,7 +147,7 @@ namespace ProtoGenesys
 			{
 				EntityList[i].bW2SSuccess = _mathematics.WorldToScreen(EntityList[i].vBones3D[vBones[BONE_HEAD].first], EntityList[i].vCenter2D);
 
-				if (EntityIsTeammate(&CG->CEntity[i]))
+				if (!_profiler.gTargetActors->Current.iValue || EntityIsTeammate(&CG->CEntity[i]))
 					continue;
 			}
 

@@ -184,7 +184,6 @@ namespace ProtoGenesys
 
 		ImGui::PopStyleVar();
 		ImGui::EndChild();
-		ImGui::Separator();
 	}
 	/*
 	//=====================================================================================

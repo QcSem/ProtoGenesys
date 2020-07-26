@@ -118,16 +118,16 @@ namespace ProtoGenesys
 				bWriteLog = false;
 			}
 
-			ImGui::SetNextWindowSize(ImVec2(589.0f, 672.0f));
+			ImGui::SetNextWindowSize(ImVec2(679.0f, 786.0f));
 			ImGui::Begin(acut::ToUpper(PROGRAM_NAME).c_str(), &bShowWindow, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
 			ImGui::SetColorEditOptions(ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoOptions | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
 
-			if (ImGui::TabLabels(_profiler.gMenuTabs->Domain.iMax, acut::StringVectorToCharPointerArray(_profiler.gMenuTabs->szItems), _profiler.gMenuTabs->Current.iValue, NULL, false, NULL, NULL, false, false, NULL, NULL, &ImVec2(81.0f, 25.0f)))
+			if (ImGui::TabLabels(_profiler.gMenuTabs->Domain.iMax, acut::StringVectorToCharPointerArray(_profiler.gMenuTabs->szItems), _profiler.gMenuTabs->Current.iValue, NULL, false, NULL, NULL, false, false, NULL, NULL, &ImVec2(82.0f, 25.0f)))
 			{
 				bWriteLog = true;
 			}
 
-			ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 562.0f), true);
+			ImGui::BeginChild("ContentRegion", ImVec2(0.0f, 676.0f), true);
 
 			switch (_profiler.gMenuTabs->Current.iValue)
 			{
@@ -179,6 +179,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gTargetActors->szName, _profiler.gTargetActors->szItems[_profiler.gTargetActors->Current.iValue], &_profiler.gTargetActors->Current.iValue, _profiler.gTargetActors->Domain.iMin, _profiler.gTargetActors->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				if (DrawOption(_profiler.gAntiAimPitch->szName, _profiler.gAntiAimPitch->szItems[_profiler.gAntiAimPitch->Current.iValue], &_profiler.gAntiAimPitch->Current.iValue, _profiler.gAntiAimPitch->Domain.iMin, _profiler.gAntiAimPitch->Domain.iMax, 1))
 				{
 					bWriteLog = true;
@@ -205,6 +210,7 @@ namespace ProtoGenesys
 					_profiler.gAntiKillTeamMates->Current.iValue = _profiler.gAntiKillTeamMates->Reset.iValue;
 					_profiler.gSilentAim->Current.iValue = _profiler.gSilentAim->Reset.iValue;
 					_profiler.gBoneScan->Current.iValue = _profiler.gBoneScan->Reset.iValue;
+					_profiler.gTargetActors->Current.iValue = _profiler.gTargetActors->Reset.iValue;
 					_profiler.gAntiAimPitch->Current.iValue = _profiler.gAntiAimPitch->Reset.iValue;
 					_profiler.gAntiAimYaw->Current.iValue = _profiler.gAntiAimYaw->Reset.iValue;
 					_profiler.gSortMethod->Current.iValue = _profiler.gSortMethod->Reset.iValue;
@@ -392,6 +398,21 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gShieldPitchShift->szName, VariadicText("%.0f degrees", _profiler.gShieldPitchShift->Current.flValue), &_profiler.gShieldPitchShift->Current.flValue, _profiler.gShieldPitchShift->Domain.flMin, _profiler.gShieldPitchShift->Domain.flMax, 1.0f))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
+				if (DrawOption(_profiler.gAntiAimCustomPitch->szName, VariadicText("%.0f degrees", _profiler.gAntiAimCustomPitch->Current.flValue), &_profiler.gAntiAimCustomPitch->Current.flValue, _profiler.gAntiAimCustomPitch->Domain.flMin, _profiler.gAntiAimCustomPitch->Domain.flMax, 1.0f))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
+				if (DrawOption(_profiler.gAntiAimCustomYaw->szName, VariadicText("%.0f degrees", _profiler.gAntiAimCustomYaw->Current.flValue), &_profiler.gAntiAimCustomYaw->Current.flValue, _profiler.gAntiAimCustomYaw->Domain.flMin, _profiler.gAntiAimCustomYaw->Domain.flMax, 1.0f))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				if (DrawOption(_profiler.gAimPower->szName, VariadicText("%.0f percent", _profiler.gAimPower->Current.flValue), &_profiler.gAimPower->Current.flValue, _profiler.gAimPower->Domain.flMin, _profiler.gAimPower->Domain.flMax, 1.0f))
 				{
 					bWriteLog = true;
@@ -452,6 +473,9 @@ namespace ProtoGenesys
 				{
 					_profiler.gAimBone->Current.iValue = _profiler.gAimBone->Reset.iValue;
 					_profiler.gAimAngle->Current.flValue = _profiler.gAimAngle->Reset.flValue;
+					_profiler.gShieldPitchShift->Current.flValue = _profiler.gShieldPitchShift->Reset.flValue;
+					_profiler.gAntiAimCustomPitch->Current.flValue = _profiler.gAntiAimCustomPitch->Reset.flValue;
+					_profiler.gAntiAimCustomYaw->Current.flValue = _profiler.gAntiAimCustomYaw->Reset.flValue;
 					_profiler.gAimPower->Current.flValue = _profiler.gAimPower->Reset.flValue;
 					_profiler.gAutoAimTime->Current.iValue = _profiler.gAutoAimTime->Reset.iValue;
 					_profiler.gAutoAimDelay->Current.iValue = _profiler.gAutoAimDelay->Reset.iValue;
@@ -675,6 +699,74 @@ namespace ProtoGenesys
 				ImGui::Separator();
 			} break;
 
+			case cProfiler::MENU_TAB_FRIENDS:
+			{
+				ImGui::Columns(2, "FriendList");
+				ImGui::Separator();
+
+				ImGui::Text("Name"); ImGui::NextColumn();
+				ImGui::Text("SteamID"); ImGui::NextColumn();
+
+				for (size_t i = 0; i < _hooks.vFriends.size(); i++)
+				{
+					ImGui::Separator();
+					ImGui::PushID(i);
+
+					ImGui::Text(_hooks.vFriends[i].second.c_str());
+
+					if (ImGui::BeginPopupContextItem(std::to_string(i).c_str()))
+					{
+						if (ImGui::Selectable("Join Session"))
+						{
+							JoinSessionFromXuid(_hooks.vFriends[i].first);
+
+							bWriteLog = true;
+						}
+
+						if (ImGui::Selectable("View Profile"))
+						{
+							PopOverlayForSteamID(_hooks.vFriends[i].first);
+
+							bShowWindow = false;
+							bWriteLog = true;
+						}
+
+						ImGui::Separator();
+
+						if (ImGui::Selectable("Copy Name"))
+						{
+							ImGui::LogToClipboard();
+							ImGui::LogText(_hooks.vFriends[i].second.c_str());
+							ImGui::LogFinish();
+
+							bWriteLog = true;
+						}
+
+						if (ImGui::Selectable("Copy SteamID"))
+						{
+							ImGui::LogToClipboard();
+							ImGui::LogText(std::to_string(_hooks.vFriends[i].first).c_str());
+							ImGui::LogFinish();
+
+							bWriteLog = true;
+						}
+
+						ImGui::EndPopup();
+					} ImGui::NextColumn();
+
+					ImGui::Text(std::to_string(_hooks.vFriends[i].first).c_str());
+					if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
+					{
+						bWriteLog = true;
+					} ImGui::NextColumn();
+
+					ImGui::PopID();
+				}
+
+				ImGui::Columns(1);
+				ImGui::Separator();
+			} break;
+
 			case cProfiler::MENU_TAB_CONSOLE:
 			{
 				_console.Init();
@@ -684,14 +776,14 @@ namespace ProtoGenesys
 
 			ImGui::EndChild();
 
-			if (ImGui::Button("Set as Default", ImVec2(189.0f, 30.0f)))
+			if (ImGui::Button("Set as Default", ImVec2(219.0f, 30.0f)))
 			{
 				_profiler.SaveProfile("");
 				bWriteLog = true;
 			} ImGui::SameLine(0.0f, 3.0f);
 
 			static bool bSaveButton;
-			if ((bSaveButton = ImGui::Button("Save Profile", ImVec2(189.0f, 30.0f))))
+			if ((bSaveButton = ImGui::Button("Save Profile", ImVec2(219.0f, 30.0f))))
 			{
 				bWriteLog = true;
 			} ImGui::SameLine(0.0f, 3.0f);
@@ -704,7 +796,7 @@ namespace ProtoGenesys
 			}
 
 			static bool bLoadButton;
-			if ((bLoadButton = ImGui::Button("Load Profile", ImVec2(189.0f, 30.0f))))
+			if ((bLoadButton = ImGui::Button("Load Profile", ImVec2(219.0f, 30.0f))))
 			{
 				bWriteLog = true;
 			}
@@ -974,10 +1066,6 @@ namespace ProtoGenesys
 
 		else
 			bIsAirStuck = GetKeyPress(VK_DELETE, true);
-
-		if (GetActiveWindow() == hWindow)
-			if ((GetAsyncKeyState(VK_MENU) & 0x8000) && (GetAsyncKeyState(VK_F4) & 0x8000))
-				exit(EXIT_SUCCESS);
 
 		*(bool*)dwMouseInput = !bShowWindow;
 
