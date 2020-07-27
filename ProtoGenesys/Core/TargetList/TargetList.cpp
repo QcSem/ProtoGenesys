@@ -157,7 +157,7 @@ namespace ProtoGenesys
 				continue;
 			}
 
-			EntityList[i].flDistance = _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin);
+			EntityList[i].flDistance = _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->vOrigin);
 			EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vScanPoints, &EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
 			EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
 

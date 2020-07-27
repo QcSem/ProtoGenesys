@@ -149,6 +149,15 @@ namespace ProtoGenesys
 	{
 		if (skeleton)
 		{
+			ImVec2 vCenter = (bones2d[vBones[BONE_HELMET].first] + bones2d[vBones[BONE_HEAD].first]) / 2.0f;
+			float flDiameter = _mathematics.CalculateDistance2D(bones2d[vBones[BONE_HELMET].first], bones2d[vBones[BONE_HEAD].first]);
+
+			ImGui::GetWindowDrawList()->AddCircle(vCenter, flDiameter / 2.0f, ImGui::GetColorU32(color), (int)flDiameter);
+
+			DrawLine(bones2d[vBones[BONE_HEAD].first],
+				bones2d[vBones[BONE_NECK].first],
+				shadow, color);
+
 			DrawLine(bones2d[vBones[BONE_NECK].first],
 				bones2d[vBones[BONE_LEFT_SHOULDER].first],
 				shadow, color);
@@ -214,6 +223,14 @@ namespace ProtoGenesys
 		{
 			if (shadow)
 			{
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_HELMET].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_HELMET].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
+				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_HEAD].first] - ImVec2(1.0f, 1.0f),
+					bones2d[vBones[BONE_HEAD].first] + ImVec2(2.0f, 2.0f),
+					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
+
 				ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_NECK].first] - ImVec2(1.0f, 1.0f),
 					bones2d[vBones[BONE_NECK].first] + ImVec2(2.0f, 2.0f),
 					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
@@ -278,6 +295,14 @@ namespace ProtoGenesys
 					bones2d[vBones[BONE_RIGHT_ANKLE].first] + ImVec2(2.0f, 2.0f),
 					ImGui::GetColorU32(_profiler.gColorShadow->Current.cValue));
 			}
+
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_HELMET].first],
+				bones2d[vBones[BONE_HELMET].first] + ImVec2(1.0f, 1.0f),
+				ImGui::GetColorU32(color));
+
+			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_HEAD].first],
+				bones2d[vBones[BONE_HEAD].first] + ImVec2(1.0f, 1.0f),
+				ImGui::GetColorU32(color));
 
 			ImGui::GetWindowDrawList()->AddRectFilled(bones2d[vBones[BONE_NECK].first],
 				bones2d[vBones[BONE_NECK].first] + ImVec2(1.0f, 1.0f),
@@ -634,49 +659,49 @@ namespace ProtoGenesys
 						if (_targetList.Priorities[i].bIsMultiPoint)
 							DrawMultiPoints(_targetList.EntityList[i].vMultiPoints2D);
 					
-						DrawClient(&CG->CEntity[i], _targetList.EntityList[i].vBones2D, _targetList.EntityList[i].vCorners2D, _targetList.EntityList[i].vCenter2D, _targetList.EntityList[i].vLower.y - _targetList.EntityList[i].vUpper.y, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->vOrigin), CG->ClientInfo[i].szName, _targetList.EntityList[i].cColor);
+						DrawClient(&CG->CEntity[i], _targetList.EntityList[i].vBones2D, _targetList.EntityList[i].vCorners2D, _targetList.EntityList[i].vCenter2D, _targetList.EntityList[i].vLower.y - _targetList.EntityList[i].vUpper.y, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->vOrigin), CG->ClientInfo[i].szName, _targetList.EntityList[i].cColor);
 					} break;
 
 					case ET_ITEM:
 					{
 						if (_profiler.gEntities->Current.iValue)
-							DrawEntity(_targetList.EntityList[i].szWeapon, _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity(_targetList.EntityList[i].szWeapon, _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_MISSILE:
 					{
 						if (_profiler.gEntities->Current.iValue)
-							DrawEntity(_targetList.EntityList[i].szWeapon, _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity(_targetList.EntityList[i].szWeapon, _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_TURRET:
 					{
 						if (_profiler.gEntities->Current.iValue)
-							DrawEntity("Turret", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Turret", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_HELICOPTER:
 					{
 						if (_profiler.gEntities->Current.iValue)
-							DrawEntity("Helicopter", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Helicopter", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_PLANE:
 					{
 						if (_profiler.gEntities->Current.iValue)
-							DrawEntity("Plane", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Plane", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_VEHICLE:
 					{
 						if (_profiler.gEntities->Current.iValue)
-							DrawEntity("Vehicle", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Vehicle", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 
 					case ET_ACTOR:
 					{
 						if (_profiler.gEntities->Current.iValue)
-							DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 					}
 				}

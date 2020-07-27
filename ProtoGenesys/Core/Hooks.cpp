@@ -771,7 +771,7 @@ namespace ProtoGenesys
 
 			if ((iPosition = szLine.find(" ")) != std::string::npos)
 			{
-				vFriends.push_back(make_pair(strtoll(szLine.substr(0, iPosition).c_str(), NULL, 10), szLine.substr(iPosition)));
+				vFriends.push_back(make_pair(strtoll(szLine.substr(0, iPosition).c_str(), NULL, 10), szLine.substr(iPosition + 1)));
 			}
 		}
 	}

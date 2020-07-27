@@ -39,7 +39,7 @@ namespace ProtoGenesys
 		FP_Enter.vEnd = end;
 
 		FP_Enter.vDir = end - start;
-		float flLength = _mathematics.VectorLength(FP_Enter.vDir, FP_Enter.vDir);
+		float flLength = _mathematics.VectorLength3D(FP_Enter.vDir, FP_Enter.vDir);
 		_mathematics.VectorNormalize(FP_Enter.vDir);
 
 		bool bEnterHit = BulletTrace(&TR_Enter, &FP_Enter, pCEntity, TRACE_HITTYPE_NONE);
@@ -83,7 +83,7 @@ namespace ProtoGenesys
 				vHitPos = TR_Enter.vHitPos;
 				vTemp = vHitPos - FP_Enter.vStart;
 
-				if (_mathematics.VectorLength(vTemp, vTemp) >= flLength)
+				if (_mathematics.VectorLength3D(vTemp, vTemp) >= flLength)
 					return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);
 				
 				if (!AdvanceTrace(&FP_Enter, &TR_Enter, 0.13500001f))
@@ -133,9 +133,9 @@ namespace ProtoGenesys
 				if (bExitHit || bStaticModel)
 				{
 					if (bStaticModel)
-						flSurfaceDepth = _mathematics.CalculateDistance(FP_Exit.vEnd, FP_Exit.vStart);
+						flSurfaceDepth = _mathematics.CalculateDistance3D(FP_Exit.vEnd, FP_Exit.vStart);
 					else
-						flSurfaceDepth = _mathematics.CalculateDistance(vHitPos, TR_Exit.vHitPos);
+						flSurfaceDepth = _mathematics.CalculateDistance3D(vHitPos, TR_Exit.vHitPos);
 
 					flSurfaceDepth = max(flSurfaceDepth, 1.0f);
 
@@ -163,7 +163,7 @@ namespace ProtoGenesys
 
 						vLength = TR_Exit.vHitPos - TR_Enter.vHitPos;
 
-						if (_mathematics.DotProduct(vLength, vLength) > FindVar("bullet_penetrationMinFxDist")->Current.flValue * FindVar("bullet_penetrationMinFxDist")->Current.flValue)
+						if (_mathematics.DotProduct3D(vLength, vLength) > FindVar("bullet_penetrationMinFxDist")->Current.flValue * FindVar("bullet_penetrationMinFxDist")->Current.flValue)
 						{
 							if (!bEnterHit)
 								return GetRemainingDamage(&FP_Enter, &TR_Enter, iWeaponID);

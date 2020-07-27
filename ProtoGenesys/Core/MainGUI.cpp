@@ -731,6 +731,20 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
+						if (ImGui::Selectable("Remove From Friend List"))
+						{
+							_hooks.vFriends.erase(std::next(_hooks.vFriends.begin(), i));
+
+							std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::out);
+
+							for (auto& Friend : _hooks.vFriends)
+								file << Friend.first << " " << Friend.second << std::endl;
+
+							_hooks.RefreshFriends();
+
+							bWriteLog = true;
+						}
+
 						ImGui::Separator();
 
 						if (ImGui::Selectable("Copy Name"))
