@@ -194,7 +194,12 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gSortMethod->szName, _profiler.gSortMethod->szItems[_profiler.gSortMethod->Current.iValue], &_profiler.gSortMethod->Current.iValue, _profiler.gSortMethod->Domain.iMin, _profiler.gSortMethod->Domain.iMax, 1))
+				if (DrawOption(_profiler.gSortMethodTargets->szName, _profiler.gSortMethodTargets->szItems[_profiler.gSortMethodTargets->Current.iValue], &_profiler.gSortMethodTargets->Current.iValue, _profiler.gSortMethodTargets->Domain.iMin, _profiler.gSortMethodTargets->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
+				if (DrawOption(_profiler.gSortMethodBones->szName, _profiler.gSortMethodBones->szItems[_profiler.gSortMethodBones->Current.iValue], &_profiler.gSortMethodBones->Current.iValue, _profiler.gSortMethodBones->Domain.iMin, _profiler.gSortMethodBones->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -213,7 +218,8 @@ namespace ProtoGenesys
 					_profiler.gTargetActors->Current.iValue = _profiler.gTargetActors->Reset.iValue;
 					_profiler.gAntiAimPitch->Current.iValue = _profiler.gAntiAimPitch->Reset.iValue;
 					_profiler.gAntiAimYaw->Current.iValue = _profiler.gAntiAimYaw->Reset.iValue;
-					_profiler.gSortMethod->Current.iValue = _profiler.gSortMethod->Reset.iValue;
+					_profiler.gSortMethodTargets->Current.iValue = _profiler.gSortMethodTargets->Reset.iValue;
+					_profiler.gSortMethodBones->Current.iValue = _profiler.gSortMethodBones->Reset.iValue;
 
 					bWriteLog = true;
 				}

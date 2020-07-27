@@ -27,7 +27,7 @@ namespace ProtoGenesys
 
 		struct sDamageInfo
 		{
-			float flDamage = -FLT_MAX;
+			float flDistance = FLT_MAX, flDamage = -FLT_MAX, flFOV = FLT_MAX;
 			ImVec3 vPosition;
 		};
 

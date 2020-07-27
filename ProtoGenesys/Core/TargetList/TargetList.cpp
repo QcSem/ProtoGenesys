@@ -10,6 +10,9 @@ namespace ProtoGenesys
 
 	void cTargetList::GetInformation()
 	{
+		ImVec3 vViewOrigin;
+		GetPlayerViewOrigin(&vViewOrigin);
+
 		sTargetInfo TargetInfo;
 		std::vector<sTargetInfo> vTargetInfo;
 
@@ -159,13 +162,13 @@ namespace ProtoGenesys
 
 			EntityList[i].flDistance = _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->vOrigin);
 			EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vScanPoints, &EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-			EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation);
+			EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation, vViewOrigin, CG->vRefDefViewAngles);
 
 			if (i < MAX_CLIENTS)
 				if (Priorities[i].bIsIgnored)
 					continue;
 
-			if (EntityList[i].bIsVisible && _mathematics.CalculateFOV(EntityList[i].vHitLocation) <= _profiler.gAimAngle->Current.flValue)
+			if (EntityList[i].bIsVisible && EntityList[i].flFOV <= _profiler.gAimAngle->Current.flValue)
 			{
 				if (i < MAX_CLIENTS)
 					TargetInfo.bIsPriority = Priorities[i].bIsPrioritized;
@@ -182,7 +185,7 @@ namespace ProtoGenesys
 
 		if (!vTargetInfo.empty())
 		{
-			if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
 			{
 				std::stable_sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDistance < b.flDistance; });
 
@@ -195,7 +198,7 @@ namespace ProtoGenesys
 					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
 
-			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
+			else if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
 			{
 				std::stable_sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDamage > b.flDamage; });
 
@@ -208,7 +211,7 @@ namespace ProtoGenesys
 					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
 			
-			else if (_profiler.gSortMethod->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			else if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_FOV)
 			{
 				std::stable_sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flFOV < b.flFOV; });
 
@@ -274,7 +277,8 @@ namespace ProtoGenesys
 	*/
 	bool cTargetList::IsVisible(sCEntity* entity, std::vector<ImVec3> scanpoints, ImVec3* position, bool autowall, float* damage)
 	{
-		bool bReturn = false;
+		ImVec3 vViewOrigin;
+		GetPlayerViewOrigin(&vViewOrigin);
 
 		sDamageInfo DamageInfo;
 		std::vector<sDamageInfo> vDamageInfo;
@@ -285,7 +289,9 @@ namespace ProtoGenesys
 		{
 			for (size_t i = 0; i < scanpoints.size(); i++)
 			{
+				DamageInfo.flDistance = _mathematics.CalculateDistance3D(scanpoints[i], vViewOrigin);
 				vIsVisible.push_back(std::async(&cTargetList::IsVisibleInternal, this, entity, scanpoints[i], autowall, &DamageInfo.flDamage));
+				DamageInfo.flFOV = _mathematics.CalculateFOV(scanpoints[i], vViewOrigin, CG->vRefDefViewAngles);
 
 				DamageInfo.vPosition = scanpoints[i];
 
@@ -297,8 +303,6 @@ namespace ProtoGenesys
 				if (vIsVisible[i].get())
 				{
 					vDamageInfoFinal.push_back(vDamageInfo[i]);
-
-					bReturn = true;
 				}
 			}
 		}
@@ -312,26 +316,51 @@ namespace ProtoGenesys
 					DamageInfo.vPosition = scanpoints[i];
 
 					vDamageInfoFinal.push_back(DamageInfo);
-
-					bReturn = true;
 				}
 			}
 		}
 
 		if (!vDamageInfoFinal.empty())
 		{
-			std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
+			if (_profiler.gSortMethodBones->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			{
+				std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDistance < b.flDistance; });
 
-			if (damage)
-				*damage = vDamageInfoFinal.front().flDamage;
+				if (damage)
+					*damage = vDamageInfoFinal.front().flDamage;
 
-			if (position)
-				*position = vDamageInfoFinal.front().vPosition;
+				if (position)
+					*position = vDamageInfoFinal.front().vPosition;
+			}
+
+			if (_profiler.gSortMethodBones->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
+			{
+				std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
+
+				if (damage)
+					*damage = vDamageInfoFinal.front().flDamage;
+
+				if (position)
+					*position = vDamageInfoFinal.front().vPosition;
+			}
+
+			if (_profiler.gSortMethodBones->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			{
+				std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flFOV < b.flFOV; });
+
+				if (damage)
+					*damage = vDamageInfoFinal.front().flDamage;
+
+				if (position)
+					*position = vDamageInfoFinal.front().vPosition;
+			}
 
 			vDamageInfoFinal.clear();
+
+			return true;
 		}
 
-		return bReturn;
+		return false;
 	}
 	/*
 	//=====================================================================================

@@ -8,17 +8,14 @@ namespace ProtoGenesys
 {
 	cMathematics _mathematics;
 
-	float cMathematics::CalculateFOV(ImVec3 position)
+	float cMathematics::CalculateFOV(ImVec3 start, ImVec3 end, ImVec3 angles)
 	{
-		ImVec3 vViewOrigin, vDirection, vAngles, vAimAngles;
-
-		GetPlayerViewOrigin(&vViewOrigin);
-		vDirection = position - vViewOrigin;
+		ImVec3 vDirection = start - end, vAngles, vAimAngles;
 
 		VectorNormalize(vDirection);
 		VectorAngles(vDirection, vAimAngles);
 
-		MakeVector(CG->vRefDefViewAngles, vAngles);
+		MakeVector(angles, vAngles);
 		MakeVector(vAimAngles, vAimAngles);
 
 		ImVec2 vLengthDot

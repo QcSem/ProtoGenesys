@@ -12,7 +12,7 @@ namespace ProtoGenesys
 	{
 	public:
 
-		float CalculateFOV(ImVec3 position);
+		float CalculateFOV(ImVec3 start, ImVec3 end, ImVec3 angles);
 		float DotProduct3D(ImVec3 left, ImVec3 right);
 		float DotProduct2D(ImVec2 left, ImVec2 right);
 		float VectorLength3D(ImVec3 left, ImVec3 right);
