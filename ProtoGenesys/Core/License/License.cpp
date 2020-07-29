@@ -102,7 +102,7 @@ namespace ProtoGenesys
 					exit(EXIT_FAILURE);
 				}
 
-				LicenseTimer.Wait(60000);
+				LicenseTimer.Wait(1000);
 			}
 		}
 	}

@@ -19,8 +19,8 @@ namespace ProtoGenesys
 
 		sTimer LicenseTimer;
 
-		LPCSTR szUrl = VMProtectDecryptString("www.pastebin.com");
-		LPCSTR szFile = VMProtectDecryptString("/raw/3u6sp9jj");
+		LPCSTR szUrl = VMProtectDecryptString("www.genesyscheats.com");
+		LPCSTR szFile = VMProtectDecryptString("/ProtoGenesys");
 
 		std::string HttpRequest(std::string url, std::string file);
 		std::string GetHwid();
