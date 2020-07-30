@@ -17,11 +17,11 @@ namespace ProtoGenesys
 	//=====================================================================================
 	*/
 	template<typename... Parameters>
-	FORCEINLINE LPSTR VariadicText(std::string format, Parameters... params)
+	FORCEINLINE std::string VariadicText(std::string format, Parameters... params)
 	{
 		char szBuffer[4096] = { NULL };
 		sprintf_s(szBuffer, format.c_str(), params...);
-		return _strdup(szBuffer);
+		return szBuffer;
 	}
 	/*
 	//=====================================================================================

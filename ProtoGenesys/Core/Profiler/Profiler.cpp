@@ -30,7 +30,7 @@ namespace ProtoGenesys
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiKillIgnored", gAntiKillIgnored->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SilentAim", gSilentAim->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.BoneScan", gBoneScan->Current.iValue);
-			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.TargetActors", gTargetActors->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.TargetK9Unit", gTargetK9Unit->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SortMethodTargets", gSortMethodTargets->Current.iValue);
@@ -160,7 +160,7 @@ namespace ProtoGenesys
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiKillIgnored", gAntiKillIgnored->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SilentAim", gSilentAim->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.BoneScan", gBoneScan->Current.iValue);
-			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.TargetActors", gTargetActors->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.TargetK9Unit", gTargetK9Unit->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimPitch", gAntiAimPitch->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.AntiAimYaw", gAntiAimYaw->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".AimBot.SortMethodTargets", gSortMethodTargets->Current.iValue);
@@ -273,7 +273,7 @@ namespace ProtoGenesys
 		gAntiKillIgnored->Current.iValue = FALSE;
 		gSilentAim->Current.iValue = FALSE;
 		gBoneScan->Current.iValue = FALSE;
-		gTargetActors->Current.iValue = FALSE;
+		gTargetK9Unit->Current.iValue = FALSE;
 		gAntiAimPitch->Current.iValue = ANTIAIM_PITCH_OFF;
 		gAntiAimYaw->Current.iValue = ANTIAIM_YAW_OFF;
 		gSortMethodTargets->Current.iValue = SORT_METHOD_DISTANCE;

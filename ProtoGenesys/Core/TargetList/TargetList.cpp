@@ -150,7 +150,7 @@ namespace ProtoGenesys
 			{
 				EntityList[i].bW2SSuccess = _mathematics.WorldToScreen(EntityList[i].vBones3D[vBones[BONE_HEAD].first], EntityList[i].vCenter2D);
 
-				if (!_profiler.gTargetActors->Current.iValue || EntityIsTeammate(&CG->CEntity[i]))
+				if (!_profiler.gTargetK9Unit->Current.iValue || EntityIsTeammate(&CG->CEntity[i]))
 					continue;
 			}
 
@@ -313,6 +313,9 @@ namespace ProtoGenesys
 			{
 				if (IsVisibleInternal(entity, scanpoints[i], autowall, &DamageInfo.flDamage))
 				{
+					DamageInfo.flDistance = _mathematics.CalculateDistance3D(scanpoints[i], vViewOrigin);
+					DamageInfo.flFOV = _mathematics.CalculateFOV(scanpoints[i], vViewOrigin, CG->vRefDefViewAngles);
+
 					DamageInfo.vPosition = scanpoints[i];
 
 					vDamageInfoFinal.push_back(DamageInfo);

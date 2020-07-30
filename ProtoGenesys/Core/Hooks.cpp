@@ -336,7 +336,7 @@ namespace ProtoGenesys
 					{
 						_profiler.gNameOverRide->Current.szValue = _strdup(ServerSession[victim].szName);
 						_profiler.gClanOverRide->Current.szValue = _strdup(ServerSession[victim].szClan);
-						_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", ServerSession[victim].qwXuid);
+						_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", ServerSession[victim].qwXuid).c_str());
 
 						AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
 							ServerSession[victim].szName,

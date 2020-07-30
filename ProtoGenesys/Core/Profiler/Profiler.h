@@ -170,7 +170,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gAntiKillIgnored = std::make_shared<sCvar>("Anti-Kill Ignored", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gSilentAim = std::make_shared<sCvar>("Silent-Aim", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gTargetActors = std::make_shared<sCvar>("Target Actors", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gTargetK9Unit = std::make_shared<sCvar>("Target K9 Unit", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Zero", "Up", "Down", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
 		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Zero", "Spin", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
 		std::shared_ptr<sCvar> gSortMethodTargets = std::make_shared<sCvar>("Sort Method Targets", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_METHOD_DISTANCE, SORT_METHOD_DISTANCE, SORT_METHOD_MAX - 1);
@@ -232,6 +232,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gClanOverRide = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gXuidOverRide = std::make_shared<sCvar>("XUID Override", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gIpOverRide = std::make_shared<sCvar>("IP Override", std::vector<std::string>(), _strdup(""));
+		std::shared_ptr<sCvar> gChatSpam = std::make_shared<sCvar>("Chatspam", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gKillSpam = std::make_shared<sCvar>("Killspam", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gVoteSpam = std::make_shared<sCvar>("Votespam", std::vector<std::string>(), _strdup(""));
 

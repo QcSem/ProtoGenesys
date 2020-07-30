@@ -701,7 +701,7 @@ namespace ProtoGenesys
 					case ET_ACTOR:
 					{
 						if (_profiler.gEntities->Current.iValue)
-							DrawEntity("Actor", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
+							DrawEntity("K9", _targetList.EntityList[i].vCenter2D, _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->PlayerState.vOrigin), _profiler.gColorText->Current.cValue);
 					} break;
 					}
 				}
