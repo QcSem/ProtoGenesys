@@ -48,6 +48,8 @@ namespace ProtoGenesys
 			vCommands.push_back(Strdup(VariadicText("%s_resetstats", PROGRAM_CMD_PREFIX).c_str()));
 			vCommands.push_back(Strdup(VariadicText("%s_connect", PROGRAM_CMD_PREFIX).c_str()));
 			vCommands.push_back(Strdup(VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_clientcmd", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_servercmd", PROGRAM_CMD_PREFIX).c_str()));
 
 			AddLog("Ready.");
 
@@ -114,6 +116,8 @@ namespace ProtoGenesys
 			AddLog("16. %s_resetstats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
 			AddLog("17. %s_connect <xuid>\n\t\tConnect to a specific player.", PROGRAM_CMD_PREFIX);
 			AddLog("18. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
+			AddLog("19. %s_clientcmd <command>\n\t\tSend a client command.", PROGRAM_CMD_PREFIX);
+			AddLog("20. %s_servercmd <command>\n\t\tSend a server command.", PROGRAM_CMD_PREFIX);
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -806,9 +810,53 @@ namespace ProtoGenesys
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_clientcmd", PROGRAM_CMD_PREFIX).c_str()))
+		{
+			char szArgBuff[512] = { NULL };
+
+			for (int i = 0; i < CmdLine.iArgNum; i++)
+				strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
+
+			LPSTR szClientcmd = strtok(szArgBuff, "\n");
+
+			if (szClientcmd)
+			{
+				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+				Cbuf_AddText(acut::FindAndReplaceString(szClientcmd, "%n", "\n"));
+				AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+			}
+
+			else
+			{
+				AddLog("%s Null argument(s).", PREFIX_ERROR);
+			}
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_servercmd", PROGRAM_CMD_PREFIX).c_str()))
+		{
+			char szArgBuff[512] = { NULL };
+
+			for (int i = 0; i < CmdLine.iArgNum; i++)
+				strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
+
+			LPSTR szServercmd = strtok(szArgBuff, "\n");
+
+			if (szServercmd)
+			{
+				AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+				AddReliableCommand(acut::FindAndReplaceString(szServercmd, "%n", "\n"));
+				AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+			}
+
+			else
+			{
+				AddLog("%s Null argument(s).", PREFIX_ERROR);
+			}
+		}
+
 		else
 		{
-			AddReliableCommand(acut::FindAndReplaceString(command, "%n", "\n"));
+			AddLog("%s Unknown Command.", PREFIX_ERROR);
 		}
 	}
 	/*
