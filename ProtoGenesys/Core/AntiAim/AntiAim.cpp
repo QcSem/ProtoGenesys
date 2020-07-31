@@ -32,12 +32,12 @@ namespace ProtoGenesys
 			switch (bMode)
 			{
 			case false:
-				vAntiAimAngles.x = -85.0f - CG->PlayerState.vDeltaAngles.x;
+				vAntiAimAngles.x = _profiler.gAntiAimPitchMinimum->Current.flValue - CG->PlayerState.vDeltaAngles.x;
 				bMode = true;
 				break;
 
 			case true:
-				vAntiAimAngles.x = 85.0f - CG->PlayerState.vDeltaAngles.x;
+				vAntiAimAngles.x = _profiler.gAntiAimPitchMaximum->Current.flValue - CG->PlayerState.vDeltaAngles.x;
 				bMode = false;
 				break;
 			}
@@ -46,7 +46,7 @@ namespace ProtoGenesys
 		else if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_RANDOM)
 		{
 			std::random_device Device;
-			std::uniform_real_distribution<float> RandomPitch(-85.0f, 85.0f);
+			std::uniform_real_distribution<float> RandomPitch(_profiler.gAntiAimPitchMinimum->Current.flValue, _profiler.gAntiAimPitchMaximum->Current.flValue);
 
 			vAntiAimAngles.x = RandomPitch(Device) - CG->PlayerState.vDeltaAngles.x;
 		}
@@ -67,11 +67,6 @@ namespace ProtoGenesys
 
 				vAntiAimAngles.x -= CG->PlayerState.vDeltaAngles.x;
 			}
-		}
-
-		else if (_profiler.gAntiAimPitch->Current.iValue == cProfiler::ANTIAIM_PITCH_CUSTOM)
-		{
-			vAntiAimAngles.x = _profiler.gAntiAimCustomPitch->Current.flValue - CG->PlayerState.vDeltaAngles.x;
 		}
 
 		if (ReadyForAntiAim() && _profiler.gAntiAimPitch->Current.iValue > cProfiler::ANTIAIM_PITCH_OFF)
@@ -153,11 +148,6 @@ namespace ProtoGenesys
 
 				vAntiAimAngles.y -= CG->PlayerState.vDeltaAngles.y;
 			}
-		}
-
-		else if (_profiler.gAntiAimYaw->Current.iValue == cProfiler::ANTIAIM_YAW_CUSTOM)
-		{
-			vAntiAimAngles.y = _profiler.gAntiAimCustomYaw->Current.flValue - CG->PlayerState.vDeltaAngles.y;
 		}
 
 		if (ReadyForAntiAim() && _profiler.gAntiAimYaw->Current.iValue > cProfiler::ANTIAIM_YAW_OFF)

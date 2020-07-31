@@ -98,7 +98,6 @@ namespace ProtoGenesys
 			ANTIAIM_PITCH_JITTER,
 			ANTIAIM_PITCH_RANDOM,
 			ANTIAIM_PITCH_REVERSE,
-			ANTIAIM_PITCH_CUSTOM,
 			ANTIAIM_PITCH_MAX
 		};
 
@@ -110,7 +109,6 @@ namespace ProtoGenesys
 			ANTIAIM_YAW_JITTER,
 			ANTIAIM_YAW_RANDOM,
 			ANTIAIM_YAW_REVERSE,
-			ANTIAIM_YAW_CUSTOM,
 			ANTIAIM_YAW_MAX
 		};
 
@@ -171,8 +169,8 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gSilentAim = std::make_shared<sCvar>("Silent-Aim", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gBoneScan = std::make_shared<sCvar>("Bonescan", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gTargetK9Unit = std::make_shared<sCvar>("Target K9 Unit", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
-		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Zero", "Up", "Down", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
-		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Zero", "Spin", "Jitter", "Random", "Reverse", "Custom" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
+		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Zero", "Up", "Down", "Jitter", "Random", "Reverse" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
+		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Zero", "Spin", "Jitter", "Random", "Reverse" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
 		std::shared_ptr<sCvar> gSortMethodTargets = std::make_shared<sCvar>("Sort Method Targets", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_METHOD_DISTANCE, SORT_METHOD_DISTANCE, SORT_METHOD_MAX - 1);
 		std::shared_ptr<sCvar> gSortMethodBones = std::make_shared<sCvar>("Sort Method Bones", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_METHOD_DISTANCE, SORT_METHOD_DISTANCE, SORT_METHOD_MAX - 1);
 
@@ -205,8 +203,8 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gAimBone = std::make_shared<sCvar>("Aimbone", std::vector<std::string>(), BONE_HELMET, BONE_HELMET, BONE_MAX - 1);
 		std::shared_ptr<sCvar> gAimAngle = std::make_shared<sCvar>("Aimangle", std::vector<std::string>(), 180.0f, 1.0f, 180.0f);
 		std::shared_ptr<sCvar> gShieldPitchShift = std::make_shared<sCvar>("Shield Pitch Shift", std::vector<std::string>(), 0.0f, -85.0f, 85.0f);
-		std::shared_ptr<sCvar> gAntiAimCustomPitch = std::make_shared<sCvar>("Anti-Aim Custom Pitch", std::vector<std::string>(), 0.0f, -85.0f, 85.0f);
-		std::shared_ptr<sCvar> gAntiAimCustomYaw = std::make_shared<sCvar>("Anti-Aim Custom Yaw", std::vector<std::string>(), 0.0f, -180.0f, 180.0f);
+		std::shared_ptr<sCvar> gAntiAimPitchMinimum = std::make_shared<sCvar>("Anti-Aim Pitch Minimum", std::vector<std::string>(), -85.0f, -85.0f, 85.0f);
+		std::shared_ptr<sCvar> gAntiAimPitchMaximum = std::make_shared<sCvar>("Anti-Aim Pitch Maximum", std::vector<std::string>(), 85.0f, -85.0f, 85.0f);
 		std::shared_ptr<sCvar> gAimPower = std::make_shared<sCvar>("Aimpower", std::vector<std::string>(), 100.0f, 1.0f, 100.0f);
 		std::shared_ptr<sCvar> gAutoAimTime = std::make_shared<sCvar>("Autoaim Time", std::vector<std::string>(), 0, 0, 1000);
 		std::shared_ptr<sCvar> gAutoAimDelay = std::make_shared<sCvar>("Autoaim Delay", std::vector<std::string>(), 0, 0, 1000);

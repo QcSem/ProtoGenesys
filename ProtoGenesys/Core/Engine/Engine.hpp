@@ -35,8 +35,7 @@
 #define RadiansToDegrees(a) ((a)*(180.0f/(float)M_PI))
 #define AngleToShort(a) ((int)((a)*(65536/360.0f))&65535)
 #define ShortToAngle(a) ((float)((a)*(360.0f/65536)))
-#define AngleNormalize360(a) (ShortToAngle(AngleToShort((a))))
-#define AngleNormalize180(a) (((a)/360.0f-floorf((a)/360.0f+0.5f))*360.0f)
+#define AngleNormalize(a) (ShortToAngle(AngleToShort((a))))
 #define Dereference(a) (*(decltype(a)*)(a))
 
 //=====================================================================================
@@ -1076,11 +1075,13 @@ namespace ProtoGenesys
 	static DWORD_PTR dwHashSeed = bIsSteamVersion ? 0x543CE0 : 0x6AACC0;
 	static DWORD_PTR dwRandomFloat = bIsSteamVersion ? 0x6A3490 : 0x4947E0;
 	static DWORD_PTR dwSeedRandom = bIsSteamVersion ? 0x4F38A0 : 0x556180;
+	static DWORD_PTR dwAngleNormalize180 = bIsSteamVersion ? 0x4DEF60 : 0x5FFDA0;
 	static DWORD_PTR dwSetFovSensitivityScale = bIsSteamVersion ? 0x40BB00 : 0x437730;
 	static DWORD_PTR dwGetViewmodelWeaponIndex = bIsSteamVersion ? 0x625770 : 0x54A0D0;
 	static DWORD_PTR dwWeaponHasPerk = bIsSteamVersion ? 0x449D90 : 0x47ED20;
 	static DWORD_PTR dwUsingSniperScope = bIsSteamVersion ? 0x646700 : 0x6C5960;
 	static DWORD_PTR dwSetUserCmdAimValues = bIsSteamVersion ? 0x6E7F80 : 0x67ACC0;
+	static DWORD_PTR dwClampUserCmdAimValues = bIsSteamVersion ? 0x942D10 : 0x942B50;
 	static DWORD_PTR dwGetLastWeaponForAlt = bIsSteamVersion ? 0x4760B0 : 0x480290;
 	static DWORD_PTR dwSetUserCmdWeapons = bIsSteamVersion ? 0x552A60 : 0x518D70;
 	static DWORD_PTR dwSetExtraButtons = bIsSteamVersion ? 0x4840B0 : 0x6994D0;
@@ -1447,6 +1448,13 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
+	FORCEINLINE float AngleNormalize180(float angle)
+	{
+		return VariadicCall<float>(dwAngleNormalize180, angle);
+	}
+	/*
+	//=====================================================================================
+	*/
 	FORCEINLINE void SetFovSensitivityScale(float scale)
 	{
 		return VariadicCall<void>(dwSetFovSensitivityScale, 0, scale);
@@ -1478,6 +1486,13 @@ namespace ProtoGenesys
 	FORCEINLINE void SetUserCmdAimValues(ImVec3* angles)
 	{
 		return VariadicCall<void>(dwSetUserCmdAimValues, 0, angles);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE void ClampUserCmdAimValues(sUserCmd* usercmd)
+	{
+		return VariadicCall<void>(dwClampUserCmdAimValues, &CG->PlayerState, usercmd);
 	}
 	/*
 	//=====================================================================================
