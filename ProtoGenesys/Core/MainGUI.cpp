@@ -70,8 +70,8 @@ namespace ProtoGenesys
 		ImU32 cShadow = ImGui::ColorConvertFloat4ToU32(ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 		std::string szWatermark(VariadicText("%s - COD BO2 by: InUrFace | Frametime: %s, Ping: %s", acut::ToUpper(PROGRAM_NAME).c_str(),
-			LocalClientIsInGame() ? VariadicText("%i ms", CG->iFrameTime) : "N/A",
-			LocalClientIsInGame() ? VariadicText("%i ms", ClientActive->iPing) : "N/A"));
+			LocalClientIsInGame() ? VariadicText("%i ms", CG->iFrameTime).c_str() : "N/A",
+			LocalClientIsInGame() ? VariadicText("%i ms", ClientActive->iPing).c_str() : "N/A"));
 
 		ImVec2 vWatermark(Eurostile_Extended->CalcTextSizeA(flEurostile_Extended, FLT_MAX, 0.0f, szWatermark.c_str()));
 		ImU32 cWatermark = ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -604,7 +604,7 @@ namespace ProtoGenesys
 						{
 							_profiler.gNameOverRide->Current.szValue = _strdup(ServerSession[i].szName);
 							_profiler.gClanOverRide->Current.szValue = _strdup(ServerSession[i].szClan);
-							_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", ServerSession[i].qwXuid);
+							_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", ServerSession[i].qwXuid).c_str());
 
 							AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
 								ServerSession[i].szName,
@@ -662,7 +662,7 @@ namespace ProtoGenesys
 								(BYTE)ServerSession[i].iIPAddress[0],
 								(BYTE)ServerSession[i].iIPAddress[1],
 								(BYTE)ServerSession[i].iIPAddress[2],
-								(BYTE)ServerSession[i].iIPAddress[3]));
+								(BYTE)ServerSession[i].iIPAddress[3]).c_str());
 
 							ImGui::LogFinish();
 
@@ -685,7 +685,7 @@ namespace ProtoGenesys
 						(BYTE)ServerSession[i].iIPAddress[0],
 						(BYTE)ServerSession[i].iIPAddress[1],
 						(BYTE)ServerSession[i].iIPAddress[2],
-						(BYTE)ServerSession[i].iIPAddress[3]));
+						(BYTE)ServerSession[i].iIPAddress[3]).c_str());
 
 					if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
 					{
@@ -912,7 +912,7 @@ namespace ProtoGenesys
 		ImGui::Text(label.c_str());
 		ImGui::SameLine(flSpacing - flWidth - ImGui::GetFrameHeight());
 
-		if (ImGui::ArrowButtonEx(VariadicText("%s_left", label.c_str()), ImGuiDir_Left, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
+		if (ImGui::ArrowButtonEx(VariadicText("%s_left", label.c_str()).c_str(), ImGuiDir_Left, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
 		{
 			*value -= step;
 
@@ -925,7 +925,7 @@ namespace ProtoGenesys
 		ImGui::Text(option.c_str());
 		ImGui::SameLine(flSpacing);
 
-		if (ImGui::ArrowButtonEx(VariadicText("%s_right", label.c_str()), ImGuiDir_Right, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
+		if (ImGui::ArrowButtonEx(VariadicText("%s_right", label.c_str()).c_str(), ImGuiDir_Right, ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()), ImGuiButtonFlags_Repeat | ImGuiButtonFlags_PressedOnClick))
 		{
 			*value += step;
 

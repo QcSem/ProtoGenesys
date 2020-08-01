@@ -27,29 +27,29 @@ namespace ProtoGenesys
 			ZeroMemory(szInput, sizeof(szInput));
 			iHistoryPos = -1;
 
-			vCommands.push_back(VariadicText("%s_clear", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_history", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_quit", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_crashname", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_crashclan", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_crashserver", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_endround", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_name", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_clan", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_xuid", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_ip", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_chatspam", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_killspam", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_votespam", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_experience", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_prestige", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_unlockall", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_uploadstats", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_resetstats", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_connect", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_clientcmd", PROGRAM_CMD_PREFIX));
-			vCommands.push_back(VariadicText("%s_servercmd", PROGRAM_CMD_PREFIX));
+			vCommands.push_back(Strdup(VariadicText("%s_clear", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_history", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_quit", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_crash_name", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_crash_clan", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_crash_server", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_end_round", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_change_name", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_change_clan", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_change_xuid", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_change_ip", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_chat_spam", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_kill_spam", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_vote_spam", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_experience", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_prestige", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_unlock_all", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_upload_stats", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_reset_stats", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_connect", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_client_cmd", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_server_cmd", PROGRAM_CMD_PREFIX).c_str()));
 
 			AddLog("Ready.");
 
@@ -98,26 +98,26 @@ namespace ProtoGenesys
 
 		if (ImGui::Button("Help", ImVec2(50, 0)))
 		{
-			AddLog("1. %s_crashname\n\t\tCrash clients with your name.", PROGRAM_CMD_PREFIX);
-			AddLog("2. %s_crashclan\n\t\tCrash clients with your clan.", PROGRAM_CMD_PREFIX);
-			AddLog("3. %s_crashserver\n\t\tCrash the current server.", PROGRAM_CMD_PREFIX);
-			AddLog("4. %s_endround\n\t\tEnd the current round.", PROGRAM_CMD_PREFIX);
-			AddLog("5. %s_name <on|off> <name>\n\t\tChange your name.", PROGRAM_CMD_PREFIX);
-			AddLog("6. %s_clan <on|off> <clan>\n\t\tChange your clan.", PROGRAM_CMD_PREFIX);
-			AddLog("7. %s_xuid <on|off> <xuid>\n\t\tChange your xuid.", PROGRAM_CMD_PREFIX);
-			AddLog("8. %s_ip <on|off> <ip>\n\t\tChange your ip.", PROGRAM_CMD_PREFIX);
-			AddLog("9. %s_chatspam <on|off> <message>\n\t\tSet chatspam message.", PROGRAM_CMD_PREFIX);
-			AddLog("10. %s_killspam <on|off> <message>\n\t\tSet killspam message.", PROGRAM_CMD_PREFIX);
-			AddLog("11. %s_votespam <on|off> <message>\n\t\tSet votespam message.", PROGRAM_CMD_PREFIX);
+			AddLog("1. %s_crash_name\n\t\tCrash clients with your name.", PROGRAM_CMD_PREFIX);
+			AddLog("2. %s_crash_clan\n\t\tCrash clients with your clan.", PROGRAM_CMD_PREFIX);
+			AddLog("3. %s_crash_server\n\t\tCrash the current server.", PROGRAM_CMD_PREFIX);
+			AddLog("4. %s_end_round\n\t\tEnd the current round.", PROGRAM_CMD_PREFIX);
+			AddLog("5. %s_change_name <on|off> <name>\n\t\tChange your name.", PROGRAM_CMD_PREFIX);
+			AddLog("6. %s_change_clan <on|off> <clan>\n\t\tChange your clan.", PROGRAM_CMD_PREFIX);
+			AddLog("7. %s_change_xuid <on|off> <xuid>\n\t\tChange your xuid.", PROGRAM_CMD_PREFIX);
+			AddLog("8. %s_change_ip <on|off> <ip>\n\t\tChange your ip.", PROGRAM_CMD_PREFIX);
+			AddLog("9. %s_chat_spam <on|off> <message>\n\t\tSet chatspam message.", PROGRAM_CMD_PREFIX);
+			AddLog("10. %s_kill_spam <on|off> <message>\n\t\tSet killspam message.", PROGRAM_CMD_PREFIX);
+			AddLog("11. %s_vote_spam <on|off> <message>\n\t\tSet votespam message.", PROGRAM_CMD_PREFIX);
 			AddLog("12. %s_experience <max|experience>\n\t\tSet your experience.", PROGRAM_CMD_PREFIX);
 			AddLog("13. %s_prestige <max|prestige>\n\t\tSet your prestige.", PROGRAM_CMD_PREFIX);
-			AddLog("14. %s_unlockall\n\t\tUnlock everything in the game.", PROGRAM_CMD_PREFIX);
-			AddLog("15. %s_uploadstats\n\t\tCalculate hash for and sign your stats.", PROGRAM_CMD_PREFIX);
-			AddLog("16. %s_resetstats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
+			AddLog("14. %s_unlock_all\n\t\tUnlock everything in the game.", PROGRAM_CMD_PREFIX);
+			AddLog("15. %s_upload_stats\n\t\tCalculate hash for and sign your stats.", PROGRAM_CMD_PREFIX);
+			AddLog("16. %s_reset_stats\n\t\tReset your save data.", PROGRAM_CMD_PREFIX);
 			AddLog("17. %s_connect <xuid>\n\t\tConnect to a specific player.", PROGRAM_CMD_PREFIX);
 			AddLog("18. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
-			AddLog("19. %s_clientcmd <command>\n\t\tSend a client command.", PROGRAM_CMD_PREFIX);
-			AddLog("20. %s_servercmd <command>\n\t\tSend a server command.", PROGRAM_CMD_PREFIX);
+			AddLog("19. %s_client_cmd <command>\n\t\tSend a client command.", PROGRAM_CMD_PREFIX);
+			AddLog("20. %s_server_cmd <command>\n\t\tSend a server command.", PROGRAM_CMD_PREFIX);
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -245,12 +245,12 @@ namespace ProtoGenesys
 
 		vHistory.push_back(Strdup(command));
 
-		if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_clear", PROGRAM_CMD_PREFIX)))
+		if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_clear", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			ClearLog();
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_history", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_history", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			int iFirst = vHistory.Size - 10;
 
@@ -258,19 +258,19 @@ namespace ProtoGenesys
 				AddLog("%3d: %s\n", i, vHistory[i]);
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_quit", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_quit", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			exit(EXIT_SUCCESS);
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashname", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crash_name", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
 			std::random_device rd;
 			std::uniform_int_distribution<int> dist(0x48, 0x49);
 
-			_profiler.gNameOverRide->Current.szValue = VariadicText("^%c\xFF\xFF\xFF", (char)dist(rd));
+			_profiler.gNameOverRide->Current.szValue = Strdup(VariadicText("^%c\xFF\xFF\xFF", (char)dist(rd)).c_str());
 
 			std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 			std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
@@ -284,14 +284,14 @@ namespace ProtoGenesys
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashclan", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crash_clan", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
 			std::random_device rd;
 			std::uniform_int_distribution<int> dist(0x48, 0x49);
 
-			_profiler.gClanOverRide->Current.szValue = VariadicText("^%c%s", (char)dist(rd), acut::RandomANString(5).c_str());
+			_profiler.gClanOverRide->Current.szValue = Strdup(VariadicText("^%c%s", (char)dist(rd), acut::RandomANString(5).c_str()).c_str());
 
 			std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 			std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
@@ -305,21 +305,21 @@ namespace ProtoGenesys
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crashserver", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_crash_server", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			AddReliableCommand(VariadicText("sl %i %i", 1024, Dereference(dwServerID)));
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_endround", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_end_round", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			AddReliableCommand(VariadicText("mr %d -1 endround", Dereference(dwServerID)));
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_name", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_change_name", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -328,7 +328,7 @@ namespace ProtoGenesys
 					char szArgBuff[512] = { NULL };
 
 					for (int i = 1; i < CmdLine.iArgNum; i++)
-						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
 					LPSTR szNameOverride = strtok(szArgBuff, "\n");
 
@@ -386,7 +386,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_clan", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_change_clan", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -395,7 +395,7 @@ namespace ProtoGenesys
 					char szArgBuff[512] = { NULL };
 
 					for (int i = 1; i < CmdLine.iArgNum; i++)
-						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
 					LPSTR szClanOverride = strtok(szArgBuff, "\n");
 
@@ -453,7 +453,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_xuid", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_change_xuid", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -462,7 +462,7 @@ namespace ProtoGenesys
 					char szArgBuff[512] = { NULL };
 
 					for (int i = 1; i < CmdLine.iArgNum; i++)
-						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
 					LPSTR szXuidOverride = strtok(szArgBuff, "\n");
 
@@ -470,7 +470,7 @@ namespace ProtoGenesys
 					{
 						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 
-						_profiler.gXuidOverRide->Current.szValue = VariadicText("%llx", strtoll(szXuidOverride, NULL, 10));
+						_profiler.gXuidOverRide->Current.szValue = Strdup(VariadicText("%llx", strtoll(szXuidOverride, NULL, 10)).c_str());
 
 						std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 						std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
@@ -520,7 +520,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_ip", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_change_ip", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -572,7 +572,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_chatspam", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_chat_spam", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -581,7 +581,7 @@ namespace ProtoGenesys
 					char szArgBuff[512] = { NULL };
 
 					for (int i = 1; i < CmdLine.iArgNum; i++)
-						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
 					LPSTR szChatspam = strtok(szArgBuff, "\n");
 
@@ -617,7 +617,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_killspam", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_kill_spam", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -626,7 +626,7 @@ namespace ProtoGenesys
 					char szArgBuff[512] = { NULL };
 
 					for (int i = 1; i < CmdLine.iArgNum; i++)
-						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
 					LPSTR szKillspam = strtok(szArgBuff, "\n");
 
@@ -662,7 +662,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_votespam", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_vote_spam", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -671,7 +671,7 @@ namespace ProtoGenesys
 					char szArgBuff[512] = { NULL };
 
 					for (int i = 1; i < CmdLine.iArgNum; i++)
-						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
 					LPSTR szVotespam = strtok(szArgBuff, "\n");
 
@@ -707,7 +707,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_experience", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_experience", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -737,7 +737,7 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_prestige", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_prestige", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -767,28 +767,28 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_unlockall", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_unlock_all", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			_stats.UnlockAll();
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_uploadstats", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_upload_stats", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			_stats.HashAndSignStats();
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_resetstats", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_reset_stats", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			Cbuf_AddText("resetStats");
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_connect", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_connect", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			if (CmdLine.iArgNum > 0)
 			{
@@ -803,19 +803,19 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
 			Cbuf_AddText("disconnect");
 			AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_clientcmd", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_client_cmd", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			char szArgBuff[512] = { NULL };
 
 			for (int i = 0; i < CmdLine.iArgNum; i++)
-				strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+				strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
 			LPSTR szClientcmd = strtok(szArgBuff, "\n");
 
@@ -832,12 +832,12 @@ namespace ProtoGenesys
 			}
 		}
 
-		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_servercmd", PROGRAM_CMD_PREFIX)))
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_server_cmd", PROGRAM_CMD_PREFIX).c_str()))
 		{
 			char szArgBuff[512] = { NULL };
 
 			for (int i = 0; i < CmdLine.iArgNum; i++)
-				strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]));
+				strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
 
 			LPSTR szServercmd = strtok(szArgBuff, "\n");
 
