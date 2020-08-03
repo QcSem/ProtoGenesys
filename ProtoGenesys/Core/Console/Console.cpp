@@ -270,7 +270,7 @@ namespace ProtoGenesys
 			std::random_device rd;
 			std::uniform_int_distribution<int> dist(0x48, 0x49);
 
-			_profiler.gNameOverRide->Current.szValue = Strdup(VariadicText("^%c\xFF\xFF\xFF", (char)dist(rd)).c_str());
+			_profiler.gNameOverRide->Current.szValue = Strdup(VariadicText("^%c\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", (char)dist(rd)).c_str());
 
 			std::string szNameOverride(_profiler.gNameOverRide->Current.szValue);
 			std::string szClanOverride(_profiler.gClanOverRide->Current.szValue);
