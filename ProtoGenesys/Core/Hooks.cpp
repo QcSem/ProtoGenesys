@@ -227,6 +227,8 @@ namespace ProtoGenesys
 		dwSysValue = Sys_GetValue(3);
 		dwShader = RegisterShader("white");
 
+		FindVar("cg_drawlagometer")->Current.iValue = _profiler.gLagometer->Current.iValue;
+
 		if (CG)
 		{
 			SetThirdPerson();
@@ -673,7 +675,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	QWORD cHooks::GetUserSteamIDAsXUID()
+	QWORD cHooks::GetUserSteamIdAsXuid()
 	{
 		return qwXuidOverride;
 	}

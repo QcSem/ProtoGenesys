@@ -371,6 +371,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gLagometer->szName, _profiler.gLagometer->szItems[_profiler.gLagometer->Current.iValue], &_profiler.gLagometer->Current.iValue, _profiler.gLagometer->Domain.iMin, _profiler.gLagometer->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
 				if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 				{

@@ -87,7 +87,7 @@ namespace ProtoGenesys
 		int Atoi2(int result);
 		LPVOID Memcpy(LPVOID dst, LPCVOID src, SIZE_T size);
 
-		QWORD GetUserSteamIDAsXUID();
+		QWORD GetUserSteamIdAsXuid();
 		LPSTR FilterPersonaName(LPSTR name, bool ascii);
 
 		std::string Randomize(std::string name);

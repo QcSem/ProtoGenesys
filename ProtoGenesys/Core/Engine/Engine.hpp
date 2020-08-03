@@ -1027,8 +1027,9 @@ namespace ProtoGenesys
 	static DWORD_PTR dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
 	static DWORD_PTR dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
 	static DWORD_PTR dwMemcpyCall = bIsSteamVersion ? 0x687460 : 0x45A840;
-	static DWORD_PTR dwGetUserSteamIDAsXUID = bIsSteamVersion ? 0x44A8F0 : 0x5C2CD0;
-	static DWORD_PTR dwGetUserSteamIDAsXUIDCall = bIsSteamVersion ? 0x924621 : 0x924471;
+	static DWORD_PTR dwFriendPersonaNameFromXuid = bIsSteamVersion ? 0x4FEA00 : 0x6286B0;
+	static DWORD_PTR dwGetUserSteamIdAsXuid = bIsSteamVersion ? 0x44A8F0 : 0x5C2CD0;
+	static DWORD_PTR dwGetUserSteamIdAsXuidCall = bIsSteamVersion ? 0x924621 : 0x924471;
 	static DWORD_PTR dwFilterPersonaNameCall = bIsSteamVersion ? 0x4FEA4F : 0x6286FF;
 
 	static DWORD_PTR dwCG = 0x113F18C;

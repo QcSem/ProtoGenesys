@@ -78,6 +78,10 @@ void USERCALL hCreateScreenShot(int unk1, int unk2, int unk3, int unk4);
 typedef void(USERCALL* tCreateScreenShot)(int unk1, int unk2, int unk3, int unk4);
 tCreateScreenShot oCreateScreenShot = (tCreateScreenShot)dwCreateScreenShot;
 
+LPSTR USERCALL hFriendPersonaNameFromXuid(LPSTR name, SIZE_T size, bool ascii);
+typedef LPSTR(USERCALL* tFriendPersonaNameFromXuid)(LPSTR name, SIZE_T size, bool ascii);
+tFriendPersonaNameFromXuid oFriendPersonaNameFromXuid = (tFriendPersonaNameFromXuid)dwFriendPersonaNameFromXuid;
+
 CSteamID* FASTCALL hGetSteamID(LPVOID ecx, LPVOID edx, int unk);
 typedef CSteamID* (FASTCALL* tGetSteamID)(LPVOID ecx, LPVOID edx, int unk);
 tGetSteamID oGetSteamID;
@@ -110,7 +114,7 @@ int USERCALL hAtoi1(LPCSTR string);
 int USERCALL hAtoi2(LPCSTR string);
 LPVOID USERCALL hMemcpy(LPVOID dst, LPCVOID src, SIZE_T size);
 
-QWORD USERCALL hGetUserSteamIDAsXUID();
+QWORD USERCALL hGetUserSteamIdAsXuid();
 LPSTR USERCALL hFilterPersonaName(LPSTR name, bool ascii);
 
 //=====================================================================================
@@ -123,7 +127,7 @@ FurtiveHook fhAtoiCall1{ x86Instruction::CALL, (LPVOID)dwAtoiCall1, &hAtoi1 };
 FurtiveHook fhAtoiCall2{ x86Instruction::CALL, (LPVOID)dwAtoiCall2, &hAtoi2 };
 FurtiveHook fhMemcpyCall{ x86Instruction::CALL, (LPVOID)dwMemcpyCall, &hMemcpy };
 
-FurtiveHook fhGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIDAsXUIDCall, &hGetUserSteamIDAsXUID };
+FurtiveHook fhGetUserSteamIDAsXUIDCall{ x86Instruction::CALL, (LPVOID)dwGetUserSteamIdAsXuidCall, &hGetUserSteamIdAsXuid };
 FurtiveHook fhFilterPersonaNameCall{ x86Instruction::CALL, (LPVOID)dwFilterPersonaNameCall, &hFilterPersonaName };
 
 //=====================================================================================
@@ -251,6 +255,13 @@ void USERCALL hCreateScreenShot(int unk1, int unk2, int unk3, int unk4)
 
 //=====================================================================================
 
+LPSTR USERCALL hFriendPersonaNameFromXuid(LPSTR name, SIZE_T size, bool ascii)
+{
+	return oFriendPersonaNameFromXuid(name, 32, ascii);
+}
+
+//=====================================================================================
+
 CSteamID* FASTCALL hGetSteamID(LPVOID ecx, LPVOID edx, int unk)
 {
 	return _hooks.GetSteamID(oGetSteamID(ecx, edx, unk));
@@ -332,9 +343,9 @@ LPVOID USERCALL hMemcpy(LPVOID dst, LPCVOID src, SIZE_T size)
 
 //=====================================================================================
 
-QWORD USERCALL hGetUserSteamIDAsXUID()
+QWORD USERCALL hGetUserSteamIdAsXuid()
 {
-	return _hooks.GetUserSteamIDAsXUID();
+	return _hooks.GetUserSteamIdAsXuid();
 }
 
 //=====================================================================================
@@ -385,6 +396,7 @@ void Init()
 	AttachHook(oGetPlayerStatus, hGetPlayerStatus);
 	AttachHook(oIsValidSteamID, hIsValidSteamID);
 	AttachHook(oCreateScreenShot, hCreateScreenShot);
+	AttachHook(oFriendPersonaNameFromXuid, hFriendPersonaNameFromXuid);
 
 	fhTransitionPlayerStateCall.SetHook();
 	fhGetWorldTagMatrixCall.SetHook();
@@ -423,6 +435,7 @@ void Free()
 	DetachHook(oGetPlayerStatus, hGetPlayerStatus);
 	DetachHook(oIsValidSteamID, hIsValidSteamID);
 	DetachHook(oCreateScreenShot, hCreateScreenShot);
+	DetachHook(oFriendPersonaNameFromXuid, hFriendPersonaNameFromXuid);
 
 	fhTransitionPlayerStateCall.UnHook();
 	fhGetWorldTagMatrixCall.UnHook();
