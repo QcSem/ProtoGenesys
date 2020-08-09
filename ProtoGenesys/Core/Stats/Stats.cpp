@@ -10585,10 +10585,10 @@ namespace ProtoGenesys
 
 		for (int i = 0; i < 10; i++)
 		{
-			Cbuf_AddText(VariadicText("setStatFromLocString CacLoadouts customClassName %i %s\n", i, PROGRAM_NAME));
-			Cbuf_AddText(VariadicText("setStatFromLocString customMatchCacLoadouts customClassName %i %s\n", i, PROGRAM_NAME));
-			Cbuf_AddText(VariadicText("setStatFromLocString leagueCacLoadouts customClassName %i %s\n", i, PROGRAM_NAME));
-			Cbuf_AddText(VariadicText("setprofilelocclass %i %s\n", i, PROGRAM_NAME));
+			Cbuf_AddText(VariadicText("setStatFromLocString CacLoadouts customClassName %i ^%i%s\n", i, i, PROGRAM_NAME));
+			Cbuf_AddText(VariadicText("setStatFromLocString customMatchCacLoadouts customClassName %i ^%i%s\n", i, i, PROGRAM_NAME));
+			Cbuf_AddText(VariadicText("setStatFromLocString leagueCacLoadouts customClassName %i ^%i%s\n", i, i, PROGRAM_NAME));
+			Cbuf_AddText(VariadicText("setprofilelocclass %i ^%i%s\n", i, i, PROGRAM_NAME));
 		}
 
 		Cbuf_AddText("uploadStats\n");

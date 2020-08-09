@@ -10,15 +10,13 @@ namespace ProtoGenesys
 
 	std::string cLicense::HttpRequest(std::string url, std::string file)
 	{
-		HINTERNET hInternet = InternetOpen(
-			VMProtectDecryptString(PROGRAM_NAME),
-			INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, NULL);
+		HINTERNET hInternet = InternetOpen(VMProtectDecryptString(PROGRAM_NAME), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, NULL);
 		if (hInternet == NULL)
 		{
 			return "";
 		}
 
-		HINTERNET hConnect = InternetConnect(hInternet, url.c_str(), INTERNET_DEFAULT_HTTP_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, NULL);
+		HINTERNET hConnect = InternetConnect(hInternet, url.c_str(), INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
 		if (hConnect == NULL)
 		{
 			InternetCloseHandle(hInternet);
@@ -26,9 +24,9 @@ namespace ProtoGenesys
 		}
 
 		LPCSTR szAcceptTypes[] = { VMProtectDecryptString("text/*"), NULL };
+		DWORD dwFlags = INTERNET_FLAG_SECURE | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_RELOAD;
 
-		HINTERNET hRequest = HttpOpenRequest(hConnect, VMProtectDecryptString("GET"), file.c_str(), VMProtectDecryptString("HTTP/1.0"), NULL, szAcceptTypes,
-			INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_RELOAD, 0);
+		HINTERNET hRequest = HttpOpenRequest(hConnect, VMProtectDecryptString("GET"), file.c_str(), VMProtectDecryptString("HTTP/1.0"), NULL, szAcceptTypes, dwFlags, NULL);
 		if (hRequest == NULL)
 		{
 			InternetCloseHandle(hConnect);
@@ -36,7 +34,7 @@ namespace ProtoGenesys
 			return "";
 		}
 
-		BOOL bRequestSent = HttpSendRequest(hRequest, NULL, 0, NULL, 0);
+		BOOL bRequestSent = HttpSendRequest(hRequest, NULL, NULL, NULL, NULL);
 		if (!bRequestSent)
 		{
 			InternetCloseHandle(hRequest);
@@ -52,7 +50,7 @@ namespace ProtoGenesys
 
 		std::string szData;
 
-		while (bKeepReading && dwBytesRead != 0)
+		while (bKeepReading && dwBytesRead)
 		{
 			bKeepReading = InternetReadFile(hRequest, szBuff, BUFF_SIZE, &dwBytesRead);
 			szData.append(szBuff, dwBytesRead);
@@ -102,7 +100,7 @@ namespace ProtoGenesys
 					exit(EXIT_FAILURE);
 				}
 
-				LicenseTimer.Wait(60000);
+				LicenseTimer.Wait(2000);
 			}
 		}
 	}

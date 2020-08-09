@@ -587,7 +587,7 @@ namespace ProtoGenesys
 
 					if (ImGui::BeginPopupContextItem(std::to_string(i).c_str()))
 					{
-						if (ImGui::Selectable("Add To Friend List"))
+						if (ImGui::MenuItem("Add To Friend List"))
 						{
 							std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::out | std::ios_base::app);
 							file << ServerSession[i].qwXuid << " " << ServerSession[i].szName << std::endl;
@@ -597,7 +597,7 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::Selectable("View Profile"))
+						if (ImGui::MenuItem("View Profile"))
 						{
 							PopOverlayForSteamID(ServerSession[i].qwXuid);
 
@@ -605,7 +605,7 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::Selectable("Steal ID"))
+						if (ImGui::MenuItem("Steal ID"))
 						{
 							_profiler.gNameOverRide->Current.szValue = _strdup(ServerSession[i].szName);
 							_profiler.gClanOverRide->Current.szValue = _strdup(ServerSession[i].szClan);
@@ -619,39 +619,51 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
+						if (ImGui::BeginMenu("Crash Player", furtive_crash::send_connectivity_test(i)))
+						{
+							ImGui::PushItemWidth(100.0f);
+							ImGui::InputText("", szCrashMessage, 1024);
+							ImGui::PopItemWidth();
+
+							ImGui::SameLine();
+							if (ImGui::Button("Execute"))
+							{
+								std::string szCrash(szCrashMessage);
+
+								if (!szCrash.empty())
+								{
+									szCrash = acut::FindAndReplaceString(szCrash, "%attacker", ServerSession[i].szName);
+									szCrash = acut::FindAndReplaceString(szCrash, "%victim", ServerSession[i].szName);
+									szCrash = acut::FindAndReplaceString(szCrash, "%ip", VariadicText("%u.%u.%u.%u",
+										(BYTE)ServerSession[i].iIPAddress[0],
+										(BYTE)ServerSession[i].iIPAddress[1],
+										(BYTE)ServerSession[i].iIPAddress[2],
+										(BYTE)ServerSession[i].iIPAddress[3]));
+
+									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrash).c_str()));
+								}
+
+								std::thread(furtive_crash::send_crash, i).detach();
+								bWriteLog = true;
+							}
+							ImGui::EndMenu();
+						}
+
 						ImGui::Separator();
 
-						if (ImGui::Selectable("Multipoint"))
+						if (ImGui::MenuItem("Multipoint", (const char*)0, &_targetList.Priorities[i].bIsMultiPoint))
 						{
-							_targetList.Priorities[i].bIsMultiPoint = !_targetList.Priorities[i].bIsMultiPoint;
-
 							bWriteLog = true;
 						}
 
-						if (_targetList.Priorities[i].bIsMultiPoint)
+						if (ImGui::MenuItem("Ignore", (const char*)0, &_targetList.Priorities[i].bIsIgnored))
 						{
-							ImGui::SameLine();
-							ImGui::RenderCheckMark(ImGui::GetCurrentWindow()->DrawList, ImGui::GetCurrentWindow()->DC.CursorPos, ImGui::GetColorU32(ImGuiCol_CheckMark), ImGui::GetCurrentContext()->FontSize);
-							ImGui::NewLine();
-						}
-
-						if (ImGui::Selectable("Ignore"))
-						{
-							_targetList.Priorities[i].bIsIgnored = !_targetList.Priorities[i].bIsIgnored;
-
 							bWriteLog = true;
-						}
-
-						if (_targetList.Priorities[i].bIsIgnored)
-						{
-							ImGui::SameLine();
-							ImGui::RenderCheckMark(ImGui::GetCurrentWindow()->DrawList, ImGui::GetCurrentWindow()->DC.CursorPos, ImGui::GetColorU32(ImGuiCol_CheckMark), ImGui::GetCurrentContext()->FontSize);
-							ImGui::NewLine();
 						}
 
 						ImGui::Separator();
 
-						if (ImGui::Selectable("Copy Name"))
+						if (ImGui::MenuItem("Copy Name"))
 						{
 							ImGui::LogToClipboard();
 							ImGui::LogText(ServerSession[i].szName);
@@ -660,7 +672,7 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::Selectable("Copy IP Address"))
+						if (ImGui::MenuItem("Copy IP Address"))
 						{
 							ImGui::LogToClipboard();
 							ImGui::LogText(VariadicText("%u.%u.%u.%u",
@@ -674,7 +686,7 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::Selectable("Copy SteamID"))
+						if (ImGui::MenuItem("Copy SteamID"))
 						{
 							ImGui::LogToClipboard();
 							ImGui::LogText(std::to_string(ServerSession[i].qwXuid).c_str());
@@ -727,14 +739,14 @@ namespace ProtoGenesys
 
 					if (ImGui::BeginPopupContextItem(std::to_string(i).c_str()))
 					{
-						if (ImGui::Selectable("Join Session"))
+						if (ImGui::MenuItem("Join Session"))
 						{
 							JoinSessionFromXuid(_hooks.vFriends[i].first);
 
 							bWriteLog = true;
 						}
 
-						if (ImGui::Selectable("View Profile"))
+						if (ImGui::MenuItem("View Profile"))
 						{
 							PopOverlayForSteamID(_hooks.vFriends[i].first);
 
@@ -742,7 +754,7 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::Selectable("Remove From Friend List"))
+						if (ImGui::MenuItem("Remove From Friend List"))
 						{
 							_hooks.vFriends.erase(std::next(_hooks.vFriends.begin(), i));
 
@@ -758,7 +770,7 @@ namespace ProtoGenesys
 
 						ImGui::Separator();
 
-						if (ImGui::Selectable("Copy Name"))
+						if (ImGui::MenuItem("Copy Name"))
 						{
 							ImGui::LogToClipboard();
 							ImGui::LogText(_hooks.vFriends[i].second.c_str());
@@ -767,7 +779,7 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::Selectable("Copy SteamID"))
+						if (ImGui::MenuItem("Copy SteamID"))
 						{
 							ImGui::LogToClipboard();
 							ImGui::LogText(std::to_string(_hooks.vFriends[i].first).c_str());

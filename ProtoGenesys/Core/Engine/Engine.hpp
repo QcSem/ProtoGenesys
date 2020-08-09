@@ -1024,6 +1024,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
 	static DWORD_PTR dwIsValidSteamID = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
 	static DWORD_PTR dwCreateScreenShot = bIsSteamVersion ? 0x75BF00 : 0x75CBB0;
+	static DWORD_PTR dwAtoiCall = bIsSteamVersion ? 0x7EB870 : 0x7EC480;
 	static DWORD_PTR dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
 	static DWORD_PTR dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
 	static DWORD_PTR dwMemcpyCall = bIsSteamVersion ? 0x687460 : 0x45A840;
@@ -1091,6 +1092,7 @@ namespace ProtoGenesys
 	static DWORD_PTR dwIsUserRegistered = bIsSteamVersion ? 0x6181A0 : 0x44D670;
 	static DWORD_PTR dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
 	static DWORD_PTR dwGetPlayerXuid = bIsSteamVersion ? 0x45C710 : 0x667A00;
+	static DWORD_PTR dwGetOurClientNum = bIsSteamVersion ? 0x5F8040 : 0x629320;
 	static DWORD_PTR dwJoinSessionFromXuid = bIsSteamVersion ? 0x6EB1E0 : 0x43D980;
 	static DWORD_PTR dwCycleWeapon = bIsSteamVersion ? 0x69BAE0 : 0x57D850;
 	static DWORD_PTR dwFindVar = bIsSteamVersion ? 0x42D410 : 0x563A70;
@@ -1550,6 +1552,13 @@ namespace ProtoGenesys
 	FORCEINLINE QWORD GetPlayerXuid(LPVOID session, int clientnum)
 	{
 		return VariadicCall<QWORD>(dwGetPlayerXuid, session, clientnum);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE int GetOurClientNum(LPVOID session)
+	{
+		return VariadicCall<int>(dwGetOurClientNum, 0, session);
 	}
 	/*
 	//=====================================================================================

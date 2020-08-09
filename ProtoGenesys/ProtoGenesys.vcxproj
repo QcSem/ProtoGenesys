@@ -60,6 +60,7 @@
     <ClCompile Include="Core\Autowall\Autowall.cpp" />
     <ClCompile Include="Core\Console\Console.cpp" />
     <ClCompile Include="Core\Drawing\Drawing.cpp" />
+    <ClCompile Include="Core\FurtiveCrash\FurtiveCrash.cpp" />
     <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp" />
     <ClCompile Include="Core\Hooks.cpp" />
     <ClCompile Include="Core\License\License.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="Core\Engine\Engine.hpp" />
     <ClInclude Include="Core\Engine\Helpers.hpp" />
     <ClInclude Include="Core\Engine\Thunk.hpp" />
+    <ClInclude Include="Core\FurtiveCrash\FurtiveCrash.h" />
     <ClInclude Include="Core\FurtiveHook\FurtiveHook.h" />
     <ClInclude Include="Core\Hooks.h" />
     <ClInclude Include="Core\License\License.h" />

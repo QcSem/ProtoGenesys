@@ -407,6 +407,8 @@ void Init()
 	fhAtoiCall2.SetHook();
 	fhMemcpyCall.SetHook();
 
+	furtive_crash::init();
+
 	HookSteamUserAPI();
 	HookSteamFriendsAPI();
 
@@ -445,6 +447,8 @@ void Free()
 	fhAtoiCall1.UnHook();
 	fhAtoiCall2.UnHook();
 	fhMemcpyCall.UnHook();
+
+	furtive_crash::free();
 
 	if (fhGetUserSteamIDAsXUIDCall.IsHooked())
 		fhGetUserSteamIDAsXUIDCall.UnHook();

@@ -30,6 +30,7 @@
 #include "Core/Autowall/Autowall.h"
 #include "Core/Console/Console.h"
 #include "Core/Drawing/Drawing.h"
+#include "Core/FurtiveCrash/FurtiveCrash.h"
 #include "Core/FurtiveHook/FurtiveHook.h"
 #include "Core/License/License.h"
 #include "Core/Mathematics/Mathematics.h"

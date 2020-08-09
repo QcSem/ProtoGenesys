@@ -68,11 +68,14 @@
     <ClCompile Include="Core\VMTHook\VMTHook.cpp">
       <Filter>Core\VMTHook</Filter>
     </ClCompile>
-    <ClCompile Include="Core\License\License.cpp">
-      <Filter>Core\License</Filter>
-    </ClCompile>
     <ClCompile Include="Core\FurtiveHook\FurtiveHook.cpp">
       <Filter>Core\FurtiveHook</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\FurtiveCrash\FurtiveCrash.cpp">
+      <Filter>Core\FurtiveCrash</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\License\License.cpp">
+      <Filter>Core\License</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,9 +182,6 @@
     <ClInclude Include="ImGui\Fonts\Bank_Gothic_Pro_Light.hpp">
       <Filter>ImGui\Fonts</Filter>
     </ClInclude>
-    <ClInclude Include="Core\License\License.h">
-      <Filter>Core\License</Filter>
-    </ClInclude>
     <ClInclude Include="ImGui\Addons\WICTextureLoader.h">
       <Filter>ImGui\Addons</Filter>
     </ClInclude>
@@ -208,6 +208,12 @@
     </ClInclude>
     <ClInclude Include="Core\FurtiveHook\FurtiveHook.h">
       <Filter>Core\FurtiveHook</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\FurtiveCrash\FurtiveCrash.h">
+      <Filter>Core\FurtiveCrash</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\License\License.h">
+      <Filter>Core\License</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -277,14 +283,17 @@
     <Filter Include="Core\Stats">
       <UniqueIdentifier>{e070b263-6b7b-474e-9105-53bed263333f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\License">
-      <UniqueIdentifier>{956ecc39-8165-4a7d-96f2-e5629f8fc99a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\VMTHook">
       <UniqueIdentifier>{73c8ab63-b3a0-4dd6-9e8a-2e91600386b2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\FurtiveHook">
       <UniqueIdentifier>{a9bc08bf-cb88-4725-8f45-5991b1fa7e2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\FurtiveCrash">
+      <UniqueIdentifier>{bc960963-0c8f-4ac6-a886-48fde1644fe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\License">
+      <UniqueIdentifier>{c50c6a02-bddb-4810-b604-fa1b5074019e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
