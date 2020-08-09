@@ -28,7 +28,7 @@ namespace ProtoGenesys
 			char szCmdName[256], szCmdArgs[256][256];
 		};
 
-		char szInput[256];
+		char szInput[sizeof(sCmdLine)];
 		bool bScrollToBottom;
 		int iHistoryPos;
 		ImVector<LPSTR> vItems, vHistory;
