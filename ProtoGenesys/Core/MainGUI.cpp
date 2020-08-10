@@ -65,6 +65,7 @@ namespace ProtoGenesys
 			_drawing.DrawRadar();
 			_drawing.DrawCrosshair();
 			_drawing.DrawTracers();
+			_drawing.ThreatWarning();
 		}
 
 		ImU32 cShadow = ImGui::ColorConvertFloat4ToU32(ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -213,6 +214,7 @@ namespace ProtoGenesys
 					_profiler.gAutoWall->Current.iValue = _profiler.gAutoWall->Reset.iValue;
 					_profiler.gApplyPrediction->Current.iValue = _profiler.gApplyPrediction->Reset.iValue;
 					_profiler.gAntiKillTeamMates->Current.iValue = _profiler.gAntiKillTeamMates->Reset.iValue;
+					_profiler.gAntiKillIgnored->Current.iValue = _profiler.gAntiKillIgnored->Reset.iValue;
 					_profiler.gSilentAim->Current.iValue = _profiler.gSilentAim->Reset.iValue;
 					_profiler.gBoneScan->Current.iValue = _profiler.gBoneScan->Reset.iValue;
 					_profiler.gTargetK9Unit->Current.iValue = _profiler.gTargetK9Unit->Reset.iValue;
@@ -288,6 +290,11 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
+				if (DrawOption(_profiler.gThreatWarning->szName, _profiler.gThreatWarning->szItems[_profiler.gThreatWarning->Current.iValue], &_profiler.gThreatWarning->Current.iValue, _profiler.gThreatWarning->Domain.iMin, _profiler.gThreatWarning->Domain.iMax, 1))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
 				ImGui::Dummy(ImGui::GetContentRegionAvail() - ImVec2(0.0f, 35.0f + ImGui::GetStyle().ItemSpacing.y));
 				if (ImGui::Button("Reset to Default", ImVec2(ImGui::GetWindowContentRegionWidth(), 35.0f)))
 				{
@@ -303,6 +310,7 @@ namespace ProtoGenesys
 					_profiler.gCompass->Current.iValue = _profiler.gCompass->Reset.iValue;
 					_profiler.gRadar->Current.iValue = _profiler.gRadar->Reset.iValue;
 					_profiler.gBulletTracers->Current.iValue = _profiler.gBulletTracers->Reset.iValue;
+					_profiler.gThreatWarning->Current.iValue = _profiler.gThreatWarning->Reset.iValue;
 
 					bWriteLog = true;
 				}
@@ -391,6 +399,7 @@ namespace ProtoGenesys
 					_profiler.gNameSpam->Current.iValue = _profiler.gNameSpam->Reset.iValue;
 					_profiler.gTrickShot->Current.iValue = _profiler.gTrickShot->Reset.iValue;
 					_profiler.gAnimatedWeaponizedCamo->Current.iValue = _profiler.gAnimatedWeaponizedCamo->Reset.iValue;
+					_profiler.gLagometer->Current.iValue = _profiler.gLagometer->Reset.iValue;
 
 					bWriteLog = true;
 				}
@@ -542,6 +551,11 @@ namespace ProtoGenesys
 				} ImGui::NewLine();
 
 				if (DrawColorPicker(_profiler.gColorShadow->szName, _profiler.gColorShadow->Current.cValue))
+				{
+					bWriteLog = true;
+				} ImGui::NewLine();
+
+				if (DrawColorPicker(_profiler.gColorThreatWarning->szName, _profiler.gColorThreatWarning->Current.cValue))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();

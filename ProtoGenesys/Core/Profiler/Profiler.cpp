@@ -48,6 +48,7 @@ namespace ProtoGenesys
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Compass", gCompass->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Radar", gRadar->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.BulletTracers", gBulletTracers->Current.iValue);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.ThreatWarning", gThreatWarning->Current.iValue);
 
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
@@ -120,6 +121,11 @@ namespace ProtoGenesys
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Blue", gColorShadow->Current.cValue.z);
 			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Alpha", gColorShadow->Current.cValue.w);
 
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.ThreatWarning.Red", gColorThreatWarning->Current.cValue.x);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.ThreatWarning.Green", gColorThreatWarning->Current.cValue.y);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.ThreatWarning.Blue", gColorThreatWarning->Current.cValue.z);
+			XML.set(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.ThreatWarning.Alpha", gColorThreatWarning->Current.cValue.w);
+
 			XML.write_document(szFilePath);
 
 			return true;
@@ -179,6 +185,7 @@ namespace ProtoGenesys
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Compass", gCompass->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.Radar", gRadar->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.BulletTracers", gBulletTracers->Current.iValue);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".WallHack.ThreatWarning", gThreatWarning->Current.iValue);
 
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.ThirdPerson", gThirdPerson->Current.iValue);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Miscellaneous.OrbitalVsat", gOrbitalVsat->Current.iValue);
@@ -251,6 +258,11 @@ namespace ProtoGenesys
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Blue", gColorShadow->Current.cValue.z);
 			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.Shadow.Alpha", gColorShadow->Current.cValue.w);
 
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.ThreatWarning.Red", gColorThreatWarning->Current.cValue.x);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.ThreatWarning.Green", gColorThreatWarning->Current.cValue.y);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.ThreatWarning.Blue", gColorThreatWarning->Current.cValue.z);
+			XML.get_if_present(acut::FindAndReplaceString(PROGRAM_NAME, " ", "") + ".Colors.ThreatWarning.Alpha", gColorThreatWarning->Current.cValue.w);
+
 			return true;
 		}
 
@@ -293,6 +305,7 @@ namespace ProtoGenesys
 		gCompass->Current.iValue = FALSE;
 		gRadar->Current.iValue = FALSE;
 		gBulletTracers->Current.iValue = FALSE;
+		gThreatWarning->Current.iValue = FALSE;
 
 		gThirdPerson->Current.iValue = FALSE;
 		gOrbitalVsat->Current.iValue = FALSE;

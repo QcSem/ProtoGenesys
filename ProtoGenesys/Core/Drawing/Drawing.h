@@ -54,6 +54,7 @@ namespace ProtoGenesys
 		void DrawRadar();
 		void DrawCrosshair();
 		void DrawTracers();
+		void ThreatWarning();
 	} extern _drawing;
 }
 

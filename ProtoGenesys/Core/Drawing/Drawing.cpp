@@ -834,6 +834,19 @@ namespace ProtoGenesys
 			}
 		}
 	}
+	/*
+	//=====================================================================================
+	*/
+	void cDrawing::ThreatWarning()
+	{
+		if (_profiler.gThreatWarning->Current.iValue)
+		{
+			if (_aimBot.AimState.bTargetAcquired)
+			{
+				ImGui::GetWindowDrawList()->AddRectFilled(ImGui::GetCurrentWindow()->Rect().Min, ImGui::GetCurrentWindow()->Rect().Max, ImGui::GetColorU32(_profiler.gColorThreatWarning->Current.cValue));
+			}
+		}
+	}
 }
 
 //=====================================================================================

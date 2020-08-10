@@ -186,6 +186,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gCompass = std::make_shared<sCvar>("Compass", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gRadar = std::make_shared<sCvar>("Radar", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gBulletTracers = std::make_shared<sCvar>("Bullet Tracers", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
+		std::shared_ptr<sCvar> gThreatWarning = std::make_shared<sCvar>("Threat Warning", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 
 		std::shared_ptr<sCvar> gThirdPerson = std::make_shared<sCvar>("Third Person", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gOrbitalVsat = std::make_shared<sCvar>("Orbital VSAT", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
@@ -226,6 +227,7 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gColorCrossHair = std::make_shared<sCvar>("Crosshair", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(0), ByteToFloat(255), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorText = std::make_shared<sCvar>("Text", std::vector<std::string>(), ImVec4(ByteToFloat(255), ByteToFloat(255), ByteToFloat(255), ByteToFloat(255)));
 		std::shared_ptr<sCvar> gColorShadow = std::make_shared<sCvar>("Shadow", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(0), ByteToFloat(0), ByteToFloat(255)));
+		std::shared_ptr<sCvar> gColorThreatWarning = std::make_shared<sCvar>("Threat Warning", std::vector<std::string>(), ImVec4(ByteToFloat(0), ByteToFloat(127), ByteToFloat(255), ByteToFloat(31)));
 
 		std::shared_ptr<sCvar> gNameOverRide = std::make_shared<sCvar>("Name Override", std::vector<std::string>(), _strdup(""));
 		std::shared_ptr<sCvar> gClanOverRide = std::make_shared<sCvar>("Clan Override", std::vector<std::string>(), _strdup(""));
