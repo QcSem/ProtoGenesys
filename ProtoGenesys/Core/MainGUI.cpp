@@ -571,6 +571,7 @@ namespace ProtoGenesys
 					_profiler.gColorCrossHair->Current.cValue = _profiler.gColorCrossHair->Reset.cValue;
 					_profiler.gColorText->Current.cValue = _profiler.gColorText->Reset.cValue;
 					_profiler.gColorShadow->Current.cValue = _profiler.gColorShadow->Reset.cValue;
+					_profiler.gColorThreatWarning->Current.cValue = _profiler.gColorThreatWarning->Reset.cValue;
 
 					bWriteLog = true;
 				}
