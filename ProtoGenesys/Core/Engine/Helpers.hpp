@@ -7,7 +7,7 @@
 namespace ProtoGenesys
 {
 	template<typename Return, typename... Parameters>
-	FORCEINLINE Return VariadicCall(DWORD_PTR address, Parameters... params)
+	FORCEINLINE Return VariadicCall(std::uintptr_t address, Parameters... params)
 	{
 		typedef Return(*tFunction)(Parameters...);
 		tFunction Function = (tFunction)address;
@@ -63,32 +63,32 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD_PTR FindPattern(LPCSTR signature, LPCSTR mask)
+	FORCEINLINE std::uintptr_t FindPattern(LPCSTR signature, LPCSTR mask)
 	{
-		DWORD_PTR dwAddress = (DWORD_PTR)GetModuleInfo(NULL).lpBaseOfDll;
-		DWORD_PTR dwLen = GetModuleInfo(NULL).SizeOfImage;
+		std::uintptr_t dwAddress = (std::uintptr_t)GetModuleInfo(NULL).lpBaseOfDll;
+		std::uintptr_t dwLen = GetModuleInfo(NULL).SizeOfImage;
 
-		for (DWORD_PTR i = 0; i < dwLen; i++)
+		for (std::uintptr_t i = 0; i < dwLen; i++)
 			if (Match((LPBYTE)(dwAddress + i), (LPBYTE)signature, mask))
-				return (DWORD_PTR)(dwAddress + i);
+				return (std::uintptr_t)(dwAddress + i);
 
 		return NULL;
 	}
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD_PTR FindPattern(DWORD_PTR address, DWORD_PTR length, LPCSTR signature, LPCSTR mask)
+	FORCEINLINE std::uintptr_t FindPattern(std::uintptr_t address, std::uintptr_t length, LPCSTR signature, LPCSTR mask)
 	{
-		for (DWORD_PTR i = 0; i < length; i++)
+		for (std::uintptr_t i = 0; i < length; i++)
 			if (Match((LPBYTE)(address + i), (LPBYTE)signature, mask))
-				return (DWORD_PTR)(address + i);
+				return (std::uintptr_t)(address + i);
 
 		return NULL;
 	}
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD_PTR ReadPointer(DWORD_PTR address, DWORD_PTR offset)
+	FORCEINLINE std::uintptr_t ReadPointer(std::uintptr_t address, std::uintptr_t offset)
 	{
 		if (!address)
 			return 0;
@@ -96,14 +96,14 @@ namespace ProtoGenesys
 		if (sizeof(LPVOID) == 0x8)
 			return address + (int)((*(int*)(address + offset) + offset) + sizeof(int));
 
-		return *(DWORD_PTR*)(address + offset);
+		return *(std::uintptr_t*)(address + offset);
 	}
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD_PTR FindDmaAddy(DWORD_PTR address, std::vector<DWORD_PTR> offsets)
+	FORCEINLINE std::uintptr_t FindDmaAddy(std::uintptr_t address, std::vector<std::uintptr_t> offsets)
 	{
-		DWORD_PTR dwPointer = *(DWORD_PTR*)address;
+		std::uintptr_t dwPointer = *(std::uintptr_t*)address;
 
 		if (!dwPointer)
 			return NULL;
@@ -112,7 +112,7 @@ namespace ProtoGenesys
 		{
 			if (Offset == offsets.back())
 			{
-				dwPointer = (DWORD_PTR)(dwPointer + Offset);
+				dwPointer = (std::uintptr_t)(dwPointer + Offset);
 
 				if (!dwPointer)
 					return NULL;
@@ -122,7 +122,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				dwPointer = *(DWORD_PTR*)(dwPointer + Offset);
+				dwPointer = *(std::uintptr_t*)(dwPointer + Offset);
 
 				if (!dwPointer)
 					return NULL;
@@ -134,10 +134,10 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE DWORD_PTR SwapVMT(DWORD_PTR address, DWORD_PTR hook, int index)
+	FORCEINLINE std::uintptr_t SwapVMT(std::uintptr_t address, std::uintptr_t hook, int index)
 	{
-		DWORD_PTR* dwVTable = *(DWORD_PTR**)address;
-		DWORD_PTR dwBackup = NULL;
+		std::uintptr_t* dwVTable = *(std::uintptr_t**)address;
+		std::uintptr_t dwBackup = NULL;
 
 		MEMORY_BASIC_INFORMATION MBI;
 

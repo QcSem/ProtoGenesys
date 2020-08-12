@@ -471,24 +471,19 @@ namespace ProtoGenesys
 	*/
 	void cHooks::SetupWeaponCamoRender(int localnum, ImVec3* origin, eWeaponDobjInfoSlot weaponslot, int camo, LPVOID weapon, int* texture)
 	{
-		if (_profiler.gAnimatedWeaponizedCamo->Current.iValue)
+		for (auto& Weaponized : vWeaponized)
 		{
-			for (auto& Weaponized : vWeaponized)
-			{
-				sWeaponized* pWeaponized = (sWeaponized*)FindDmaAddy(Weaponized.first, std::vector<DWORD_PTR>({ Weaponized.second }));
+			sWeaponized* pWeaponized = (sWeaponized*)FindDmaAddy(Weaponized.first, std::vector<std::uintptr_t>({ Weaponized.second }));
 
+			if (_profiler.gAnimatedWeaponizedCamo->Current.iValue)
+			{
 				pWeaponized->flLayer1Scroll = -0.06f;
 				pWeaponized->flLayer2Scroll = 0.1f;
 				pWeaponized->flLayer3Scroll = 0.06f;
 			}
-		}
 
-		else
-		{
-			for (auto& Weaponized : vWeaponized)
+			else
 			{
-				sWeaponized* pWeaponized = (sWeaponized*)FindDmaAddy(Weaponized.first, std::vector<DWORD_PTR>({ Weaponized.second }));
-
 				pWeaponized->flLayer1Scroll = 0.0f;
 				pWeaponized->flLayer2Scroll = 0.0f;
 				pWeaponized->flLayer3Scroll = 0.0f;
@@ -521,7 +516,7 @@ namespace ProtoGenesys
 		if (!szIpOverride.empty())
 		{
 			std::vector<std::string> vIpOverride = acut::SplitStringWithDelimiter(szIpOverride, ".");
-			LPBYTE lpIPAddress = (LPBYTE)FindDmaAddy(dwXnAddr, std::vector<DWORD_PTR>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
+			LPBYTE lpIPAddress = (LPBYTE)FindDmaAddy(dwXnAddr, std::vector<std::uintptr_t>({ 0xE0, 0x90, 0x38, 0x58, 0x14 }));
 
 			lpIPAddress[0] = (BYTE)strtol(vIpOverride[0].c_str(), NULL, 10);
 			lpIPAddress[1] = (BYTE)strtol(vIpOverride[1].c_str(), NULL, 10);
