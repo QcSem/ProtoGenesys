@@ -208,12 +208,12 @@ namespace ProtoGenesys
 
 		if (Dereference(dwTacSSCheck))
 		{
-			VirtualProtect((LPVOID)dwTacSSPatch, sizeof(QWORD), dwProtection, &dwProtection);
+			VirtualProtect((LPVOID)dwTacSSPatch, sizeof(std::uint64_t), dwProtection, &dwProtection);
 
 			for (int i = 0; i < sizeof(szPatchStub); ++i)
 				Dereference(dwTacSSPatch + sizeof(DWORD) * i) = szPatchStub[i];
 
-			bResult = VirtualProtect((LPVOID)dwTacSSPatch, sizeof(QWORD), dwProtection, &dwProtection);
+			bResult = VirtualProtect((LPVOID)dwTacSSPatch, sizeof(std::uint64_t), dwProtection, &dwProtection);
 			Dereference(dwTacSSCheck) = NULL;
 		}
 
@@ -253,7 +253,7 @@ namespace ProtoGenesys
 			}
 
 			for (int i = 0; i < MAX_CLIENTS; i++)
-				if (!CG->ClientInfo[i].iInfoValid)
+				if ((!t6::get_party_data()->get_session_data()->dyn.users[i].registered && !CG->ClientInfo[i].iInfoValid))
 					_targetList.Priorities[i].bIsPrioritized = _targetList.Priorities[i].bIsIgnored = _targetList.Priorities[i].bIsMultiPoint = false;
 		}
 	}
@@ -336,14 +336,19 @@ namespace ProtoGenesys
 				{
 					if (_profiler.gIdStealer->Current.iValue)
 					{
-						_profiler.gNameOverRide->Current.szValue = _strdup(ServerSession[victim].szName);
-						_profiler.gClanOverRide->Current.szValue = _strdup(ServerSession[victim].szClan);
-						_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", ServerSession[victim].qwXuid).c_str());
+						_profiler.gNameOverRide->Current.szValue = _strdup(t6::get_party_data()->get_party_member(victim)->gamertag);
+						_profiler.gClanOverRide->Current.szValue = _strdup(t6::get_party_data()->get_party_member(victim)->clanAbbrev);
+						_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", t6::get_party_data()->get_party_member(victim)->player).c_str());
+						_profiler.gIpOverRide->Current.szValue = _strdup(VariadicText("%u.%u.%u.%u",
+							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
+							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
+							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
+							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]).c_str());
 
-						AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
-							ServerSession[victim].szName,
-							ServerSession[victim].szClan,
-							ServerSession[victim].qwXuid));
+						AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
+							_profiler.gNameOverRide->Current.szValue,
+							_profiler.gClanOverRide->Current.szValue,
+							_profiler.gXuidOverRide->Current.szValue));
 					}
 
 					if (_profiler.gTrickShot->Current.iValue)
@@ -356,13 +361,13 @@ namespace ProtoGenesys
 
 					if (!szKillspam.empty())
 					{
-						szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", ServerSession[attacker].szName);
-						szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", ServerSession[victim].szName);
+						szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", t6::get_party_data()->get_party_member(attacker)->gamertag);
+						szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", t6::get_party_data()->get_party_member(victim)->clanAbbrev);
 						szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", VariadicText("%u.%u.%u.%u",
-							(BYTE)ServerSession[victim].iIPAddress[0],
-							(BYTE)ServerSession[victim].iIPAddress[1],
-							(BYTE)ServerSession[victim].iIPAddress[2],
-							(BYTE)ServerSession[victim].iIPAddress[3]));
+							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
+							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
+							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
+							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]));
 
 						AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szKillspam).c_str()));
 					}
@@ -534,7 +539,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	int cHooks::GetPlayerStatus(int localnum, QWORD xuid)
+	int cHooks::GetPlayerStatus(int localnum, std::uint64_t xuid)
 	{
 		return 1;
 	}
@@ -577,8 +582,7 @@ namespace ProtoGenesys
 		else if (szNameOverride.empty())
 			return GetUsername();
 
-		else
-			return szNameOverride.c_str();
+		return szNameOverride.c_str();
 	}
 	/*
 	//=====================================================================================
@@ -616,7 +620,7 @@ namespace ProtoGenesys
 	*/
 	LPCSTR cHooks::GetFriendPersonaName(LPVOID ecx, LPVOID edx, CSteamID steamid)
 	{
-		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamid](std::pair<QWORD, std::string>& _friend) { return steamid.ConvertToUint64() == _friend.first; });
+		auto Friend = std::find_if(vFriends.begin(), vFriends.end(), [&steamid](std::pair<std::uint64_t, std::string>& _friend) { return steamid.ConvertToUint64() == _friend.first; });
 
 		if (Friend != vFriends.end())
 			return Friend->second.c_str();
@@ -675,7 +679,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	QWORD cHooks::GetUserSteamIdAsXuid()
+	std::uint64_t cHooks::GetUserSteamIdAsXuid()
 	{
 		return qwXuidOverride;
 	}

@@ -18,7 +18,7 @@ namespace ProtoGenesys
 		if (!Window->iWidth || !Window->iHeight)
 			return;
 
-		oWindowProcess = (tWindowProcess)SetWindowLongPtr(hWindow, GWLP_WNDPROC, (LONG_PTR)_thunkWindowProcess.GetThunk());
+		oWindowProcess = (tWindowProcess)SetWindowLongPtr(hWindow, GWLP_WNDPROC, (std::intptr_t)_thunkWindowProcess.GetThunk());
 
 		ImGui::CreateContext();
 		ImGui_ImplWin32_Init(hWindow);
@@ -588,16 +588,48 @@ namespace ProtoGenesys
 
 				for (int i = 0; i < MAX_CLIENTS; i++)
 				{
-					if ((std::string(ServerSession[i].szName).empty() && !DwordFromBytes(ServerSession[i].iIPAddress) && !ServerSession[i].qwXuid) ||
-						(!IsUserRegistered(GetCurrentSession(), i) && !CG->ClientInfo[i].iInfoValid))
+					if ((!t6::get_party_data()->get_session_data()->dyn.users[i].registered && !CG->ClientInfo[i].iInfoValid) ||
+						(std::string(t6::get_party_data()->get_party_member(i)->gamertag).empty() &&
+						!DwordFromBytes(t6::get_party_data()->get_party_member(i)->platformAddr.netAddr.ip.bytes) &&
+						!t6::get_party_data()->get_party_member(i)->player))
 						continue;
 
 					ImGui::Separator();
 					ImGui::PushID(i);
 
-					if (ImGui::Selectable(ServerSession[i].szName, &_targetList.Priorities[i].bIsPrioritized, ImGuiSelectableFlags_SpanAllColumns))
+					ImVec4 cColor;
+					GetTeamColor((eTeam)t6::get_party_data()->get_party_member(i)->teamInfo.team, &cColor);
+
+					ImGui::PushStyleColor(ImGuiCol_Text, cColor);
+					if (ImGui::Selectable(t6::get_party_data()->get_party_member(i)->gamertag, &_targetList.Priorities[i].bIsPrioritized, ImGuiSelectableFlags_SpanAllColumns))
 					{
 						bWriteLog = true;
+					} ImGui::PopStyleColor();
+
+					if (strcmp(_hooks._steamFriends->GetFriendPersonaName(CSteamID(t6::get_party_data()->get_party_member(i)->player)), t6::get_party_data()->get_party_member(i)->gamertag) &&
+						strcmp(_hooks._steamFriends->GetFriendPersonaName(CSteamID(t6::get_party_data()->get_party_member(i)->player)), "[unknown]") &&
+						strcmp(_hooks._steamFriends->GetFriendPersonaName(CSteamID(t6::get_party_data()->get_party_member(i)->player)), ""))
+					{
+						ImGui::SameLine();
+						ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
+						ImGui::Text(VariadicText("(%s)", _hooks._steamFriends->GetFriendPersonaName(CSteamID(t6::get_party_data()->get_party_member(i)->player))).c_str());
+						ImGui::PopStyleColor();
+					}
+
+					if (_hooks._steamFriends->GetFriendRelationship(CSteamID(t6::get_party_data()->get_party_member(i)->player)) == EFriendRelationship::k_EFriendRelationshipFriend)
+					{
+						ImGui::SameLine();
+						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
+						ImGui::Text("[FRIEND]");
+						ImGui::PopStyleColor();
+					}
+
+					if (t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0)) == i)
+					{
+						ImGui::SameLine();
+						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
+						ImGui::Text("[YOU]");
+						ImGui::PopStyleColor();
 					}
 
 					if (ImGui::BeginPopupContextItem(std::to_string(i).c_str()))
@@ -605,7 +637,7 @@ namespace ProtoGenesys
 						if (ImGui::MenuItem("Add To Friend List"))
 						{
 							std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::out | std::ios_base::app);
-							file << ServerSession[i].qwXuid << " " << ServerSession[i].szName << std::endl;
+							file << t6::get_party_data()->get_party_member(i)->player << " " << t6::get_party_data()->get_party_member(i)->gamertag << std::endl;
 
 							_hooks.RefreshFriends();
 
@@ -614,7 +646,7 @@ namespace ProtoGenesys
 
 						if (ImGui::MenuItem("View Profile"))
 						{
-							PopOverlayForSteamID(ServerSession[i].qwXuid);
+							PopOverlayForSteamID(t6::get_party_data()->get_party_member(i)->player);
 
 							bShowWindow = false;
 							bWriteLog = true;
@@ -622,14 +654,19 @@ namespace ProtoGenesys
 
 						if (ImGui::MenuItem("Steal ID"))
 						{
-							_profiler.gNameOverRide->Current.szValue = _strdup(ServerSession[i].szName);
-							_profiler.gClanOverRide->Current.szValue = _strdup(ServerSession[i].szClan);
-							_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", ServerSession[i].qwXuid).c_str());
+							_profiler.gNameOverRide->Current.szValue = _strdup(t6::get_party_data()->get_party_member(i)->gamertag);
+							_profiler.gClanOverRide->Current.szValue = _strdup(t6::get_party_data()->get_party_member(i)->clanAbbrev);
+							_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", t6::get_party_data()->get_party_member(i)->player).c_str());
+							_profiler.gIpOverRide->Current.szValue = _strdup(VariadicText("%u.%u.%u.%u",
+								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
+								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
+								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
+								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]).c_str());
 
-							AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%llx\"",
-								ServerSession[i].szName,
-								ServerSession[i].szClan,
-								ServerSession[i].qwXuid));
+							AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
+								_profiler.gNameOverRide->Current.szValue,
+								_profiler.gClanOverRide->Current.szValue,
+								_profiler.gXuidOverRide->Current.szValue));
 
 							bWriteLog = true;
 						}
@@ -647,13 +684,13 @@ namespace ProtoGenesys
 
 								if (!szCrash.empty())
 								{
-									szCrash = acut::FindAndReplaceString(szCrash, "%attacker", ServerSession[i].szName);
-									szCrash = acut::FindAndReplaceString(szCrash, "%victim", ServerSession[i].szName);
+									szCrash = acut::FindAndReplaceString(szCrash, "%attacker", t6::get_party_data()->get_party_member(t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0)))->gamertag);
+									szCrash = acut::FindAndReplaceString(szCrash, "%victim", t6::get_party_data()->get_party_member(i)->gamertag);
 									szCrash = acut::FindAndReplaceString(szCrash, "%ip", VariadicText("%u.%u.%u.%u",
-										(BYTE)ServerSession[i].iIPAddress[0],
-										(BYTE)ServerSession[i].iIPAddress[1],
-										(BYTE)ServerSession[i].iIPAddress[2],
-										(BYTE)ServerSession[i].iIPAddress[3]));
+										(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
+										(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
+										(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
+										(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]));
 
 									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrash).c_str()));
 								}
@@ -681,7 +718,7 @@ namespace ProtoGenesys
 						if (ImGui::MenuItem("Copy Name"))
 						{
 							ImGui::LogToClipboard();
-							ImGui::LogText(ServerSession[i].szName);
+							ImGui::LogText(t6::get_party_data()->get_party_member(i)->gamertag);
 							ImGui::LogFinish();
 
 							bWriteLog = true;
@@ -691,10 +728,10 @@ namespace ProtoGenesys
 						{
 							ImGui::LogToClipboard();
 							ImGui::LogText(VariadicText("%u.%u.%u.%u",
-								(BYTE)ServerSession[i].iIPAddress[0],
-								(BYTE)ServerSession[i].iIPAddress[1],
-								(BYTE)ServerSession[i].iIPAddress[2],
-								(BYTE)ServerSession[i].iIPAddress[3]).c_str());
+								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
+								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
+								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
+								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]).c_str());
 
 							ImGui::LogFinish();
 
@@ -704,7 +741,7 @@ namespace ProtoGenesys
 						if (ImGui::MenuItem("Copy SteamID"))
 						{
 							ImGui::LogToClipboard();
-							ImGui::LogText(std::to_string(ServerSession[i].qwXuid).c_str());
+							ImGui::LogText(std::to_string(t6::get_party_data()->get_party_member(i)->player).c_str());
 							ImGui::LogFinish();
 
 							bWriteLog = true;
@@ -714,17 +751,17 @@ namespace ProtoGenesys
 					} ImGui::NextColumn();
 
 					ImGui::Text(VariadicText("%u.%u.%u.%u",
-						(BYTE)ServerSession[i].iIPAddress[0],
-						(BYTE)ServerSession[i].iIPAddress[1],
-						(BYTE)ServerSession[i].iIPAddress[2],
-						(BYTE)ServerSession[i].iIPAddress[3]).c_str());
+						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
+						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
+						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
+						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]).c_str());
 
 					if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
 					{
 						bWriteLog = true;
 					} ImGui::NextColumn();
 
-					ImGui::Text(std::to_string(ServerSession[i].qwXuid).c_str());
+					ImGui::Text(std::to_string(t6::get_party_data()->get_party_member(i)->player).c_str());
 					if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
 					{
 						bWriteLog = true;
@@ -754,9 +791,16 @@ namespace ProtoGenesys
 
 					if (ImGui::BeginPopupContextItem(std::to_string(i).c_str()))
 					{
-						if (ImGui::MenuItem("Join Session"))
+						if (ImGui::MenuItem("Remove From Friend List"))
 						{
-							JoinSessionFromXuid(_hooks.vFriends[i].first);
+							_hooks.vFriends.erase(std::next(_hooks.vFriends.begin(), i));
+
+							std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::out);
+
+							for (auto& Friend : _hooks.vFriends)
+								file << Friend.first << " " << Friend.second << std::endl;
+
+							_hooks.RefreshFriends();
 
 							bWriteLog = true;
 						}
@@ -769,16 +813,9 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::MenuItem("Remove From Friend List"))
+						if (ImGui::MenuItem("Join Session"))
 						{
-							_hooks.vFriends.erase(std::next(_hooks.vFriends.begin(), i));
-
-							std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::out);
-
-							for (auto& Friend : _hooks.vFriends)
-								file << Friend.first << " " << Friend.second << std::endl;
-
-							_hooks.RefreshFriends();
+							JoinSessionFromXuid(_hooks.vFriends[i].first);
 
 							bWriteLog = true;
 						}

@@ -42,8 +42,6 @@
 
 namespace ProtoGenesys
 {
-	typedef unsigned __int64 QWORD;
-
 	enum eBone
 	{
 		BONE_HELMET,
@@ -254,38 +252,39 @@ namespace ProtoGenesys
 	private:
 		char _0x4[0x14];
 	public:
-
 		union uDvarValue
 		{
 			bool bValue;
-			int iValue;
-			float flValue;
-			DWORD dwValue;
+			std::int32_t iValue;
+			std::uint32_t dwValue;
+			std::uint64_t qwValue;
+			std::float_t flValue;
 			ImVec4 cValue;
 			LPSTR szValue;
 		} Current, Latched, Reset;
-
 		union uDvarLimits
 		{
 			struct
 			{
-				DWORD dwMin;
-				DWORD dwMax;
+				std::int32_t iMin;
+				std::int32_t iMax;
 			};
-
 			struct
 			{
-				QWORD qwMin;
-				QWORD qwMax;
+				std::uint32_t dwMin;
+				std::uint32_t dwMax;
 			};
-
 			struct
 			{
-				FLOAT flMin;
-				FLOAT flMax;
+				std::uint64_t qwMin;
+				std::uint64_t qwMax;
+			};
+			struct
+			{
+				std::float_t flMin;
+				std::float_t flMax;
 			};
 		} Domain;
-
 	private:
 		char _0x58[0x8];
 	};
@@ -470,7 +469,7 @@ namespace ProtoGenesys
 	private:
 		char _0x64[0x14];
 	public:
-		QWORD qwXuid;
+		unsigned __int64 qwXuid;
 		char szClan[8];
 	private:
 		char _0x88[0x7];
@@ -791,25 +790,6 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	struct sServerSession
-	{
-	public:
-		QWORD qwXuid;
-		char szName[32];
-	private:
-		char _0x28[0x2C];
-	public:
-		char szClan[8];
-	private:
-		char _0x5C[0x3A];
-	public:
-		char iIPAddress[4];
-	private:
-		char _0x9A[0xAE];
-	};
-	/*
-	//=====================================================================================
-	*/
 	struct sWindow
 	{
 	public:
@@ -892,12 +872,9 @@ namespace ProtoGenesys
 	public:
 		char iIPAddress[4];
 		short iPort;
-	private:
-		char _0x6[0x2];
-	public:
 		int iType;
 		int iLocalNetID;
-		int iServerID;
+		short iServerID;
 	};
 	/*
 	//=====================================================================================
@@ -981,151 +958,151 @@ namespace ProtoGenesys
 
 	static bool bIsSteamVersion = hT6mp.SizeOfImage == 0x400D000;
 
-	static DWORD_PTR dwConnectPathsDvar = 0x2366AA4;
-	static DWORD_PTR dwMouseAccelerationDvar = 0x11C7834;
-	static DWORD_PTR dwDrawBigFPSDvar = 0x1140A08;
-	static DWORD_PTR dwMaxClientsDvar = 0x25E456C;
-	static DWORD_PTR dwNoDeltaDvar = 0x11C3634;
+	static std::uintptr_t dwConnectPathsDvar = 0x2366AA4;
+	static std::uintptr_t dwMouseAccelerationDvar = 0x11C7834;
+	static std::uintptr_t dwDrawBigFPSDvar = 0x1140A08;
+	static std::uintptr_t dwMaxClientsDvar = 0x25E456C;
+	static std::uintptr_t dwNoDeltaDvar = 0x11C3634;
 
-	static DWORD_PTR dwTransitionPlayerStateCall = bIsSteamVersion ? 0x55CF28 : 0x51DAE8;
-	static DWORD_PTR dwGetWorldTagMatrixCall = bIsSteamVersion ? 0x7D53BA : 0x7D5CAA;
-	static DWORD_PTR dwGameTypeSettingsCall = bIsSteamVersion ? 0x97CBC2 : 0x97CC42;
-	static DWORD_PTR dwOrbitalVsat = 0x12A0CA4;
+	static std::uintptr_t dwTransitionPlayerStateCall = bIsSteamVersion ? 0x55CF28 : 0x51DAE8;
+	static std::uintptr_t dwGetWorldTagMatrixCall = bIsSteamVersion ? 0x7D53BA : 0x7D5CAA;
+	static std::uintptr_t dwGameTypeSettingsCall = bIsSteamVersion ? 0x97CBC2 : 0x97CC42;
+	static std::uintptr_t dwOrbitalVsat = 0x12A0CA4;
 
-	static DWORD_PTR dwSysGetValueException = bIsSteamVersion ? 0x635F09 : 0x5EFBB9;
-	static DWORD_PTR dwRegisterShaderException = bIsSteamVersion ? 0x6874E9 : 0x45A8C9;
-	static DWORD_PTR dwConnectPathsException1 = bIsSteamVersion ? 0x43B6DB : 0x53367B;
-	static DWORD_PTR dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
-	static DWORD_PTR dwObituaryException = bIsSteamVersion ? 0x7A345C : 0x7A40EC;
+	static std::uintptr_t dwSysGetValueException = bIsSteamVersion ? 0x635F09 : 0x5EFBB9;
+	static std::uintptr_t dwRegisterShaderException = bIsSteamVersion ? 0x6874E9 : 0x45A8C9;
+	static std::uintptr_t dwConnectPathsException1 = bIsSteamVersion ? 0x43B6DB : 0x53367B;
+	static std::uintptr_t dwConnectPathsException2 = bIsSteamVersion ? 0x4CF0C5 : 0x488335;
+	static std::uintptr_t dwObituaryException = bIsSteamVersion ? 0x7A345C : 0x7A40EC;
 
-	static DWORD_PTR dwComError = bIsSteamVersion ? 0x4ECFD0 : 0x58FC30;
-	static DWORD_PTR dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
-	static DWORD_PTR dwSysMilliseconds = bIsSteamVersion ? 0x5BD480 : 0x57EC40;
-	static DWORD_PTR dwRegisterShader = bIsSteamVersion ? 0x734000 : 0x734CC0;
-	static DWORD_PTR dwPrepFireParams = bIsSteamVersion ? 0x6EE050 : 0x638120;
-	static DWORD_PTR dwPredictPlayerState = bIsSteamVersion ? 0x5B3C40 : 0x5B4F40;
-	static DWORD_PTR dwWritePacket = bIsSteamVersion ? 0x48E610 : 0x439380;
-	static DWORD_PTR dwSetValueForKey = bIsSteamVersion ? 0x406830 : 0x551B00;
-	static DWORD_PTR dwGetUsername = bIsSteamVersion ? 0x65FDE0 : 0x4B58D0;
-	static DWORD_PTR dwGetClantag = bIsSteamVersion ? 0x5ACDA0 : 0x6D2900;
-	static DWORD_PTR dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
-	static DWORD_PTR dwPopOverlayForSteamID = bIsSteamVersion ? 0x589740 : 0x556680;
-	static DWORD_PTR dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
-	static DWORD_PTR dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
-	static DWORD_PTR dwBulletHitEvent = bIsSteamVersion ? 0x57CED0 : 0x5F72B0;
-	static DWORD_PTR dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
-	static DWORD_PTR dwInterpolateEntityPosition = bIsSteamVersion ? 0x7A0000 : 0x7A0C90;
-	static DWORD_PTR dwInterpolateEntityAngles = bIsSteamVersion ? 0x6B4100 : 0x4B1D40;
-	static DWORD_PTR dwTransitionPlayerState = bIsSteamVersion ? 0x666DD0 : 0x6AB990;
-	static DWORD_PTR dwSetupWeaponCamoRender = bIsSteamVersion ? 0x69C560 : 0x4B5B20;
-	static DWORD_PTR dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
-	static DWORD_PTR dwGameTypeSettings = bIsSteamVersion ? 0x6C43C0 : 0x4F5F70;
-	static DWORD_PTR dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
-	static DWORD_PTR dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
-	static DWORD_PTR dwIsValidSteamID = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
-	static DWORD_PTR dwCreateScreenShot = bIsSteamVersion ? 0x75BF00 : 0x75CBB0;
-	static DWORD_PTR dwAtoiCall = bIsSteamVersion ? 0x7EB870 : 0x7EC480;
-	static DWORD_PTR dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
-	static DWORD_PTR dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
-	static DWORD_PTR dwMemcpyCall = bIsSteamVersion ? 0x687460 : 0x45A840;
-	static DWORD_PTR dwFriendPersonaNameFromXuid = bIsSteamVersion ? 0x4FEA00 : 0x6286B0;
-	static DWORD_PTR dwGetUserSteamIdAsXuid = bIsSteamVersion ? 0x44A8F0 : 0x5C2CD0;
-	static DWORD_PTR dwGetUserSteamIdAsXuidCall = bIsSteamVersion ? 0x924621 : 0x924471;
-	static DWORD_PTR dwFilterPersonaNameCall = bIsSteamVersion ? 0x4FEA4F : 0x6286FF;
+	static std::uintptr_t dwComError = bIsSteamVersion ? 0x4ECFD0 : 0x58FC30;
+	static std::uintptr_t dwSysGetValue = bIsSteamVersion ? 0x635EF0 : 0x5EFBA0;
+	static std::uintptr_t dwSysMilliseconds = bIsSteamVersion ? 0x5BD480 : 0x57EC40;
+	static std::uintptr_t dwRegisterShader = bIsSteamVersion ? 0x734000 : 0x734CC0;
+	static std::uintptr_t dwPrepFireParams = bIsSteamVersion ? 0x6EE050 : 0x638120;
+	static std::uintptr_t dwPredictPlayerState = bIsSteamVersion ? 0x5B3C40 : 0x5B4F40;
+	static std::uintptr_t dwWritePacket = bIsSteamVersion ? 0x48E610 : 0x439380;
+	static std::uintptr_t dwSetValueForKey = bIsSteamVersion ? 0x406830 : 0x551B00;
+	static std::uintptr_t dwGetUsername = bIsSteamVersion ? 0x65FDE0 : 0x4B58D0;
+	static std::uintptr_t dwGetClantag = bIsSteamVersion ? 0x5ACDA0 : 0x6D2900;
+	static std::uintptr_t dwGetXuidstring = bIsSteamVersion ? 0x534D60 : 0x491870;
+	static std::uintptr_t dwPopOverlayForSteamID = bIsSteamVersion ? 0x589740 : 0x556680;
+	static std::uintptr_t dwGetIntPlayerStatInternal = bIsSteamVersion ? 0x67A430 : 0x52EE10;
+	static std::uintptr_t dwInt64ToString = bIsSteamVersion ? 0x57E0F0 : 0x427820;
+	static std::uintptr_t dwBulletHitEvent = bIsSteamVersion ? 0x57CED0 : 0x5F72B0;
+	static std::uintptr_t dwCalcEntityLerpPositions = bIsSteamVersion ? 0x469870 : 0x6B98D0;
+	static std::uintptr_t dwInterpolateEntityPosition = bIsSteamVersion ? 0x7A0000 : 0x7A0C90;
+	static std::uintptr_t dwInterpolateEntityAngles = bIsSteamVersion ? 0x6B4100 : 0x4B1D40;
+	static std::uintptr_t dwTransitionPlayerState = bIsSteamVersion ? 0x666DD0 : 0x6AB990;
+	static std::uintptr_t dwSetupWeaponCamoRender = bIsSteamVersion ? 0x69C560 : 0x4B5B20;
+	static std::uintptr_t dwGetWorldTagMatrix = bIsSteamVersion ? 0x47AC00 : 0x4FC740;
+	static std::uintptr_t dwGameTypeSettings = bIsSteamVersion ? 0x6C43C0 : 0x4F5F70;
+	static std::uintptr_t dwGetAddr = bIsSteamVersion ? 0x628E30 : 0x4D3A70;
+	static std::uintptr_t dwGetPlayerStatus = bIsSteamVersion ? 0x8C5DD0 : 0x8C5F30;
+	static std::uintptr_t dwIsValidSteamID = bIsSteamVersion ? 0x531AC0 : 0x60EFC0;
+	static std::uintptr_t dwCreateScreenShot = bIsSteamVersion ? 0x75BF00 : 0x75CBB0;
+	static std::uintptr_t dwAtoiCall1 = bIsSteamVersion ? 0x7D0DC8 : 0x7D16B8;
+	static std::uintptr_t dwAtoiCall2 = bIsSteamVersion ? 0x7D0DD7 : 0x7D16C7;
+	static std::uintptr_t dwMemcpyCall = bIsSteamVersion ? 0x687460 : 0x45A840;
+	static std::uintptr_t dwFriendPersonaNameFromXuid = bIsSteamVersion ? 0x4FEA00 : 0x6286B0;
+	static std::uintptr_t dwGetUserSteamIdAsXuid = bIsSteamVersion ? 0x44A8F0 : 0x5C2CD0;
+	static std::uintptr_t dwGetUserSteamIdAsXuidCall = bIsSteamVersion ? 0x924621 : 0x924471;
+	static std::uintptr_t dwFilterPersonaNameCall = bIsSteamVersion ? 0x4FEA4F : 0x6286FF;
 
-	static DWORD_PTR dwCG = 0x113F18C;
-	static DWORD_PTR dwClientActive = 0x11C7D74;
-	static DWORD_PTR dwViewAngles = 0xFE64393C;
-	static DWORD_PTR dwRecoilAngles = 0xFE6438B0;
-	static DWORD_PTR dwWeaponNames = 0x10A7E28;
-	static DWORD_PTR dwWindowHandle = 0x2B6ED88;
-	static DWORD_PTR dwServerSession = 0x12A7240;
-	static DWORD_PTR dwServerID = 0x11D0ACC;
-	static DWORD_PTR dwWindow = 0x2956244;
-	static DWORD_PTR dwConnectionState = 0x11C7848;
+	static std::uintptr_t dwCG = 0x113F18C;
+	static std::uintptr_t dwClientActive = 0x11C7D74;
+	static std::uintptr_t dwViewAngles = 0xFE64393C;
+	static std::uintptr_t dwRecoilAngles = 0xFE6438B0;
+	static std::uintptr_t dwWeaponNames = 0x10A7E28;
+	static std::uintptr_t dwWindowHandle = 0x2B6ED88;
+	static std::uintptr_t dwServerID = 0x11D0ACC;
+	static std::uintptr_t dwWindow = 0x2956244;
+	static std::uintptr_t dwConnectionState = 0x11C7848;
 
-	static DWORD_PTR dwLocalClientIsInGame = bIsSteamVersion ? 0x5922F0 : 0x402F80;
-	static DWORD_PTR dwGetDObj = bIsSteamVersion ? 0x5D2590 : 0x4DA190;
-	static DWORD_PTR dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
-	static DWORD_PTR dwGetTagPosition = bIsSteamVersion ? 0x664930 : 0x4A1210;
-	static DWORD_PTR dwGetScreenPlacement = bIsSteamVersion ? 0x4C7EF0 : 0x6F6AF0;
-	static DWORD_PTR dwEntityIsTeammate = bIsSteamVersion ? 0x50EC80 : 0x4309A0;
-	static DWORD_PTR dwGetPlayerViewOrigin = bIsSteamVersion ? 0x580890 : 0x640E80;
-	static DWORD_PTR dwEvaluateTrajectory = bIsSteamVersion ? 0x47F7A0 : 0x44CE20;
-	static DWORD_PTR dwWeaponIsVehicle = bIsSteamVersion ? 0x5B8AD0 : 0x5AE8C0;
-	static DWORD_PTR dwWeaponAmmoAvailable = bIsSteamVersion ? 0x557C40 : 0x6DF580;
-	static DWORD_PTR dwGetAmmoNotInClip = bIsSteamVersion ? 0x63ADD0 : 0x471050;
-	static DWORD_PTR dwGetClipSize = bIsSteamVersion ? 0x699C30 : 0x5B4410;
-	static DWORD_PTR dwGetHeldWeapon = bIsSteamVersion ? 0x4420E0 : 0x4368E0;
-	static DWORD_PTR dwSetZoomState = bIsSteamVersion ? 0x42BD00 : 0x583950;
-	static DWORD_PTR dwWeaponIsAkimbo = bIsSteamVersion ? 0x6625B0 : 0x52E780;
-	static DWORD_PTR dwGetWeaponDef = bIsSteamVersion ? 0x5846F0 : 0x5225F0;
-	static DWORD_PTR dwGetPenetrateType = bIsSteamVersion ? 0x62E290 : 0x4AC220;
-	static DWORD_PTR dwBulletTrace = bIsSteamVersion ? 0x7E0170 : 0x7E0A00;
-	static DWORD_PTR dwGetWeaponDamageForRange = bIsSteamVersion ? 0x6D85B0 : 0x676160;
-	static DWORD_PTR dwGetWeaponHitLocationMultiplier = bIsSteamVersion ? 0x472780 : 0x669830;
-	static DWORD_PTR dwGetTraceHitType = bIsSteamVersion ? 0x4AC3D0 : 0x6A32F0;
-	static DWORD_PTR dwEntityIsDeployedRiotshield = bIsSteamVersion ? 0x45D4D0 : 0x501160;
-	static DWORD_PTR dwHasPerk = bIsSteamVersion ? 0x42BD20 : 0x530C10;
-	static DWORD_PTR dwGetSurfacePenetrationDepth = bIsSteamVersion ? 0x572480 : 0x622CE0;
-	static DWORD_PTR dwAdvanceTrace = bIsSteamVersion ? 0x5B0F60 : 0x703090;
-	static DWORD_PTR dwPenetrationCheck = bIsSteamVersion ? 0x7E0370 : 0x7E0C00;
-	static DWORD_PTR dwLocationalTrace = bIsSteamVersion ? 0x6C6C00 : 0x50B870;
-	static DWORD_PTR dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
-	static DWORD_PTR dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
-	static DWORD_PTR dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
-	static DWORD_PTR dwHashSeed = bIsSteamVersion ? 0x543CE0 : 0x6AACC0;
-	static DWORD_PTR dwRandomFloat = bIsSteamVersion ? 0x6A3490 : 0x4947E0;
-	static DWORD_PTR dwSeedRandom = bIsSteamVersion ? 0x4F38A0 : 0x556180;
-	static DWORD_PTR dwAngleNormalize180 = bIsSteamVersion ? 0x4DEF60 : 0x5FFDA0;
-	static DWORD_PTR dwSetFovSensitivityScale = bIsSteamVersion ? 0x40BB00 : 0x437730;
-	static DWORD_PTR dwGetViewmodelWeaponIndex = bIsSteamVersion ? 0x625770 : 0x54A0D0;
-	static DWORD_PTR dwWeaponHasPerk = bIsSteamVersion ? 0x449D90 : 0x47ED20;
-	static DWORD_PTR dwUsingSniperScope = bIsSteamVersion ? 0x646700 : 0x6C5960;
-	static DWORD_PTR dwSetUserCmdAimValues = bIsSteamVersion ? 0x6E7F80 : 0x67ACC0;
-	static DWORD_PTR dwClampUserCmdAimValues = bIsSteamVersion ? 0x942D10 : 0x942B50;
-	static DWORD_PTR dwGetLastWeaponForAlt = bIsSteamVersion ? 0x4760B0 : 0x480290;
-	static DWORD_PTR dwSetUserCmdWeapons = bIsSteamVersion ? 0x552A60 : 0x518D70;
-	static DWORD_PTR dwSetExtraButtons = bIsSteamVersion ? 0x4840B0 : 0x6994D0;
-	static DWORD_PTR dwGetWeaponName = bIsSteamVersion ? 0x458190 : 0x9502B0;
-	static DWORD_PTR dwGetCurrentSession = bIsSteamVersion ? 0x4823F0 : 0x534520;
-	static DWORD_PTR dwIsUserRegistered = bIsSteamVersion ? 0x6181A0 : 0x44D670;
-	static DWORD_PTR dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
-	static DWORD_PTR dwGetPlayerXuid = bIsSteamVersion ? 0x45C710 : 0x667A00;
-	static DWORD_PTR dwGetOurClientNum = bIsSteamVersion ? 0x5F8040 : 0x629320;
-	static DWORD_PTR dwJoinSessionFromXuid = bIsSteamVersion ? 0x6EB1E0 : 0x43D980;
-	static DWORD_PTR dwCycleWeapon = bIsSteamVersion ? 0x69BAE0 : 0x57D850;
-	static DWORD_PTR dwFindVar = bIsSteamVersion ? 0x42D410 : 0x563A70;
-	static DWORD_PTR dwFindHash = bIsSteamVersion ? 0xA5E1C0 : 0xA5E1D0;
-	static DWORD_PTR dwHashMemory = bIsSteamVersion ? 0xA61B00 : 0xA61B10;
-	static DWORD_PTR dwRegisterPrng = bIsSteamVersion ? 0xA61F10 : 0xA61F20;
-	static DWORD_PTR dwFindPrng = bIsSteamVersion ? 0xA61EA0 : 0xA61EB0;
-	static DWORD_PTR dwSignHash = bIsSteamVersion ? 0xA61C00 : 0xA61C10;
+	static std::uintptr_t dwLocalClientIsInGame = bIsSteamVersion ? 0x5922F0 : 0x402F80;
+	static std::uintptr_t dwGetDObj = bIsSteamVersion ? 0x5D2590 : 0x4DA190;
+	static std::uintptr_t dwRegisterTag = bIsSteamVersion ? 0x479B40 : 0x5EE820;
+	static std::uintptr_t dwGetTagPosition = bIsSteamVersion ? 0x664930 : 0x4A1210;
+	static std::uintptr_t dwGetScreenPlacement = bIsSteamVersion ? 0x4C7EF0 : 0x6F6AF0;
+	static std::uintptr_t dwEntityIsTeammate = bIsSteamVersion ? 0x50EC80 : 0x4309A0;
+	static std::uintptr_t dwGetTeamColor = bIsSteamVersion ? 0x40AA70 : 0x5C02D0;
+	static std::uintptr_t dwGetPlayerViewOrigin = bIsSteamVersion ? 0x580890 : 0x640E80;
+	static std::uintptr_t dwEvaluateTrajectory = bIsSteamVersion ? 0x47F7A0 : 0x44CE20;
+	static std::uintptr_t dwWeaponIsVehicle = bIsSteamVersion ? 0x5B8AD0 : 0x5AE8C0;
+	static std::uintptr_t dwWeaponAmmoAvailable = bIsSteamVersion ? 0x557C40 : 0x6DF580;
+	static std::uintptr_t dwGetAmmoNotInClip = bIsSteamVersion ? 0x63ADD0 : 0x471050;
+	static std::uintptr_t dwGetClipSize = bIsSteamVersion ? 0x699C30 : 0x5B4410;
+	static std::uintptr_t dwGetHeldWeapon = bIsSteamVersion ? 0x4420E0 : 0x4368E0;
+	static std::uintptr_t dwSetZoomState = bIsSteamVersion ? 0x42BD00 : 0x583950;
+	static std::uintptr_t dwWeaponIsAkimbo = bIsSteamVersion ? 0x6625B0 : 0x52E780;
+	static std::uintptr_t dwGetWeaponDef = bIsSteamVersion ? 0x5846F0 : 0x5225F0;
+	static std::uintptr_t dwGetPenetrateType = bIsSteamVersion ? 0x62E290 : 0x4AC220;
+	static std::uintptr_t dwBulletTrace = bIsSteamVersion ? 0x7E0170 : 0x7E0A00;
+	static std::uintptr_t dwGetWeaponDamageForRange = bIsSteamVersion ? 0x6D85B0 : 0x676160;
+	static std::uintptr_t dwGetWeaponHitLocationMultiplier = bIsSteamVersion ? 0x472780 : 0x669830;
+	static std::uintptr_t dwGetTraceHitType = bIsSteamVersion ? 0x4AC3D0 : 0x6A32F0;
+	static std::uintptr_t dwEntityIsDeployedRiotshield = bIsSteamVersion ? 0x45D4D0 : 0x501160;
+	static std::uintptr_t dwHasPerk = bIsSteamVersion ? 0x42BD20 : 0x530C10;
+	static std::uintptr_t dwGetSurfacePenetrationDepth = bIsSteamVersion ? 0x572480 : 0x622CE0;
+	static std::uintptr_t dwAdvanceTrace = bIsSteamVersion ? 0x5B0F60 : 0x703090;
+	static std::uintptr_t dwPenetrationCheck = bIsSteamVersion ? 0x7E0370 : 0x7E0C00;
+	static std::uintptr_t dwLocationalTrace = bIsSteamVersion ? 0x6C6C00 : 0x50B870;
+	static std::uintptr_t dwAddReliableCommand = bIsSteamVersion ? 0x5E58E0 : 0x6A1C40;
+	static std::uintptr_t dwCbufAddText = bIsSteamVersion ? 0x5BDF70 : 0x5C6F10;
+	static std::uintptr_t dwGetSpreadForWeapon = bIsSteamVersion ? 0x402A80 : 0x5B0BE0;
+	static std::uintptr_t dwHashSeed = bIsSteamVersion ? 0x543CE0 : 0x6AACC0;
+	static std::uintptr_t dwRandomFloat = bIsSteamVersion ? 0x6A3490 : 0x4947E0;
+	static std::uintptr_t dwSeedRandom = bIsSteamVersion ? 0x4F38A0 : 0x556180;
+	static std::uintptr_t dwAngleNormalize180 = bIsSteamVersion ? 0x4DEF60 : 0x5FFDA0;
+	static std::uintptr_t dwSetFovSensitivityScale = bIsSteamVersion ? 0x40BB00 : 0x437730;
+	static std::uintptr_t dwGetViewmodelWeaponIndex = bIsSteamVersion ? 0x625770 : 0x54A0D0;
+	static std::uintptr_t dwWeaponHasPerk = bIsSteamVersion ? 0x449D90 : 0x47ED20;
+	static std::uintptr_t dwUsingSniperScope = bIsSteamVersion ? 0x646700 : 0x6C5960;
+	static std::uintptr_t dwSetUserCmdAimValues = bIsSteamVersion ? 0x6E7F80 : 0x67ACC0;
+	static std::uintptr_t dwClampUserCmdAimValues = bIsSteamVersion ? 0x942D10 : 0x942B50;
+	static std::uintptr_t dwGetLastWeaponForAlt = bIsSteamVersion ? 0x4760B0 : 0x480290;
+	static std::uintptr_t dwSetUserCmdWeapons = bIsSteamVersion ? 0x552A60 : 0x518D70;
+	static std::uintptr_t dwSetExtraButtons = bIsSteamVersion ? 0x4840B0 : 0x6994D0;
+	static std::uintptr_t dwGetWeaponName = bIsSteamVersion ? 0x458190 : 0x9502B0;
+	static std::uintptr_t dwGetPartyData = bIsSteamVersion ? 0x548CF0 : 0x615150;
+	static std::uintptr_t dwGetSessionData = bIsSteamVersion ? 0x4823F0 : 0x534520;
+	static std::uintptr_t dwIsUserRegistered = bIsSteamVersion ? 0x6181A0 : 0x44D670;
+	static std::uintptr_t dwGetPlayerAddr = bIsSteamVersion ? 0x701320 : 0x641180;
+	static std::uintptr_t dwGetPlayerXuid = bIsSteamVersion ? 0x45C710 : 0x667A00;
+	static std::uintptr_t dwGetOurClientNum = bIsSteamVersion ? 0x5F8040 : 0x629320;
+	static std::uintptr_t dwJoinSessionFromXuid = bIsSteamVersion ? 0x6EB1E0 : 0x43D980;
+	static std::uintptr_t dwCycleWeapon = bIsSteamVersion ? 0x69BAE0 : 0x57D850;
+	static std::uintptr_t dwFindVar = bIsSteamVersion ? 0x42D410 : 0x563A70;
+	static std::uintptr_t dwFindHash = bIsSteamVersion ? 0xA5E1C0 : 0xA5E1D0;
+	static std::uintptr_t dwHashMemory = bIsSteamVersion ? 0xA61B00 : 0xA61B10;
+	static std::uintptr_t dwRegisterPrng = bIsSteamVersion ? 0xA61F10 : 0xA61F20;
+	static std::uintptr_t dwFindPrng = bIsSteamVersion ? 0xA61EA0 : 0xA61EB0;
+	static std::uintptr_t dwSignHash = bIsSteamVersion ? 0xA61C00 : 0xA61C10;
 
-	static DWORD_PTR dwTigerHash = bIsSteamVersion ? 0xC81AF8 : 0xC273A4;
-	static DWORD_PTR dwPrng = bIsSteamVersion ? 0xCC8030 : 0xCC8090;
-	static DWORD_PTR dwSprng = bIsSteamVersion ? 0xC52214 : 0xBD590C;
-	static DWORD_PTR dwKey = bIsSteamVersion ? 0x301EB88 : 0x2FFDB88;
+	static std::uintptr_t dwTigerHash = bIsSteamVersion ? 0xC81AF8 : 0xC273A4;
+	static std::uintptr_t dwPrng = bIsSteamVersion ? 0xCC8030 : 0xCC8090;
+	static std::uintptr_t dwSprng = bIsSteamVersion ? 0xC52214 : 0xBD590C;
+	static std::uintptr_t dwKey = bIsSteamVersion ? 0x301EB88 : 0x2FFDB88;
 
-	static DWORD_PTR dwRankXP = bIsSteamVersion ? 0x2FB176C : 0x2F9076C;
-	static DWORD_PTR dwPLevel = bIsSteamVersion ? 0x2FB1754 : 0x2F90754;
+	static std::uintptr_t dwRankXP = bIsSteamVersion ? 0x2FB176C : 0x2F9076C;
+	static std::uintptr_t dwPLevel = bIsSteamVersion ? 0x2FB1754 : 0x2F90754;
 
-	static DWORD_PTR dwStatsBase = bIsSteamVersion ? 0x2F00000 : 0x2EDF000;
-	static DWORD_PTR dwMemoryBase = bIsSteamVersion ? 0x24A0000 : 0x247F000;
+	static std::uintptr_t dwStatsBase = bIsSteamVersion ? 0x2F00000 : 0x2EDF000;
+	static std::uintptr_t dwMemoryBase = bIsSteamVersion ? 0x24A0000 : 0x247F000;
 
-	static DWORD_PTR dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
-	static DWORD_PTR dwDevice = bIsSteamVersion ? 0x35CF484 : 0x35AE484;
-	static DWORD_PTR dwDeviceContext = bIsSteamVersion ? 0x35CF488 : 0x35AE488;
+	static std::uintptr_t dwSwapChain = bIsSteamVersion ? 0x3606F94 : 0x35E5F94;
+	static std::uintptr_t dwDevice = bIsSteamVersion ? 0x35CF484 : 0x35AE484;
+	static std::uintptr_t dwDeviceContext = bIsSteamVersion ? 0x35CF488 : 0x35AE488;
 
-	static DWORD_PTR dwMouseInput = 0x2B69969;
+	static std::uintptr_t dwMouseInput = 0x2B69969;
 
-	static DWORD_PTR dwTacSSCount = 0x28A1FB4;
-	static DWORD_PTR dwTacSSCheck = 0x2B68838;
-	static DWORD_PTR dwTacSSPatch = 0x2B68824;
-	static DWORD_PTR dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
-	static DWORD_PTR dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
+	static std::uintptr_t dwTacSSCount = 0x28A1FB4;
+	static std::uintptr_t dwTacSSCheck = 0x2B68838;
+	static std::uintptr_t dwTacSSPatch = 0x2B68824;
+	static std::uintptr_t dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
+	static std::uintptr_t dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
 
-	static std::vector<std::pair<DWORD_PTR, DWORD_PTR>> vWeaponized =
+	static std::vector<std::pair<std::uintptr_t, std::uintptr_t>> vWeaponized =
 	{
 		std::make_pair(0x164FAB8, 0x14E),
 		std::make_pair(0x164FB28, 0xBC),
@@ -1144,7 +1121,6 @@ namespace ProtoGenesys
 #define WeaponNames ((sWeaponName*)Dereference(dwWeaponNames))
 #define ViewAngles ((sViewAngles*)(Dereference(dwCG)+dwViewAngles))
 #define RecoilAngles ((sRecoilAngles*)(Dereference(dwCG)+dwRecoilAngles))
-#define ServerSession ((sServerSession*)dwServerSession)
 #define Window ((sWindow*)dwWindow)
 	/*
 	//=====================================================================================
@@ -1206,7 +1182,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE void PopOverlayForSteamID(QWORD steamid)
+	FORCEINLINE void PopOverlayForSteamID(std::uint64_t steamid)
 	{
 		return VariadicCall<void>(dwPopOverlayForSteamID, steamid);
 	}
@@ -1220,7 +1196,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE int Int64ToString(QWORD int64, LPSTR buffer)
+	FORCEINLINE int Int64ToString(std::uint64_t int64, LPSTR buffer)
 	{
 		return VariadicCall<int>(dwInt64ToString, int64, buffer);
 	}
@@ -1265,6 +1241,13 @@ namespace ProtoGenesys
 	FORCEINLINE bool EntityIsTeammate(sCEntity* entity)
 	{
 		return VariadicCall<bool>(dwEntityIsTeammate, 0, entity);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE void GetTeamColor(eTeam team, ImVec4* color)
+	{
+		return VariadicCall<void>(dwGetTeamColor, team, color);
 	}
 	/*
 	//=====================================================================================
@@ -1528,9 +1511,16 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE LPVOID GetCurrentSession()
+	FORCEINLINE LPVOID GetSessionData()
 	{
-		return VariadicCall<LPVOID>(dwGetCurrentSession);
+		return VariadicCall<LPVOID>(dwGetSessionData);
+	}
+	/*
+	//=====================================================================================
+	*/
+	FORCEINLINE LPVOID GetPartyData()
+	{
+		return VariadicCall<LPVOID>(dwGetPartyData);
 	}
 	/*
 	//=====================================================================================
@@ -1549,9 +1539,9 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE QWORD GetPlayerXuid(LPVOID session, int clientnum)
+	FORCEINLINE std::uint64_t GetPlayerXuid(LPVOID session, int clientnum)
 	{
-		return VariadicCall<QWORD>(dwGetPlayerXuid, session, clientnum);
+		return VariadicCall<std::uint64_t>(dwGetPlayerXuid, session, clientnum);
 	}
 	/*
 	//=====================================================================================
@@ -1563,7 +1553,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	FORCEINLINE bool JoinSessionFromXuid(QWORD xuid)
+	FORCEINLINE bool JoinSessionFromXuid(std::uint64_t xuid)
 	{
 		return VariadicCall<bool>(dwJoinSessionFromXuid, 0, xuid);
 	}

@@ -273,7 +273,14 @@ struct SessionData
 
 struct PartyData_s
 {
+private:
 	SessionData* session;
+
+public:
+	SessionData* get_session_data() const
+	{
+		return this->session;
+	}
 
     bool is_running() const
 	{
@@ -297,20 +304,26 @@ namespace t6
 {
     namespace offsets
     {
+		constexpr auto cls_state = 0x11C7848;
+
         constexpr auto g_partyData = 0x12B2308;
 	    constexpr auto g_lobbyData = 0x12A7000;
+
+		const auto Party_GetPartyData = ProtoGenesys::bIsSteamVersion ? 0x548CF0 : 0x615150;
+		const auto atoi_CL_HandleRelayPacketCall = ProtoGenesys::bIsSteamVersion ? 0x7EB870 : 0x7EC480;
 
 	    const auto MSG_Init = ProtoGenesys::bIsSteamVersion ? 0x69D900 : 0x465E60;
         const auto MSG_WriteString = ProtoGenesys::bIsSteamVersion ? 0x623EC0 : 0x630CF0;
 	    const auto NET_OutOfBandData = ProtoGenesys::bIsSteamVersion ? 0x706EC0 : 0x45C230;
 
 		const auto CL_SendPeerData = ProtoGenesys::bIsSteamVersion ? 0x6642E0 : 0x51FA60;
-		constexpr auto cls_state = 0x11C7848;
 		const auto MSG_WriteByte = ProtoGenesys::bIsSteamVersion ? 0x4D0500 : 0x415940;
 		const auto CL_CanWeConnectToClient = ProtoGenesys::bIsSteamVersion ? 0x697EF0 : 0x639CF0;
 		const auto Party_FindMemberByXUID = ProtoGenesys::bIsSteamVersion ? 0x673F60 : 0x51AD60;
 		const auto Live_GetXuid = ProtoGenesys::bIsSteamVersion ? 0x54FBD0 : 0x4EA8C0;
     }
+
+	const static auto Party_GetPartyData = reinterpret_cast<PartyData_s*(*)()>(offsets::Party_GetPartyData);
 
     const static auto MSG_Init = reinterpret_cast<void(*)(msg_t * buf, char* data, int length)>(offsets::MSG_Init);
 	const static auto MSG_WriteString = reinterpret_cast<void(*)(msg_t * sb, const char* s)>(offsets::MSG_WriteString);
@@ -324,6 +337,11 @@ namespace t6
 
     static auto g_partyData = reinterpret_cast<PartyData_s*>(offsets::g_partyData);
 	static auto g_lobbyData = reinterpret_cast<PartyData_s*>(offsets::g_lobbyData);
+
+	static PartyData_s* get_party_data()
+	{
+		return (t6::g_partyData->in_party() ? t6::g_partyData : t6::g_lobbyData);
+	}
 }
 
 //=====================================================================================
@@ -331,6 +349,7 @@ namespace t6
 namespace furtive_crash
 {
     int atoi_CL_HandleRelayPacket(const char* str);
+
     void init();
 	void free();
 

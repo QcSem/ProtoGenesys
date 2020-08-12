@@ -66,8 +66,8 @@ int USERCALL hGameTypeSettings(int setting);
 typedef int(USERCALL* tGameTypeSettings)(int setting);
 tGameTypeSettings oGameTypeSettings = (tGameTypeSettings)dwGameTypeSettings;
 
-int USERCALL hGetPlayerStatus(int localnum, QWORD xuid);
-typedef int(USERCALL* tGetPlayerStatus)(int localnum, QWORD xuid);
+int USERCALL hGetPlayerStatus(int localnum, std::uint64_t xuid);
+typedef int(USERCALL* tGetPlayerStatus)(int localnum, std::uint64_t xuid);
 tGetPlayerStatus oGetPlayerStatus = (tGetPlayerStatus)dwGetPlayerStatus;
 
 bool FASTCALL hIsValidSteamID(CSteamID* steamid);
@@ -114,7 +114,7 @@ int USERCALL hAtoi1(LPCSTR string);
 int USERCALL hAtoi2(LPCSTR string);
 LPVOID USERCALL hMemcpy(LPVOID dst, LPCVOID src, SIZE_T size);
 
-QWORD USERCALL hGetUserSteamIdAsXuid();
+std::uint64_t USERCALL hGetUserSteamIdAsXuid();
 LPSTR USERCALL hFilterPersonaName(LPSTR name, bool ascii);
 
 //=====================================================================================
@@ -199,7 +199,7 @@ void USERCALL hSetupWeaponCamoRender(int localnum, ImVec3* origin, eWeaponDobjIn
 
 	else
 	{
-		return oSetupWeaponCamoRender(localnum, origin, weaponslot, camo, weapon, texture);
+		oSetupWeaponCamoRender(localnum, origin, weaponslot, camo, weapon, texture);
 	}
 }
 
@@ -232,7 +232,7 @@ int USERCALL hGameTypeSettings(int setting)
 
 //=====================================================================================
 
-int USERCALL hGetPlayerStatus(int localnum, QWORD xuid)
+int USERCALL hGetPlayerStatus(int localnum, std::uint64_t xuid)
 {
 	return _hooks.GetPlayerStatus(localnum, xuid);
 }
@@ -324,14 +324,14 @@ bool FASTCALL hGetFriendGamePlayed(CSteamID steamid, int unk1, int unk2, FriendG
 
 int USERCALL hAtoi1(LPCSTR string)
 {
-	return _hooks.Atoi1(atoi(string));
+	return _hooks.Atoi1(std::atoi(string));
 }
 
 //=====================================================================================
 
 int USERCALL hAtoi2(LPCSTR string)
 {
-	return _hooks.Atoi2(atoi(string));
+	return _hooks.Atoi2(std::atoi(string));
 }
 
 //=====================================================================================
@@ -343,7 +343,7 @@ LPVOID USERCALL hMemcpy(LPVOID dst, LPCVOID src, SIZE_T size)
 
 //=====================================================================================
 
-QWORD USERCALL hGetUserSteamIdAsXuid()
+std::uint64_t USERCALL hGetUserSteamIdAsXuid()
 {
 	return _hooks.GetUserSteamIdAsXuid();
 }
@@ -365,7 +365,7 @@ void Init()
 		hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
 
 	while (!oPresent)
-		oPresent = (tPresent)Dereference(ReadPointer(FindPattern((DWORD_PTR)hGameOverlayRenderer.lpBaseOfDll, (DWORD_PTR)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2));
+		oPresent = (tPresent)Dereference(ReadPointer(FindPattern((std::uintptr_t)hGameOverlayRenderer.lpBaseOfDll, (std::uintptr_t)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2));
 
 	_console.AddLog("%s patching ac hook...", PREFIX_LOG);
 	_hooks.PatchAntiCheat();
@@ -454,25 +454,25 @@ void Free()
 		fhGetUserSteamIDAsXUIDCall.UnHook();
 
 	if (oGetSteamID)
-		SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)oGetSteamID, 2);
+		SwapVMT((std::uintptr_t)_hooks._steamUser, (std::uintptr_t)oGetSteamID, 2);
 	
 	if (oGetPersonaName)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetPersonaName, 0);
+		SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)oGetPersonaName, 0);
 
 	if (oGetFriendCount)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendCount, 3);
+		SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)oGetFriendCount, 3);
 
 	if (oGetFriendByIndex)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendByIndex, 4);
+		SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)oGetFriendByIndex, 4);
 
 	if (oGetFriendPersonaState)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendPersonaState, 6);
+		SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)oGetFriendPersonaState, 6);
 
 	if (oGetFriendPersonaName)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendPersonaName, 7);
+		SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)oGetFriendPersonaName, 7);
 
 	if (oGetFriendGamePlayed)
-		SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)oGetFriendGamePlayed, 8);
+		SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)oGetFriendGamePlayed, 8);
 	
 	_mainGui._device->Release();
 	_mainGui._deviceContext->Release();
@@ -481,7 +481,7 @@ void Free()
 	ImGui_ImplDX11_Shutdown();
 	ImGui::DestroyContext();
 
-	SetWindowLongPtr(_mainGui.hWindow, GWLP_WNDPROC, (LONG_PTR)_mainGui.oWindowProcess);
+	SetWindowLongPtr(_mainGui.hWindow, GWLP_WNDPROC, (std::intptr_t)_mainGui.oWindowProcess);
 }
 
 //=====================================================================================
@@ -497,7 +497,7 @@ void HookSteamUserAPI()
 	while (!_hooks._steamUser)
 		_hooks._steamUser = _hooks.GetSteamUser();
 
-	oGetSteamID = (tGetSteamID)SwapVMT((DWORD_PTR)_hooks._steamUser, (DWORD_PTR)&hGetSteamID, 2);
+	oGetSteamID = (tGetSteamID)SwapVMT((std::uintptr_t)_hooks._steamUser, (std::uintptr_t)&hGetSteamID, 2);
 }
 
 //=====================================================================================
@@ -515,12 +515,12 @@ void HookSteamFriendsAPI()
 	while (!_hooks._steamFriends)
 		_hooks._steamFriends = _hooks.GetSteamFriends();
 	
-	oGetPersonaName = (tGetPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetPersonaName, 0);
-	oGetFriendCount = (tGetFriendCount)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendCount, 3);
-	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendByIndex, 4);
-	oGetFriendPersonaState = (tGetFriendPersonaState)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendPersonaState, 6);
-	oGetFriendPersonaName = (tGetFriendPersonaName)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendPersonaName, 7);
-	oGetFriendGamePlayed = (tGetFriendGamePlayed)SwapVMT((DWORD_PTR)_hooks._steamFriends, (DWORD_PTR)&hGetFriendGamePlayed, 8);
+	oGetPersonaName = (tGetPersonaName)SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)&hGetPersonaName, 0);
+	oGetFriendCount = (tGetFriendCount)SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)&hGetFriendCount, 3);
+	oGetFriendByIndex = (tGetFriendByIndex)SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)&hGetFriendByIndex, 4);
+	oGetFriendPersonaState = (tGetFriendPersonaState)SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)&hGetFriendPersonaState, 6);
+	oGetFriendPersonaName = (tGetFriendPersonaName)SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)&hGetFriendPersonaName, 7);
+	oGetFriendGamePlayed = (tGetFriendGamePlayed)SwapVMT((std::uintptr_t)_hooks._steamFriends, (std::uintptr_t)&hGetFriendGamePlayed, 8);
 }
 
 //=====================================================================================

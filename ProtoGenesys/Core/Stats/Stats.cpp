@@ -27,7 +27,7 @@ namespace ProtoGenesys
 	void cStats::HashAndSignStats()
 	{
 		char szHash[8];
-		Dereference((QWORD)szHash) = Dereference(dwRankXP) ^ Dereference(dwPLevel) ^ (QWORD)strtoll(GetXuidstring(), NULL, 0x10);
+		Dereference((std::uint64_t)szHash) = Dereference(dwRankXP) ^ Dereference(dwPLevel) ^ (std::uint64_t)strtoll(GetXuidstring(), NULL, 0x10);
 		Dereference(dwMemoryBase + 0x28FC) = 0x18;
 		HashMemory(FindHash((LPCSTR)dwTigerHash), szHash, 0x8, (LPSTR)(dwMemoryBase + 0x2900), (int*)(dwMemoryBase + 0x28FC));
 		RegisterPrng((LPVOID)dwPrng);

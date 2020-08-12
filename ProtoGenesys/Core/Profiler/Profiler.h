@@ -21,16 +21,18 @@ namespace ProtoGenesys
 			union uCvarValue
 			{
 				bool bValue;
-				int iValue;
-				float flValue;
-				DWORD dwValue;
+				std::int32_t iValue;
+				std::uint32_t dwValue;
+				std::uint64_t qwValue;
+				std::float_t flValue;
 				ImVec4 cValue;
 				LPSTR szValue;
 
 				uCvarValue(bool value) : bValue(value) {}
-				uCvarValue(int value) : iValue(value) {}
-				uCvarValue(float value) : flValue(value) {}
-				uCvarValue(DWORD value) : dwValue(value) {}
+				uCvarValue(std::int32_t value) : iValue(value) {}
+				uCvarValue(std::uint32_t value) : dwValue(value) {}
+				uCvarValue(std::uint64_t value) : qwValue(value) {}
+				uCvarValue(std::float_t value) : flValue(value) {}
 				uCvarValue(ImVec4 value) : cValue(value) {}
 				uCvarValue(LPSTR value) : szValue(value) {}
 			} Current, Reset;
@@ -39,31 +41,39 @@ namespace ProtoGenesys
 			{
 				struct
 				{
-					int iMin;
-					int iMax;
+					std::int32_t iMin;
+					std::int32_t iMax;
 				};
 
 				struct
 				{
-					float flMin;
-					float flMax;
+					std::uint32_t dwMin;
+					std::uint32_t dwMax;
 				};
 
 				struct
 				{
-					DWORD dwMin;
-					DWORD dwMax;
+					std::uint64_t qwMin;
+					std::uint64_t qwMax;
 				};
 
-				uCvarLimits(int min, int max) : iMin(min), iMax(max) {}
-				uCvarLimits(float min, float max) : flMin(min), flMax(max) {}
-				uCvarLimits(DWORD min, DWORD max) : dwMin(min), dwMax(max) {}
+				struct
+				{
+					std::float_t flMin;
+					std::float_t flMax;
+				};
+
+				uCvarLimits(std::int32_t min, std::int32_t max) : iMin(min), iMax(max) {}
+				uCvarLimits(std::uint32_t min, std::uint32_t max) : dwMin(min), dwMax(max) {}
+				uCvarLimits(std::uint64_t min, std::uint64_t max) : qwMin(min), qwMax(max) {}
+				uCvarLimits(std::float_t min, std::float_t max) : flMin(min), flMax(max) {}
 			} Domain;
 
 			sCvar(std::string name, std::vector<std::string> items, bool value) : szName(name), szItems(items), Current(value), Reset(value), Domain(NULL, NULL) {}
-			sCvar(std::string name, std::vector<std::string> items, int value, int min, int max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
-			sCvar(std::string name, std::vector<std::string> items, float value, float min, float max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
-			sCvar(std::string name, std::vector<std::string> items, DWORD value, DWORD min, DWORD max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
+			sCvar(std::string name, std::vector<std::string> items, std::int32_t value, std::int32_t min, std::int32_t max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
+			sCvar(std::string name, std::vector<std::string> items, std::uint32_t value, std::uint32_t min, std::uint32_t max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
+			sCvar(std::string name, std::vector<std::string> items, std::uint64_t value, std::uint64_t min, std::uint64_t max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
+			sCvar(std::string name, std::vector<std::string> items, std::float_t value, std::float_t min, std::float_t max) : szName(name), szItems(items), Current(value), Reset(value), Domain(min, max) {}
 			sCvar(std::string name, std::vector<std::string> items, ImVec4 value) : szName(name), szItems(items), Current(value), Reset(value), Domain(NULL, NULL) {}
 			sCvar(std::string name, std::vector<std::string> items, LPSTR value) : szName(name), szItems(items), Current(value), Reset(value), Domain(NULL, NULL) {}
 		};

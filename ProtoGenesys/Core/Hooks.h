@@ -34,10 +34,10 @@ namespace ProtoGenesys
 		sTimer RandomizeTimer, FakeLagOnTimer, FakeLagOffTimer;
 
 		bool bXuidOverride;
-		QWORD qwXuidOverride;
+		std::uint64_t qwXuidOverride;
 
 		int iScreenShotCount, iFriendCount;
-		std::vector<std::pair<QWORD, std::string>> vFriends;
+		std::vector<std::pair<std::uint64_t, std::string>> vFriends;
 
 		DWORD dwConnectPaths, dwMouseAccel, dwDrawBigFPS, dwMaxClients, dwNoDelta, dwSysValue, dwShader, dwAddress;
 
@@ -71,7 +71,7 @@ namespace ProtoGenesys
 		void GetAddr(bool renew);
 		
 		int GameTypeSettings(int settings);
-		int GetPlayerStatus(int localnum, QWORD xuid);
+		int GetPlayerStatus(int localnum, std::uint64_t xuid);
 		bool IsValidSteamID(CSteamID* steamid);
 		void CreateScreenShot(int unk1, int unk2, int unk3, int unk4);
 
@@ -87,7 +87,7 @@ namespace ProtoGenesys
 		int Atoi2(int result);
 		LPVOID Memcpy(LPVOID dst, LPCVOID src, SIZE_T size);
 
-		QWORD GetUserSteamIdAsXuid();
+		std::uint64_t GetUserSteamIdAsXuid();
 		LPSTR FilterPersonaName(LPSTR name, bool ascii);
 
 		std::string Randomize(std::string name);
