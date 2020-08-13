@@ -253,7 +253,7 @@ namespace ProtoGenesys
 			}
 
 			for (int i = 0; i < MAX_CLIENTS; i++)
-				if ((!t6::get_party_data()->get_session_data()->dyn.users[i].registered && !CG->ClientInfo[i].iInfoValid))
+				if ((LocalClientIsInGame() ? !CG->ClientInfo[i].iInfoValid : !t6::get_party_data()->get_session_data()->dyn.users[i].registered))
 					_targetList.Priorities[i].bIsPrioritized = _targetList.Priorities[i].bIsIgnored = _targetList.Priorities[i].bIsMultiPoint = false;
 		}
 	}
@@ -336,9 +336,9 @@ namespace ProtoGenesys
 				{
 					if (_profiler.gIdStealer->Current.iValue)
 					{
-						_profiler.gNameOverRide->Current.szValue = _strdup(t6::get_party_data()->get_party_member(victim)->gamertag);
-						_profiler.gClanOverRide->Current.szValue = _strdup(t6::get_party_data()->get_party_member(victim)->clanAbbrev);
-						_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", t6::get_party_data()->get_party_member(victim)->player).c_str());
+						_profiler.gNameOverRide->Current.szValue = _strdup(CG->ClientInfo[victim].szName);
+						_profiler.gClanOverRide->Current.szValue = _strdup(CG->ClientInfo[victim].szClan);
+						_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", CG->ClientInfo[victim].qwXuid).c_str());
 						_profiler.gIpOverRide->Current.szValue = _strdup(VariadicText("%u.%u.%u.%u",
 							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
 							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
@@ -361,8 +361,8 @@ namespace ProtoGenesys
 
 					if (!szKillspam.empty())
 					{
-						szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", t6::get_party_data()->get_party_member(attacker)->gamertag);
-						szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", t6::get_party_data()->get_party_member(victim)->clanAbbrev);
+						szKillspam = acut::FindAndReplaceString(szKillspam, "%attacker", CG->ClientInfo[attacker].szName);
+						szKillspam = acut::FindAndReplaceString(szKillspam, "%victim", CG->ClientInfo[victim].szName);
 						szKillspam = acut::FindAndReplaceString(szKillspam, "%ip", VariadicText("%u.%u.%u.%u",
 							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
 							(BYTE)t6::get_party_data()->get_party_member(victim)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],

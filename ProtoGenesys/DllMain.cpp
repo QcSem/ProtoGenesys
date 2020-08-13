@@ -359,16 +359,17 @@ LPSTR USERCALL hFilterPersonaName(LPSTR name, bool ascii)
 
 void Init()
 {
-	while (Sys_Milliseconds() < 15000);
-
 	while (!hGameOverlayRenderer.lpBaseOfDll || !hGameOverlayRenderer.EntryPoint || !hGameOverlayRenderer.SizeOfImage)
 		hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
 
 	while (!oPresent)
 		oPresent = (tPresent)Dereference(ReadPointer(FindPattern((std::uintptr_t)hGameOverlayRenderer.lpBaseOfDll, (std::uintptr_t)hGameOverlayRenderer.SizeOfImage, "\xFF\x15\x00\x00\x00\x00\x5B\x5D\xC2\x0C\x00", "xx????xxxxx"), 0x2));
 
-	_console.AddLog("%s patching ac hook...", PREFIX_LOG);
 	_hooks.PatchAntiCheat();
+
+	_console.AddLog("%s patching ac hook...", PREFIX_LOG);
+	_console.AddLog("%s hooked all", PREFIX_LOG);
+	_console.Init();
 
 	_hooks.pUnhandledExceptionFilter = SetUnhandledExceptionFilter(NULL);
 	_hooks.pVectoredExceptionHandler = AddVectoredExceptionHandler(TRUE, _hooks._thunkVectoredExceptionHandler.GetThunk());
@@ -409,11 +410,13 @@ void Init()
 
 	furtive_crash::init();
 
-	HookSteamUserAPI();
-	HookSteamFriendsAPI();
+	while (Sys_Milliseconds() < 15000);
 
-	_console.AddLog("%s hooked all", PREFIX_LOG);
-	_console.Init();
+	if (bIsSteamVersion)
+	{
+		HookSteamUserAPI();
+		HookSteamFriendsAPI();
+	}
 }
 
 //=====================================================================================

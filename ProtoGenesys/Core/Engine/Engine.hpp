@@ -870,7 +870,7 @@ namespace ProtoGenesys
 	struct sNetAddr
 	{
 	public:
-		char iIPAddress[4];
+		char szIPAddress[4];
 		short iPort;
 		int iType;
 		int iLocalNetID;

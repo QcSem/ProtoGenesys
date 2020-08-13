@@ -588,40 +588,61 @@ namespace ProtoGenesys
 
 				for (int i = 0; i < MAX_CLIENTS; i++)
 				{
-					if ((!t6::get_party_data()->get_session_data()->dyn.users[i].registered && !CG->ClientInfo[i].iInfoValid) ||
-						(std::string(t6::get_party_data()->get_party_member(i)->gamertag).empty() &&
-						!DwordFromBytes(t6::get_party_data()->get_party_member(i)->platformAddr.netAddr.ip.bytes) &&
-						!t6::get_party_data()->get_party_member(i)->player))
+					std::string szName = LocalClientIsInGame() ? CG->ClientInfo[i].szName : t6::get_party_data()->get_party_member(i)->gamertag;
+					std::string szClan = LocalClientIsInGame() ? CG->ClientInfo[i].szClan : t6::get_party_data()->get_party_member(i)->clanAbbrev;
+					std::uint64_t qwXuid = LocalClientIsInGame() ? CG->ClientInfo[i].qwXuid : t6::get_party_data()->get_party_member(i)->player;
+					BYTE szIPAddress[4] =
+					{
+						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
+						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
+						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
+						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]
+					};
+
+					if ((LocalClientIsInGame() ? !CG->ClientInfo[i].iInfoValid : !t6::get_party_data()->get_session_data()->dyn.users[i].registered) ||
+						(szName.empty() && !DwordFromBytes(szIPAddress) && !qwXuid))
 						continue;
 
 					ImGui::Separator();
 					ImGui::PushID(i);
 
-					ImVec4 cColor;
-					GetTeamColor((eTeam)t6::get_party_data()->get_party_member(i)->teamInfo.team, &cColor);
+					if (LocalClientIsInGame())
+					{
+						ImVec4 cColor;
+						GetTeamColor(CG->ClientInfo[i].iTeam1, &cColor);
 
-					ImGui::PushStyleColor(ImGuiCol_Text, cColor);
-					if (ImGui::Selectable(t6::get_party_data()->get_party_member(i)->gamertag, &_targetList.Priorities[i].bIsPrioritized, ImGuiSelectableFlags_SpanAllColumns))
+						ImGui::PushStyleColor(ImGuiCol_Text, cColor);
+					}
+					if (ImGui::Selectable(szName.c_str(), &_targetList.Priorities[i].bIsPrioritized, ImGuiSelectableFlags_SpanAllColumns))
 					{
 						bWriteLog = true;
-					} ImGui::PopStyleColor();
-
-					if (strcmp(_hooks._steamFriends->GetFriendPersonaName(CSteamID(t6::get_party_data()->get_party_member(i)->player)), t6::get_party_data()->get_party_member(i)->gamertag) &&
-						strcmp(_hooks._steamFriends->GetFriendPersonaName(CSteamID(t6::get_party_data()->get_party_member(i)->player)), "[unknown]") &&
-						strcmp(_hooks._steamFriends->GetFriendPersonaName(CSteamID(t6::get_party_data()->get_party_member(i)->player)), ""))
+					} 
+					if (LocalClientIsInGame()) 
 					{
-						ImGui::SameLine();
-						ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
-						ImGui::Text(VariadicText("(%s)", _hooks._steamFriends->GetFriendPersonaName(CSteamID(t6::get_party_data()->get_party_member(i)->player))).c_str());
 						ImGui::PopStyleColor();
 					}
 
-					if (_hooks._steamFriends->GetFriendRelationship(CSteamID(t6::get_party_data()->get_party_member(i)->player)) == EFriendRelationship::k_EFriendRelationshipFriend)
+					if (_hooks._steamFriends)
 					{
-						ImGui::SameLine();
-						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
-						ImGui::Text("[FRIEND]");
-						ImGui::PopStyleColor();
+						std::string szFriendName = _hooks._steamFriends->GetFriendPersonaName(CSteamID(qwXuid));
+
+						if (strcmp(szFriendName.c_str(), szName.c_str()) &&
+							strcmp(szFriendName.c_str(), "[unknown]") &&
+							!szFriendName.empty())
+						{
+							ImGui::SameLine();
+							ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
+							ImGui::Text(VariadicText("(%s)", szFriendName).c_str());
+							ImGui::PopStyleColor();
+						}
+
+						if (_hooks._steamFriends->GetFriendRelationship(CSteamID(qwXuid)) == EFriendRelationship::k_EFriendRelationshipFriend)
+						{
+							ImGui::SameLine();
+							ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
+							ImGui::Text("[FRIEND]");
+							ImGui::PopStyleColor();
+						}
 					}
 
 					if (t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0)) == i)
@@ -637,7 +658,7 @@ namespace ProtoGenesys
 						if (ImGui::MenuItem("Add To Friend List"))
 						{
 							std::ofstream file(acut::GetExeDirectory() + acut::FindAndReplaceString(DEFAULT_TXT, " ", ""), std::ios_base::out | std::ios_base::app);
-							file << t6::get_party_data()->get_party_member(i)->player << " " << t6::get_party_data()->get_party_member(i)->gamertag << std::endl;
+							file << qwXuid << " " << szName << std::endl;
 
 							_hooks.RefreshFriends();
 
@@ -646,7 +667,7 @@ namespace ProtoGenesys
 
 						if (ImGui::MenuItem("View Profile"))
 						{
-							PopOverlayForSteamID(t6::get_party_data()->get_party_member(i)->player);
+							PopOverlayForSteamID(qwXuid);
 
 							bShowWindow = false;
 							bWriteLog = true;
@@ -654,14 +675,10 @@ namespace ProtoGenesys
 
 						if (ImGui::MenuItem("Steal ID"))
 						{
-							_profiler.gNameOverRide->Current.szValue = _strdup(t6::get_party_data()->get_party_member(i)->gamertag);
-							_profiler.gClanOverRide->Current.szValue = _strdup(t6::get_party_data()->get_party_member(i)->clanAbbrev);
-							_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", t6::get_party_data()->get_party_member(i)->player).c_str());
-							_profiler.gIpOverRide->Current.szValue = _strdup(VariadicText("%u.%u.%u.%u",
-								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
-								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
-								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
-								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]).c_str());
+							_profiler.gNameOverRide->Current.szValue = _strdup(szName.c_str());
+							_profiler.gClanOverRide->Current.szValue = _strdup(szClan.c_str());
+							_profiler.gXuidOverRide->Current.szValue = _strdup(VariadicText("%llx", qwXuid).c_str());
+							_profiler.gIpOverRide->Current.szValue = _strdup(VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]).c_str());
 
 							AddReliableCommand(VariadicText("userinfo \"\\name\\%s\\clanAbbrev\\%s\\xuid\\%s\"",
 								_profiler.gNameOverRide->Current.szValue,
@@ -684,13 +701,12 @@ namespace ProtoGenesys
 
 								if (!szCrash.empty())
 								{
-									szCrash = acut::FindAndReplaceString(szCrash, "%attacker", t6::get_party_data()->get_party_member(t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0)))->gamertag);
-									szCrash = acut::FindAndReplaceString(szCrash, "%victim", t6::get_party_data()->get_party_member(i)->gamertag);
-									szCrash = acut::FindAndReplaceString(szCrash, "%ip", VariadicText("%u.%u.%u.%u",
-										(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
-										(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
-										(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
-										(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]));
+									int iLocalNum = t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0));
+									std::string szLocalName = LocalClientIsInGame() ? CG->ClientInfo[iLocalNum].szName : t6::get_party_data()->get_party_member(iLocalNum)->gamertag;
+
+									szCrash = acut::FindAndReplaceString(szCrash, "%attacker", szLocalName);
+									szCrash = acut::FindAndReplaceString(szCrash, "%victim", szName);
+									szCrash = acut::FindAndReplaceString(szCrash, "%ip", VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]));
 
 									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrash).c_str()));
 								}
@@ -718,7 +734,7 @@ namespace ProtoGenesys
 						if (ImGui::MenuItem("Copy Name"))
 						{
 							ImGui::LogToClipboard();
-							ImGui::LogText(t6::get_party_data()->get_party_member(i)->gamertag);
+							ImGui::LogText(szName.c_str());
 							ImGui::LogFinish();
 
 							bWriteLog = true;
@@ -727,11 +743,7 @@ namespace ProtoGenesys
 						if (ImGui::MenuItem("Copy IP Address"))
 						{
 							ImGui::LogToClipboard();
-							ImGui::LogText(VariadicText("%u.%u.%u.%u",
-								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
-								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
-								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
-								(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]).c_str());
+							ImGui::LogText(VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]).c_str());
 
 							ImGui::LogFinish();
 
@@ -741,7 +753,7 @@ namespace ProtoGenesys
 						if (ImGui::MenuItem("Copy SteamID"))
 						{
 							ImGui::LogToClipboard();
-							ImGui::LogText(std::to_string(t6::get_party_data()->get_party_member(i)->player).c_str());
+							ImGui::LogText(std::to_string(qwXuid).c_str());
 							ImGui::LogFinish();
 
 							bWriteLog = true;
@@ -750,18 +762,14 @@ namespace ProtoGenesys
 						ImGui::EndPopup();
 					} ImGui::NextColumn();
 
-					ImGui::Text(VariadicText("%u.%u.%u.%u",
-						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1E],
-						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x1F],
-						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x20],
-						(BYTE)t6::get_party_data()->get_party_member(i)->platformAddr.liveaddr.xnaddr.addrBuff[0x21]).c_str());
+					ImGui::Text(VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]).c_str());
 
 					if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
 					{
 						bWriteLog = true;
 					} ImGui::NextColumn();
 
-					ImGui::Text(std::to_string(t6::get_party_data()->get_party_member(i)->player).c_str());
+					ImGui::Text(std::to_string(qwXuid).c_str());
 					if (ImGui::OpenPopupOnItemClick(std::to_string(i).c_str()))
 					{
 						bWriteLog = true;
