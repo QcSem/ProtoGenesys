@@ -632,7 +632,7 @@ namespace ProtoGenesys
 						{
 							ImGui::SameLine();
 							ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetColorU32(ImGuiCol_TextDisabled));
-							ImGui::Text(VariadicText("(%s)", szFriendName).c_str());
+							ImGui::Text(VariadicText("(%s)", szFriendName.c_str()).c_str());
 							ImGui::PopStyleColor();
 						}
 
