@@ -33,13 +33,13 @@ namespace ProtoGenesys
 			EntityList[i].flDamage = -FLT_MAX;
 			EntityList[i].flFOV = FLT_MAX;
 
+			EntityList[i].vScanPoints.clear();
+
 			if (!EntityIsValid(&CG->CEntity[i]))
 				continue;
 
 			if (CG->CEntity[i].NextEntityState.wEntityType == ET_PLAYER || CG->CEntity[i].NextEntityState.wEntityType == ET_ACTOR)
 			{
-				EntityList[i].vScanPoints.clear();
-
 				LPVOID lpDObj = GetDObj(&CG->CEntity[i]);
 
 				if (!lpDObj)
@@ -232,7 +232,7 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	bool cTargetList::IsVisibleInternal(sCEntity* entity, ImVec3 position, bool autowall, float* damage)
+	float cTargetList::IsVisibleInternal(sCEntity* entity, ImVec3 position, bool autowall, float* damage)
 	{
 		ImVec3 vViewOrigin;
 		GetPlayerViewOrigin(&vViewOrigin);
@@ -244,8 +244,7 @@ namespace ProtoGenesys
 			if (damage)
 				*damage = flDamage;
 
-			if (flDamage >= 1.0f)
-				return true;
+			return flDamage;
 		}
 
 		else if (autowall)
@@ -255,8 +254,7 @@ namespace ProtoGenesys
 			if (damage)
 				*damage = flDamage;
 
-			if (flDamage >= 1.0f)
-				return true;
+			return flDamage;
 		}
 
 		else
@@ -266,11 +264,8 @@ namespace ProtoGenesys
 			if (damage)
 				*damage = flDamage;
 
-			if (flDamage >= 1.0f)
-				return true;
+			return flDamage;
 		}
-
-		return false;
 	}
 	/*
 	//=====================================================================================
@@ -283,7 +278,7 @@ namespace ProtoGenesys
 		sDamageInfo DamageInfo;
 		std::vector<sDamageInfo> vDamageInfo;
 		std::vector<sDamageInfo> vDamageInfoFinal;
-		std::vector<std::future<bool>> vIsVisible;
+		std::vector<std::future<float>> vIsVisible;
 
 		if (bIsSteamVersion)
 		{
@@ -292,7 +287,6 @@ namespace ProtoGenesys
 				DamageInfo.flDistance = _mathematics.CalculateDistance3D(scanpoints[i], vViewOrigin);
 				vIsVisible.push_back(std::async(&cTargetList::IsVisibleInternal, this, entity, scanpoints[i], autowall, &DamageInfo.flDamage));
 				DamageInfo.flFOV = _mathematics.CalculateFOV(scanpoints[i], vViewOrigin, CG->vRefDefViewAngles);
-
 				DamageInfo.vPosition = scanpoints[i];
 
 				vDamageInfo.push_back(DamageInfo);
@@ -300,7 +294,7 @@ namespace ProtoGenesys
 
 			for (size_t i = 0; i < scanpoints.size(); i++)
 			{
-				if (vIsVisible[i].get())
+				if ((vDamageInfo[i].flDamage = vIsVisible[i].get()) >= 1.0f)
 				{
 					vDamageInfoFinal.push_back(vDamageInfo[i]);
 				}
@@ -311,11 +305,10 @@ namespace ProtoGenesys
 		{
 			for (size_t i = 0; i < scanpoints.size(); i++)
 			{
-				if (IsVisibleInternal(entity, scanpoints[i], autowall, &DamageInfo.flDamage))
+				if (IsVisibleInternal(entity, scanpoints[i], autowall, &DamageInfo.flDamage) >= 1.0f)
 				{
 					DamageInfo.flDistance = _mathematics.CalculateDistance3D(scanpoints[i], vViewOrigin);
 					DamageInfo.flFOV = _mathematics.CalculateFOV(scanpoints[i], vViewOrigin, CG->vRefDefViewAngles);
-
 					DamageInfo.vPosition = scanpoints[i];
 
 					vDamageInfoFinal.push_back(DamageInfo);

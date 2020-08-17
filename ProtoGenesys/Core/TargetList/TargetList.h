@@ -49,7 +49,7 @@ namespace ProtoGenesys
 		} Priorities[MAX_CLIENTS];
 
 		void GetInformation();
-		bool IsVisibleInternal(sCEntity* entity, ImVec3 position, bool autowall, float* damage);
+		float IsVisibleInternal(sCEntity* entity, ImVec3 position, bool autowall, float* damage);
 		bool IsVisible(sCEntity* entity, std::vector<ImVec3> scanpoints, ImVec3* position, bool autowall, float* damage);
 		std::vector<ImVec3> CalculateMultiPoints(sCEntity* entity, ImVec3 bones3d[BONE_MAX], int divisor, float radius);
 	} extern _targetList;
