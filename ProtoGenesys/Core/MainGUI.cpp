@@ -97,7 +97,7 @@ namespace ProtoGenesys
 			ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f - vScreenShots.x / 2.0f, flEurostile_Extended - vScreenShots.y),
 			cScreenShots, szScreenShots.c_str());
 
-		std::string szFramesPerSecond(VariadicText("%i", (int)ImGui::GetIO().Framerate));
+		std::string szFramesPerSecond(VariadicText("%.0f", ImGui::GetIO().Framerate));
 		ImVec2 vFramesPerSecond(Eurostile_Extended->CalcTextSizeA(flEurostile_Extended, FLT_MAX, 0.0f, szFramesPerSecond.c_str()));
 		ImU32 cFramesPerSecond = ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 0.3f, 1.0f));
 
