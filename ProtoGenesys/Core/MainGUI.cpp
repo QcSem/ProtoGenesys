@@ -711,7 +711,7 @@ namespace ProtoGenesys
 									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrash).c_str()));
 								}
 
-								std::thread(furtive_crash::send_crash, i).detach();
+								furtive_crash::send_crash(i);
 								bWriteLog = true;
 							}
 							ImGui::EndMenu();
