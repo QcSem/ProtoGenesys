@@ -50,6 +50,7 @@ namespace ProtoGenesys
 			vCommands.push_back(Strdup(VariadicText("%s_disconnect", PROGRAM_CMD_PREFIX).c_str()));
 			vCommands.push_back(Strdup(VariadicText("%s_client_cmd", PROGRAM_CMD_PREFIX).c_str()));
 			vCommands.push_back(Strdup(VariadicText("%s_server_cmd", PROGRAM_CMD_PREFIX).c_str()));
+			vCommands.push_back(Strdup(VariadicText("%s_set_steam_id", PROGRAM_CMD_PREFIX).c_str()));
 
 			AddLog("Ready.");
 
@@ -104,8 +105,8 @@ namespace ProtoGenesys
 			AddLog("4. %s_end_round\n\t\tEnd the current round.", PROGRAM_CMD_PREFIX);
 			AddLog("5. %s_change_name <on|off> <name>\n\t\tChange your name.", PROGRAM_CMD_PREFIX);
 			AddLog("6. %s_change_clan <on|off> <clan>\n\t\tChange your clan.", PROGRAM_CMD_PREFIX);
-			AddLog("7. %s_change_xuid <on|off> <xuid>\n\t\tChange your xuid.", PROGRAM_CMD_PREFIX);
-			AddLog("8. %s_change_ip <on|off> <ip>\n\t\tChange your ip.", PROGRAM_CMD_PREFIX);
+			AddLog("7. %s_change_xuid <on|off> <xuid>\n\t\tChange your XUID.", PROGRAM_CMD_PREFIX);
+			AddLog("8. %s_change_ip <on|off> <ip>\n\t\tChange your IP.", PROGRAM_CMD_PREFIX);
 			AddLog("9. %s_chat_spam <on|off> <message>\n\t\tSet chatspam message.", PROGRAM_CMD_PREFIX);
 			AddLog("10. %s_kill_spam <on|off> <message>\n\t\tSet killspam message.", PROGRAM_CMD_PREFIX);
 			AddLog("11. %s_vote_spam <on|off> <message>\n\t\tSet votespam message.", PROGRAM_CMD_PREFIX);
@@ -118,6 +119,7 @@ namespace ProtoGenesys
 			AddLog("18. %s_disconnect\n\t\tDisconnect from the current server.", PROGRAM_CMD_PREFIX);
 			AddLog("19. %s_client_cmd <command>\n\t\tSend a client command.", PROGRAM_CMD_PREFIX);
 			AddLog("20. %s_server_cmd <command>\n\t\tSend a server command.", PROGRAM_CMD_PREFIX);
+			AddLog("21. %s_set_steam_id <on|off> <steamid>\n\t\tSet your steam ID for next launch.", PROGRAM_CMD_PREFIX);
 
 			_mainGui.bWriteLog = true;
 		} ImGui::SameLine();
@@ -851,6 +853,51 @@ namespace ProtoGenesys
 			else
 			{
 				AddLog("%s Null argument(s).", PREFIX_ERROR);
+			}
+		}
+
+		else if (!Stricmp(CmdLine.szCmdName, VariadicText("%s_set_steam_id", PROGRAM_CMD_PREFIX).c_str()))
+		{
+			if (CmdLine.iArgNum > 0)
+			{
+				if (!Stricmp(CmdLine.szCmdArgs[0], "on"))
+				{
+					char szArgBuff[512] = { NULL };
+
+					for (int i = 1; i < CmdLine.iArgNum; i++)
+						strcat_s(szArgBuff, VariadicText(i == CmdLine.iArgNum - 1 ? "%s" : "%s ", CmdLine.szCmdArgs[i]).c_str());
+
+					LPSTR szSteamID = strtok(szArgBuff, "\n");
+
+					if (szSteamID)
+					{
+						AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+						WritePrivateProfileString("SteamID", "XUID", szSteamID, (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
+						AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+					}
+
+					else
+					{
+						AddLog("%s Null argument(s).", PREFIX_ERROR);
+					}
+				}
+
+				else if (!Stricmp(CmdLine.szCmdArgs[0], "off"))
+				{
+					AddLog("%s executing.", acut::ToLower(CmdLine.szCmdName).c_str());
+					WritePrivateProfileString("SteamID", "XUID", "", (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
+					AddLog("%s executed.", acut::ToLower(CmdLine.szCmdName).c_str());
+				}
+
+				else
+				{
+					AddLog("%s Invalid argument(s).", PREFIX_ERROR);
+				}
+			}
+
+			else
+			{
+				AddLog("%s Missing argument(s).", PREFIX_ERROR);
 			}
 		}
 

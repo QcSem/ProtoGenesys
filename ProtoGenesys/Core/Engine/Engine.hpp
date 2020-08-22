@@ -1094,6 +1094,7 @@ namespace ProtoGenesys
 	static std::uintptr_t dwDevice = bIsSteamVersion ? 0x35CF484 : 0x35AE484;
 	static std::uintptr_t dwDeviceContext = bIsSteamVersion ? 0x35CF488 : 0x35AE488;
 
+	static std::uintptr_t dwVersionString = 0x2B1E560;
 	static std::uintptr_t dwMouseInput = 0x2B69969;
 
 	static std::uintptr_t dwTacSSCount = 0x28A1FB4;

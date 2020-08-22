@@ -9,8 +9,6 @@ using namespace ProtoGenesys;
 #define FASTCALL __fastcall
 #define USERCALL __cdecl
 
-#define DLLEXPORT comment(linker, "/EXPORT:" __FUNCTION__ "=" __FUNCDNAME__)
-
 #define AttachHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourAttach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
 #define DetachHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourDetach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
 
@@ -22,7 +20,7 @@ void Free();
 void HookSteamUserAPI();
 void HookSteamFriendsAPI();
 
-void WINAPI SteamID(LPWSTR xuid);
+void SetSteamID();
 
 //=====================================================================================
 
@@ -359,6 +357,8 @@ LPSTR USERCALL hFilterPersonaName(LPSTR name, bool ascii)
 
 void Init()
 {
+	SetSteamID();
+
 	while (!hGameOverlayRenderer.lpBaseOfDll || !hGameOverlayRenderer.EntryPoint || !hGameOverlayRenderer.SizeOfImage)
 		hGameOverlayRenderer = GetModuleInfo("GameOverlayRenderer.dll");
 
@@ -410,10 +410,10 @@ void Init()
 
 	furtive_crash::init();
 
-	while (Sys_Milliseconds() < 15000);
-
 	if (bIsSteamVersion)
 	{
+		while (strcmp((LPCSTR)dwVersionString, "43.1736.11"));
+
 		HookSteamUserAPI();
 		HookSteamFriendsAPI();
 	}
@@ -528,14 +528,21 @@ void HookSteamFriendsAPI()
 
 //=====================================================================================
 
-void WINAPI SteamID(LPWSTR xuid)
+void SetSteamID()
 {
-#pragma DLLEXPORT
+	char szTempSteamID[20] = { NULL };
 
-	_hooks.bXuidOverride = true;
-	_hooks.qwXuidOverride = wcstoll(xuid, NULL, 10);
+	GetPrivateProfileString("SteamID", "XUID", "", szTempSteamID, sizeof(szTempSteamID), (acut::GetExeDirectory() + DEFAULT_CFG).c_str());
 
-	fhGetUserSteamIDAsXUIDCall.SetHook();
+	std::string szSteamID(szTempSteamID);
+
+	if (!szSteamID.empty())
+	{
+		_hooks.bXuidOverride = true;
+		_hooks.qwXuidOverride = strtoll(szSteamID.c_str(), NULL, 10);
+
+		fhGetUserSteamIDAsXUIDCall.SetHook();
+	}
 }
 
 //=====================================================================================
