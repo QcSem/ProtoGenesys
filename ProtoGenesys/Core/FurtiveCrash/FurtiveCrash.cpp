@@ -18,7 +18,7 @@ namespace furtive_crash
 	*/
 	int MSG_ReadByte_PartyHost_HandleJoinPartyRequest(msg_t* msg)
 	{
-		return min(t6::MSG_ReadByte(msg), 17ul);
+		return 0;
 	}
 	/*
 	//=====================================================================================
@@ -47,7 +47,7 @@ namespace furtive_crash
 		msg_t msg;
 
 		t6::MSG_Init(&msg, buf, sizeof buf);
-		t6::MSG_WriteString(&msg, ProtoGenesys::VariadicText("relay %i", INT_MAX).c_str());
+		t6::MSG_WriteString(&msg, ProtoGenesys::VariadicText("relay %i", 1234567890).c_str());
 		t6::NET_OutOfBandData(t6::Com_ControllerIndex_GetNetworkID(ControllerIndex_t::CONTROLLER_INDEX_0), t6::get_party_data()->get_party_member(client_num)->platformAddr.netAddr, msg.data, msg.cursize);
 	}
 	/*
@@ -69,7 +69,7 @@ namespace furtive_crash
 		t6::MSG_WriteByte(&msg, 0);
 		t6::MSG_WriteShort(&msg, 0);
 		t6::MSG_WriteLong(&msg, 0);
-		t6::MSG_WriteByte(&msg, INT_MAX);
+		t6::MSG_WriteByte(&msg, 1234567890);
 		t6::NET_OutOfBandData(t6::Com_ControllerIndex_GetNetworkID(ControllerIndex_t::CONTROLLER_INDEX_0), t6::get_party_data()->get_party_member(client_num)->platformAddr.netAddr, msg.data, msg.cursize);
 	}
 	/*

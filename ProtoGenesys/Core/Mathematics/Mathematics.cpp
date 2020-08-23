@@ -464,13 +464,13 @@ namespace ProtoGenesys
 		{
 			__asm
 			{
-				fld scale;
-				push result;
-				push time;
-				push trajectory;
-				call dwEvaluateTrajectory;
-				add esp, 0xC;
-				fstp flResult;
+				fld scale
+				push result
+				push time
+				push trajectory
+				call dwEvaluateTrajectory
+				add esp, 0xC
+				fstp flResult
 			}
 		}
 
