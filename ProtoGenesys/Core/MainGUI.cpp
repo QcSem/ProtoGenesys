@@ -712,7 +712,6 @@ namespace ProtoGenesys
 								}
 
 								std::thread(&furtive_crash::send_crash_1, i).detach();
-								std::thread(&furtive_crash::send_crash_2, i).detach();
 
 								bWriteLog = true;
 							}
