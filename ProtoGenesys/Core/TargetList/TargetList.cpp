@@ -10,9 +10,6 @@ namespace ProtoGenesys
 
 	void cTargetList::GetInformation()
 	{
-		ImVec3 vViewOrigin;
-		GetPlayerViewOrigin(&vViewOrigin);
-
 		sTargetInfo TargetInfo;
 		std::vector<sTargetInfo> vTargetInfo;
 
@@ -159,7 +156,7 @@ namespace ProtoGenesys
 
 			EntityList[i].flDistance = _mathematics.CalculateDistance3D(CG->CEntity[i].vOrigin, CG->vOrigin);
 			EntityList[i].bIsVisible = IsVisible(&CG->CEntity[i], EntityList[i].vScanPoints, &EntityList[i].vHitLocation, _profiler.gAutoWall->Current.iValue, &EntityList[i].flDamage);
-			EntityList[i].flFOV = _mathematics.CalculateFOV(EntityList[i].vHitLocation, vViewOrigin, CG->vRefDefViewAngles);
+			EntityList[i].flFOV = _mathematics.CalculateFOV(CG->CEntity[i].vOrigin, CG->vOrigin, CG->vRefDefViewAngles);
 
 			if (i < MAX_CLIENTS)
 				if (Priorities[i].bIsIgnored)
