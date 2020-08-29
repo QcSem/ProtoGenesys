@@ -6,9 +6,6 @@ using namespace ProtoGenesys;
 
 //=====================================================================================
 
-#define FASTCALL __fastcall
-#define USERCALL __cdecl
-
 #define AttachHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourAttach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
 #define DetachHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourDetach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
 

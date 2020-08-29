@@ -40,7 +40,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;PROTOGENESYS_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;IMGUI_DEFINE_MATH_OPERATORS;VMProtectDecryptString=VMProtectDecryptStringA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;PROTOGENESYS_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;IMGUI_DEFINE_MATH_OPERATORS;FASTCALL=__fastcall;USERCALL=__cdecl;VMProtectDecryptString=VMProtectDecryptStringA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
