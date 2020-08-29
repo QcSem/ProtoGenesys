@@ -26,6 +26,7 @@ namespace furtive_crash
 	void init()
 	{
 		fhAtoiCall.SetHook();
+		fhReadByteCall.SetHook();
 	}
 	/*
 	//=====================================================================================
@@ -33,6 +34,7 @@ namespace furtive_crash
 	void free()
 	{
 		fhAtoiCall.UnHook();
+		fhReadByteCall.UnHook();
 	}
 	/*
 	//=====================================================================================
