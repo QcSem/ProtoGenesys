@@ -141,7 +141,7 @@ namespace ProtoGenesys
 
 			else
 			{
-				vAntiAimAngles.y = CG->vRefDefViewAngles.y - 165.0f;
+				vAntiAimAngles.y = CG->vRefDefViewAngles.y - 170.0f;
 
 				while (vAntiAimAngles.y > 180.0f) vAntiAimAngles.y -= 360.0f;
 				while (vAntiAimAngles.y < -180.0f) vAntiAimAngles.y += 360.0f;

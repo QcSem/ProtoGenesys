@@ -242,7 +242,7 @@ namespace ProtoGenesys
 		ClampAngles(angles);
 
 		angles.x = _profiler.gShieldPitchShift->Current.flValue - angles.x;
-		angles.y = angles.y - 165.0f;
+		angles.y = angles.y - 170.0f;
 
 		angles -= CG->PlayerState.vDeltaAngles;
 

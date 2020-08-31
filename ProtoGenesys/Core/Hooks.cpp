@@ -393,32 +393,46 @@ namespace ProtoGenesys
 				{
 					if (sourcenum == CG->iClientNum && (CG->CEntity[targetnum].NextEntityState.wEntityType == ET_PLAYER || CG->CEntity[targetnum].NextEntityState.wEntityType == ET_ACTOR))
 					{
-						int iShots, iIgnoreNum;
-						float flRange, flSpread;
-						ImVec3 vTracerStart, vOrigin;
-						sOrientation Orientation;
+						cDrawing::sTracer Tracer;
+						ImVec3 vTracerStart;
 
-						sBulletFireParams FireParams;
-						ZeroMemory(&FireParams, sizeof(sBulletFireParams));
-
-						if (PrepFireParams(&CG->CEntity[CG->iClientNum], RegisterTag("tag_flash"), CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, &vTracerStart, &iShots, &flRange, &Orientation, &vOrigin, &flSpread, &iIgnoreNum))
+						if (IsThirdPerson())
 						{
-							cDrawing::sTracer Tracer;
+							LPVOID lpDObj = GetDObj(&CG->CEntity[sourcenum]);
 
-							Tracer.iStartTime = Sys_Milliseconds();
-							Tracer.vStartPos3D = vTracerStart;
-							Tracer.vHitPos3D = *position;
+							if (!lpDObj)
+								return;
 
-							Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
-							Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
-							Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
-
-							Tracer.flAlphaShadow = _profiler.gColorShadow->Current.cValue.w;
-							Tracer.flAlphaHitMarker = _profiler.gColorText->Current.cValue.w;
-							Tracer.flAlphaTracer = _profiler.gColorAccents->Current.cValue.w;
-
-							_drawing.vTracers.push_back(Tracer);
+							GetTagPosition(&CG->CEntity[sourcenum], RegisterTag("tag_flash"), lpDObj, &vTracerStart);
 						}
+
+						else
+						{
+							int iShots, iIgnoreNum;
+							float flRange, flSpread;
+							ImVec3 vOrigin;
+							sOrientation Orientation;
+
+							sBulletFireParams FireParams;
+							ZeroMemory(&FireParams, sizeof(sBulletFireParams));
+
+							if (!PrepFireParams(&CG->CEntity[CG->iClientNum], RegisterTag("tag_flash"), CG->CEntity[CG->iClientNum].NextEntityState.iWeaponID, 32, true, &FireParams, &vTracerStart, &iShots, &flRange, &Orientation, &vOrigin, &flSpread, &iIgnoreNum))
+								return;
+						}
+
+						Tracer.iStartTime = Sys_Milliseconds();
+						Tracer.vStartPos3D = vTracerStart;
+						Tracer.vHitPos3D = *position;
+
+						Tracer.cColorShadow = _profiler.gColorShadow->Current.cValue;
+						Tracer.cColorHitMarker = _profiler.gColorText->Current.cValue;
+						Tracer.cColorTracer = _profiler.gColorAccents->Current.cValue;
+
+						Tracer.flAlphaShadow = _profiler.gColorShadow->Current.cValue.w;
+						Tracer.flAlphaHitMarker = _profiler.gColorText->Current.cValue.w;
+						Tracer.flAlphaTracer = _profiler.gColorAccents->Current.cValue.w;
+
+						_drawing.vTracers.push_back(Tracer);
 					}
 				}
 			}
@@ -676,6 +690,8 @@ namespace ProtoGenesys
 	*/
 	std::uint64_t cHooks::GetUserSteamIdAsXuid()
 	{
+		bXuidOverride = true;
+
 		return qwXuidOverride;
 	}
 	/*

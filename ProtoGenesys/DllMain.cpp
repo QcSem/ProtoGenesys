@@ -535,7 +535,6 @@ void SetSteamID()
 
 	if (!szSteamID.empty())
 	{
-		_hooks.bXuidOverride = true;
 		_hooks.qwXuidOverride = strtoll(szSteamID.c_str(), NULL, 10);
 
 		fhGetUserSteamIDAsXUIDCall.SetHook();
