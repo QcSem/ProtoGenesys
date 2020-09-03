@@ -248,15 +248,15 @@ namespace ProtoGenesys
 	{
 		bool bResult = false;
 
-		__declspec(align(16)) char szSave[512];
+		__declspec(align(0x10)) char szSave[0x200];
 		_fxsave(szSave);
 		__asm
 		{
-			push 0
+			push 0h
 			push surfacetype
 			push attacker
 			push fireparams
-			push 0
+			push 0h
 			mov esi, traceresults
 			call dwBulletTrace
 			mov bResult, al

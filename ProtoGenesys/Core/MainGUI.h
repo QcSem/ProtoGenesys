@@ -38,7 +38,6 @@ namespace ProtoGenesys
 		float flBank_Gothic_Pro_Light, flEurostile_Extended;
 
 		sTimer ChatSpamTimer, VoteSpamTimer;
-		char szCrashMessage[1024] = { NULL };
 
 		struct sVirtualKeys
 		{

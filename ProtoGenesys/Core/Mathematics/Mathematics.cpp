@@ -469,7 +469,7 @@ namespace ProtoGenesys
 				push time
 				push trajectory
 				call dwEvaluateTrajectory
-				add esp, 0xC
+				add esp, 0Ch
 				fstp flResult
 			}
 		}

@@ -195,12 +195,12 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gSortMethodTargets->szName, _profiler.gSortMethodTargets->szItems[_profiler.gSortMethodTargets->Current.iValue], &_profiler.gSortMethodTargets->Current.iValue, _profiler.gSortMethodTargets->Domain.iMin, _profiler.gSortMethodTargets->Domain.iMax, 1))
+				if (DrawOption(_profiler.gSortAlgorithmTargets->szName, _profiler.gSortAlgorithmTargets->szItems[_profiler.gSortAlgorithmTargets->Current.iValue], &_profiler.gSortAlgorithmTargets->Current.iValue, _profiler.gSortAlgorithmTargets->Domain.iMin, _profiler.gSortAlgorithmTargets->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gSortMethodBones->szName, _profiler.gSortMethodBones->szItems[_profiler.gSortMethodBones->Current.iValue], &_profiler.gSortMethodBones->Current.iValue, _profiler.gSortMethodBones->Domain.iMin, _profiler.gSortMethodBones->Domain.iMax, 1))
+				if (DrawOption(_profiler.gSortAlgorithmBones->szName, _profiler.gSortAlgorithmBones->szItems[_profiler.gSortAlgorithmBones->Current.iValue], &_profiler.gSortAlgorithmBones->Current.iValue, _profiler.gSortAlgorithmBones->Domain.iMin, _profiler.gSortAlgorithmBones->Domain.iMax, 1))
 				{
 					bWriteLog = true;
 				} ImGui::NewLine();
@@ -220,8 +220,8 @@ namespace ProtoGenesys
 					_profiler.gTargetK9Unit->Current.iValue = _profiler.gTargetK9Unit->Reset.iValue;
 					_profiler.gAntiAimPitch->Current.iValue = _profiler.gAntiAimPitch->Reset.iValue;
 					_profiler.gAntiAimYaw->Current.iValue = _profiler.gAntiAimYaw->Reset.iValue;
-					_profiler.gSortMethodTargets->Current.iValue = _profiler.gSortMethodTargets->Reset.iValue;
-					_profiler.gSortMethodBones->Current.iValue = _profiler.gSortMethodBones->Reset.iValue;
+					_profiler.gSortAlgorithmTargets->Current.iValue = _profiler.gSortAlgorithmTargets->Reset.iValue;
+					_profiler.gSortAlgorithmBones->Current.iValue = _profiler.gSortAlgorithmBones->Reset.iValue;
 
 					bWriteLog = true;
 				}
@@ -688,74 +688,66 @@ namespace ProtoGenesys
 							bWriteLog = true;
 						}
 
-						if (ImGui::BeginMenu("Crash Player 1", furtive_crash::send_connectivity_test(i)))
+						if (ImGui::BeginMenu("Crash Player", furtive_crash::send_connectivity_test(i)))
 						{
-							ImGui::PushItemWidth(100.0f);
-							ImGui::InputText("", szCrashMessage, 1024);
+							ImGui::PushItemWidth(150.0f);
+							ImGui::InputText("", furtive_crash::szCrashMessage, sizeof(furtive_crash::szCrashMessage));
 							ImGui::PopItemWidth();
 
-							ImGui::SameLine();
-							if (ImGui::Button("Execute"))
+							if (ImGui::Button("Method 1", ImVec2(73.0f, 0.0f)))
 							{
-								std::string szCrash(szCrashMessage);
+								std::string szCrashMessage(furtive_crash::szCrashMessage);
 
-								if (!szCrash.empty())
+								if (!szCrashMessage.empty())
 								{
 									int iLocalNum = t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0));
 									std::string szLocalName = LocalClientIsInGame() ? CG->ClientInfo[iLocalNum].szName : t6::get_party_data()->get_party_member(iLocalNum)->gamertag;
 
-									szCrash = acut::FindAndReplaceString(szCrash, "%attacker", szLocalName);
-									szCrash = acut::FindAndReplaceString(szCrash, "%victim", szName);
-									szCrash = acut::FindAndReplaceString(szCrash, "%ip", VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]));
+									szCrashMessage = acut::FindAndReplaceString(szCrashMessage, "%attacker", szLocalName);
+									szCrashMessage = acut::FindAndReplaceString(szCrashMessage, "%victim", szName);
+									szCrashMessage = acut::FindAndReplaceString(szCrashMessage, "%ip", VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]));
 
-									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrash).c_str()));
+									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrashMessage).c_str()));
 								}
 
 								std::thread(&furtive_crash::send_crash_1, i).detach();
 
 								bWriteLog = true;
-							}
-							ImGui::EndMenu();
-						}
+							} ImGui::SameLine(0.0f, 4.0f);
 
-						if (ImGui::BeginMenu("Crash Player 2", furtive_crash::send_connectivity_test(i)))
-						{
-							ImGui::PushItemWidth(100.0f);
-							ImGui::InputText("", szCrashMessage, 1024);
-							ImGui::PopItemWidth();
-
-							ImGui::SameLine();
-							if (ImGui::Button("Execute"))
+							if (ImGui::Button("Method 2", ImVec2(73.0f, 0.0f)))
 							{
-								std::string szCrash(szCrashMessage);
+								std::string szCrashMessage(furtive_crash::szCrashMessage);
 
-								if (!szCrash.empty())
+								if (!szCrashMessage.empty())
 								{
 									int iLocalNum = t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0));
 									std::string szLocalName = LocalClientIsInGame() ? CG->ClientInfo[iLocalNum].szName : t6::get_party_data()->get_party_member(iLocalNum)->gamertag;
 
-									szCrash = acut::FindAndReplaceString(szCrash, "%attacker", szLocalName);
-									szCrash = acut::FindAndReplaceString(szCrash, "%victim", szName);
-									szCrash = acut::FindAndReplaceString(szCrash, "%ip", VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]));
+									szCrashMessage = acut::FindAndReplaceString(szCrashMessage, "%attacker", szLocalName);
+									szCrashMessage = acut::FindAndReplaceString(szCrashMessage, "%victim", szName);
+									szCrashMessage = acut::FindAndReplaceString(szCrashMessage, "%ip", VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]));
 
-									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrash).c_str()));
+									AddReliableCommand(VariadicText("say \"%s\"", acut::StripColorCodes(szCrashMessage).c_str()));
 								}
 
 								std::thread(&furtive_crash::send_crash_2, i).detach();
 
 								bWriteLog = true;
 							}
+
 							ImGui::EndMenu();
+							bWriteLog = true;
 						}
 
 						ImGui::Separator();
 
-						if (ImGui::MenuItem("Multipoint", (const char*)0, &_targetList.Priorities[i].bIsMultiPoint))
+						if (ImGui::MenuItem("Multipoint", NULL, &_targetList.Priorities[i].bIsMultiPoint))
 						{
 							bWriteLog = true;
 						}
 
-						if (ImGui::MenuItem("Ignore", (const char*)0, &_targetList.Priorities[i].bIsIgnored))
+						if (ImGui::MenuItem("Ignore", NULL, &_targetList.Priorities[i].bIsIgnored))
 						{
 							bWriteLog = true;
 						}
@@ -791,6 +783,7 @@ namespace ProtoGenesys
 						}
 
 						ImGui::EndPopup();
+						bWriteLog = true;
 					} ImGui::NextColumn();
 
 					ImGui::Text(VariadicText("%u.%u.%u.%u", szIPAddress[0], szIPAddress[1], szIPAddress[2], szIPAddress[3]).c_str());
@@ -880,6 +873,7 @@ namespace ProtoGenesys
 						}
 
 						ImGui::EndPopup();
+						bWriteLog = true;
 					} ImGui::NextColumn();
 
 					ImGui::Text(std::to_string(_hooks.vFriends[i].first).c_str());

@@ -6,35 +6,43 @@
 
 namespace furtive_crash
 {
-	FurtiveHook fhAtoiCall{ x86Instruction::CALL, (LPVOID)t6::offsets::atoi_CL_HandleRelayPacketCall, &atoi_CL_HandleRelayPacket };
-	FurtiveHook fhReadByteCall{ x86Instruction::CALL, (LPVOID)t6::offsets::MSG_ReadByte_PartyHost_HandleJoinPartyRequestCall, &MSG_ReadByte_PartyHost_HandleJoinPartyRequest };
+	char szCrashMessage[1024] = { NULL };
 
-	int atoi_CL_HandleRelayPacket(const char* str)
+	int CL_HandleRelayPacket(const char* str)
 	{
 		return min(std::atoi(str), 17ul);
-	}
+	} FurtiveHook fhCL_HandleRelayPacket{ x86Instruction::CALL, (LPVOID)t6::offsets::CL_HandleRelayPacket, &CL_HandleRelayPacket };
 	/*
 	//=====================================================================================
 	*/
-	int MSG_ReadByte_PartyHost_HandleJoinPartyRequest(msg_t* msg)
+	__declspec(naked) void PartyHost_HandleJoinPartyRequest()
 	{
-		return 0;
-	}
+		__asm
+		{
+			cmp eax, 12h
+			jae fix
+			jmp t6::offsets::PartyHost_HandleJoinPartyRequest1
+		fix:
+			add esp, 20h
+			push t6::offsets::PartyHost_HandleJoinPartyRequest2
+			retn
+		}
+	} FurtiveHook fhPartyHost_HandleJoinPartyRequest{ x86Instruction::JMP, (LPVOID)t6::offsets::PartyHost_HandleJoinPartyRequest1, &PartyHost_HandleJoinPartyRequest };
 	/*
 	//=====================================================================================
 	*/
 	void init()
 	{
-		fhAtoiCall.SetHook();
-		fhReadByteCall.SetHook();
+		fhCL_HandleRelayPacket.SetHook();
+		fhPartyHost_HandleJoinPartyRequest.SetHook();
 	}
 	/*
 	//=====================================================================================
 	*/
 	void free()
 	{
-		fhAtoiCall.UnHook();
-		fhReadByteCall.UnHook();
+		fhCL_HandleRelayPacket.UnHook();
+		fhPartyHost_HandleJoinPartyRequest.UnHook();
 	}
 	/*
 	//=====================================================================================
@@ -46,7 +54,7 @@ namespace furtive_crash
 		char buf[1260];
 		msg_t msg;
 
-		t6::MSG_Init(&msg, buf, sizeof buf);
+		t6::MSG_Init(&msg, buf, sizeof(buf));
 		t6::MSG_WriteString(&msg, ProtoGenesys::VariadicText("relay %i", 1234567890).c_str());
 		t6::NET_OutOfBandData(t6::Com_ControllerIndex_GetNetworkID(ControllerIndex_t::CONTROLLER_INDEX_0), t6::get_party_data()->get_party_member(client_num)->platformAddr.netAddr, msg.data, msg.cursize);
 	}
@@ -60,7 +68,7 @@ namespace furtive_crash
 		char buf[1024];
 		msg_t msg;
 
-		t6::MSG_Init(&msg, buf, sizeof buf);
+		t6::MSG_Init(&msg, buf, sizeof(buf));
 		t6::MSG_WriteString(&msg, ProtoGenesys::VariadicText("%ijoinParty", t6::get_party_data()->party_id()).c_str());
 		t6::MSG_WriteLong(&msg, 0);
 		t6::MSG_WriteLong(&msg, 0);
@@ -77,19 +85,17 @@ namespace furtive_crash
 	*/
 	bool send_connectivity_test(std::size_t client_num)
 	{
-		PartyData_s* party = t6::get_party_data();
-
-		if (const auto our_client_num = t6::Party_FindMemberByXUID(party, t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0)); our_client_num >= 0)
+		if (const auto our_client_num = t6::Party_FindMemberByXUID(t6::get_party_data(), t6::Live_GetXuid(ControllerIndex_t::CONTROLLER_INDEX_0)); our_client_num > -1)
 		{
 			char buf[1260];
 			msg_t msg;
 
-			t6::MSG_Init(&msg, buf, sizeof buf);
+			t6::MSG_Init(&msg, buf, sizeof(buf));
 			t6::MSG_WriteString(&msg, "vt");
 			t6::MSG_WriteByte(&msg, our_client_num);
-			t6::CL_SendPeerData(party->get_session_data(), 0, t6::Com_ControllerIndex_GetNetworkID(ControllerIndex_t::CONTROLLER_INDEX_0), client_num, &msg, 1);
+			t6::CL_SendPeerData(t6::get_party_data()->get_session_data(), 0, t6::Com_ControllerIndex_GetNetworkID(ControllerIndex_t::CONTROLLER_INDEX_0), client_num, &msg, 1);
 
-			return t6::CL_CanWeConnectToClient(party->get_session_data(), our_client_num, client_num);
+			return t6::CL_CanWeConnectToClient(t6::get_party_data()->get_session_data(), our_client_num, client_num);
 		}
 
 		return false;

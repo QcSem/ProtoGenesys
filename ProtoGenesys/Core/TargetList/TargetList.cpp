@@ -193,7 +193,7 @@ namespace ProtoGenesys
 
 		if (!vTargetInfo.empty())
 		{
-			if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			if (_profiler.gSortAlgorithmTargets->Current.iValue == cProfiler::SORT_ALGORITHM_DISTANCE)
 			{
 				std::stable_sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDistance < b.flDistance; });
 
@@ -206,7 +206,7 @@ namespace ProtoGenesys
 					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
 
-			else if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
+			else if (_profiler.gSortAlgorithmTargets->Current.iValue == cProfiler::SORT_ALGORITHM_DAMAGE)
 			{
 				std::stable_sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flDamage > b.flDamage; });
 
@@ -219,7 +219,7 @@ namespace ProtoGenesys
 					_aimBot.AimState.iTargetNum = vTargetInfo.front().iIndex;
 			}
 			
-			else if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			else if (_profiler.gSortAlgorithmTargets->Current.iValue == cProfiler::SORT_ALGORITHM_FOV)
 			{
 				std::stable_sort(vTargetInfo.begin(), vTargetInfo.end(), [&](const sTargetInfo& a, const sTargetInfo& b) { return a.flFOV < b.flFOV; });
 
@@ -237,21 +237,21 @@ namespace ProtoGenesys
 
 		if (!vAntiAimTargetInfo.empty())
 		{
-			if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			if (_profiler.gSortAlgorithmTargets->Current.iValue == cProfiler::SORT_ALGORITHM_DISTANCE)
 			{
 				std::stable_sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flDistance < b.flDistance; });
 
 				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
 			}
 
-			else if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
+			else if (_profiler.gSortAlgorithmTargets->Current.iValue == cProfiler::SORT_ALGORITHM_DAMAGE)
 			{
 				std::stable_sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flDamage > b.flDamage; });
 
 				_aimBot.AimState.iAntiAimTargetNum = vAntiAimTargetInfo.front().iIndex;
 			}
 
-			else if (_profiler.gSortMethodTargets->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			else if (_profiler.gSortAlgorithmTargets->Current.iValue == cProfiler::SORT_ALGORITHM_FOV)
 			{
 				std::stable_sort(vAntiAimTargetInfo.begin(), vAntiAimTargetInfo.end(), [&](const sAntiAimTargetInfo& a, const sAntiAimTargetInfo& b) { return a.flFOV < b.flFOV; });
 
@@ -352,7 +352,7 @@ namespace ProtoGenesys
 
 		if (!vDamageInfoFinal.empty())
 		{
-			if (_profiler.gSortMethodBones->Current.iValue == cProfiler::SORT_METHOD_DISTANCE)
+			if (_profiler.gSortAlgorithmBones->Current.iValue == cProfiler::SORT_ALGORITHM_DISTANCE)
 			{
 				std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDistance < b.flDistance; });
 
@@ -363,7 +363,7 @@ namespace ProtoGenesys
 					*position = vDamageInfoFinal.front().vPosition;
 			}
 
-			if (_profiler.gSortMethodBones->Current.iValue == cProfiler::SORT_METHOD_DAMAGE)
+			if (_profiler.gSortAlgorithmBones->Current.iValue == cProfiler::SORT_ALGORITHM_DAMAGE)
 			{
 				std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flDamage > b.flDamage; });
 
@@ -374,7 +374,7 @@ namespace ProtoGenesys
 					*position = vDamageInfoFinal.front().vPosition;
 			}
 
-			if (_profiler.gSortMethodBones->Current.iValue == cProfiler::SORT_METHOD_FOV)
+			if (_profiler.gSortAlgorithmBones->Current.iValue == cProfiler::SORT_ALGORITHM_FOV)
 			{
 				std::stable_sort(vDamageInfoFinal.begin(), vDamageInfoFinal.end(), [&](const sDamageInfo& a, const sDamageInfo& b) { return a.flFOV < b.flFOV; });
 

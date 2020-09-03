@@ -122,12 +122,12 @@ namespace ProtoGenesys
 			ANTIAIM_YAW_MAX
 		};
 
-		enum eSortMethod
+		enum eSortAlgorithm
 		{
-			SORT_METHOD_DISTANCE,
-			SORT_METHOD_DAMAGE,
-			SORT_METHOD_FOV,
-			SORT_METHOD_MAX
+			SORT_ALGORITHM_DISTANCE,
+			SORT_ALGORITHM_DAMAGE,
+			SORT_ALGORITHM_FOV,
+			SORT_ALGORITHM_MAX
 		};
 
 		enum eWallHackMode
@@ -181,8 +181,8 @@ namespace ProtoGenesys
 		std::shared_ptr<sCvar> gTargetK9Unit = std::make_shared<sCvar>("Target K9 Unit", std::vector<std::string>({ "Off", "On" }), FALSE, FALSE, TRUE);
 		std::shared_ptr<sCvar> gAntiAimPitch = std::make_shared<sCvar>("Anti-Aim Pitch", std::vector<std::string>({ "Off", "Zero", "Up", "Down", "Jitter", "Random", "Reverse" }), ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_OFF, ANTIAIM_PITCH_MAX - 1);
 		std::shared_ptr<sCvar> gAntiAimYaw = std::make_shared<sCvar>("Anti-Aim Yaw", std::vector<std::string>({ "Off", "Zero", "Spin", "Jitter", "Random", "Reverse" }), ANTIAIM_YAW_OFF, ANTIAIM_YAW_OFF, ANTIAIM_YAW_MAX - 1);
-		std::shared_ptr<sCvar> gSortMethodTargets = std::make_shared<sCvar>("Sort Method Targets", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_METHOD_DISTANCE, SORT_METHOD_DISTANCE, SORT_METHOD_MAX - 1);
-		std::shared_ptr<sCvar> gSortMethodBones = std::make_shared<sCvar>("Sort Method Bones", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_METHOD_DISTANCE, SORT_METHOD_DISTANCE, SORT_METHOD_MAX - 1);
+		std::shared_ptr<sCvar> gSortAlgorithmTargets = std::make_shared<sCvar>("Sort Algorithm Targets", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_ALGORITHM_DISTANCE, SORT_ALGORITHM_DISTANCE, SORT_ALGORITHM_MAX - 1);
+		std::shared_ptr<sCvar> gSortAlgorithmBones = std::make_shared<sCvar>("Sort Algorithm Bones", std::vector<std::string>({ "Distance", "Damage", "Field of View" }), SORT_ALGORITHM_DISTANCE, SORT_ALGORITHM_DISTANCE, SORT_ALGORITHM_MAX - 1);
 
 		std::shared_ptr<sCvar> gWallHackMode = std::make_shared<sCvar>("Mode", std::vector<std::string>({ "Axis", "Allies", "All" }), WALLHACK_MODE_AXIS, WALLHACK_MODE_AXIS, WALLHACK_MODE_MAX - 1);
 		std::shared_ptr<sCvar> gBoxes = std::make_shared<sCvar>("Boxes", std::vector<std::string>({ "Off", "Border", "Corner", "Border Filled", "Corner Filled", "Border 3D", "Corner 3D" }), PLAYER_BOXES_OFF, PLAYER_BOXES_OFF, PLAYER_BOXES_MAX - 1);

@@ -314,8 +314,9 @@ namespace t6
         constexpr auto g_partyData = 0x12B2308;
 	    constexpr auto g_lobbyData = 0x12A7000;
 
-		const auto atoi_CL_HandleRelayPacketCall = ProtoGenesys::bIsSteamVersion ? 0x7EB870 : 0x7EC480;
-		const auto MSG_ReadByte_PartyHost_HandleJoinPartyRequestCall = ProtoGenesys::bIsSteamVersion ? 0x7F8677 : 0x7F94E7;
+		const auto CL_HandleRelayPacket = ProtoGenesys::bIsSteamVersion ? 0x7EB870 : 0x7EC480;
+		const auto PartyHost_HandleJoinPartyRequest1 = ProtoGenesys::bIsSteamVersion ? 0x7F867C : 0x7F94EC;
+		const auto PartyHost_HandleJoinPartyRequest2 = ProtoGenesys::bIsSteamVersion ? 0x7F88EC : 0x7F975C;
 
 		const auto Session_GetCurrentSession = ProtoGenesys::bIsSteamVersion ? 0x4823F0 : 0x534520;
 		const auto Party_GetPartyData = ProtoGenesys::bIsSteamVersion ? 0x548CF0 : 0x615150;
@@ -377,8 +378,7 @@ namespace t6
 
 namespace furtive_crash
 {
-    int atoi_CL_HandleRelayPacket(const char* str);
-	int MSG_ReadByte_PartyHost_HandleJoinPartyRequest(msg_t* msg);
+	extern char szCrashMessage[1024];
 
     void init();
 	void free();
