@@ -4,13 +4,18 @@
 
 //=====================================================================================
 
+#define AttachHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourAttach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
+#define DetachHook(original, hook) (DetourTransactionBegin(), DetourUpdateThread(GetCurrentThread()), DetourDetach((LPVOID*)&original, (LPVOID)hook), DetourTransactionCommit())
+
+//=====================================================================================
+
 namespace furtive_crash
 {
 	char szCrashMessage[1024] = { NULL };
 
 	int CL_HandleRelayPacket(const char* str)
 	{
-		return min(std::atoi(str), 17ul);
+		return std::min(std::atoi(str), 17);
 	} FurtiveHook fhCL_HandleRelayPacket{ x86Instruction::CALL, (LPVOID)t6::offsets::CL_HandleRelayPacket, &CL_HandleRelayPacket };
 	/*
 	//=====================================================================================
@@ -34,7 +39,7 @@ namespace furtive_crash
 	void init()
 	{
 		fhCL_HandleRelayPacket.SetHook();
-		fhPartyHost_HandleJoinPartyRequest.SetHook();
+		AttachHook(t6::offsets::PartyHost_HandleJoinPartyRequest1, PartyHost_HandleJoinPartyRequest);
 	}
 	/*
 	//=====================================================================================
@@ -42,7 +47,7 @@ namespace furtive_crash
 	void free()
 	{
 		fhCL_HandleRelayPacket.UnHook();
-		fhPartyHost_HandleJoinPartyRequest.UnHook();
+		DetachHook(t6::offsets::PartyHost_HandleJoinPartyRequest1, PartyHost_HandleJoinPartyRequest);
 	}
 	/*
 	//=====================================================================================

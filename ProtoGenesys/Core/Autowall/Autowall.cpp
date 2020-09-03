@@ -137,7 +137,7 @@ namespace ProtoGenesys
 					else
 						flSurfaceDepth = _mathematics.CalculateDistance3D(vHitPos, TR_Exit.vHitPos);
 
-					flSurfaceDepth = max(flSurfaceDepth, 1.0f);
+					flSurfaceDepth = std::max(flSurfaceDepth, 1.0f);
 
 					if (bExitHit)
 					{
@@ -146,7 +146,7 @@ namespace ProtoGenesys
 						if (HasPerk(6))
 							flExitDepth *= FindVar("perk_bulletPenetrationMultiplier")->Current.flValue;
 
-						flEnterDepth = min(flEnterDepth, flExitDepth);
+						flEnterDepth = std::min(flEnterDepth, flExitDepth);
 
 						if (flEnterDepth <= 0.0f)
 							return -FLT_MAX;

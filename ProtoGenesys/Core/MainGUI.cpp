@@ -996,7 +996,7 @@ namespace ProtoGenesys
 				if (!szVotespam.empty())
 				{
 					AddReliableCommand(VariadicText("callvote %s", acut::FindAndReplaceString(szVotespam, "%n", "\n").c_str()));
-					VoteSpamTimer.Wait(30000 + max(CG->iFrameTime, ClientActive->iPing));
+					VoteSpamTimer.Wait(30000 + std::max(CG->iFrameTime, ClientActive->iPing));
 				}
 			}
 		}

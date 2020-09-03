@@ -70,7 +70,7 @@ namespace acut
 		auto idxf = path.rfind('/');
 
 		if (idxb != path.npos && idxf != path.npos)
-			idx = max(idxb, idxf);
+			idx = std::max(idxb, idxf);
 
 		else if (idxb != path.npos)
 			idx = idxb;
@@ -97,7 +97,7 @@ namespace acut
 		auto idxf = path.rfind('/');
 
 		if (idxb != path.npos && idxf != path.npos)
-			idx = max(idxb, idxf);
+			idx = std::max(idxb, idxf);
 
 		else if (idxb != path.npos)
 			idx = idxb;
