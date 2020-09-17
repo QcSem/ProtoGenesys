@@ -45,10 +45,6 @@ void USERCALL hCalcEntityLerpPositions(int localnum, sCEntity* entity);
 typedef void(USERCALL* tCalcEntityLerpPositions)(int localnum, sCEntity* entity);
 tCalcEntityLerpPositions oCalcEntityLerpPositions = (tCalcEntityLerpPositions)dwCalcEntityLerpPositions;
 
-void USERCALL hSetupWeaponCamoRender(int localnum, ImVec3* origin, eWeaponDobjInfoSlot weaponslot, int camo, LPVOID weapon, int* texture);
-typedef void(USERCALL* tSetupWeaponCamoRender)(int localnum, ImVec3* origin, eWeaponDobjInfoSlot weaponslot, int camo, LPVOID weapon, int* texture);
-tSetupWeaponCamoRender oSetupWeaponCamoRender = (tSetupWeaponCamoRender)dwSetupWeaponCamoRender;
-
 int USERCALL hGetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin);
 typedef int(USERCALL* tGetWorldTagMatrix)(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin);
 tGetWorldTagMatrix oGetWorldTagMatrix = (tGetWorldTagMatrix)dwGetWorldTagMatrix;
@@ -177,25 +173,6 @@ void USERCALL hCalcEntityLerpPositions(int localnum, sCEntity* entity)
 	oCalcEntityLerpPositions(localnum, entity);
 
 	return _hooks.CalcEntityLerpPositions(localnum, entity);
-}
-
-//=====================================================================================
-
-void USERCALL hSetupWeaponCamoRender(int localnum, ImVec3* origin, eWeaponDobjInfoSlot weaponslot, int camo, LPVOID weapon, int* texture)
-{
-	_hooks.SetupWeaponCamoRender(localnum, origin, weaponslot, camo, weapon, texture);
-
-	if (_profiler.gAnimatedWeaponizedCamo->Current.iValue)
-	{
-		oSetupWeaponCamoRender(localnum, origin, HELD, 43, weapon, texture);
-		oSetupWeaponCamoRender(localnum, origin, STOWED, 43, weapon, texture);
-		oSetupWeaponCamoRender(localnum, origin, MELEE, 43, weapon, texture);
-	}
-
-	else
-	{
-		oSetupWeaponCamoRender(localnum, origin, weaponslot, camo, weapon, texture);
-	}
 }
 
 //=====================================================================================
@@ -389,7 +366,6 @@ void Init()
 	AttachHook(oPresent, hPresent);
 	AttachHook(oBulletHitEvent, hBulletHitEvent);
 	AttachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
-	AttachHook(oSetupWeaponCamoRender, hSetupWeaponCamoRender);
 	AttachHook(oGetAddr, hGetAddr);
 	AttachHook(oGetPlayerStatus, hGetPlayerStatus);
 	AttachHook(oIsValidSteamID, hIsValidSteamID);
@@ -432,7 +408,6 @@ void Free()
 	DetachHook(oPresent, hPresent);
 	DetachHook(oBulletHitEvent, hBulletHitEvent);
 	DetachHook(oCalcEntityLerpPositions, hCalcEntityLerpPositions);
-	DetachHook(oSetupWeaponCamoRender, hSetupWeaponCamoRender);
 	DetachHook(oGetAddr, hGetAddr);
 	DetachHook(oGetPlayerStatus, hGetPlayerStatus);
 	DetachHook(oIsValidSteamID, hIsValidSteamID);

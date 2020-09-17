@@ -374,11 +374,6 @@ namespace ProtoGenesys
 					bWriteLog = true;
 				} ImGui::NewLine();
 
-				if (DrawOption(_profiler.gAnimatedWeaponizedCamo->szName, _profiler.gAnimatedWeaponizedCamo->szItems[_profiler.gAnimatedWeaponizedCamo->Current.iValue], &_profiler.gAnimatedWeaponizedCamo->Current.iValue, _profiler.gAnimatedWeaponizedCamo->Domain.iMin, _profiler.gAnimatedWeaponizedCamo->Domain.iMax, 1))
-				{
-					bWriteLog = true;
-				} ImGui::NewLine();
-
 				if (DrawOption(_profiler.gLagometer->szName, _profiler.gLagometer->szItems[_profiler.gLagometer->Current.iValue], &_profiler.gLagometer->Current.iValue, _profiler.gLagometer->Domain.iMin, _profiler.gLagometer->Domain.iMax, 1))
 				{
 					bWriteLog = true;
@@ -398,7 +393,6 @@ namespace ProtoGenesys
 					_profiler.gBoneScanRiotShielders->Current.iValue = _profiler.gBoneScanRiotShielders->Reset.iValue;
 					_profiler.gNameSpam->Current.iValue = _profiler.gNameSpam->Reset.iValue;
 					_profiler.gTrickShot->Current.iValue = _profiler.gTrickShot->Reset.iValue;
-					_profiler.gAnimatedWeaponizedCamo->Current.iValue = _profiler.gAnimatedWeaponizedCamo->Reset.iValue;
 					_profiler.gLagometer->Current.iValue = _profiler.gLagometer->Reset.iValue;
 
 					bWriteLog = true;

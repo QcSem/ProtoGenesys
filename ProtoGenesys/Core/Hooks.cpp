@@ -483,30 +483,6 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	void cHooks::SetupWeaponCamoRender(int localnum, ImVec3* origin, eWeaponDobjInfoSlot weaponslot, int camo, LPVOID weapon, int* texture)
-	{
-		for (auto& Weaponized : vWeaponized)
-		{
-			sWeaponized* pWeaponized = (sWeaponized*)FindDmaAddy(Weaponized.first, std::vector<std::uintptr_t>({ Weaponized.second }));
-
-			if (_profiler.gAnimatedWeaponizedCamo->Current.iValue)
-			{
-				pWeaponized->flLayer1Scroll = -0.06f;
-				pWeaponized->flLayer2Scroll = 0.1f;
-				pWeaponized->flLayer3Scroll = 0.06f;
-			}
-
-			else
-			{
-				pWeaponized->flLayer1Scroll = 0.0f;
-				pWeaponized->flLayer2Scroll = 0.0f;
-				pWeaponized->flLayer3Scroll = 0.0f;
-			}
-		}
-	}
-	/*
-	//=====================================================================================
-	*/
 	void cHooks::GetWorldTagMatrix(LPVOID pose, LPVOID dobj, WORD tag, ImVec3 matrix[], ImVec3* origin)
 	{
 		if (CG)
