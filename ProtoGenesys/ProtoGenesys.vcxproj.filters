@@ -74,9 +74,6 @@
     <ClCompile Include="Core\FurtiveCrash\FurtiveCrash.cpp">
       <Filter>Core\FurtiveCrash</Filter>
     </ClCompile>
-    <ClCompile Include="Core\License\License.cpp">
-      <Filter>Core\License</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.hpp" />
@@ -211,9 +208,6 @@
     </ClInclude>
     <ClInclude Include="Core\FurtiveCrash\FurtiveCrash.h">
       <Filter>Core\FurtiveCrash</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\License\License.h">
-      <Filter>Core\License</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

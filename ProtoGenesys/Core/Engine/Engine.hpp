@@ -922,36 +922,6 @@ namespace ProtoGenesys
 	/*
 	//=====================================================================================
 	*/
-	struct sWeaponized
-	{
-	public:
-		float flReflection;
-	private:
-		char _0x4[0x1C];
-	public:
-		float flLayer3Scroll;
-	private:
-		char _0x24[0x1C];
-	public:
-		float flEmissiveAmount;
-	private:
-		char _0x44[0xFC];
-	public:
-		float flLayer1Scroll;
-	private:
-		char _0x144[0x7C];
-	public:
-		float flLayer2Scroll;
-	private:
-		char _0x1C4[0x11C];
-	public:
-		float flGlossAmount;
-	private:
-		char _0x2E4[0xEC];
-	};
-	/*
-	//=====================================================================================
-	*/
 	static MODULEINFO hSteamAPI;
 	static MODULEINFO hGameOverlayRenderer;
 	static MODULEINFO hT6mp = GetModuleInfo(NULL);
@@ -1102,18 +1072,6 @@ namespace ProtoGenesys
 	static std::uintptr_t dwTacSSPatch = 0x2B68824;
 	static std::uintptr_t dwTacSSHandle = bIsSteamVersion ? 0x3A458F4 : 0x3A248F4;
 	static std::uintptr_t dwXnAddr = bIsSteamVersion ? 0x34389B0 : 0x34179B0;
-
-	static std::vector<std::pair<std::uintptr_t, std::uintptr_t>> vWeaponized =
-	{
-		std::make_pair(0x164FAB8, 0x14E),
-		std::make_pair(0x164FB28, 0xBC),
-		std::make_pair(0x164FB98, 0xBC),
-		std::make_pair(0x164FC08, 0xBC),
-		std::make_pair(0x164FC78, 0xBC),
-		std::make_pair(0x164FCE8, 0xCC),
-		std::make_pair(0x164FD58, 0xCC),
-		std::make_pair(0x164FDC8, 0xCC)
-	};
 	/*
 	//=====================================================================================
 	*/
